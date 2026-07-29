@@ -32,7 +32,7 @@ from itertools import product
 
 import numpy as np
 
-from grammar import Grammaire
+from grammaire import Grammaire
 
 DOSSIER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results_test2")
 COEFS = [0.01, 0.02, 0.05, 0.08, 0.12, 0.2, 0.35, 0.5]

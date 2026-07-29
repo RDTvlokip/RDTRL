@@ -56,40 +56,40 @@ Scripts import their siblings, so **run them from their own directory**.
 
 ```bash
 cd src/test1_copy
-python rl_copy.py            # ~20 min — 3 reward shapes + the 4 post-hoc analyses
-python test4_control.py      # ~4 min  — transfer control with zero positional overlap
+python rl_copie.py           # ~20 min — 3 reward shapes + the 4 post-hoc analyses
+python test4_controle.py     # ~4 min  — transfer control with zero positional overlap
 ```
 
-`rl_copy.py` runs the graded, Levenshtein and all-or-nothing rewards, then (only if the
+`rl_copie.py` runs the graded, Levenshtein and all-or-nothing rewards, then (only if the
 copy succeeded) the anti-cheat controls, the probability heatmap, the hidden-state
-ablation and the perturbation test. `test4_control.py` is the control that killed the
+ablation and the perturbation test. `test4_controle.py` is the control that killed the
 apparent transfer result, and it saves the trained weights.
 
 ### Test 2 — the grammar
 
 ```bash
 cd src/test2_grammar
-python grammar.py                          # instant — parser self-test, exact counts
-python rl_grammar.py                       # ~35 min — sweep, controls, generalization
-python seed_sweep.py                       # ~45 min — the same sweep across 3 seeds
-python capacity_probe.py                   # ~1 min  — is the target even representable?
-python gibbs_optimum.py                    # instant — closed-form optimum, shaping tax
-python check_dominance.py                  # instant — needs .pt from rl_grammar.py
-python exact_gradient.py                   # ~2 h    — order-1 analysis + exact gradient
-python parameterization_and_annealing.py   # ~25 min — tabular vs GRU, the β annealing fix
-python stability_and_trajectory.py         # ~35 min — stability from the ideal policy
-python trajectory_and_structure.py         # ~20 min — PCA, ANOVA, conserved functionals
-python collapse_localization.py            # ~20 min — which position carries the collapse
+python grammaire.py                    # instant — parser self-test, exact counts
+python rl_grammaire.py                 # ~35 min — sweep, controls, generalization
+python balayage_graines.py             # ~45 min — the same sweep across 3 seeds
+python sonde_capacite.py               # ~1 min  — is the target even representable?
+python optimum_gibbs.py                # instant — closed-form optimum, shaping tax
+python verifier_dominance.py           # instant — needs .pt from rl_grammaire.py
+python gradient_exact.py               # ~2 h    — order-1 analysis + exact gradient
+python parametrisation_et_recuit.py    # ~25 min — tabular vs GRU, the β annealing fix
+python stabilite_et_trajectoire.py     # ~35 min — stability from the ideal policy
+python trajectoire_et_structure.py     # ~20 min — PCA, ANOVA, conserved functionals
+python localisation_effondrement.py    # ~20 min — which position carries the collapse
 ```
 
-Times are for a Ryzen 5 5600G. `exact_gradient.py` is by far the longest: it
+Times are for a Ryzen 5 5600G. `gradient_exact.py` is by far the longest: it
 backpropagates through all 8,000 sequences at every step, 4,000 steps × 4 betas × 3 seeds.
 
 ### Figures
 
 ```bash
 cd src/tools
-python article_figures.py    # ~6 min first run, instant afterwards
+python figures_article.py    # ~6 min first run, instant afterwards
 ```
 
 Regenerates the 8 article figures in English from the saved CSV/JSON. Needs test 1 and
@@ -102,21 +102,21 @@ test 2 to have run. The phase portrait retrains 3 seeds and caches the trajector
 
 | script | question it answers |
 |---|---|
-| `test1_copy/rl_copy.py` | Can pure RL copy a fixed sentence? And is the success real? |
-| `test1_copy/test4_control.py` | Is the observed transfer real structure, or just a shared literal prefix? |
-| `test2_grammar/grammar.py` | The hand-written grammar and parser. No AI anywhere in the reward. |
-| `test2_grammar/rl_grammar.py` | Can pure RL learn a grammar? Entropy sweep, all-or-nothing control, generalization tests, **exact** diversity measures. |
-| `test2_grammar/seed_sweep.py` | Is the sweep reproducible, or was the frontier a single-seed artifact? |
-| `test2_grammar/capacity_probe.py` | Is the ideal policy even *representable* by this model? (diagnostic only — not learning) |
-| `test2_grammar/gibbs_optimum.py` | What is the optimum of the objective actually being optimized, and how bad is the shaping tax? |
-| `test2_grammar/check_dominance.py` | Verifying the dominance argument numerically instead of asserting it. |
-| `test2_grammar/exact_gradient.py` | What does the gradient see at initialization (order-1 analysis)? And is the collapse due to noise or geometry? |
-| `test2_grammar/parameterization_and_annealing.py` | Objective or parameterization? And can annealing β fix it? |
-| `test2_grammar/stability_and_trajectory.py` | Is the optimum unreachable, or merely unstable? Is it a waypoint rather than a destination? |
-| `test2_grammar/trajectory_and_structure.py` | The reward's ANOVA spectrum, the trajectory's effective dimension, conserved functionals. |
-| `test2_grammar/collapse_localization.py` | Which sequence position carries the collapse? |
+| `test1_copy/rl_copie.py` | Can pure RL copy a fixed sentence? And is the success real? |
+| `test1_copy/test4_controle.py` | Is the observed transfer real structure, or just a shared literal prefix? |
+| `test2_grammar/grammaire.py` | The hand-written grammar and parser. No AI anywhere in the reward. |
+| `test2_grammar/rl_grammaire.py` | Can pure RL learn a grammar? Entropy sweep, all-or-nothing control, generalization tests, **exact** diversity measures. |
+| `test2_grammar/balayage_graines.py` | Is the sweep reproducible, or was the frontier a single-seed artifact? |
+| `test2_grammar/sonde_capacite.py` | Is the ideal policy even *representable* by this model? (diagnostic only, not learning) |
+| `test2_grammar/optimum_gibbs.py` | What is the optimum of the objective actually being optimized, and how bad is the shaping tax? |
+| `test2_grammar/verifier_dominance.py` | Verifying the dominance argument numerically instead of asserting it. |
+| `test2_grammar/gradient_exact.py` | What does the gradient see at initialization (order-1 analysis)? And is the collapse due to noise or geometry? |
+| `test2_grammar/parametrisation_et_recuit.py` | Objective or parameterization? And can annealing β fix it? |
+| `test2_grammar/stabilite_et_trajectoire.py` | Is the optimum unreachable, or merely unstable? Is it a waypoint rather than a destination? |
+| `test2_grammar/trajectoire_et_structure.py` | The reward's ANOVA spectrum, the trajectory's effective dimension, conserved functionals. |
+| `test2_grammar/localisation_effondrement.py` | Which sequence position carries the collapse? |
 | `tools/bench_device.py` | CPU vs GPU per-episode timing. |
-| `tools/article_figures.py` | Regenerates all article figures from saved data. |
+| `tools/figures_article.py` | Regenerates all article figures from saved data. |
 
 ---
 

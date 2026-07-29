@@ -23,8 +23,8 @@ from itertools import product
 import numpy as np
 import torch
 
-from grammar import Grammaire
-from rl_grammar import PolitiqueGRU, distribution_exacte, DOSSIER_SORTIE
+from grammaire import Grammaire
+from rl_grammaire import PolitiqueGRU, distribution_exacte, DOSSIER_SORTIE
 
 COEFS = [0.0, 0.01, 0.02, 0.05, 0.08, 0.12, 0.2, 0.35, 0.5]
 

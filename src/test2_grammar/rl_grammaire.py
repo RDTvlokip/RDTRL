@@ -32,7 +32,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from grammar import Grammaire
+from grammaire import Grammaire
 
 # Les sorties vont a la racine du depot, pas a cote du script.
 RACINE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))

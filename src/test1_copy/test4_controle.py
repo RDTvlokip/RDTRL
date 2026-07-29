@@ -16,7 +16,7 @@ import random
 import numpy as np
 import torch
 
-from rl_copy import (DOSSIER_SORTIE, CIBLE_PRINCIPALE, CIBLE_PERTURBEE, Vocabulaire,
+from rl_copie import (DOSSIER_SORTIE, CIBLE_PRINCIPALE, CIBLE_PERTURBEE, Vocabulaire,
                       construire_vocabulaire, nouvelle_politique, entrainer,
                       fixer_graine)
 

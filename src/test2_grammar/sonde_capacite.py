@@ -18,8 +18,8 @@ puis uniforme sur les noms compatibles, puis sur les verbes compatibles.
 
 import torch
 
-from grammar import Grammaire
-from rl_grammar import PolitiqueGRU, analyse_exacte, fixer_graine, distribution_exacte
+from grammaire import Grammaire
+from rl_grammaire import PolitiqueGRU, analyse_exacte, fixer_graine, distribution_exacte
 
 ETAPES = 3000
 LR = 5e-3

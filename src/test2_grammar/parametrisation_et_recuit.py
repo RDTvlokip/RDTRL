@@ -36,8 +36,8 @@ from itertools import product
 import numpy as np
 import torch
 
-from grammar import Grammaire
-from rl_grammar import PolitiqueGRU, analyse_exacte, fixer_graine, DOSSIER_SORTIE
+from grammaire import Grammaire
+from rl_grammaire import PolitiqueGRU, analyse_exacte, fixer_graine, DOSSIER_SORTIE
 
 ETAPES_TABULAIRE = 6000
 EPISODES_RECUIT = 30000

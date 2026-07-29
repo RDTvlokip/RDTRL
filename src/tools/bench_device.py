@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")),
     "src", "test1_copy"))
 
-from rl_copy import (CIBLE_PRINCIPALE, CIBLE_PERTURBEE, Vocabulaire,
+from rl_copie import (CIBLE_PRINCIPALE, CIBLE_PERTURBEE, Vocabulaire,
                       construire_vocabulaire, nouvelle_politique,
                       recompense_positions)
 

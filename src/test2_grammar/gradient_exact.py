@@ -33,8 +33,8 @@ from itertools import product
 import numpy as np
 import torch
 
-from grammar import Grammaire
-from rl_grammar import PolitiqueGRU, analyse_exacte, fixer_graine
+from grammaire import Grammaire
+from rl_grammaire import PolitiqueGRU, analyse_exacte, fixer_graine
 
 ETAPES = 4000
 LR = 5e-3

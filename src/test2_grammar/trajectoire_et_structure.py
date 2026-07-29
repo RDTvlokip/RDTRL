@@ -39,8 +39,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from grammar import Grammaire
-from rl_grammar import PolitiqueGRU, distribution_exacte, fixer_graine, DOSSIER_SORTIE
+from grammaire import Grammaire
+from rl_grammaire import PolitiqueGRU, distribution_exacte, fixer_graine, DOSSIER_SORTIE
 
 EPISODES = 20000
 PERIODE = 250

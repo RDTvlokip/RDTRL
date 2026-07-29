@@ -26,8 +26,8 @@ import sys
 RACINE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, os.path.join(RACINE, "src", "test2_grammar"))
 
-from grammar import Grammaire
-from rl_grammar import PolitiqueGRU, analyse_exacte, distribution_exacte, fixer_graine
+from grammaire import Grammaire
+from rl_grammaire import PolitiqueGRU, analyse_exacte, distribution_exacte, fixer_graine
 
 FIGURES = os.path.join(RACINE, "figures")
 R1 = os.path.join(RACINE, "results")
