@@ -32,9 +32,11 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from grammaire import Grammaire
+from grammar import Grammaire
 
-DOSSIER_SORTIE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultats_test2")
+# Les sorties vont a la racine du depot, pas a cote du script.
+RACINE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DOSSIER_SORTIE = os.path.join(RACINE, "results_test2")
 
 
 class PolitiqueGRU(nn.Module):

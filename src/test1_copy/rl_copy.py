@@ -45,7 +45,9 @@ import matplotlib.pyplot as plt
 CIBLE_PRINCIPALE = "le chat dort"      # 12 caracteres
 CIBLE_PERTURBEE = "le chien dort"      # 13 caracteres, un seul mot change
 
-DOSSIER_SORTIE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resultats")
+# Les sorties vont a la racine du depot, pas a cote du script.
+RACINE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DOSSIER_SORTIE = os.path.join(RACINE, "results")
 
 
 # Vocabulaire

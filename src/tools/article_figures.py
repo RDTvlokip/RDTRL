@@ -21,13 +21,17 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from grammaire import Grammaire
-from rl_grammaire import PolitiqueGRU, analyse_exacte, distribution_exacte, fixer_graine
+import sys
 
-RACINE = os.path.dirname(os.path.abspath(__file__))
+RACINE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.join(RACINE, "src", "test2_grammar"))
+
+from grammar import Grammaire
+from rl_grammar import PolitiqueGRU, analyse_exacte, distribution_exacte, fixer_graine
+
 FIGURES = os.path.join(RACINE, "figures")
-R1 = os.path.join(RACINE, "resultats")
-R2 = os.path.join(RACINE, "resultats_test2")
+R1 = os.path.join(RACINE, "results")
+R2 = os.path.join(RACINE, "results_test2")
 
 plt.rcParams.update({"figure.dpi": 130, "axes.grid": True, "grid.alpha": 0.25,
                      "font.size": 10})

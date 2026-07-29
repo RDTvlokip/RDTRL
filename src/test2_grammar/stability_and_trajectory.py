@@ -28,10 +28,10 @@ from itertools import product
 import numpy as np
 import torch
 
-from grammaire import Grammaire
-from rl_grammaire import (PolitiqueGRU, analyse_exacte, distribution_exacte,
+from grammar import Grammaire
+from rl_grammar import (PolitiqueGRU, analyse_exacte, distribution_exacte,
                           fixer_graine, DOSSIER_SORTIE)
-from sonde_capacite import phrases_valides_en_ids, ajuster
+from capacity_probe import phrases_valides_en_ids, ajuster
 
 EPISODES = 20000
 PERIODE = 250

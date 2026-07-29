@@ -18,8 +18,8 @@ import os
 import numpy as np
 import torch
 
-from grammaire import Grammaire
-from rl_grammaire import (PolitiqueGRU, analyse_exacte, entrainer, fixer_graine,
+from grammar import Grammaire
+from rl_grammar import (PolitiqueGRU, analyse_exacte, entrainer, fixer_graine,
                           DOSSIER_SORTIE)
 
 COEFS = [0.0, 0.01, 0.02, 0.05, 0.08, 0.12, 0.2, 0.35]

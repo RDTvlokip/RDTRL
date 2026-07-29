@@ -16,7 +16,7 @@ import random
 import numpy as np
 import torch
 
-from rl_copie import (CIBLE_PRINCIPALE, CIBLE_PERTURBEE, Vocabulaire,
+from rl_copy import (DOSSIER_SORTIE, CIBLE_PRINCIPALE, CIBLE_PERTURBEE, Vocabulaire,
                       construire_vocabulaire, nouvelle_politique, entrainer,
                       fixer_graine)
 
@@ -55,7 +55,8 @@ run_origine = entrainer(politique, CIBLE_PRINCIPALE, vocabulaire,
                         max_episodes=MAX_EPISODES, verbeux=False, etiquette="origine")
 print(f"  1er reward=1.0 : {run_origine['premier_parfait']} "
       f"| greedy '{run_origine['greedy_final']}'")
-torch.save(politique.state_dict(), "resultats/politique_le_chat_dort.pt")
+torch.save(politique.state_dict(),
+           os.path.join(DOSSIER_SORTIE, "politique_le_chat_dort.pt"))
 
 # 2. Transfert vers la cible sans recouvrement (poids conserves, pas de reset)
 print(f"\nTransfert vers '{cible_neutre}' (poids conserves)...")
