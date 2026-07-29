@@ -135,12 +135,15 @@ test 2 to have run. The phase portrait retrains 3 seeds and caches the trajector
 └── results_test2/        test 2 outputs (gitignored)
 ```
 
-**A note on language.** Filenames, folders, this README, the docs and the figures are in
-English. **The code itself — comments, docstrings, variable names — is in French.** That is
-deliberate: it is how the work was actually done, and rewriting it afterwards would be
-cosmetic. If you want to follow the reasoning line by line, you will have to adapt. The
-docs carry everything you need to understand *what* each script establishes without
-reading a word of French.
+**A note on language.** Filenames, folders, this README, the documentation and the figures
+are written in English. **The code itself — including comments, docstrings and variable
+names — is written in French.** This is intentional: the experiments were developed this
+way, and the original terminology was preserved to avoid cosmetic rewriting.
+
+The documentation contains all the necessary explanations to understand the purpose and
+conclusions of each script without requiring knowledge of French. Readers who wish to
+inspect the implementation details line by line may encounter French terminology inside the
+source code.
 
 **On `CARNET.md`:** refuted hypotheses stay in the file with their date of death. Five of
 mine died during this project, including one that was wrong three times over before the
