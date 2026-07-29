@@ -5,7 +5,9 @@ Two experiments testing whether a policy, initialized with **random weights** an
 
 No pretraining. No input/output pairs. No HuggingFace, no RL library — plain PyTorch.
 
-📄 **Full write-up:** [the article](docs/ARTICLE.md) · 🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
+📄 **Full write-up:** [Teaching a network to write with reward only](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) (Hugging Face blog) — also mirrored in [docs/ARTICLE.md](docs/ARTICLE.md)
+
+🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
 
 ---
 
@@ -166,6 +168,14 @@ a referential game, with the falsification threshold fixed **before** the first 
 code, which is the one thing tests 1 and 2 never had.
 
 Prediction on record: high task success, non-compositional code.
+
+---
+
+## License
+
+[MIT](LICENSE) — use, modify and redistribute freely, including for reproduction of these
+results. If you build on this work, a citation or a link back is appreciated but not
+required.
 
 ---
 

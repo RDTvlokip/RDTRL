@@ -887,7 +887,10 @@ Replaces the argument about whether a reward is "sparse" with a measurement of w
 
 ## 💻 The code
 
-Everything is plain PyTorch, no HuggingFace, no RL library. Fourteen standalone scripts, French comments:
+Everything is on GitHub: **[RDTvlokip/RDTRL](https://github.com/RDTvlokip/RDTRL)** — MIT
+licensed, with the exact commands and runtimes to reproduce every number in this article.
+
+Plain PyTorch, no HuggingFace, no RL library. Fifteen standalone scripts, French comments:
 
 | script | what it does |
 |---|---|
