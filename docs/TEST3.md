@@ -188,10 +188,33 @@ les codes, c'est la **répartition** de ces 3 log 3 dans la matrice 3 × 3.
 D'où le scalaire :
 
 ```
-concentration = ( Σ_j max_i M[i,j] ) / (3 log 3)     ∈ [1/3, 1]
+concentration = ( Σ_j max_i M[i,j] ) / log₂(27)     ∈ [0, 1]
 ```
 
-Vaut 1 pour un code compositionnel. Plus bas pour un code étalé.
+Majorée par 1 puisque `Σ_j max_i I(A_i;M_j) ≤ Σ_j H(M_j) ≤ 3·log₂3 = log₂27`.
+
+**Correction d'une affirmation écrite sans vérification.** J'avais annoncé un
+minorant de 1/3, en supposant implicitement que l'information mutuelle
+s'additionnait à travers la matrice. C'est faux, et le calcul le montre : le
+minimum observé sur 20 000 bijections uniformes est **0,0305**.
+
+### Valeurs mesurées — `grammaire3.py`, 20 000 tirages
+
+| | concentration |
+|---|---|
+| code compositionnel (les 1 296, vérifiés un par un) | **1,000000** |
+| bijection uniforme, moyenne | **0,1273** |
+| bijection uniforme, écart-type | 0,0332 |
+| bijection uniforme, minimum observé | 0,0305 |
+| bijection uniforme, **maximum observé** | **0,3305** |
+| quantiles 1 % / 50 % / 99 % / 99,9 % | 0,066 / 0,125 / 0,217 / 0,254 |
+
+Un code compositionnel est à **26,3 écarts-types** de la moyenne nulle. Aucun des
+20 000 tirages n'atteint 0,34.
+
+**Conséquence pratique** : une concentration mesurée au-dessus de ~0,35 serait déjà
+hors de portée du tirage uniforme. Ce seuil n'est pas choisi, il est **dérivé de la
+loi nulle** — c'est exactement ce qu'un seuil arbitraire n'aurait pas su faire.
 
 **Ce qu'on apprend.** Pas un binaire, une **position** dans l'espace des codes
 parfaits. C'est la différence entre « ce n'est pas compositionnel » et « voici à
