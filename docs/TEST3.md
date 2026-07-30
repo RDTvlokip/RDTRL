@@ -95,61 +95,241 @@ C'est une courbe, pas un verdict.
 
 ---
 
-## 4. Critère de falsification, fixé à l'avance
+## 4. La formulation algébrique, et pourquoi elle rend tout exact
 
-Retirer de l'entraînement des **combinaisons** d'attributs, jamais des valeurs
-entières — c'est l'erreur du token jamais vu du test 2, où l'embedding non
-entraîné rendait le test vide par construction.
+Notons `S` la matrice 27 × 27 de l'émetteur, `S[r, m] = P(message m | référent r)`,
+et `R` celle du récepteur, `R[m, r̂] = P(reconstruction r̂ | message m)`. Les lignes
+de chacune somment à 1.
 
-Mesures :
+Avec des référents tirés uniformément, la récompense espérée s'écrit exactement :
 
-| mesure | seuil proposé |
+```
+E[R] = (1/27) · Σ_r Σ_m S[r,m] · R[m,r] = (1/27) · tr(S R)
+```
+
+Trois conséquences immédiates, toutes utilisables comme instruments.
+
+**a) L'objectif est bilinéaire.** Il est linéaire en `S` à `R` fixé, et
+réciproquement. C'est un jeu de coordination pur : aucun conflit d'intérêt, un
+seul optimum de valeur. Ça n'a rien à voir avec l'optimisation à un seul agent du
+test 2, et ça se traite avec des outils différents.
+
+**b) L'ensemble des optima globaux est exactement `{(P, Pᵀ) : P matrice de
+permutation}`.** `tr(S R) ≤ 27` avec égalité si et seulement si `S` est une
+permutation et `R` son inverse. C'est la reformulation rigoureuse du comptage de
+§3 : il y a exactement 27! optima globaux, tous de valeur 1.
+
+**c) Le gradient de l'un est la politique de l'autre.**
+
+```
+∂E[R] / ∂S[r,m] = (1/27) · R[m,r]
+∂E[R] / ∂R[m,r] = (1/27) · S[r,m]
+```
+
+L'émetteur monte le gradient de la **table de décodage courante du récepteur**, et
+inversement. C'est la structure de co-adaptation sous sa forme la plus nue, et
+elle est exacte, pas approchée.
+
+**Prédiction dérivable de (c), avant toute expérience** : à l'initialisation les
+deux politiques sont quasi uniformes, donc chaque gradient est quasi uniforme,
+donc **il n'existe aucune direction préférée**. La brisure de symétrie ne peut
+venir que du bruit d'initialisation et de l'échantillonnage. Contraste net avec le
+test 2, où le signal d'ordre 1 imposait une direction dès le premier pas à cause
+d'un déséquilibre du lexique.
+
+---
+
+## 5. Ce qui remplace le seuil : une prédiction avec mécanisme
+
+On abandonne délibérément le critère pass/fail. Raison : **le verdict est déjà
+démontré**. Le comptage de §3 et le point (b) ci-dessus établissent que la
+récompense est indifférente à la compositionnalité, sans qu'aucun entraînement
+soit nécessaire. Un seuil empirique sur la précision zéro-shot ne ferait que
+re-mesurer bruyamment ce qu'on sait déjà exactement.
+
+Un seuil ne limite d'ailleurs pas ce qu'on mesure, seulement ce qu'on a le droit
+de conclure. Ce qu'on garde à la place est plus contraignant et plus intéressant :
+
+> **Engagement enregistré le 29/07/2026.** Les codes émergents seront des
+> bijections quasi parfaites (succès de tâche élevé) et non compositionnels. La
+> mesure de concentration positionnelle définie en §6.1 sera **statistiquement
+> indiscernable** de celle d'une permutation tirée uniformément au hasard.
+
+C'est falsifiable de façon bien plus tranchante qu'un seuil arbitraire. **Si la
+concentration mesurée dépasse significativement le tirage uniforme, alors quelque
+chose sélectionne les codes en dehors de la récompense** — et le raisonnement des
+optima à égalité, qui porte tout le projet depuis le test 2, comporte une faille.
+Ce serait le résultat majeur de RDTRL.
+
+---
+
+## 6. Le programme d'investigation
+
+Sept questions, dans l'ordre où chacune devient posable. Pour chacune :
+l'instrument, et ce que chaque issue signifierait.
+
+### 6.1 Quel code émerge, et où tombe-t-il parmi les 27! ?
+
+**Instrument.** La loi jointe étant énumérable, on calcule la matrice d'information
+mutuelle attribut × position :
+
+```
+M[i, j] = I(A_i ; M_j)     pour i, j ∈ {1, 2, 3}
+```
+
+Pour toute bijection, `I(référent ; message) = log 27 = 3 log 3`. Ce qui distingue
+les codes, c'est la **répartition** de ces 3 log 3 dans la matrice 3 × 3.
+
+- Code compositionnel : matrice diagonale à permutation près, `log 3` sur trois
+  cases, 0 partout ailleurs.
+- Code holistique : information étalée, chaque position portant un peu de chaque
+  attribut.
+
+D'où le scalaire :
+
+```
+concentration = ( Σ_j max_i M[i,j] ) / (3 log 3)     ∈ [1/3, 1]
+```
+
+Vaut 1 pour un code compositionnel. Plus bas pour un code étalé.
+
+**Ce qu'on apprend.** Pas un binaire, une **position** dans l'espace des codes
+parfaits. C'est la différence entre « ce n'est pas compositionnel » et « voici à
+quelle distance et dans quelle direction ».
+
+### 6.2 La dynamique tire-t-elle vraiment au hasard parmi les codes parfaits ?
+
+**La question la plus prometteuse du lot**, parce qu'elle teste l'hypothèse qui
+porte tout le reste.
+
+**Le piège à éviter.** Tester directement « P(compositionnel) = 1,19 × 10⁻²⁵ » n'a
+aucune puissance statistique : sous l'hypothèse nulle on attend zéro succès en
+cinquante runs, et on en observera zéro. Le test ne peut rien distinguer.
+
+**L'instrument qui a de la puissance.** Construire la **loi nulle de la
+concentration** en tirant N permutations uniformément parmi les 27!, et calculer
+la distribution de la statistique de §6.1. Puis comparer la concentration des
+codes réellement émergents à cette loi nulle.
+
+- Concentration des runs indiscernable de la nulle → la dynamique échantillonne
+  bien uniformément, le calcul de §3 tient, prédiction confirmée.
+- Concentration **supérieure** → quelque chose sélectionne hors récompense.
+  Candidats : la factorisation autorégressive de l'émetteur, l'ordre de génération
+  des tokens, la structure de partage de paramètres. C'est exactement ce qui
+  s'était passé au test 2, où le biais d'ordre 1 décidait la branche.
+- Concentration **inférieure** → la dynamique fuit activement les codes
+  structurés, ce qui serait très surprenant et demanderait une explication.
+
+Le modèle est minuscule, donc 50 à 100 graines sont accessibles. C'est ce qui rend
+ce test faisable ici et nulle part ailleurs.
+
+### 6.3 Qui écrit le code, l'émetteur ou le récepteur ?
+
+**Instrument.** Quatre conditions, en gelant l'un des deux :
+
+| condition | question |
 |---|---|
-| précision zéro-shot sur les combinaisons retenues | **≥ 60 %** sur au moins **2 graines sur 3** |
-| similarité topographique (distance sémantique ↔ distance des messages) | **≥ 0,3** |
-| référence hasard | 3,7 % (reconstruction), 6,25 % si variante discrimination à K=16 |
+| `S` gelé compositionnel, `R` libre | le récepteur apprend-il à décoder un code structuré ? (attendu : oui, c'est un problème d'apprentissage supervisé déguisé) |
+| `R` gelé compositionnel, `S` libre | l'émetteur retrouve-t-il l'encodeur correspondant ? |
+| `S` gelé sur une permutation aléatoire, `R` libre | le récepteur apprend-il aussi bien un code arbitraire ? |
+| les deux libres | ce qui émerge réellement |
 
-En dessous, l'hypothèse « le RL découvre une représentation linguistique
-générale » est abandonnée **pour ce design**, sans renégociation après coup.
+**Ce qu'on apprend.** Si un code compositionnel s'apprend aussi facilement qu'un
+code arbitraire une fois l'autre agent gelé, alors la difficulté n'est pas dans
+l'apprentissage du code mais dans la **coordination** sur lequel choisir. C'est
+une localisation, pas un constat — la version test 3 du gel de position qui avait
+tout localisé au test 2.
 
-**Prédiction au dossier, datée du 29/07/2026** : succès de tâche élevé, code non
-compositionnel, zéro-shot proche du hasard.
+### 6.4 Que voit le gradient au premier pas, avec un partenaire qui apprend aussi ?
+
+**Instrument.** Le point (c) de §4 donne le gradient exact et gratuit. On le
+calcule à l'initialisation, on mesure sa norme et son alignement avec les
+directions compositionnelles.
+
+**Ce qu'on apprend.** L'analogue de l'analyse d'ordre 1 du test 2, mais dans un
+cadre où la « fonction » de récompense bouge. Prédiction déjà dérivée en §4 :
+aucune direction préférée à l'initialisation. Si on observe le contraire, c'est
+que la paramétrisation en introduit une, et il faudra la nommer.
+
+### 6.5 Représentable, atteignable, stable — les trois séparément
+
+Au test 2 ces trois réponses étaient **différentes**, et c'est précisément ce qui a
+fait basculer tout le verdict : le modèle pouvait représenter l'optimum, pouvait à
+peu près s'y maintenir, et ne pouvait pas l'atteindre.
+
+**Instrument.** On construit à la main le code compositionnel canonique
+(`S = P`, `R = Pᵀ`, où `P` encode l'attribut *i* dans le token *i*), puis :
+
+1. **Représentable** — ajustement supervisé des deux réseaux vers ce code. Y
+   arrivent-ils exactement ? (sonde de capacité, purement diagnostique)
+2. **Atteignable** — l'entraînement depuis l'aléatoire y arrive-t-il jamais ?
+3. **Stable** — en démarrant *dessus*, REINFORCE y reste-t-il, ou dérive-t-il vers
+   un attracteur comme les 45,3 modes du test 2 ?
+
+**Ce qu'on apprend.** Trois échecs possibles qui portent le même nom et appellent
+des remèdes opposés. Si le code compositionnel est instable, aucune initialisation
+intelligente ne sauvera quoi que ce soit.
+
+### 6.6 La courbe qui remplace le verdict
+
+**La vraie mesure du test 3.** Puisque la récompense est indifférente à la
+compositionnalité, celle-ci ne peut venir que d'une contrainte **extérieure**. La
+question devient quantitative : combien de contrainte, et laquelle ?
+
+| contrainte | bouton | pourquoi ça devrait marcher |
+|---|---|---|
+| bruit de canal | probabilité ε qu'un token soit corrompu | un code compositionnel ne perd qu'un attribut quand un token est corrompu ; un code holistique perd tout |
+| goulot de vocabulaire | `V^L` juste au-dessus de 27, puis en dessous | force la réutilisation des tokens, donc la structure |
+| renouvellement de population | période K de remplacement d'un agent par un agent neuf | un code structuré se réapprend plus vite, donc survit aux générations |
+| pression de longueur | pénalité sur la longueur du message | favorise les codes réguliers |
+
+On trace **concentration en fonction du bouton**, avec la loi nulle de §6.2 en
+référence horizontale. C'est la courbe qui remplace le pass/fail.
+
+**Filiation à citer, ce n'est pas nouveau.** Le renouvellement de population
+produisant de la compositionnalité, c'est l'*iterated learning* (Kirby et coll.).
+La robustesse au bruit favorisant la structure est un argument classique en
+théorie du codage. Ce qui serait nouveau ici, ce n'est pas le phénomène : c'est de
+le mesurer **contre une ligne de base calculée exactement** plutôt que contre une
+intuition.
+
+### 6.7 Le certificat des optima à égalité survit-il à un jeu à deux agents ?
+
+**La question la plus inconfortable, et je ne connais pas la réponse.**
+
+Tout le raisonnement de §3 importe un résultat du test 2 : *sous max-entropie, des
+optima à récompense égale sont équiprobables*. Ce résultat a été établi pour un
+**agent unique** optimisant `E[R] + β·H`.
+
+Ici l'objectif conjoint est `(1/27)·tr(S R) + β·(H(S) + H(R))`. Rien ne garantit
+que son optimum soit encore une loi de Gibbs sur les paires, ni que les 27! optima
+globaux restent équiprobables. Le terme d'entropie porte sur **deux** politiques
+séparément, pas sur la distribution jointe des messages.
+
+**Instrument.** L'espace étant énumérable, on peut résoudre numériquement le
+problème `max (1/27)·tr(S R) + β·(H(S)+H(R))` sur les matrices stochastiques, par
+montée de gradient exacte en paramétrisation tabulaire, et **regarder à quoi
+ressemble l'optimum**. Si les 27! solutions n'y sont pas équiprobables, alors
+mon calcul des 10⁻²⁵ repose sur une hypothèse fausse et il faut le refaire.
+
+**C'est le premier endroit du projet où un résultat que j'ai publié pourrait
+s'effondrer sur un point technique que je n'ai pas vérifié.** Il passe donc en
+tête de liste, avant tout entraînement.
 
 ---
 
-## 5. Instruments à construire avant l'entraînement
+## 7. Ordre de construction
 
-1. **Énumération complète** des 27 référents, 27 messages, et de la loi jointe
-   émetteur × récepteur.
-2. **Comptage exact** des bijections parfaites et compositionnelles (fait, §3).
-3. **Optimum de l'objectif** en forme close, comme `optimum_gibbs.py` au test 2.
-4. **Sonde de capacité** : construire un code compositionnel à la main, vérifier
-   que les deux agents peuvent le représenter, puis s'ils peuvent l'atteindre,
-   puis s'il est stable quand on les y démarre. C'est la structure Q-A / Q-D du
-   test 2 transposée.
-5. **Contrôle tabulaire** : mêmes agents en paramétrisation libre, pour séparer
-   l'objectif de la paramétrisation.
-6. **Décomposition d'information** : `I(référent ; message)` ventilée par
-   attribut. Un code compositionnel porte de l'information attribut par attribut ;
-   un code holistique ne porte que l'identité.
-7. **Analyse d'ordre 1** : que voit le gradient à l'initialisation, dans un jeu où
-   la récompense dépend de la politique du partenaire ?
-
----
-
-## 6. Ce qui est nouveau par rapport au test 2
-
-La récompense est **non stationnaire** : elle dépend de la politique du partenaire,
-qui apprend en même temps. Toutes les analyses du test 2 supposaient une fonction
-fixe.
-
-Questions ouvertes que ça crée, reprises en §8 du carnet :
-
-- Quelle est l'ANOVA d'une récompense qui co-évolue ?
-- Qui décide de la structure du code, l'émetteur ou le récepteur ? Geler l'un,
-  entraîner l'autre. Est-ce la même asymétrie que ordre-de-génération contre
-  direction-de-l'accord au test 2 ?
-- La mesure induite par la **dynamique** sur l'ensemble des codes parfaits est-elle
-  vraiment l'uniforme supposée par le calcul de §3 ? Elle pourrait concentrer sur
-  une sous-famille pour des raisons sans rapport avec la récompense, exactement
-  comme le biais d'ordre 1 a décidé la branche au test 2.
+1. `grammaire3.py` — les 27 référents, les 27 messages, le comptage exact des
+   bijections et des codes compositionnels, la matrice d'information mutuelle et
+   la statistique de concentration.
+2. **La loi nulle** — distribution de la concentration sur des permutations tirées
+   uniformément. C'est la référence de tout le reste.
+3. **§6.7 d'abord** — vérifier que le certificat des optima à égalité tient dans le
+   cadre à deux agents, en paramétrisation tabulaire et gradient exact. Si ça
+   casse, tout §3 est à réécrire.
+4. La sonde de capacité et le code compositionnel construit à la main (§6.5).
+5. L'entraînement multi-graines, et §6.1 / §6.2.
+6. Le gel d'agent (§6.3) et l'analyse du gradient initial (§6.4).
+7. La courbe de contrainte (§6.6), en dernier, parce que c'est la plus coûteuse et
+   qu'elle n'a de sens qu'une fois la ligne de base établie.
