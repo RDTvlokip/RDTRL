@@ -118,7 +118,7 @@ P(nom|dét) = 0,911 et 0,837, P(verbe|nom) = 0,977 et 0,916. **La règle est don
 apprenable par REINFORCE — mais de façon non fiable**, et seulement dans la bande
 étroite où les deux branches survivent.
 
-## 3. Isolation causale complète de l'effondrement
+## 3. Isolation causale de l'effondrement, et la conclusion que j'ai dû corriger
 
 Ce que l'espace énumérable rend possible et qu'aucun modèle réel ne permet :
 parcourir l'arbre des causes en entier.
@@ -311,7 +311,28 @@ Deux précisions qui empêchent d'en tirer trop :
 entraîner par gradient de politique ne fait pas mieux qu'un filtre et détruit la
 diversité que le filtre préserve gratuitement.*
 
-## 6bis. Deux résultats nuls, rapportés comme tels
+## 6bis. L'optimum est une étape, pas une destination
+
+Même mesure que ci-dessus mais depuis l'aléatoire, à β = 0,02, avec relevé de la
+distribution exacte tous les 250 épisodes :
+
+```
+maximum de modes effectifs : 24,0 à l'épisode 4 750
+KL minimale vers l'idéal   : 1,0000 bit à l'épisode 11 500
+état final                 : 11,5 modes, KL 2,0611 bits
+```
+
+**La diversité culmine à mi-parcours puis se dégrade.** Un arrêt précoce battrait
+la convergence de **+12,5 modes**. Entraîner au-delà de l'épisode ~4 750 détruit
+la moitié de ce qui avait été acquis.
+
+**À ne pas citer comme acquis** : une seule graine, et j'ai observé un écart
+run-à-run à réglages nominalement identiques (11,5 modes ici contre 18,6 au
+balayage), très probablement du non-déterminisme multithread de torch sur CPU. Le
+phénomène est cohérent avec le portrait de phase (§6ter) et avec l'écart
+initialisation/arrivée, mais il n'est pas répliqué.
+
+## 6ter. Deux résultats nuls, rapportés comme tels
 
 Deux questions que je jugeais prometteuses n'ont rien donné. Les omettre
 donnerait une fausse impression de taux de réussite.

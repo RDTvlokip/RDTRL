@@ -44,6 +44,23 @@ La dispersion serrée sur 4 graines exclut la chance : c'est un mécanisme fiabl
 La convergence identique sur une cible aléatoire exclut toute fuite d'information
 spécifique à une phrase française.
 
+### 1bis. Les trois formes de récompense, côte à côte
+
+La spec demandait aussi une variante Levenshtein (`1 − distance d'édition
+normalisée`), plus tolérante aux décalages de position.
+
+| récompense | 1er reward = 1.0 | 1er greedy parfait | convergence stable |
+|---|---|---|---|
+| par positions | ép. 1 639 | ép. 1 846 | ép. 2 405 |
+| **Levenshtein** | **ép. 762** | ép. 1 585 | ép. 2 073 |
+| tout-ou-rien | **jamais** (30 000 ép.) | jamais | jamais |
+
+Levenshtein trouve un premier échantillon parfait **deux fois plus vite**, mais
+converge au même endroit. La tolérance aide l'exploration précoce et cesse de
+compter une fois les positions verrouillées — ce qui est cohérent avec le
+mécanisme de décomposition décrit plus haut : une fois chaque position traitée
+comme un bandit indépendant, la tolérance aux décalages n'a plus d'objet.
+
 ### 2. La variable causale est la récompense, pas l'algorithme
 
 Contrôle décisif : **même architecture, même algorithme, même graine**, seule la
