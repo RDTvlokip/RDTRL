@@ -800,6 +800,30 @@ le gradient exact, qui part au singulier de façon déterministe sur toutes les
 graines : le bruit était la seule chose qui permettait parfois de surmonter ce
 biais.
 
+**Complément du 30/07/2026, après une critique extérieure (§7.10).** Il y a un
+second signal d'ordre 1, à la position 0, et il pointe **en sens inverse** :
+`E[R | dét]` vaut 0,3089 pour `les` et `des` contre 0,2756 pour les quatre
+singuliers, soit **+0,0333 en faveur du pluriel**, deux fois l'écart du nom. Les
+deux causes sont orthogonales, une par trait :
+
+| | genre | nombre | moyenne |
+|---|---|---|---|
+| crédit reçu par un nom **singulier** | 2/3 | **2/3** | 2/3 |
+| crédit reçu par un nom **pluriel** | 2/3 | **1/3** | 1/2 |
+| crédit reçu par `le` (dét sg) | **1/2** | 1/2 | 1/2 |
+| crédit reçu par `les` (dét pl) | **1** | 1/2 | 3/4 |
+
+L'avantage du nom singulier est **entièrement dans le nombre** — le genre est à
+2/3 des deux côtés — donc il vient du déséquilibre 4 contre 2. L'avantage du
+déterminant pluriel est **entièrement dans le genre** — le nombre est à 1/2 des
+deux côtés — donc il vient du `None`. Deux accidents de lexique indépendants,
+deux traits différents, signes opposés.
+
+C'est pour ça que la séquence gloutonne d'ordre 1 est **invalide** : aucune
+phrase valide ne peut satisfaire les deux positions à la fois. Le fait que
+`des chat chante` soit invalide n'est pas une curiosité, c'est la **signature de
+la contradiction entre marginales**, et je ne l'avais écrit nulle part.
+
 ### 7.6 L'effondrement est localisé dans la position 0
 
 | figée | modes | sg % | pl % | P(nom\|dét) | P(verbe\|nom) |
@@ -860,6 +884,67 @@ la convergence de **+12,5 modes**.
 Non répliqué : une seule graine, et j'ai observé un écart run-à-run à réglages
 nominalement identiques (11,5 ici contre 18,6 au balayage), probablement du
 non-déterminisme multithread de torch sur CPU. **Je ne l'inscris pas comme acquis.**
+
+### 7.10 Première critique extérieure : juste sur la méthode, fausse sur la conclusion
+
+Le 30/07/2026, **dipankarsarkar** commente l'article après avoir fait tourner ma
+classe `Grammaire` sans entraînement. Il calcule `E[R | premier token]` à
+politique uniforme, trouve `des` et `les` à 0,3089 contre 0,2756 pour les
+singuliers, identifie correctement le `None` comme mécanisme, et conclut :
+*« l'effondrement était décidé avant l'épisode 1, la sous-langue dégénérée n'a pas
+été trouvée par 20 000 épisodes de recherche, c'était la direction la plus raide
+au pas 0 »*.
+
+**Ses chiffres sont exacts, je les reproduis à la virgule près.** Deux précisions
+seulement : `des` et `les` sont la même entrée de lexique à l'orthographe près, ils
+sont donc **exactement** égaux (0,153277835… sur la grammaire longue), et son
+0,1536 contre 0,1535 est du bruit d'échantillonnage ; et son `E[accord|dét]` de
+0,75 contre 0,50 est bien la bonne forme close.
+
+**Ce que la sonde rate : elle ne regarde que la position 0.** La position 1 pointe
+en sens inverse (§7.5 complété). Et c'est la position 1 qui nomme la branche : le
+déterminant, l'adjectif et le verbe s'accordent **avec le nom**, le nom est le seul
+porteur de traits, donc « sous-langue au pluriel » est un énoncé sur le nombre du
+nom, pas sur celui du déterminant.
+
+**Qui gagne ? Les données disent le nom.** Gradient exact, même GRU, zéro
+échantillonnage : **6 graines sur 6** à β = 0,01 et 0,02 finissent à **100 %
+singulier**. β = 0 échantillonné : 3 graines sur 3 à 100 % singulier, 1,0 mode.
+Balayage complet, 8 β × 3 graines : **15 runs singulier, 9 pluriel**. Et à son
+β = 0,02 précisément :
+
+| graine | branche | modes |
+|---|---|---|
+| 0 | **pluriel** | 18,6 ← le run qu'il cite |
+| 1 | singulier | 11,7 |
+| 2 | singulier | 12,0 |
+
+Énoncé correct : **l'effondrement est décidé avant l'épisode 1, le coin ne l'est
+pas.** Lequel des deux coins dégénérés est atteint reste une loterie de graine,
+biaisée environ 2 contre 1 vers le singulier.
+
+Son argument par la diversité ne tranche pas non plus : la sous-langue singulière
+contient elle aussi exactement 24 des 48 phrases (4 déterminants × 6). 18,6 vaut
+77,5 % de 24, mais les graines 1 et 2 sont à 11,7 et 12,0, soit ~49 % de **leur**
+24, à β et architecture identiques.
+
+**Ce qu'il a raison de dire malgré tout**, et que j'aurais dû mettre en avant : la
+sonde se calcule avant tout entraînement, elle coûte une énumération, et elle
+appartient au protocole d'avance de phase, pas à l'analyse post-hoc. Elle existait
+déjà dans le dépôt (`gradient_exact.py`, partie 1, qui imprime les deux tableaux)
+mais enterrée dans un script d'analyse. Sortie en script autonome :
+`src/test2_grammar/sonde_ordre1.py`, toutes positions, deux grammaires.
+
+**La leçon à en tirer n'est pas la sienne.** Ce n'est pas « trouver le coin
+vacuellement satisfait », c'est **calculer toutes les positions, parce que le coin
+est là où elles se contredisent, et que le signe de la contradiction n'est pas
+lisible depuis le premier token**.
+
+**Ce que ça révèle de mon article** : je donne le tableau des marginales, je donne
+`des chat chantent` invalide, et je n'écris **jamais pourquoi** cette séquence est
+invalide. La phrase manquante est celle qui empêche la lecture « la position 0
+décide ». Un lecteur attentif a fait exactement l'inférence que mon texte
+autorisait. C'est un défaut d'écriture, pas de mesure.
 
 ---
 
