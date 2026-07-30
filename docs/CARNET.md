@@ -335,9 +335,12 @@ irréductible, et je ne l'ai pas dit explicitement.
 
 Mesurable exactement sur les 8 000 séquences : quelle part de la variance de la
 récompense est expliquée par les marginales par position, quelle part par les
-interactions (décomposition de type Sobol / ANOVA fonctionnelle). Si l'agent
-apprend la part d'interaction, ce serait le premier résultat du projet qui ne se
-réduit pas à « la récompense a fait le travail ». **Non fait.**
+interactions (décomposition de type Sobol / ANOVA fonctionnelle).
+
+**FAIT** — voir §7.4. Graduée : 76,1 % d'ordre 1, 23,9 % d'ordre 2, **0,0 %**
+d'ordre 3. Tout-ou-rien : 4,0 % d'ordre 1, 30,5 % d'ordre 2, **65,5 %** d'ordre 3.
+Le gradient à politique uniforme ne voit que l'ordre 1, donc le façonnage ne
+« densifie » rien : il déplace la variance des ordres élevés vers l'ordre 1.
 
 ### 5.4 « Sans oracle » fait un travail rhétorique non mérité
 
@@ -690,7 +693,322 @@ modèle divers » vers « quelle régularisation encode la diversité voulue ».
 
 ---
 
-## 6. Ce qu'il faudrait construire ensuite, par ordre de valeur
+## 7. Ce qui s'est fermé après coup, et ce que ça a cassé
+
+Le carnet s'arrêtait à la mi-journée. Voici la suite, y compris la conclusion
+publiée qu'un run tardif a démentie.
+
+### 7.1 Bruit ou géométrie : j'ai publié la moitié de la réponse
+
+Sur les seuls runs à β=0,01, gradient exact, le GRU s'effondre à 12,0 modes sur
+3 graines/3 alors que le tabulaire atteint 48,0. J'en ai conclu, et écrit dans
+l'article : *« ce n'est pas le bruit, c'est la géométrie ; aucune réduction de
+variance ne sauvera la méthode »*.
+
+Les runs à β ≥ 0,05, terminés **après** la publication, l'ont démentie :
+
+| β | graines | gradient exact | optimum de Gibbs calculé |
+|---|---|---|---|
+| 0,05 | 0, 1, 2 | 48,0 modes, 50/50, 94,60 / 94,60 / 94,59 % | **94,59 %** |
+| 0,08 | 0, 1, 2 | 48,0 modes, 50/50, 79,12 / 79,13 / 79,10 % | **79,12 %** |
+
+Le GRU à gradient exact reproduit l'optimum analytique **à deux décimales sur six
+runs indépendants**. Il ne s'effondre pas du tout.
+
+**Deux régimes, transition nette entre β=0,02 et β=0,05.** En dessous, la
+factorisation à paramètres partagés bloque même avec un gradient parfait. Au
+dessus, le blocage disparaît et tout ce qui échoue relève de la procédure
+échantillonnée. L'échantillonnage décale d'un facteur 3 à 5 la pression
+entropique nécessaire : gradient exact β≈0,05, échantillonné β≈0,12 — où
+l'optimum est déjà tombé à 52 % de validité.
+
+**Confondant que je ne peux pas lever** : le run exact optimise `E[R] + β·H(p)`,
+l'échantillonné utilise le bonus d'entropie standard, estimateur biaisé. À β ≥ 0,05
+« bruit » recouvre peut-être « biais d'estimateur ». Seule la comparaison à faible
+β est propre, tabulaire et GRU y partageant objectif et gradient.
+
+**La leçon** : j'ai tiré une conclusion générale d'un seul point du balayage,
+alors que le balayage tournait encore. Attendre la fin d'un sweep avant d'écrire
+sa conclusion n'est pas de la prudence, c'est la condition minimale.
+
+### 7.2 L'attracteur à 45,3 modes, expliqué au chiffre près
+
+Les deux recuits de β et la trajectoire partie de la politique idéale convergent
+tous vers un partage sg/pl de ~66,7 / 33,3. Ce n'est pas du bruit : 2/3–1/3 = 4/6–2/6,
+soit exactement ce qu'on obtient quand **P(déterminant) est uniforme sur les 6
+déterminants**, le lexique en comptant 4 singuliers et 2 pluriels.
+
+```
+24 phrases sg à masse (2/3)/24, 24 pl à (1/3)/24
+H = ⅔·log₂(36) + ⅓·log₂(72) = 5,5032 bits
+2^H = 45,35 modes effectifs
+```
+
+**45,3 mesuré.** Le plafond résiduel est donc un décalage de cible : **le bonus
+d'entropie par token vise l'uniformité sur les tokens, pas sur les séquences.**
+Les deux ne coïncident que si tous les préfixes ont le même nombre de complétions
+valides — faux ici, `les` en admet 12 et `le` seulement 6.
+
+### 7.3 Le recuit de β, seul correctif validé
+
+| méthode | validité | modes / 48 | familles |
+|---|---|---|---|
+| β constant 0,02 | 99,99 % | 18,6 | 1 |
+| β constant 0,12 | 57,13 % | 45,9 | 2 |
+| **recuit 0,2 → 0,01** | **99,97 %** | **45,3** | **2** |
+| **recuit 0,12 → 0,02** | **99,96 %** | **45,3** | **2** |
+
+Domine les deux régimes constants, reproduit sur deux calendriers. Mécanisme : à
+β élevé les six conditionnelles reçoivent du gradient, donc la représentation
+partagée se forme pour toutes ; quand β redescend, l'interférence n'a plus lieu
+d'être. **Le recuit ne combat pas l'effondrement, il l'empêche de se former.**
+
+### 7.4 Le spectre ANOVA de la récompense
+
+| récompense | ordre 1 | ordre 2 | ordre 3 |
+|---|---|---|---|
+| graduée | **76,1 %** | 23,9 % | **0,0 %** |
+| tout-ou-rien | **4,0 %** | 30,5 % | **65,5 %** |
+
+L'ordre 3 exactement nul de la graduée est structurel : c'est une somme de termes
+par position (ordre 1) et d'accords par paire (ordre 2). L'indicateur est un
+produit, d'où ses 65,5 % à l'ordre 3.
+
+Détail d'ordre 2 pour la graduée : `pos0-1` 10,0 %, `pos1-2` 14,0 %, **`pos0-2`
+0,0 %** — déterminant et verbe n'ont aucune contrainte directe, ils n'interagissent
+que par le nom. **La décomposition retrouve la structure de dépendance de la
+grammaire à partir de la seule récompense.**
+
+Piège de curriculum : la séquence gloutonne d'ordre 1 est `des chat chantent`,
+**invalide**, R = 0,50. Le premier signal que l'agent suit ne pointe pas vers une
+solution.
+
+### 7.5 Le signal d'ordre 1 décide de la branche, et c'est mon lexique qui le décide
+
+Marginale `E[R | nom]` : **0,2944** pour les noms singuliers, **0,2778** pour les
+pluriels, écart **+0,0167** en faveur du singulier.
+
+Cause : j'ai mis **4 déterminants singuliers et seulement 2 pluriels**. Un
+déterminant tiré au hasard s'accorde donc en nombre avec un nom singulier 4 fois
+sur 6, contre 2 fois sur 6. Vérification : crédit partiel moyen 0,667 (sg) contre
+0,500 (pl), écart 0,167 sur le sous-score, /3 pour la moyenne, × 6/20 pour la
+dilution = **0,0167**. Exactement la valeur mesurée.
+
+**Un déséquilibre involontaire du vocabulaire, calculable avant tout
+entraînement, décide dans quelle sous-langue l'agent s'effondre.** Confirmé par
+le gradient exact, qui part au singulier de façon déterministe sur toutes les
+graines : le bruit était la seule chose qui permettait parfois de surmonter ce
+biais.
+
+### 7.6 L'effondrement est localisé dans la position 0
+
+| figée | modes | sg % | pl % | P(nom\|dét) | P(verbe\|nom) |
+|---|---|---|---|---|---|
+| aucune | 11,5 | 0,0 | 100,0 | 0,333 | 0,500 |
+| **pos0 (dét)** | **30,3** | **61,9** | **38,1** | **0,999** | **0,924** |
+| pos1 (nom) | 17,7 | 0,2 | 99,8 | 0,005 | 0,875 |
+| pos2 (verbe) | 8,0 | 100,0 | 0,0 | 0,500 | 0,009 |
+
+Figer la seule marginale du déterminant fait passer P(nom accordé | dét) de 0,333
+à **0,999**, pour les six déterminants, avec les deux familles vivantes. Les
+lignes pos1 et pos2 sont non informatives : figer à un tirage indépendant détruit
+la dépendance par construction.
+
+Défaut de mon protocole à signaler : la validité affichée pour ces lignes est un
+artefact — la position figée est exclue du gradient mais laissée libre à
+l'évaluation. Seules les conditionnelles survivent à ce défaut.
+
+### 7.7 Deux résultats nuls, et une figure qui dit plus que ce que j'y cherchais
+
+**ACP sur la trajectoire — hypothèse réfutée.** Je pariais 2 ou 3 dimensions et un
+portrait de phase dessinable. Il en faut **8 pour 90 %** du mouvement, 21 pour
+99 %, 33 pour 99,9 %.
+
+**Fonctionnelles conservées — aucune.** Zéro fonctionnelle varie de moins de 0,02.
+Les neuf masses catégorie × position bougent toutes massivement.
+
+**Mais le portrait de phase, dessiné quand même, montre autre chose.** Les trois
+initialisations aléatoires démarrent **empilées sur l'optimum** :
+
+```
+distance à l'optimum dans ce plan — départ : 0,001    arrivée : 0,212
+```
+
+L'entraînement éloigne la politique **200× plus loin** de la distribution idéale
+que son point de départ. Version géométrique du résultat de l'échantillonnage par
+rejet. Nuance : ce plan ne porte que 56,5 % du mouvement, et l'axe validité — sur
+lequel le réseau non entraîné est évidemment mauvais — est dans les 43,5 %
+restants. Ce que la projection isole, c'est l'axe diversité.
+
+### 7.8 Q-A revisité : l'optimum n'est pas un point fixe
+
+J'avais écrit « parti de l'idéal, il s'y maintient ». Trop simple. Il **quitte
+l'optimum dès les 250 premiers épisodes** (48,0 → 44,0 modes, 49,9/50,1 →
+66,7/33,3), puis oscille autour de l'attracteur à 45,3 avec des excursions
+jusqu'à 26,7, et finit à 43,0 après 18 250 épisodes.
+
+Énoncé correct : *l'optimum est instable, mais le bassin dans lequel il retombe
+(45,3 modes, deux familles) est incomparablement meilleur que ce qui est
+atteignable depuis l'aléatoire (11,5–18,6 modes, une famille).*
+
+### 7.9 Q-B : la diversité culmine à mi-parcours
+
+Depuis l'aléatoire à β=0,02 : maximum de **24,0 modes à l'épisode 4 750**, KL
+minimale à l'épisode 11 500, état final **11,5 modes**. Un arrêt précoce battrait
+la convergence de **+12,5 modes**.
+
+Non répliqué : une seule graine, et j'ai observé un écart run-à-run à réglages
+nominalement identiques (11,5 ici contre 18,6 au balayage), probablement du
+non-déterminisme multithread de torch sur CPU. **Je ne l'inscris pas comme acquis.**
+
+---
+
+## 8. Vingt questions inconfortables
+
+Règle que je m'impose ici : pas de question dont je connais déjà la réponse, pas
+de question qui flatte le projet, et pour chacune ce qui la trancherait. Plusieurs
+attaquent la valeur de tout ce qui précède.
+
+### Sur le résultat combinatoire du test 3
+
+**Q11 — Existe-t-il une seule fonction de récompense dont l'ensemble des optima
+soit exactement les codes compositionnels, sans qu'on ait codé la
+compositionnalité à la main ?** Le calcul du test 3 donne 1 296 codes
+compositionnels sur 27! ≈ 1,09 × 10²⁸ bijections, toutes à récompense 1. Si la
+réponse est non, alors la compositionnalité n'est **jamais** apprenable depuis une
+récompense seule, à aucune échelle, et toute la littérature sur l'émergence de
+langage mesure l'effet de contraintes annexes en croyant mesurer l'effet du RL.
+
+**Q12 — Toute récompense d'alignement a-t-elle cette forme ?** Un modèle de
+récompense départage mal deux comportements qu'il note pareil. Si « aligné » et
+« qui a l'air aligné » sont à égalité sous le reward model, alors l'alignement par
+récompense est structurellement le même problème que la compositionnalité par
+récompense — et le certificat des optima à égalité (§2.2) s'y applique tel quel.
+Testable : prendre un reward model public, chercher des paires notées à 10⁻⁶ près
+et regarder ce qui les sépare.
+
+**Q13 — La probabilité 10⁻²⁵ est-elle vraiment la bonne mesure ?** Elle suppose
+l'équiprobabilité à l'optimum max-ent. Mais l'initialisation n'est pas uniforme
+sur les bijections, et la dynamique non plus. Quelle est la mesure **induite par
+la dynamique** sur l'ensemble des codes parfaits ? Elle pourrait concentrer sur
+une sous-famille structurée pour des raisons qui n'ont rien à voir avec la
+récompense — exactement comme le biais d'ordre 1 a décidé la branche au test 2.
+
+### Sur le vérificateur
+
+**Q14 — Le code et les mathématiques ont des vérificateurs parce qu'ils ont une
+sémantique formelle. Le langage naturel n'en a pas. Est-ce là toute
+l'explication ?** Si oui, la question « peut-on apprendre le langage par
+récompense » a une réponse structurelle et non empirique, et aucune expérience ne
+la changera.
+
+**Q15 — Toutes les capacités que le RL a automatisées avaient un vérificateur
+construit par des humains *avant* l'IA** : règles des échecs, du go, tests
+unitaires, vérificateurs de preuve. La généralité apparente du RL n'est-elle pas
+en réalité un **inventaire de vérificateurs préexistants** ? Question falsifiable :
+citer une capacité acquise par RL dont le vérificateur a été inventé *pour*
+l'occasion et n'encode pas déjà la solution.
+
+**Q16 — Un vérificateur qui accepte un ensemble est-il vraiment différent d'un
+oracle sur un point ?** J'ai présenté le passage test 1 → test 2 comme un progrès
+(oracle-point → oracle-ensemble). Mais l'information fournie par un humain a
+peut-être seulement changé de forme, pas de quantité. Mesurable : combien de bits
+faut-il pour spécifier le parser, contre combien pour spécifier la cible ?
+
+### Sur ce que mes propres mesures valent
+
+**Q17 — Toutes mes mesures exactes ne le sont que parce que l'espace fait 8 000
+éléments. Y a-t-il une seule propriété mesurée ici dont on puisse **prouver**
+qu'elle survit au passage à l'échelle ?** Si la réponse est non, l'article décrit
+un régime, pas un phénomène, et « énumérable » est une physique différente.
+
+**Q18 — Le réseau non entraîné a 47,5 modes effectifs sur 48. Que reste-t-il de ce
+qu'on appelle « diversité apprise » ailleurs, une fois qu'on soustrait l'entropie
+résiduelle d'initialisation que l'entraînement n'a pas encore détruite ?** Le
+protocole existe et coûte une passe : mesurer la métrique de diversité **sur le
+modèle non entraîné** et la rapporter systématiquement comme plancher.
+
+**Q19 — Le bonus d'entropie par token vise l'uniformité sur les tokens, pas sur
+les séquences. Ce décalage existe dans tout régularisateur par token de tout
+modèle de langue.** Quelle part de ce qu'on appelle « la distribution du modèle »
+est un artefact de régularisation à la mauvaise granularité ? Calculable
+exactement ici : l'écart entre 45,35 et 48 est précisément ça.
+
+**Q20 — Existe-t-il un régularisateur dont le point fixe soit l'uniforme sur
+l'ensemble des bonnes réponses, sans connaître cet ensemble ?** C'est ce que le
+recuit approche empiriquement sans le formuler. S'il existe, il remplace le bonus
+d'entropie partout.
+
+### Sur la conception de récompense
+
+**Q21 — Peut-on calculer, à partir de la seule fonction de récompense et avant
+tout entraînement, la taille du plus grand sous-ensemble où la contrainte est
+vacuellement satisfaite ?** Ce serait un *linter* de récompense : il aurait signalé
+la sous-langue tout-pluriel du test 2 avant que je lance quoi que ce soit. Je ne
+connais rien qui fasse ça.
+
+**Q22 — Le β critique (entre 0,02 et 0,05) est-il déductible du spectre ANOVA
+seul ?** Les deux quantités sont calculables sans entraînement. S'il existe une
+relation, on prédit la pression entropique nécessaire avant de lancer — et §5bis.3
+devient une loi et non une conjecture.
+
+**Q23 — Le recuit de β, le warmup de learning rate, les calendriers de KL en RLHF
+et le recuit simulé sont-ils le même mécanisme ou seulement des cousins visuels ?**
+Ici le mécanisme est identifié : garder toutes les conditionnelles entraînées
+pendant que la représentation partagée se forme. Si c'est le même ailleurs, le
+warmup n'est pas une astuce numérique mais une prévention d'interférence
+représentationnelle.
+
+### Sur le RL lui-même
+
+**Q24 — L'aveuglement à l'ordre 1 est-il dans l'estimateur ou dans la
+politique ?** REINFORCE donne le même avantage global à chaque position, choix de
+1992. Une attribution de crédit par position — qu'on sait faire — suffirait-elle,
+ou l'aveuglement vient-il de la factorisation autorégressive elle-même ? Les deux
+sont testables séparément ici, et personne ne les sépare.
+
+**Q25 — Combien de pathologies nommées du ML sont juste des objectifs qui font ce
+qu'ils disent ?** À β=0, l'effondrement de mode **est** l'optimum. On l'appelle
+pathologie parce que l'objectif ne contient pas ce qu'on voulait. Combien d'autres
+noms — *reward hacking*, *shortcut learning*, *sycophancy* — désignent la même
+chose : une spécification correcte et une intention absente ?
+
+**Q26 — Un agent optimal sur une récompense est-il obligé de trouver la
+sous-langue dégénérée ?** Au test 2 c'est ce qui s'est passé, mais parce que
+l'ordre 1 y menait. Y a-t-il des récompenses où le chemin d'ordre 1 pointe **vers**
+la solution non dégénérée ? Si oui, on peut concevoir des récompenses par leur
+spectre plutôt que par leur formule.
+
+### Les plus inconfortables
+
+**Q27 — La vitesse de production d'une explication prédit-elle sa fausseté ?**
+Cinq de mes hypothèses sont mortes aujourd'hui, toutes plausibles, toutes
+produites en une seconde. C'est un signal que j'ai fini par utiliser
+consciemment. Est-il **mesurable** ? On pourrait horodater les explications et
+corréler avec leur survie — sur soi comme sur un modèle.
+
+**Q28 — Combien de conclusions publiées sont conditionnées à quel run a fini avant
+la date limite ?** J'ai publié « c'est la géométrie, pas le bruit » parce que le
+balayage tournait encore. Le run qui l'a démentie a fini deux heures plus tard.
+Ce n'est pas une négligence isolée, c'est la structure normale du travail sous
+contrainte de temps.
+
+**Q29 — Si la valeur de ce projet vient entièrement d'un jouet assez petit pour
+être énuméré, la façon honnête de faire de la recherche en ML est-elle de
+rétrécir jusqu'à l'exactitude puis de débattre de l'extrapolation ?** Et alors,
+que devient tout ce qui est fait à l'échelle — est-ce nécessairement de
+l'anecdote mieux financée ?
+
+**Q30 — À quel moment « je mesure ma propre spécification » s'applique-t-il à moi
+et plus seulement à l'agent ?** J'ai écrit l'environnement, la récompense, les
+diagnostics, les métriques et l'interprétation. Le diagnostic que j'ai construit
+(imposer l'antécédent, mesurer le conséquent) détecte les sous-langues
+dégénérées de l'agent. **Quel diagnostic détecte les miennes ?** C'est la seule
+question de cette liste à laquelle je n'ai aucune piste.
+
+---
+
+## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
    c'est la seule mesure qui distingue le test 2 du test 1 sur le fond.
