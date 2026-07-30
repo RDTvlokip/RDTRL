@@ -14,6 +14,9 @@ results_test2/
 *.npy
 *.csv
 
+# Brouillons de reponses publiques : ils vivent en local, jamais dans le depot
+docs/REPONSE_*.md
+
 # Articles from other projects, not part of this repo
 -teaching-my-llm-to-think-deeper-adaptive-depth.md
 -the-hardware-wall-kernel-power-41.md
