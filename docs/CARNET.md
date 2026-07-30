@@ -928,6 +928,31 @@ contient elle aussi exactement 24 des 48 phrases (4 déterminants × 6). 18,6 va
 77,5 % de 24, mais les graines 1 et 2 sont à 11,7 et 12,0, soit ~49 % de **leur**
 24, à β et architecture identiques.
 
+**Sa question — la grammaire longue s'effondre-t-elle au pluriel aussi ?**
+Mesurée, 5 graines, β = 0,08, 40 000 échantillons par graine :
+
+| graine | validité | phrases valides distinctes | nombre du nom, masse valide |
+|---|---|---|---|
+| 0 | 6,98 % | 144 | **100,0 % sg** |
+| 1 | 9,41 % | 144 | **100,0 % sg** |
+| 2 | 6,79 % | 151 | 99,7 % sg |
+| 3 | 7,54 % | 144 | **100,0 % pl** |
+| 4 | 7,27 % | 148 | 99,9 % sg |
+
+Réponse : **elle s'effondre sur une seule famille, et c'est le singulier 4 fois
+sur 5.** Les 144 phrases valides distinctes sont exactement la taille d'une
+famille (144 des 288), la répartition étant parfaitement symétrique — 8 noms × 2
+déterminants × 2 adjectifs × 3 verbes × 3 adverbes = 36 chacun.
+
+Structurellement le coin vacuellement satisfait **n'existe pas** sur la grammaire
+longue : les adjectifs sont écrits pour les quatre combinaisons genre × nombre,
+aucun `None` nulle part, donc `E[accord_adj_nom | nom]` vaut exactement 0,5 pour
+tous les noms et la position de l'adjectif est parfaitement plate (0,1329 partout).
+Passer au pluriel n'achète plus que le genre gratuit du déterminant, un
+sous-score sur quatre au lieu d'un sur trois. Les deux écarts sont divisés par
+exactement (3/4)(20/31) = 0,4839 : dét +0,0333 → +0,0161, nom +0,0167 → +0,0081.
+**Ajouter une règle d'accord n'a ajouté que du dénominateur, aucun contre-signal.**
+
 **Ce qu'il a raison de dire malgré tout**, et que j'aurais dû mettre en avant : la
 sonde se calcule avant tout entraînement, elle coûte une énumération, et elle
 appartient au protocole d'avance de phase, pas à l'analyse post-hoc. Elle existait
