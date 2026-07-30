@@ -12,7 +12,10 @@ Ce que la sonde revele et que la position 0 seule ne montre pas : les positions 
 sont pas d'accord entre elles. Le determinant tire vers le pluriel, le nom tire
 vers le singulier, et c'est le nom qui porte les traits.
 
-Partie B : la question restee ouverte, celle de la grammaire longue.
+Partie B : la question posee par dipankarsarkar a la fin de son commentaire, et a
+laquelle je n'avais pas la reponse. La grammaire longue s'effondre-t-elle au
+pluriel elle aussi ? Elle s'effondre bien sur une seule famille, mais c'est le
+singulier 4 graines sur 5.
 """
 
 import argparse

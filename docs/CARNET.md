@@ -928,8 +928,12 @@ contient elle aussi exactement 24 des 48 phrases (4 déterminants × 6). 18,6 va
 77,5 % de 24, mais les graines 1 et 2 sont à 11,7 et 12,0, soit ~49 % de **leur**
 24, à β et architecture identiques.
 
-**Sa question — la grammaire longue s'effondre-t-elle au pluriel aussi ?**
-Mesurée, 5 graines, β = 0,08, 40 000 échantillons par graine :
+**La question posée par dipankarsarkar — la grammaire longue s'effondre-t-elle au
+pluriel elle aussi ?** Elle est de lui, pas de moi : je n'avais jamais mesuré la
+branche sur la grammaire longue, et je n'y aurais pas pensé, parce que sa faible
+validité (6 à 9 %) me la faisait ranger comme « échec de passage à l'échelle »
+plutôt que comme un effondrement à analyser. Mesurée sur sa demande, 5 graines,
+β = 0,08, 40 000 échantillons par graine :
 
 | graine | validité | phrases valides distinctes | nombre du nom, masse valide |
 |---|---|---|---|
