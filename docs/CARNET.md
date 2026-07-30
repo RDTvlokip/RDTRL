@@ -1122,6 +1122,122 @@ question de cette liste à laquelle je n'ai aucune piste.
 
 ---
 
+## 8bis. Le jury de LLM : trois questions de Théo, et ce qu'elles ouvrent
+
+Échange du 31/07/2026, après la critique d'ordre 1. Ses questions valent d'être
+notées telles quelles, parce que la troisième retourne l'argument des deux
+premières et que je ne l'avais pas vu venir.
+
+### T1 — « Pourquoi ne pas remplacer le parser par un jury de LLM ? »
+
+Schéma proposé : génération RL → trois juges LLM (qualité, logique, vérité) →
+agrégation → récompense.
+
+Cinq objections, toutes adossées à des chiffres déjà acquis :
+
+1. **Les juges sont pré-entraînés.** Le prior linguistique n'est pas supprimé, il
+   passe de l'autre côté de la fonction de récompense. C'est la conclusion 3 de
+   `ANALYSE.md` : le pré-entraînement fournit le signal dense par position, ici
+   c'est le juge. « Zéro donnée humaine » devient faux par construction.
+2. **On perd l'énumérabilité, donc les preuves.** Masse valide exacte, 2^H exact,
+   optimum de Gibbs, certificat des optima à égalité : tout repose sur 8 000
+   séquences énumérables. Avec des juges LLM il ne reste que l'échantillonnage,
+   c'est-à-dire des courbes qui montent.
+3. **Le certificat des optima à égalité s'applique tel quel, et il est
+   défavorable.** L'ensemble des sorties notées 9/10 est immense et le juge ne
+   sépare rien à l'intérieur. Voir Q12.
+4. **La sous-langue dégénérée devient indétectable.** Un juge LLM a plus de coins
+   vacuellement satisfaits qu'un parser, et on ne peut plus les énumérer.
+5. **Trois juges corrélés ne font pas trois signaux.** Même pré-entraînement,
+   mêmes angles morts ; moyenner compresse la dynamique et fabrique des égalités.
+
+### T2 — « Et si le juge explique pourquoi c'est faux et comment s'améliorer ? »
+
+**Ce n'est plus du RL.** Une critique en langue naturelle porte des centaines de
+bits *dirigés* contre quelques bits scalaires. Le nom honnête est distillation
+d'un professeur.
+
+**Et c'est circulaire pour notre question** : pour exploiter « le déterminant ne
+s'accorde pas en nombre avec le nom », il faut déjà comprendre cette phrase. La
+compétence qu'on cherche à faire émerger est un **prérequis** pour consommer le
+signal censé la produire.
+
+**Mais l'intuition est juste sur le fond**, et c'est le point à retenir : une
+critique textuelle défait exactement les deux pathologies mesurées ici. Le
+gradient est aveugle à l'ordre 1 (§7.4) alors que l'accord est d'ordre 2 par
+nature ; une critique qui nomme la **paire** fautive livre l'ordre 2 directement,
+sans attendre que la politique se déplace. Et elle sépare deux sorties que le
+scalaire notait pareil, donc elle casse le certificat des optima à égalité.
+
+**Expérience qui isole ça sans aucun LLM, tout reste énumérable.**
+`grammaire.py:analyser()` renvoie déjà les sous-scores séparés ; aujourd'hui on
+en fait la moyenne et on jette le vecteur.
+
+| régime | ce que l'agent reçoit |
+|---|---|
+| actuel | la moyenne, un scalaire |
+| vectoriel | les 3 sous-scores séparés |
+| ciblé | l'identité de la contrainte violée |
+
+Si le vectoriel suffit à sortir du coin dégénéré, le mérite est dans la
+**décomposition** et ni le LLM ni la langue naturelle n'y sont pour rien. Si seul
+le ciblé y arrive, c'est l'**adressage** de la contrainte qui compte. Une heure
+de calcul, et ça tranche une question que le débat RLAIF traite par l'anecdote.
+
+### T3 — « Les humains apprennent comme ça »
+
+Objection apparente, et en fait **le même résultat que le nôtre**.
+
+**L'explication arrive après la représentation, jamais avant.** On ne peut pas
+expliquer à un enfant de 14 mois pourquoi sa phrase est mal accordée : il faut
+déjà la langue pour lire la correction. Les premiers mois sont un apprentissage
+sans explication et sans récompense dirigée. La phase « le juge explique » ne
+s'ouvre qu'une fois le socle en place, c'est-à-dire **exactement l'ordre
+pré-entraînement → RLHF**. L'analogie humaine décrit le pipeline standard en
+croyant décrire une alternative.
+
+**Sur la grammaire précisément l'analogie est plus faible encore.** Le résultat
+classique (Brown & Hanlon, 1970) est que les parents corrigent la vérité de
+l'énoncé, pas sa forme. C'est contesté depuis — les reformulations implicites
+existent — mais personne ne soutient qu'un enfant reçoit « erreur d'accord
+genre-nombre en position 2 ». Or c'est ce que fournit le juge de T2, et les
+enfants apprennent l'accord **sans**.
+
+### Questions que cet échange ouvre
+
+**Q31 — Quelle est la marginale d'ordre 1 d'un juge LLM ?** `E[R_juge | token en
+position p]` sous politique uniforme, sur un vocabulaire assez petit pour être
+énuméré. C'est le premier signal que suivra l'agent, il est calculable avant tout
+entraînement, et **personne ne le calcule**. Chez nous il pointait vers une
+phrase invalide (§7.5). La sonde existe déjà : `sonde_ordre1.py`, il n'y a que la
+fonction de récompense à remplacer.
+
+**Q32 — Combien de bits indépendants portent trois juges corrélés ?** Mesurable
+directement par la corrélation des scores sur un même lot de sorties. Si elle est
+haute, l'agrégation est du théâtre et il faut le dire avant de construire le
+pipeline.
+
+**Q33 — Le gain d'une critique textuelle vient-il de la décomposition ou de la
+langue naturelle ?** C'est le protocole scalaire / vectoriel / ciblé ci-dessus.
+La réponse détermine si tout l'appareil LLM est nécessaire ou décoratif.
+
+**Q34 — Existe-t-il un seuil de compétence en dessous duquel une critique est
+inutilisable ?** Si oui, il y a une frontière nette entre « apprenable par
+récompense » et « apprenable par correction », et elle se mesure.
+
+**Q35 — Que devient le certificat des optima à égalité quand la récompense est
+un vecteur et non un scalaire ?** Le certificat suppose un ordre total sur les
+sorties. Avec des sous-scores séparés il n'y a plus d'égalité qu'en cas d'égalité
+**sur toutes les coordonnées**, donc l'ensemble des optima à égalité rétrécit.
+De combien ? Calculable exactement sur les 8 000 séquences.
+
+**Q36 — D'où peut venir un signal gradué avant que la langue existe ?** La
+question ouverte de la fin de `ANALYSE.md`, et T3 la remet au centre : c'est le
+seul endroit où l'analogie humaine reste informative, parce que c'est le seul
+endroit où l'humain fait quelque chose qu'on ne sait pas répliquer.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
