@@ -320,16 +320,30 @@ tête de liste, avant tout entraînement.
 
 ## 7. Ordre de construction
 
-1. `grammaire3.py` — les 27 référents, les 27 messages, le comptage exact des
-   bijections et des codes compositionnels, la matrice d'information mutuelle et
-   la statistique de concentration.
-2. **La loi nulle** — distribution de la concentration sur des permutations tirées
-   uniformément. C'est la référence de tout le reste.
-3. **§6.7 d'abord** — vérifier que le certificat des optima à égalité tient dans le
-   cadre à deux agents, en paramétrisation tabulaire et gradient exact. Si ça
-   casse, tout §3 est à réécrire.
-4. La sonde de capacité et le code compositionnel construit à la main (§6.5).
-5. L'entraînement multi-graines, et §6.1 / §6.2.
-6. Le gel d'agent (§6.3) et l'analyse du gradient initial (§6.4).
-7. La courbe de contrainte (§6.6), en dernier, parce que c'est la plus coûteuse et
-   qu'elle n'a de sens qu'une fois la ligne de base établie.
+**Attention : ce n'est pas l'ordre du §6.** Le §6 range les questions par
+dépendance conceptuelle, pour qu'elles se comprennent en se lisant à la suite.
+L'ordre ci-dessous est celui d'exécution, et il diffère pour deux raisons : ce qui
+peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
+
+| étape | à construire | question traitée |
+|---|---|---|
+| 1 | `grammaire3.py` : les 27 référents, les 27 messages, le comptage exact des bijections et des codes compositionnels, la matrice d'information mutuelle, la statistique de concentration | — infrastructure |
+| 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément | — référence de tout le reste |
+| 3 | vérification du certificat des optima à égalité en cadre à deux agents, paramétrisation tabulaire et gradient exact | **§6.7** |
+| 4 | sonde de capacité et code compositionnel construit à la main | **§6.5** |
+| 5 | entraînement multi-graines | **§6.1** puis **§6.2** |
+| 6 | gel d'agent, analyse du gradient initial | **§6.3** puis **§6.4** |
+| 7 | courbe de contrainte | **§6.6** |
+
+Soit, en termes de questions : **6.7 → 6.5 → 6.1 → 6.2 → 6.3 → 6.4 → 6.6.**
+
+**Pourquoi §6.7 remonte en troisième position.** C'est la seule question dont une
+réponse négative invalide tout le reste du document. Si le certificat des optima à
+égalité ne tient pas dans un jeu à deux agents, le calcul des 10⁻²⁵ de §3 est faux
+et il faut le refaire avant de lancer le moindre entraînement. La faire en dernier
+reviendrait à construire six expériences sur une hypothèse non vérifiée.
+
+**Pourquoi §6.6 descend en dernier.** C'est la plus coûteuse — un balayage complet
+par contrainte, sur plusieurs graines — et elle n'a aucun sens tant que la ligne de
+base de §6.2 n'existe pas : on mesurerait un déplacement sans savoir par rapport à
+quoi.
