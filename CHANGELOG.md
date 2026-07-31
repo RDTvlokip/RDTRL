@@ -8,6 +8,25 @@ du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
 DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
 entrée ci-dessous.
 
+## [0.3.2] — 2026-07-31
+
+Version de métadonnées uniquement, aucun changement de code ni de résultat.
+
+### Corrigé
+
+- **Le badge et le BibTeX pointaient sur un DOI de version, pas sur le concept.**
+  Zenodo frappe trois numéros ici : `21726216` pour le concept, qui résout
+  toujours vers la dernière version et ne change jamais, puis un par release.
+  Les archives 0.3.0 et 0.3.1 contiennent donc un README qui présente un DOI de
+  version comme s'il représentait le dépôt. Corrigé à la source : le badge, le
+  BibTeX et le champ `doi` de `CITATION.cff` portent désormais le concept, les
+  deux DOI de version sont conservés en identifiants secondaires, et chaque
+  entrée de ce fichier porte le sien.
+
+À partir de cette version, publier une release ne demande plus de toucher au
+README : le badge suit automatiquement. Il suffit d'ajouter la ligne « DOI de
+version » sous la nouvelle entrée ci-dessous.
+
 ## [0.3.1] — 2026-07-31
 
 DOI de version : [10.5281/zenodo.21726387](https://doi.org/10.5281/zenodo.21726387)

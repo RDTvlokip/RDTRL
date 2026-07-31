@@ -189,7 +189,7 @@ per-version DOIs are listed in [CHANGELOG.md](CHANGELOG.md).
   author    = {Charlet, Théo},
   title     = {{RDTRL — Can a network learn to write from reward alone?}},
   year      = {2026},
-  version   = {0.3.1},
+  version   = {0.3.2},
   publisher = {Zenodo},
   doi       = {10.5281/zenodo.21726216},
   url       = {https://doi.org/10.5281/zenodo.21726216}
