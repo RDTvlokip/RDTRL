@@ -74,12 +74,42 @@ C'est l'erreur la plus grave, parce que j'allais l'écrire dans un verdict.
 Réfutée deux fois, indépendamment : par le calcul de l'optimum de Gibbs (§2.1)
 et par l'argument de dominance (§2.2). Détail en §2.
 
-### 1.5 Correction rétroactive au test 1
+### 1.5 Correction rétroactive au test 1 — 29/07/2026
 
 J'avais écrit : « le blocage est sur l'obtention du signal, jamais sur
 l'optimisation ». **Faux dès qu'il existe plusieurs solutions.** C'était vrai
 pour une cible unique, où il n'y a rien à répartir. Le test 2 montre une
 optimisation qui échoue alors que le signal est parfait.
+
+### 1.6 « La branche est biaisée environ 2 contre 1 vers le singulier » — morte le 31/07/2026
+
+Publiée dans une réponse à une critique extérieure, à partir de 15 runs
+singuliers sur 24. Les 24 étaient 3 graines × 8 valeurs de β, et dans le régime
+d'effondrement la branche est décidée par la graine seule. **70 graines à
+condition unique : 37 / 33, Wilson [0,413 ; 0,641], p = 0,72 contre une pièce
+équilibrée et p = 0,016 contre mon 2 contre 1.** Le biais d'ordre 1 au nom
+(+0,0167) existe et se calcule, mais il ne survit pas à la dynamique
+échantillonnée. Détail en §7.11.
+
+### 1.7 « L'estimateur d'entropie biaisé explique l'écart exact / échantillonné » — morte le 31/07/2026
+
+Produite en quelques secondes, séduisante, et fausse. Le bonus implémenté ne
+rétropropage pas à travers la distribution de visite (§5.1), donc il ne peut pas
+récompenser l'ouverture d'une branche jamais visitée — le récit tenait debout.
+Mais la table de saturation dit **H(nom | `la`) = 0,997 bit contre 1,000 pour
+`le`** : les branches mortes n'ont pas une entropie de continuation plus élevée,
+et le terme manquant ne pousserait donc pas vers elles. Réfutée **avant** d'avoir
+été utilisée, pour une fois.
+
+### 1.8 « REINFORCE résout exactement le problème restreint aux produits » — morte le 31/07/2026
+
+Formulée en voyant 19 des 37 runs singuliers exactement à 12,0 : un plafond
+atteint si précisément devait être un optimum, pas une contrainte subie.
+`optimum_produit.py` optimise le même objectif sur trois lois indépendantes et
+trouve **24,00 modes**, dans le coin pluriel, à tous les β et sur trois graines.
+REINFORCE se pose sur 12 une fois sur deux : il est à un optimum **local** de la
+classe restreinte. Ce qui survit : conditionnellement au coin, il atteint le
+produit maximal de ce coin environ une fois sur deux. Détail en §7.11ter.
 
 ---
 
@@ -1228,7 +1258,7 @@ lignes ? »** Seulement les lignes. Relancé en sauvegardant la masse par
 déterminant, la conditionnelle détaillée, l'information mutuelle **et les 70
 poids**.
 
-### 7.11ter Hypothèse réfutée : REINFORCE ne résout pas non plus le problème restreint
+### 7.11ter Hypothèse réfutée le 31/07/2026 : REINFORCE ne résout pas non plus le problème restreint
 
 Approfondissement, question 1. J'avais avancé, en voyant 19 des 37 runs
 singuliers exactement à 12,0 : *un plafond atteint aussi précisément n'est pas
