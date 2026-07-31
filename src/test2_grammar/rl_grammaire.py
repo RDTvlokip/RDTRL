@@ -281,15 +281,35 @@ def analyse_exacte(politique, grammaire, device="cpu"):
         if total <= 1e-9:
             entropie_nom_sachant_det[det] = None
             continue
-        pn = np.array([float(bloc[grammaire.index[n]].sum()) / total
-                       for n in grammaire.tokens_par_categorie["nom"]])
-        pn = pn[pn > 1e-12]
-        h = float(-(pn * np.log2(pn)).sum())
+        # Deux quantites que l'ancienne version confondait dans un seul ratio.
+        # H sur les 8 noms rapporte a log2(noms compatibles) pouvait depasser
+        # 100 %, et une valeur > 100 % signalait une FUITE de masse sur des noms
+        # incompatibles, donc un echec, alors qu'elle se lisait comme un succes.
+        # On separe : la masse accordee dit si l'agent reste valide, la
+        # saturation dit combien de noms compatibles il utilise vraiment.
+        noms = grammaire.tokens_par_categorie["nom"]
+        p_tous = np.array([float(bloc[grammaire.index[n]].sum()) / total for n in noms])
+        pt = p_tous[p_tous > 1e-12]
+        h_tous = float(-(pt * np.log2(pt)).sum())
+
+        masse_accordee = float(sum(p_tous[i] for i, n in enumerate(noms)
+                                   if n in noms_compatibles))
+        if masse_accordee > 1e-12:
+            p_acc = np.array([p_tous[i] for i, n in enumerate(noms)
+                              if n in noms_compatibles]) / masse_accordee
+            p_acc = p_acc[p_acc > 1e-12]
+            h_accorde = float(-(p_acc * np.log2(p_acc)).sum())
+        else:
+            h_accorde = 0.0
         h_max = float(np.log2(len(noms_compatibles))) if noms_compatibles else 0.0
         entropie_nom_sachant_det[det] = {
-            "H_bits": round(h, 3),
+            "H_bits": round(h_tous, 3),
+            "H_accorde_bits": round(h_accorde, 3),
             "H_max_bits": round(h_max, 3),
-            "saturation_pct": round(100 * h / h_max, 1) if h_max > 0 else None,
+            # Borne a 100 % par construction : calculee sur la conditionnelle
+            # RESTREINTE aux noms compatibles puis renormalisee.
+            "saturation_pct": round(100 * h_accorde / h_max, 1) if h_max > 0 else None,
+            "masse_accordee_pct": round(100 * masse_accordee, 2),
             "noms_compatibles": len(noms_compatibles),
             "masse_du_determinant": round(total, 5),
         }
@@ -648,15 +668,19 @@ def main():
     # branches : un determinant peut saturer son entropie tout en n'etant
     # presque jamais emis.
     print("\n  Entropie conditionnelle H(nom | determinant) :")
-    print(f"    {'det':>5} {'masse':>8} {'H bits':>8} {'H max':>7} {'satur.%':>8} {'noms ok':>8}")
+    print(f"    {'det':>5} {'masse':>8} {'accord%':>8} {'H bits':>8} {'H acc.':>8} "
+          f"{'H max':>7} {'satur.%':>8} {'noms ok':>8}")
     for det, e in sorted(exact_retenu["entropie_nom_sachant_det"].items()):
         if e is None:
             print(f"    {det:>5} {'~0':>8} {'n/a':>8}")
             continue
-        print(f"    {det:>5} {e['masse_du_determinant']:>8.4f} {e['H_bits']:>8.3f} "
-              f"{e['H_max_bits']:>7.3f} "
+        print(f"    {det:>5} {e['masse_du_determinant']:>8.4f} "
+              f"{e['masse_accordee_pct']:>8.2f} {e['H_bits']:>8.3f} "
+              f"{e['H_accorde_bits']:>8.3f} {e['H_max_bits']:>7.3f} "
               f"{(e['saturation_pct'] if e['saturation_pct'] is not None else 0):>8.1f} "
               f"{e['noms_compatibles']:>8}")
+    print("    accord% = masse placee sur des noms qui s'accordent avec le determinant.")
+    print("    satur.% = H sur ces seuls noms, renormalisee, rapportee a log2(noms ok).")
     rapport["regime_retenu"] = exact_retenu
     print()
 

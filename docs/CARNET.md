@@ -238,13 +238,31 @@ Note annexe : à 0,6 % de validité au hasard, la première réussite devrait to
 vers l'épisode 167, pas 45. Un réseau à poids aléatoires n'est donc pas uniforme
 sur les 8 000 séquences — il a déjà des préférences marquées. Non creusé.
 
-### 3.3 Ma propre métrique de saturation est mal étiquetée
+### 3.3 Ma propre métrique de saturation est mal étiquetée — CORRIGÉ le 31/07/2026
 
 Dans le tableau H(nom | déterminant), la colonne `satur.%` dépasse 100 %
 (`la` : 218 %). Cause : H est calculée sur les 8 noms alors que H_max utilise le
 nombre de noms *compatibles*. Une valeur > 100 % signale donc une **fuite de
 masse sur des noms incompatibles**, c'est-à-dire un échec — pas une
-sur-saturation. À renommer ou à normaliser.
+sur-saturation.
+
+**Signalé ici, puis laissé tel quel jusqu'à ce qu'un lecteur extérieur demande
+précisément ce champ** (§7.11). Un défaut connu, écrit au carnet et non corrigé
+est pire qu'un défaut inconnu : je l'aurais servi en croyant l'avoir traité,
+parce qu'il était noté.
+
+Correction : le ratio confondait deux questions, elles sont maintenant séparées
+dans `analyse_exacte`.
+
+| champ | question à laquelle il répond |
+|---|---|
+| `masse_accordee_pct` | l'agent reste-t-il **valide** après ce déterminant ? |
+| `saturation_pct` | parmi les noms **compatibles**, combien en utilise-t-il vraiment ? |
+
+`saturation_pct` se calcule désormais sur la conditionnelle **restreinte aux noms
+compatibles puis renormalisée**, donc bornée à 100 % par construction. `H_bits`
+reste l'entropie sur les 8 noms, qui est la vraie conditionnelle et n'était pas
+fausse ; c'est le **rapport** qui l'était.
 
 ### 3.4 Puissance statistique du test de généralisation
 

@@ -100,15 +100,18 @@ def detail_saturation(politique, g, etiquette):
     print(f"  {etiquette} : {ex['masse_valide_pct']:.2f} % valide | "
           f"{ex['modes_effectifs']} modes | sg {ex['repartition_familles']['sg']:.1f} % "
           f"/ pl {ex['repartition_familles']['pl']:.1f} %")
-    print(f"    {'det':>5} {'masse':>9} {'H bits':>8} {'H max':>7} {'satur.%':>8} {'noms ok':>8}")
+    print(f"    {'det':>5} {'masse':>9} {'accord%':>8} {'H bits':>8} {'H acc.':>8} "
+          f"{'H max':>7} {'satur.%':>8} {'noms ok':>8}")
     for det in sorted(ex["entropie_nom_sachant_det"]):
         e = ex["entropie_nom_sachant_det"][det]
         if e is None:
             print(f"    {det:>5} {'~0':>9} {'n/a':>8}")
             continue
         sat = e["saturation_pct"] if e["saturation_pct"] is not None else 0.0
-        print(f"    {det:>5} {e['masse_du_determinant']:>9.5f} {e['H_bits']:>8.3f} "
-              f"{e['H_max_bits']:>7.3f} {sat:>8.1f} {e['noms_compatibles']:>8}")
+        print(f"    {det:>5} {e['masse_du_determinant']:>9.5f} "
+              f"{e['masse_accordee_pct']:>8.2f} {e['H_bits']:>8.3f} "
+              f"{e['H_accorde_bits']:>8.3f} {e['H_max_bits']:>7.3f} "
+              f"{sat:>8.1f} {e['noms_compatibles']:>8}")
     return ex
 
 
@@ -151,12 +154,19 @@ def main():
 
     print()
     print("=" * 78)
-    print("PARTIE B1 - gradient exact, beta = 0.01, les runs a 12,0 modes")
+    print("PARTIE B1 - gradient exact : les runs a 12 modes ET leur temoin a 24")
     print("=" * 78)
-    for graine in args.graines:
-        pol = gradient_exact(g, sequences_t, recompenses_t, 0.01, graine)
-        ex = detail_saturation(pol, g, f"gradient exact beta=0.01 graine {graine}")
-        rapport["gradient_exact"][str(graine)] = ex
+    # Les quatre runs a 12,0 modes du tableau publie sont (0.01, 0), (0.01, 1),
+    # (0.01, 2) et (0.02, 1). Les deux autres, (0.02, 0) et (0.02, 2), font
+    # 24,0 modes DANS LE MEME COIN SINGULIER : ils depassent donc le plafond
+    # sans couplage, ce qui n'est possible qu'en ayant acquis la conditionnelle.
+    # Sans eux le chiffre a 12 n'est pas interpretable, avec eux c'est un
+    # contraste a un seul facteur.
+    for beta in (0.01, 0.02):
+        for graine in args.graines:
+            pol = gradient_exact(g, sequences_t, recompenses_t, beta, graine)
+            ex = detail_saturation(pol, g, f"gradient exact beta={beta} graine {graine}")
+            rapport["gradient_exact"][f"b{beta}_g{graine}"] = ex
 
     print()
     print("=" * 78)
