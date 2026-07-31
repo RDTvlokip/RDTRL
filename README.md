@@ -195,7 +195,20 @@ Archived on Zenodo with a DOI. The concept DOI below always resolves to the late
 }
 ```
 
-Machine-readable metadata is in [CITATION.cff](CITATION.cff).
+Machine-readable metadata is in [CITATION.cff](CITATION.cff) and [.zenodo.json](.zenodo.json).
+
+## Acknowledgments
+
+**Dipankar Sarkar** ([ORCID 0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)) —
+the product bound at the centre of v0.3.0 is his. He derived the order-1 marginals
+independently from the published article, then showed that the two degenerate corners hold
+the same number of valid sentences but **not the same largest product**, which is what makes
+the ceiling computable before training. Three rounds of his criticism also corrected a
+statistic of mine that measured determiner coverage rather than agreement, a saturation
+metric that could exceed 100 %, and a sample-size claim that pooled 3 seeds into 24 rows.
+
+The exchange, including the errors it caught, is recorded in
+[docs/CARNET.md](docs/CARNET.md) §7.10 to §7.12.
 
 ---
 

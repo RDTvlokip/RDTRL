@@ -1,0 +1,40 @@
+{
+  "title": "RDTRL — Can a network learn to write from reward alone?",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "version": "0.3.1",
+  "creators": [
+    {
+      "name": "Charlet, Théo"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Sarkar, Dipankar",
+      "type": "Researcher",
+      "orcid": "0000-0001-5431-6367"
+    }
+  ],
+  "keywords": [
+    "reinforcement learning",
+    "REINFORCE",
+    "mode collapse",
+    "emergent communication",
+    "reward shaping",
+    "grammar"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/RDTvlokip/RDTRL",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ],
+  "description": "<p>An experimental bench testing whether a neural network can learn to produce language from a scalar reward alone, with random initial weights, no pretraining and no input/output pairs. The search spaces are small enough to enumerate exhaustively, so validity mass, effective modes, the Gibbs optimum and the conditional structure are computed exactly rather than estimated.</p><p>Test 1 copies a fixed sentence and shows the success comes from reward decomposability rather than from search. Test 2 uses a hand-written grammar judged by a deterministic parser, reaching 99.9 percent grammaticality with no learned rule, and isolates the cause of mode collapse.</p><p>Version 0.3.0 adds a closed-form bound: a policy with no determiner-to-noun coupling has a product support, so at full validity it is capped by the largest fully valid product in the sublanguage it enters. That bound is never exceeded across 70 runs, is attained exactly by half of them, and turns out to be a plateau rather than a basin. Version 0.3.1 is a metadata release recording the acknowledgment below.</p><p><strong>Acknowledgment.</strong> The product bound is due to Dipankar Sarkar (ORCID 0000-0001-5431-6367), who derived the order-1 marginals independently from the published article and then showed that the two degenerate corners hold the same number of valid sentences but not the same largest product. Three rounds of his criticism also corrected a statistic that measured determiner coverage rather than agreement, a saturation metric that could exceed 100 percent, and a sample-size claim that pooled three seeds into twenty-four rows.</p>"
+}

@@ -2,6 +2,25 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage manuel.
 
+## [0.3.1] — 2026-07-31
+
+Version de métadonnées uniquement, aucun changement de code ni de résultat.
+
+### Ajouté
+
+- **Remerciement à Dipankar Sarkar** ([ORCID
+  0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)), dans le README,
+  dans `CITATION.cff` et comme `contributor` structuré dans `.zenodo.json`. La
+  borne de produit qui porte la version 0.3.0 est de lui : il a dérivé les
+  marginales d'ordre 1 indépendamment depuis l'article publié, puis montré que
+  les deux coins dégénérés contiennent le même nombre de phrases valides mais
+  **pas le même plus grand produit**. Trois séries de ses critiques ont aussi
+  corrigé une statistique qui mesurait la couverture de déterminants et non
+  l'accord, une métrique de saturation qui pouvait dépasser 100 %, et une
+  affirmation d'échantillon qui agrégeait 3 graines en 24 lignes.
+- **`.zenodo.json`** — métadonnées structurées pour l'archivage, avec le champ
+  `contributors` que `CITATION.cff` ne propose pas en version 1.2.0.
+
 ## [0.3.0] — 2026-07-31
 
 Version de référence pour archivage. Elle contient, en plus des tests 1 et 2, un

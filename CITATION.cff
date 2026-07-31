@@ -26,6 +26,15 @@ abstract: >-
   support, so at full validity it is capped by the largest fully valid product
   in the sublanguage it enters. That bound is never exceeded in 70 runs, is
   attained exactly by half of them, and is a plateau rather than a basin.
+
+  Acknowledgment. The product bound is due to Dipankar Sarkar
+  (ORCID 0000-0001-5431-6367), who derived the order-1 marginals independently
+  from the published article and then showed that the two degenerate corners
+  hold the same number of valid sentences but not the same largest product.
+  Three rounds of his criticism also corrected a statistic that measured
+  determiner coverage rather than agreement, a saturation metric that could
+  exceed 100 percent, and a sample-size claim that pooled three seeds into
+  twenty-four rows.
 keywords:
   - reinforcement learning
   - REINFORCE
@@ -34,5 +43,5 @@ keywords:
   - reward shaping
   - grammar
 license: MIT
-version: 0.3.0
+version: 0.3.1
 date-released: "2026-07-31"
