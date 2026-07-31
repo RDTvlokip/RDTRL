@@ -120,6 +120,8 @@ def main():
     p.add_argument("--fin", type=int, default=None,
                    help="derniere graine exclue ; par defaut --graines")
     p.add_argument("--episodes", type=int, default=20000)
+    p.add_argument("--chemin", choices=["float32", "float64"], default="float32",
+                   help="ou se fait la soustraction recompense - baseline")
     args = p.parse_args()
     fin = args.graines if args.fin is None else args.fin
 
@@ -139,7 +141,8 @@ def main():
         fixer_graine(graine)
         politique = PolitiqueGRU(g.taille)
         entrainer(politique, g, max_episodes=args.episodes, type_recompense="graduee",
-                  coef_entropie=args.beta, verbeux=False, etiquette=f"g{graine}")
+                  coef_entropie=args.beta, verbeux=False, etiquette=f"g{graine}",
+                  chemin_avantage=args.chemin)
         ex = analyse_exacte(politique, g)
         sg, pl = ex["repartition_familles"]["sg"], ex["repartition_familles"]["pl"]
         branche = "sg" if sg > pl else ("pl" if pl > sg else "ex aequo")
@@ -188,9 +191,10 @@ def main():
             print(f"  modes effectifs, branche {br} : moyenne {np.mean(m):.2f} "
                   f"+/- {np.std(m):.2f}  (min {min(m)}, max {max(m)}, n = {len(m)})")
 
+    marque = "" if args.chemin == "float32" else f"_{args.chemin}"
     chemin = os.path.join(
         DOSSIER_SORTIE,
-        f"balayage_70_graines_b{args.beta}_{args.debut:03d}_{fin:03d}.json")
+        f"balayage_70_graines_b{args.beta}{marque}_{args.debut:03d}_{fin:03d}.json")
     with open(chemin, "w", encoding="utf-8") as f:
         json.dump({"detail": lignes, "n_effondres": n, "k_singulier": k_sg,
                    "wilson95": wilson(k_sg, n) if n else None,

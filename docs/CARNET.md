@@ -933,6 +933,14 @@ Non répliqué : une seule graine, et j'ai observé un écart run-à-run à rég
 nominalement identiques (11,5 ici contre 18,6 au balayage), probablement du
 non-déterminisme multithread de torch sur CPU. **Je ne l'inscris pas comme acquis.**
 
+> **Corrigé le 31/07/2026 (§7.11quinquies).** L'écart 11,5 / 18,6 n'était pas du
+> non-déterminisme mais **deux chemins d'arrondi déterministes** sur la ligne
+> d'avantage. Et le chiffre du titre change : le pic vaut 24,00 au pas 5 750 sur
+> **les deux** chemins, mais l'écart d'arrêt précoce vaut **+5,38** sur le chemin
+> du balayage et +12,50 sur l'autre. Mesuré aussi : **une seule graine sur trois**
+> montre un écart, +0,28 et 0,00 pour les autres. Le « +12,5 » ne doit pas être
+> cité sans ces deux précisions.
+
 ### 7.10 Première critique extérieure : juste sur la méthode, fausse sur la conclusion
 
 Le 30/07/2026, **dipankarsarkar** commente l'article après avoir fait tourner ma
@@ -1365,6 +1373,113 @@ non-déterminisme multithread de torch ; les deux scripts sont désormais en
 mono-thread, donc **cette explication ne tient plus**. Il y a une différence de
 chemin de code que je n'ai pas trouvée, et tant qu'elle n'est pas trouvée l'un
 des deux chiffres vient d'un code que je n'ai pas audité.
+
+> **RÉSOLU le 31/07/2026 en §7.11quinquies** — c'est la ligne d'avantage, et un
+> arrondi de scalaire. Les deux chiffres sont sains.
+
+### 7.11quinquies Deux chemins numériques dans mon dépôt, et un arrondi qui déplace un titre
+
+Quatrième critique, 31/07/2026. Il trouve que la ligne d'avantage n'existe pas en
+une seule version dans le dépôt, et que les deux versions ne calculent pas la
+même chose.
+
+```
+rl_grammaire.py:141              (recompenses_t - baseline).detach()
+stabilite_et_trajectoire.py:79   torch.tensor(r - baseline, dtype=torch.float32)
+parametrisation_et_recuit.py:90  idem
+localisation_effondrement.py:55  idem
+trajectoire_couplage.py:84       torch.tensor(r - base).detach()
+```
+
+La première soustrait **en float32** : `recompenses_t` est déjà float32 et
+`baseline` est un flottant Python, donc la promotion tenseur-scalaire arrondit la
+baseline **avant** de soustraire, soit deux arrondis. Les autres soustraient deux
+float64 puis arrondissent une fois. Vérifié :
+
+```
+  float32 d'abord : 0.08333331346511841
+  float64 d'abord : 0.0833333358168602
+```
+
+**Correction à sa lecture : il y a deux chemins, pas trois.** Il annonce que
+`trajectoire_couplage.py:84`, sans `dtype`, laisse l'avantage en float64 et
+promeut la perte. Faux en torch : `torch.get_default_dtype()` vaut **float32**,
+donc `torch.tensor(x)` sur un flottant Python rend un tenseur float32. Même
+dtype, même valeur au bit près, même dtype de perte. Son raisonnement serait
+correct en numpy. Ça ne change pas sa conclusion — le chemin float32 est bien
+isolé — mais le décompte est de deux.
+
+**Divergence mesurée sur le flux de récompenses réel** (`chemin_avantage.py`,
+partie A). `recompense_graduee` rend des tiers et des neuvièmes, dont aucun n'est
+exact en binaire, donc les deux lignes cessent d'être le même calcul tout de
+suite :
+
+| graine | premier désaccord | % des 2 000 premiers pas | % ensuite | écart relatif max |
+|---|---|---|---|---|
+| 0 | pas **5** | 57,7 | 24,2 | 5,45e-06 |
+| 1 | pas **5** | 78,3 | 29,6 | 7,96e-06 |
+| 2 | pas **4** | 79,0 | 26,1 | 5,45e-06 |
+
+Son écart relatif maximal de 5,4e-06 est retrouvé exactement. Ses pourcentages
+diffèrent des miens (49 % et 1,5 % contre 58-79 % et 24-30 %) parce que sa
+seconde fenêtre est « après saturation de la récompense » et la mienne « après le
+pas 2 000 » ; je ne prétends pas qu'il a tort, les définitions ne coïncident pas.
+
+**L'anomalie 18,6 contre 11,50 est intégralement expliquée.** Même graine, même
+boucle, seule la ligne d'avantage change :
+
+| chemin | modes finaux, graine 0 |
+|---|---|
+| float32 (`rl_grammaire:141`) | **18,62** — le chiffre du balayage |
+| float64 puis arrondi | **11,50** — le chiffre de la trajectoire |
+| float64 sans `dtype` | **11,50**, identique au précédent |
+
+Un bit suffit parce que `distribution.sample()` est un seuil sur un tirage
+uniforme : il finit par faire basculer un token, après quoi les deux runs ne
+partagent plus que la graine. Et les deux restent reproductibles parce que **les
+deux arrondis sont déterministes** — ce que « non-déterminisme multithread »
+n'expliquait pas, et c'est ce qui aurait dû me mettre la puce à l'oreille.
+
+**Sa deuxième question, et sa prédiction est juste au centième.** Le maximum de
+modes, **restreint aux pas où la validité dépasse 90 %** :
+
+| chemin | graine | pic | au pas | fin | écart d'arrêt précoce |
+|---|---|---|---|---|---|
+| float32 | 0 | **24,00** | 5 750 | 18,62 | **+5,38** |
+| float32 | 1 | 12,00 | 9 000 | 11,72 | +0,28 |
+| float32 | 2 | 12,00 | 16 500 | 12,00 | 0,00 |
+| float64 | 0 | **24,00** | 5 750 | 11,50 | **+12,50** |
+| float64 | 1 | 12,00 | 11 750 | 12,00 | 0,00 |
+| float64 | 2 | 8,00 | 5 750 | 8,00 | 0,00 |
+
+Il annonçait « +5,4 et non +12,5 » à partir de l'arithmétique seule, sans rien
+lancer. Mesuré : **+5,38**.
+
+Deux choses de plus que sa question ne demandait pas. **Le pic est le même sur
+les deux chemins** — 24,00 au pas 5 750 exactement — donc c'est le *point
+d'arrivée* qui dépend de l'arrondi, pas le sommet de la trajectoire. Et **une
+seule graine sur trois montre un écart** : +0,28 et 0,00 pour les deux autres.
+Le titre du §7.9 repose donc sur une graine, deux fois de suite.
+
+**Défaut de ma propre mesure, corrigé en route.** Ma première colonne « modes
+max » donnait 47,54 au pas 0 pour tous les runs : c'est le réseau non entraîné,
+qui domine l'argmax et n'a rien à voir avec l'arrêt précoce. Restreindre aux pas
+à validité ≥ 90 % était nécessaire pour que la question ait un sens.
+
+**Ligne canonique.** Le chemin float64 est le bon : un seul arrondi au lieu de
+deux, et c'est déjà ce que font quatre scripts sur cinq. Mais le basculer en
+silence réécrirait tous les chiffres archivés sous DOI. `entrainer` prend donc un
+paramètre `chemin_avantage` explicite, **défaut `"float32"` pour ne rien changer
+sans le dire**, et le balayage 70 graines est relancé sur `"float64"` pour
+répondre à la seule question qui compte : *les conclusions agrégées survivent-elles
+au changement de chemin ?* Si oui elles sont robustes, si non elles étaient des
+artefacts d'arrondi.
+
+**Ménage, son dernier point.** Seuls deux fichiers épinglaient les threads
+eux-mêmes ; les autres dépendaient du shell, donc se dés-épinglaient
+silencieusement pour qui les relance. `torch.set_num_threads` est maintenant dans
+`rl_grammaire.py`, que **14 scripts importent**, avec `RDTRL_THREADS` pour revenir
+en arrière sur les calculs à gros lot.
 
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 

@@ -28,6 +28,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+# Le nombre de threads change l'ordre des reductions flottantes, donc les
+# derniers bits, donc parfois la trajectoire entiere : distribution.sample() est
+# un seuil sur un tirage uniforme, il suffit qu'un token bascule une fois. On
+# epingle donc a 1 ici, dans le module que tous les scripts importent, plutot
+# que fichier par fichier ou depuis le shell. RDTRL_THREADS permet de revenir en
+# arriere pour les rares calculs a gros lot qui y gagnent (gradient exact).
+torch.set_num_threads(int(os.environ.get("RDTRL_THREADS", "1")))
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -114,8 +122,21 @@ def nouvelle_politique(grammaire, graine, device="cpu"):
 def entrainer(politique, grammaire, max_episodes=20000, type_recompense="graduee",
               lr=1e-3, coef_entropie=0.01, taille_lot=1, fenetre=100,
               masque_fn=None, verbeux=True, periode_log=100, device="cpu",
-              etiquette=""):
-    """REINFORCE avec baseline. La recompense vient du parser de regles."""
+              etiquette="", chemin_avantage="float32"):
+    """REINFORCE avec baseline. La recompense vient du parser de regles.
+
+    chemin_avantage : ou se fait la soustraction recompense - baseline.
+        "float32"  recompenses_t est float32 et baseline un flottant Python, donc
+                   la promotion arrondit la baseline AVANT de soustraire : deux
+                   arrondis. C'est le comportement historique de ce fichier, et
+                   celui qui a produit tous les chiffres publies.
+        "float64"  soustraction en double precision puis un seul arrondi. Plus
+                   exact, et c'est ce que font les quatre autres scripts du
+                   depot ; le defaut reste "float32" pour ne rien changer en
+                   silence a des resultats deja archives.
+        Les deux ne different que dans les derniers bits, mais un seul bit suffit
+        a faire basculer un tirage, donc a changer la trajectoire entiere.
+    """
     fonction = (grammaire.recompense_graduee if type_recompense == "graduee"
                 else grammaire.recompense_tout_ou_rien)
     optimiseur = torch.optim.Adam(politique.parameters(), lr=lr)
@@ -137,8 +158,12 @@ def entrainer(politique, grammaire, max_episodes=20000, type_recompense="graduee
 
         baseline = (sum(historique_baseline) / len(historique_baseline)
                     if historique_baseline else 0.0)
-        recompenses_t = torch.tensor(recompenses, dtype=torch.float32, device=device)
-        avantages = (recompenses_t - baseline).detach()
+        if chemin_avantage == "float32":
+            recompenses_t = torch.tensor(recompenses, dtype=torch.float32, device=device)
+            avantages = (recompenses_t - baseline).detach()
+        else:
+            avantages = torch.tensor([r - baseline for r in recompenses],
+                                     dtype=torch.float32, device=device).detach()
 
         perte = -(log_probs.sum(dim=1) * avantages).mean() \
                 - coef_entropie * entropies.sum(dim=1).mean()
