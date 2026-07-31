@@ -4,6 +4,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage m
 
 ## [0.3.1] — 2026-07-31
 
+DOI : [10.5281/zenodo.21726387](https://doi.org/10.5281/zenodo.21726387)
+
 Version de métadonnées uniquement, aucun changement de code ni de résultat.
 
 ### Ajouté
@@ -22,6 +24,8 @@ Version de métadonnées uniquement, aucun changement de code ni de résultat.
   `contributors` que `CITATION.cff` ne propose pas en version 1.2.0.
 
 ## [0.3.0] — 2026-07-31
+
+DOI : [10.5281/zenodo.21726217](https://doi.org/10.5281/zenodo.21726217)
 
 Version de référence pour archivage. Elle contient, en plus des tests 1 et 2, un
 résultat quantitatif nouveau et **la correction de trois affirmations publiées en

@@ -1,6 +1,6 @@
 # RDTRL — Can a network learn to write with reward only?
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726217.svg)](https://doi.org/10.5281/zenodo.21726217)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726387.svg)](https://doi.org/10.5281/zenodo.21726387)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Two experiments testing whether a policy, initialized with **random weights** and given
@@ -181,17 +181,17 @@ Prediction on record: high task success, non-compositional code.
 
 Archived on Zenodo with a DOI. The concept DOI below always resolves to the latest version.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726217.svg)](https://doi.org/10.5281/zenodo.21726217)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726387.svg)](https://doi.org/10.5281/zenodo.21726387)
 
 ```bibtex
 @software{charlet_rdtrl_2026,
   author    = {Charlet, Théo},
   title     = {{RDTRL — Can a network learn to write from reward alone?}},
   year      = {2026},
-  version   = {0.3.0},
+  version   = {0.3.1},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.21726217},
-  url       = {https://doi.org/10.5281/zenodo.21726217}
+  doi       = {10.5281/zenodo.21726387},
+  url       = {https://doi.org/10.5281/zenodo.21726387}
 }
 ```
 
