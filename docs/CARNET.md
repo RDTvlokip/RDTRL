@@ -1228,6 +1228,50 @@ lignes ? »** Seulement les lignes. Relancé en sauvegardant la masse par
 déterminant, la conditionnelle détaillée, l'information mutuelle **et les 70
 poids**.
 
+### 7.11ter Hypothèse réfutée : REINFORCE ne résout pas non plus le problème restreint
+
+Approfondissement, question 1. J'avais avancé, en voyant 19 des 37 runs
+singuliers exactement à 12,0 : *un plafond atteint aussi précisément n'est pas
+une contrainte subie, c'est un optimum ; REINFORCE résout donc exactement le
+problème restreint aux politiques sans couplage et échoue uniquement à quitter la
+classe.*
+
+**Faux.** `optimum_produit.py` optimise le même objectif `E[R] + β·H` par gradient
+exact sur trois lois indépendantes p(d), p(n), p(v), donc `I(dét;nom) = 0` par
+construction.
+
+| β | classe produit | classe libre |
+|---|---|---|
+| 0,01 | **24,00** modes, I = 0 | 48,00 modes, I = 1,500 |
+| 0,02 | **24,00** | 48,00, I = 1,497 |
+| 0,05 | **24,00** | 48,00, I = 1,181 |
+| 0,08 | **24,00** | 48,00, I = 0,744 |
+
+Trois graines sur trois, à tous les β : l'optimum de la classe produit vaut
+**24,00 modes** et se place dans le coin **pluriel**, qui est le plus grand
+produit global. REINFORCE se pose sur 12 une fois sur deux. **Il n'est donc pas à
+l'optimum de la classe restreinte, il est à un optimum LOCAL de cette classe.**
+
+Il y a donc **deux échecs emboîtés**, pas un :
+
+| niveau | ce qui est raté | fréquence |
+|---|---|---|
+| 1 | trouver le meilleur produit **du coin où il est** | 19/37 sg, **6/33** pl |
+| 2 | trouver le meilleur produit **tout court** (coin pluriel, 24) | 37 runs sur 70 le ratent |
+| 3 | **quitter la classe produit** | **0/70** |
+
+Ce qui survit de mon énoncé : *conditionnellement au coin, REINFORCE atteint le
+produit maximal de ce coin environ une fois sur deux.* Et le coin pluriel, dont le
+produit est plus grand, est **moins bien rempli** (6/33) que le singulier
+(19/37) — plus il y a à couvrir, moins c'est couvert.
+
+**Ce que ça confirme de son argument.** Le coin singulier coûte exactement
+`log2(24/12) = 1 bit`, soit `β·ln2 = 0,0139` d'objectif à β = 0,02, à récompense
+strictement égale. Sa phrase « ces runs se sont arrêtés avant l'optimum plutôt
+que d'y converger » est donc vraie **deux fois** : en dessous de l'optimum libre
+(48) et en dessous de l'optimum produit (24). Vérifié par optimisation directe de
+la classe restreinte, pas par argument.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
