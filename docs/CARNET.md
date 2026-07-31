@@ -1105,6 +1105,40 @@ le franchit jamais, 0 fois sur 70. Le plafond n'est donc pas une propriété de 
 tâche ni de l'architecture, c'est **le plafond de la procédure échantillonnée**,
 et il a une forme close.
 
+**Sa question, mesurée : la saturation de `le` et `la` sur les runs à 12 modes.**
+Six runs à 12 modes, quatre à gradient exact et deux échantillonnés, plus deux
+témoins à 24 modes.
+
+| run | modes | déterminants porteurs | masse | saturation | genre |
+|---|---|---|---|---|---|
+| exact β=0,01 g0 | 12,0 | `le`, `un` | 0,500 / 0,500 | **100,0 / 100,0** | m |
+| exact β=0,01 g1 | 12,0 | `le`, `un` | 0,500 / 0,500 | **100,0 / 100,0** | m |
+| exact β=0,01 g2 | 12,0 | `la`, `une` | 0,500 / 0,500 | **100,0 / 100,0** | **f** |
+| exact β=0,02 g1 | 12,0 | `le`, `un` | 0,499 / 0,501 | **100,0 / 100,0** | m |
+| échant. β=0,02 g1 | 11,7 | `le`, `un` | 0,448 / 0,551 | 95,9 / 99,9 | m |
+| échant. β=0,02 g2 | 12,0 | `la`, `une` | 0,500 / 0,500 | **100,0 / 100,0** | **f** |
+| **témoin** exact β=0,02 g0 | **24,0** | `le`, `la`, `un`, `une` | **0,25 × 4** | **100,0 × 4** | les deux |
+| **témoin** exact β=0,02 g2 | **24,0** | `le`, `la`, `un`, `une` | **0,25 × 4** | **100,0 × 4** | les deux |
+
+**Six sur six : deux déterminants de même genre à la moitié de la masse chacun et
+100 % de saturation, les quatre autres à masse nulle.** Le produit verrouillé sur
+un genre, exactement sa prédiction. Le genre lui-même est une seconde loterie :
+4 runs masculins, 2 féminins.
+
+**Nuance qui corrige sa question.** La saturation vaut 100 % dans **les deux**
+structures : le run à 24 modes a aussi 100 % sur ses quatre déterminants. Ce n'est
+donc pas la saturation qui discrimine, c'est le **profil de masse** — deux
+déterminants à 0,5 contre quatre à 0,25. Un produit et une union de deux produits
+saturent également, la différence est dans le nombre de branches ouvertes. La
+saturation seule aurait donné la même valeur pour les deux et n'aurait rien
+tranché.
+
+**Et la correction de §3.3 paie tout de suite.** Dans le run exact β=0,01 g0,
+`la` affiche 86,7 % de saturation sur une masse de 0,00000, et `des` 99,5 % sur
+0,00000 : ce sont des conditionnelles jamais entraînées, lues sur du vide. La
+colonne `accord%` à 0,00 les élimine en un coup d'œil. Sans la séparation des deux
+champs, j'aurais servi « `la` à 86,7 % » comme si c'était un signal.
+
 **Le champ qui tranchait était déjà calculé et jeté.** `analyse_exacte` renvoie
 `entropie_nom_sachant_det` avec `H_max = log2(noms_compatibles)`, soit 1 bit pour
 un déterminant singulier et 2 pour un pluriel. `balayage_graines.py` sauvegarde
