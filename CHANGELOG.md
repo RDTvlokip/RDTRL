@@ -2,7 +2,87 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage manuel.
 
+## [0.3.0] — 2026-07-31
+
+Version de référence pour archivage. Elle contient, en plus des tests 1 et 2, un
+résultat quantitatif nouveau et **la correction de trois affirmations publiées en
+0.2.0**.
+
+### Ajouté — le plafond de produit et la mesure du couplage
+
+**`sonde_ordre1.py`** — marginales `E[R | x_p = t]` en forme close, pour **toutes**
+les positions et les deux grammaires, calculables avant tout entraînement. Deux
+accidents de lexique orthogonaux, un par trait : le `None` de genre donne +0,0333
+au déterminant pluriel, le déséquilibre 4 déterminants singuliers contre 2 donne
++0,0167 au nom singulier. Les marginales se contredisent, d'où une séquence
+gloutonne d'ordre 1 **invalide**.
+
+**`produit_et_saturation.py`** — plus grand ensemble **produit** entièrement valide
+contenu dans chaque coin, par énumération exhaustive. Une politique sans couplage
+dét → nom a un support produit, donc à validité 1 elle est bornée par ce nombre.
+
+| | phrases valides | plus grand produit |
+|---|---|---|
+| courte, coin pluriel | 24 | **24** |
+| courte, coin singulier | 24 | **12** |
+| longue, chaque coin | 144 | **72** |
+
+**`balayage_70_graines.py`** — 70 graines à condition unique, avec sauvegarde des
+poids et de la masse par déterminant.
+
+**`optimum_produit.py`** — optimisation exacte de `E[R] + β·H` sur la classe des
+politiques sans couplage (trois lois indépendantes) contre la classe libre.
+
+**`trajectoire_couplage.py`** — suivi pas à pas de `I(dét ; nom)`.
+
+### Résultats
+
+- **Le plafond de produit n'est jamais franchi** : 0 dépassement sur les 37 runs
+  du coin singulier, et le résultat modal **est** le plafond (19 runs exactement
+  à 12,0). Les modes effectifs sont des **produits d'entiers** — {2, 4, 6, 8, 12}
+  et {6, 8, 12, 16, 18, 24}.
+- **Le plafond est un plateau, pas un bassin** : le gradient exact tient 12,00
+  modes à `I = 0` pendant mille pas, puis s'échappe vers 24,00 à `I = 0,998`. On
+  en sort donc sans aucun bruit.
+- **Ce qui sépare gradient exact et échantillonné est la profondeur de
+  l'effondrement transitoire** : minimum 10,7 à 11,2 modes pour l'exact, **1,09 à
+  1,88** pour l'échantillonné, qui écrase la politique sur une seule phrase avant
+  de la reconstruire.
+- **Aucun run n'acquiert la conditionnelle** : `I(dét;nom)` médiane 0,0000 bit,
+  maximum 0,0377 sur 70, contre 1,0 nécessaire. Mesuré cette fois avec une
+  statistique qui peut le dire.
+- **Le choix de branche est une pièce équilibrée** : 37 singulier / 33 pluriel,
+  Wilson 95 % [0,413 ; 0,641], p = 0,72 contre 1/2.
+
+### Corrigé — affirmations de la version 0.2.0
+
+- **« Isolation causale complète … la factorisation autorégressive est la
+  coupable »** : faux tel quel. La cause se scinde en deux régimes. À β ≥ 0,05 le
+  gradient exact atteint 48,0 modes et un partage 50/50, donc c'est la procédure
+  échantillonnée qui échoue, pas la factorisation.
+- **« L'agent se réfugie dans une sous-langue au pluriel »** : vrai d'une graine.
+  Sur 70 graines, 37 vont au singulier et 33 au pluriel.
+- **`P(nom accordé | dét) = 0,333`** : cette statistique était une moyenne **non
+  pondérée** sur les six déterminants et vaut donc (déterminants émis)/6, pas un
+  taux d'accord. Remplacée par `I(dét ; nom)`, plus `cond_det_pondere` et
+  `determinants_emis`.
+- **Métrique de saturation** : `H` était calculée sur les 8 noms et `H_max` sur
+  les noms compatibles, donc la valeur pouvait dépasser 100 %, ce qui signalait
+  une fuite de masse et se lisait comme un succès. Séparée en
+  `masse_accordee_pct` et `saturation_pct`, cette dernière bornée par
+  construction.
+
+### Notes
+
+Les hypothèses réfutées sont datées dans [docs/CARNET.md](docs/CARNET.md) §1,
+huit à ce jour. Le détail des trois critiques extérieures et de mes erreurs est
+en §7.10 à §7.12. L'évaluation de publiabilité, avec ce qui manque, est en §7.12.
+
 ## [0.2.0] — 2026-07-29
+
+> **Corrigé en 0.3.0.** Trois affirmations de cette section sont fausses ou mal
+> mesurées : l'isolation causale « complète », l'effondrement « au pluriel », et
+> `P(nom accordé | dét) = 0,333`. Voir la section 0.3.0 ci-dessus.
 
 ### Ajouté — Test 2 : apprendre une grammaire en RL pur
 
