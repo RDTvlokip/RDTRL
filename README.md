@@ -179,7 +179,8 @@ Prediction on record: high task success, non-compositional code.
 
 ## Citation
 
-Archived on Zenodo with a DOI. The concept DOI below always resolves to the latest version.
+Archived on Zenodo. The **concept DOI** below always resolves to the latest version; the
+per-version DOIs are listed in [CHANGELOG.md](CHANGELOG.md).
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726387.svg)](https://doi.org/10.5281/zenodo.21726387)
 

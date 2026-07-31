@@ -2,9 +2,13 @@
 
 Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/). Versionnage manuel.
 
-## [0.3.1] — 2026-07-31
+**DOI de concept, toutes versions confondues :**
+[10.5281/zenodo.21726387](https://doi.org/10.5281/zenodo.21726387) — c'est celui
+du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
+DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
+entrée ci-dessous.
 
-DOI : [10.5281/zenodo.21726387](https://doi.org/10.5281/zenodo.21726387)
+## [0.3.1] — 2026-07-31
 
 Version de métadonnées uniquement, aucun changement de code ni de résultat.
 
@@ -25,7 +29,7 @@ Version de métadonnées uniquement, aucun changement de code ni de résultat.
 
 ## [0.3.0] — 2026-07-31
 
-DOI : [10.5281/zenodo.21726217](https://doi.org/10.5281/zenodo.21726217)
+DOI de version : [10.5281/zenodo.21726217](https://doi.org/10.5281/zenodo.21726217)
 
 Version de référence pour archivage. Elle contient, en plus des tests 1 et 2, un
 résultat quantitatif nouveau et **la correction de trois affirmations publiées en
