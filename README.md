@@ -1,6 +1,6 @@
 # RDTRL — Can a network learn to write with reward only?
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726387.svg)](https://doi.org/10.5281/zenodo.21726387)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726216.svg)](https://doi.org/10.5281/zenodo.21726216)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Two experiments testing whether a policy, initialized with **random weights** and given
@@ -182,7 +182,7 @@ Prediction on record: high task success, non-compositional code.
 Archived on Zenodo. The **concept DOI** below always resolves to the latest version; the
 per-version DOIs are listed in [CHANGELOG.md](CHANGELOG.md).
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726387.svg)](https://doi.org/10.5281/zenodo.21726387)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726216.svg)](https://doi.org/10.5281/zenodo.21726216)
 
 ```bibtex
 @software{charlet_rdtrl_2026,
@@ -191,8 +191,8 @@ per-version DOIs are listed in [CHANGELOG.md](CHANGELOG.md).
   year      = {2026},
   version   = {0.3.1},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.21726387},
-  url       = {https://doi.org/10.5281/zenodo.21726387}
+  doi       = {10.5281/zenodo.21726216},
+  url       = {https://doi.org/10.5281/zenodo.21726216}
 }
 ```
 
