@@ -975,6 +975,91 @@ invalide. La phrase manquante est celle qui empêche la lecture « la position 0
 décide ». Un lecteur attentif a fait exactement l'inférence que mon texte
 autorisait. C'est un défaut d'écriture, pas de mesure.
 
+### 7.11 Deuxième critique, et trois erreurs à moi dans la réponse à la première
+
+Même interlocuteur, 31/07/2026, en réponse à §7.10. Il apporte un résultat que je
+n'avais pas, et il trouve trois fautes dans ce que je venais d'écrire.
+
+**Son résultat : les deux coins ne se valent pas.** Une politique **sans
+couplage** dét → nom a un support **produit**. À validité 1 ce support doit donc
+tenir dans le plus grand produit entièrement valide du coin. C'est un plafond, et
+il se calcule sans entraînement. Vérifié par énumération exhaustive de tous les
+sous-ensembles de noms :
+
+| | phrases valides | plus grand produit | plafond |
+|---|---|---|---|
+| courte, coin pluriel | 24 | **24** = {des,les} × 4 noms × 3 verbes | 4,585 bits |
+| courte, coin singulier | 24 | **12**, genre verrouillé | 3,585 bits |
+| longue, coin pluriel | 144 | **72** | 6,170 bits |
+| longue, coin singulier | 144 | **72** | 6,170 bits |
+
+Le 24 pluriel est **un seul produit**, parce que le `None` supprime la contrainte
+de genre entre déterminant et nom. Le 24 singulier est une **union de deux**
+produits (masculin et féminin), donc il exige que la récurrence porte le genre.
+Écart de plafond sur la grammaire courte : **exactement 1 bit**. Sur la longue :
+**exactement 0**, parce que l'adjectif s'accorde en genre sans aucun `None` et
+force donc le couplage des deux côtés.
+
+Conséquence directe, et c'est ce que je n'avais pas vu : les 12,0 modes du
+gradient exact à β = 0,01, trois graines sur trois, ne sont **pas** un tirage.
+C'est le plafond exact d'une politique non couplée dans le coin singulier. Et le
+coin pluriel offre 24 modes à `E[R] = 1` identique, donc à entropie strictement
+supérieure : sous mon propre objectif il gagne de **β·ln2 = 0,0069** à coût nul.
+Ces trois runs se sont **arrêtés avant l'optimum**, ils n'y ont pas convergé.
+
+**Synthèse des deux lectures, et elles sont compatibles.** Mon signal d'ordre 1
+au nom envoie la dynamique vers le singulier ; son plafond de produit rend le coin
+pluriel meilleur à l'arrivée. L'agent va où l'ordre 1 l'envoie, puis reste bloqué
+au plafond non couplé du coin où il a atterri. Prédiction de son modèle que mes
+données confirment déjà : son avantage vaut β·ln2, donc il **disparaît à β = 0**,
+et à β = 0 mes trois graines vont toutes au singulier avec 1,0 mode.
+
+**Mes trois erreurs.**
+
+**E1 — j'ai compté 24 tirages là où il y en a 3.** Mon « 15 singulier / 9 pluriel
+sur 24 runs, biaisé environ 2 contre 1 » vient de 3 graines × 8 valeurs de β. Il
+l'a diagnostiqué depuis le tableau seul. Les données brutes disent pire : dans le
+régime d'effondrement la branche est décidée par la **graine**, β ne fait que la
+recopier.
+
+```
+  graine 0 : sg pl pl pl pl
+  graine 1 : sg sg sg sg
+  graine 2 : sg sg sg sg
+```
+
+Ce ne sont pas 24 tirages corrélés, ce sont **3 tirages recopiés**. Wilson à
+n = 24 donne [0,427 ; 0,788] ; à n = 3 il donne **[0,208 ; 0,939]**. Je n'avais
+aucune information sur le biais de branche.
+
+**E2 — mon dénominateur était faux avant même la question de l'indépendance.**
+Onze runs sur 24 ne sont pas des effondrements : à β ≥ 0,08 les deux familles sont
+vivantes. J'ai étiqueté chaque run par la famille majoritaire, donc un partage
+50,1 / 49,9 a été compté comme « singulier ». Du bruit compté comme une branche.
+Seuls **13 runs sur 24** sont de vrais effondrements.
+
+**E3 — j'ai commis E1 le jour même où j'ai écrit la mémoire qui l'interdit.**
+`un-run-nest-pas-une-propriete` dit « vérifier sur combien de runs X est vrai ».
+Je l'ai fait : j'ai compté 24 lignes. La règle était insuffisante, il fallait
+**compter les tirages indépendants, pas les lignes du tableau**. Corrigé dans la
+mémoire.
+
+**Symétrie à ne pas manquer.** Je lui reprochais de s'arrêter à la position 0 ;
+je me suis arrêté au nombre de lignes. Même faute de forme, chacun sur son axe.
+
+**Ce qu'il reste à mesurer**, et qui est en cours : 70 graines à β constant, seule
+condition, ce qu'il faut pour séparer 2/3 de 1/2 à 80 % de puissance ; et la
+saturation de `H(nom | déterminant)` pour `le` et `la` sur les runs à 12 modes,
+qui départage un produit verrouillé sur un genre d'une politique couplée
+n'utilisant qu'un nom par déterminant.
+
+**Le champ qui tranchait était déjà calculé et jeté.** `analyse_exacte` renvoie
+`entropie_nom_sachant_det` avec `H_max = log2(noms_compatibles)`, soit 1 bit pour
+un déterminant singulier et 2 pour un pluriel. `balayage_graines.py` sauvegarde
+`moyenne_cond_det` à la place. Troisième fois dans ce projet qu'une mesure
+décisive existe déjà et n'est pas regardée, après la sonde d'ordre 1 (§7.10) et le
+balayage multi-graines (§7.5).
+
 ---
 
 ## 8. Vingt questions inconfortables
