@@ -1,5 +1,8 @@
 # RDTRL — Can a network learn to write with reward only?
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726217.svg)](https://doi.org/10.5281/zenodo.21726217)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Two experiments testing whether a policy, initialized with **random weights** and given
 **no human text**, can learn language-like behaviour from a reward signal alone.
 
@@ -9,6 +12,8 @@ No pretraining. No input/output pairs. No HuggingFace, no RL library — plain P
 
 🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
 
+📦 **Archived release:** [v0.3.0](docs/RELEASE_v0.3.0.md) — the product ceiling, and four corrections to the record
+
 ---
 
 ## The short version
@@ -16,7 +21,7 @@ No pretraining. No input/output pairs. No HuggingFace, no RL library — plain P
 | test | task | outcome |
 |---|---|---|
 | **1** | copy a fixed 12-character sentence | ✅ solved in 1,639 episodes — because the per-position reward factorizes 12¹² into twelve trivial bandits. Transfer to a non-overlapping target was **slower than starting over**. |
-| **2** | learn a grammar judged by a hand-written parser | ✅ 99.9 % grammatical — **with zero agreement rules learned**, by hiding in an all-plural sublanguage where the constraint is vacuous. |
+| **2** | learn a grammar judged by a hand-written parser | ✅ 99.9 % grammatical — **with zero agreement rules learned**, by hiding in a single-number sublanguage where the constraint is vacuous. Which of the two it picks is a fair coin: 37 singular against 33 plural over 70 seeds. |
 
 Both "successes" are empty on inspection. What came out of digging into why:
 
@@ -25,6 +30,7 @@ Both "successes" are empty on inspection. What came out of digging into why:
 - **Mode collapse, causally isolated.** Capacity, the objective, and instability all cleared by independent controls. What remains splits by regime: below β≈0.05 the autoregressive factorization blocks the optimum *even with an exact gradient*; above it, the exact-gradient GRU hits the closed-form optimum to two decimals on 3/3 seeds and only the sampled procedure fails.
 - **Rejection sampling from the untrained network beats 20,000 episodes of REINFORCE** — 100 % validity and ~47.5 effective modes vs 99.99 % and 18.6.
 - **A fix that works:** annealing the entropy coefficient gives 99.97 % validity **and** 45.3/48 modes, dominating both constant-β regimes.
+- **A closed-form ceiling (v0.3.0).** A policy with no determiner→noun coupling has a **product** support, so at full validity it is capped by the largest fully valid product in the sublanguage it entered — 12 on one side, 24 on the other. Over 70 seeds the bound is **never exceeded**, the modal outcome **is** the bound, and the effective modes come out as integer products. It is a **plateau, not a basin**: the exact gradient holds 12.00 modes with I(det;noun) identically zero for a thousand steps, then escapes to 24.00. What separates exact from sampled is the depth of the transient collapse — 10.7 effective modes against **1.09**, a single sentence, before rebuilding.
 
 The whole thing is only provable because the short grammar's space is **enumerable** (8,000 sequences), so every number is exact rather than estimated.
 
@@ -168,6 +174,28 @@ a referential game, with the falsification threshold fixed **before** the first 
 code, which is the one thing tests 1 and 2 never had.
 
 Prediction on record: high task success, non-compositional code.
+
+---
+
+## Citation
+
+Archived on Zenodo with a DOI. The concept DOI below always resolves to the latest version.
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726217.svg)](https://doi.org/10.5281/zenodo.21726217)
+
+```bibtex
+@software{charlet_rdtrl_2026,
+  author    = {Charlet, Théo},
+  title     = {{RDTRL — Can a network learn to write from reward alone?}},
+  year      = {2026},
+  version   = {0.3.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.21726217},
+  url       = {https://doi.org/10.5281/zenodo.21726217}
+}
+```
+
+Machine-readable metadata is in [CITATION.cff](CITATION.cff).
 
 ---
 

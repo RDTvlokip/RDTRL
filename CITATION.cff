@@ -7,6 +7,11 @@ authors:
     given-names: Théo
 repository-code: "https://github.com/RDTvlokip/RDTRL"
 url: "https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only"
+doi: "10.5281/zenodo.21726217"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21726217"
+    description: "Concept DOI, always resolves to the latest version"
 abstract: >-
   An experimental bench testing whether a neural network can learn to produce
   language from a scalar reward alone, with random initial weights, no
