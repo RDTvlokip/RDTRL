@@ -97,6 +97,19 @@ pression de longueur. On trace concentration en fonction du bouton.
 
 ---
 
+## Concurrent apparu le 31/07/2026 — le test de renversement du plafond
+
+Le plafond de produit (carnet §7.11) est le résultat le plus solide du projet, et
+**une seule expérience décide s'il est publiable** : construire un lexique où
+l'ordre des plafonds s'inverse, prédire l'inversion avant de lancer, vérifier.
+Quelques heures, tout l'outillage existe (`produit_et_saturation.py`,
+`balayage_70_graines.py`).
+
+À arbitrer contre le test 3 : ce test-là finit un résultat acquis, le test 3 en
+ouvre un nouveau. Évaluation complète et question d'attribution en §7.12.
+
+---
+
 ## Prédiction enregistrée le 29/07/2026
 
 > Les codes émergents seront des bijections quasi parfaites (succès de tâche

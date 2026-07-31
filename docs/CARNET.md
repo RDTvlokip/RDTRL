@@ -1146,6 +1146,61 @@ un déterminant singulier et 2 pour un pluriel. `balayage_graines.py` sauvegarde
 décisive existe déjà et n'est pas regardée, après la sonde d'ordre 1 (§7.10) et le
 balayage multi-graines (§7.5).
 
+### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
+
+**Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
+autonome, non, pas encore.**
+
+**Ce qui est fort** : une borne en forme close, calculable avant tout
+entraînement ; 0 violation sur 70 runs ; les modes effectifs sont des **produits
+d'entiers**, donc une quantification observée et non un ajustement ; et un
+contrôle à un seul facteur — même architecture, même objectif, même coin, le
+gradient exact franchit le plafond, l'échantillonné jamais.
+
+**Correction de portée que j'ai trouvée en évaluant la publiabilité, et qui
+change l'énoncé.** Le recuit β 0,2 → 0,01 atteint **45,3 modes**. Le plus grand
+produit sur **tout** l'ensemble valide, coins confondus, vaut **24**. Donc le
+recuit **franchit le plafond global** : REINFORCE échantillonné acquiert bel et
+bien la conditionnelle dès que β varie.
+
+Énoncé correct : *le plafond lie à **β constant dans le régime d'effondrement**,
+pas pour l'échantillonnage en général.*
+
+Ça renforce le résultat au lieu de l'affaiblir. J'expliquais le recuit
+qualitativement (§7.3 : « garder toutes les conditionnelles entraînées pendant que
+la représentation partagée se forme »). Le plafond remplace ce récit par un
+nombre : à β constant bas, la politique tombe dans un coin et y est plafonnée par
+le plus grand produit de ce coin ; le rôle du calendrier est de **retarder
+l'engagement jusqu'à ce que le couplage existe**. Un mécanisme calculable à
+l'avance au lieu d'un calendrier qu'on règle à la main.
+
+**Ce qui manque, par ordre de ce qui tuerait le résultat.**
+
+1. **Le test de renversement — le seul qui compte.** J'ai **un** lexique, et
+   l'ordre plafond pluriel > singulier vient du `None` de genre que j'ai écrit
+   moi-même. Il faut construire un lexique où l'ordre **s'inverse** (déterminant
+   singulier neutre en genre, ou pluriels marqués), **prédire l'inversion avant
+   de lancer**, et vérifier. Si ça s'inverse, c'est une loi ; sinon c'est une
+   coïncidence de mon vocabulaire. Quelques heures, tout l'outillage existe.
+2. **Un seul algorithme.** « La procédure échantillonnée » est une affirmation
+   sur une famille tirée d'un seul membre, REINFORCE + baseline mobile. Au moins
+   PPO, ou une baseline à variance réduite.
+3. **Un seul β** : les 70 graines sont toutes à 0,02.
+4. **Le mécanisme est localisé, pas démontré.** Je sais que l'échantillonnage est
+   nécessaire pour que le plafond lie. Je n'ai pas de preuve du *pourquoi* — et le
+   confondant de §5.1 reste entier, le gradient exact optimise le vrai objectif
+   alors que l'échantillonné utilise le bonus d'entropie biaisé.
+
+**Verdict** : atelier, ou section forte d'un article plus large. Pas un article
+principal autonome sur une grammaire de 20 tokens, et le premier reproche du
+relecteur sera exactement celui que pose déjà ma Q29.
+
+**Attribution, à trancher avant d'écrire quoi que ce soit.** L'argument du
+produit est **de dipankarsarkar**. Je l'ai vérifié, étendu à la grammaire longue
+et confronté à 70 graines, mais je ne l'ai pas trouvé. Si ça se publie, c'est une
+co-signature ou au minimum un crédit en tête d'article, et ça se décide
+maintenant, pas quand le brouillon existe.
+
 ---
 
 ## 8. Vingt questions inconfortables
