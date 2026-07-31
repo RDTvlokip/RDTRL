@@ -1065,11 +1065,45 @@ mémoire.
 **Symétrie à ne pas manquer.** Je lui reprochais de s'arrêter à la position 0 ;
 je me suis arrêté au nombre de lignes. Même faute de forme, chacun sur son axe.
 
-**Ce qu'il reste à mesurer**, et qui est en cours : 70 graines à β constant, seule
-condition, ce qu'il faut pour séparer 2/3 de 1/2 à 80 % de puissance ; et la
-saturation de `H(nom | déterminant)` pour `le` et `la` sur les runs à 12 modes,
-qui départage un produit verrouillé sur un genre d'une politique couplée
-n'utilisant qu'un nom par déterminant.
+**Les 70 graines, mesurées. Il avait raison et j'avais tort.** Une seule
+condition, β = 0,02, 20 000 épisodes, `balayage_70_graines.py`.
+
+| | |
+|---|---|
+| singulier / pluriel | **37 / 33** |
+| proportion singulier | 0,5286 |
+| Wilson 95 % | **[0,413 ; 0,641]**, contient 1/2 |
+| binomial contre 1/2 | p = **0,72** |
+| binomial contre 2/3 | p = **0,016** |
+
+**Le choix de branche est indiscernable d'une pièce équilibrée, et mon « biaisé
+2 contre 1 vers le singulier » est rejeté à p = 0,016.** Le biais d'ordre 1 au nom
+(+0,0167) existe et se calcule, mais il ne survit pas à la dynamique
+échantillonnée. Ce que j'avais lu comme un biais était 3 graines recopiées 8 fois.
+
+**Et le plafond de produit, lui, tient exactement.**
+
+| branche | n | plafond | max observé | dépassements | pile au plafond | moyenne |
+|---|---|---|---|---|---|---|
+| singulier | 37 | 12 | **12,0** | **0** | 19 | 9,41 |
+| pluriel | 33 | 24 | **24,0** | **0** | 6 | 15,12 |
+
+**Zéro dépassement sur 70 runs**, et le résultat modal est le plafond lui-même
+(19 runs singuliers exactement à 12,0). Mieux : les modes effectifs sont des
+**produits d'entiers**, pas des valeurs quelconques — singulier {2, 4, 6, 8, 12},
+pluriel {6, 8, 12, 16, 18, 24}, c'est-à-dire |A_dét| × |A_nom| × |A_verbe|. La
+structure produit se lit directement dans l'histogramme.
+
+`P(nom accordé | dét)` reste à **0,333 ± 0,003** sur les 37 runs singuliers et
+0,330 ± 0,018 sur les 33 pluriels. **Aucun des 70 runs n'acquiert la
+conditionnelle.**
+
+**Ce qui sépare enfin le bruit du gradient, et c'est neuf.** Le gradient exact à
+β = 0,02 atteint 24,0 modes **dans le coin singulier** (graines 0 et 2), donc il
+franchit le plafond de 12 : il a acquis le couplage. REINFORCE échantillonné ne
+le franchit jamais, 0 fois sur 70. Le plafond n'est donc pas une propriété de la
+tâche ni de l'architecture, c'est **le plafond de la procédure échantillonnée**,
+et il a une forme close.
 
 **Le champ qui tranchait était déjà calculé et jeté.** `analyse_exacte` renvoie
 `entropie_nom_sachant_det` avec `H_max = log2(noms_compatibles)`, soit 1 bit pour
