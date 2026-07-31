@@ -1302,6 +1302,70 @@ que d'y converger » est donc vraie **deux fois** : en dessous de l'optimum libr
 (48) et en dessous de l'optimum produit (24). Vérifié par optimisation directe de
 la classe restreinte, pas par argument.
 
+### 7.11quater Le couplage se décide tard, et l'échantillonnage écrase la politique en un point
+
+Approfondissement, question 2. `trajectoire_couplage.py` suit I(dét ; nom) pas à
+pas, sonde exacte, β = 0,02, trois graines par procédure.
+
+**Rien ne prédit à l'initialisation.** I au départ vaut 0,0045 / 0,0045 / 0,0035
+bit, et les six masses de déterminants sont toutes entre 0,042 et 0,057, sans
+structure qui distingue la graine qui va coupler de celle qui ne le fera pas. Le
+prédicteur que je cherchais dans les marginales de position 0 **n'existe pas**.
+
+**Le gradient exact tient le plafond mille pas, puis en sort.**
+
+```
+  pas     0 : I = 0.0045 |  47.54 modes | valide   0.60 %
+  pas   100 : I = 0.0000 |  12.00 modes | valide  99.99 %
+  pas  1000 : I = 0.0000 |  12.00 modes | valide  99.97 %
+  pas  1250 : I = 0.8518 |  17.87 modes | valide  99.92 %
+  pas  1500 : I = 0.9980 |  24.00 modes | valide  99.98 %
+```
+
+**12,00 modes exactement, I strictement nul, pendant mille pas, puis échappée.**
+Donc le plafond du coin singulier n'est pas un bassin, c'est un **plateau**, et on
+peut en sortir sans le moindre bruit. Les instants d'échappée varient beaucoup —
+pas 1250 et pas 2875 sur deux graines, jamais sur la troisième en 4 000 pas.
+
+**Et voilà ce qui sépare vraiment les deux procédures.**
+
+| procédure | modes au **minimum** de la trajectoire | à quel pas | validité alors |
+|---|---|---|---|
+| exact, 3 graines | **10,7 / 11,1 / 11,2** | 25 | 99,5 à 99,9 % |
+| échantillonné, 3 graines | **1,09 / 1,88 / 1,18** | 400 à 800 | 87,7 à 99,4 % |
+
+Toutes les trajectoires démarrent à **47,5 modes** — le réseau non entraîné —
+puis l'entraînement détruit la diversité. Mais l'échantillonné l'écrase jusqu'à
+**une seule phrase** avant de la reconstruire, alors que l'exact ne descend jamais
+sous 10,7.
+
+**Hypothèse mécaniste, explicitement non démontrée.** Reconstruire une politique
+depuis un point quasi déterministe se fait **position par position** — c'est ce
+que le bonus d'entropie sait faire, il agit sur des conditionnelles par position.
+Or une reconstruction position par position engendre **un produit par
+construction**. Pour obtenir du couplage il faudrait ouvrir une direction
+*jointe*, ce que le terme d'entropie par position ne fait jamais. Le gradient
+exact, qui ne passe pas par le point, garde assez de structure jointe pour
+trouver la direction couplée plus tard.
+
+Ce que ça prédit, et qui se teste : **la profondeur de l'effondrement transitoire
+doit prédire l'acquisition du couplage.** Mesurable sur les 70 politiques
+sauvegardées si on refait les trajectoires, ou sur un balayage dédié.
+
+Et ça donne au recuit une explication qu'il n'avait pas. §7.3 disait « garder
+toutes les conditionnelles entraînées pendant que la représentation partagée se
+forme ». La vraie raison serait plus simple : **β élevé au début empêche
+l'écrasement en un point**, donc la politique n'a jamais à se reconstruire depuis
+un produit.
+
+**Anomalie à ne pas enterrer.** La graine 0 échantillonnée donne 11,50 modes ici
+et **18,6** dans `balayage_70_graines.py`, à configuration nominalement
+identique, et les deux valeurs sont reproductibles. §7.9 attribuait cet écart au
+non-déterminisme multithread de torch ; les deux scripts sont désormais en
+mono-thread, donc **cette explication ne tient plus**. Il y a une différence de
+chemin de code que je n'ai pas trouvée, et tant qu'elle n'est pas trouvée l'un
+des deux chiffres vient d'un code que je n'ai pas audité.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
