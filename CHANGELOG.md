@@ -10,6 +10,8 @@ entrée ci-dessous.
 
 ## [0.3.2] — 2026-07-31
 
+DOI de version : [10.5281/zenodo.21726512](https://doi.org/10.5281/zenodo.21726512)
+
 Version de métadonnées uniquement, aucun changement de code ni de résultat.
 
 ### Corrigé
