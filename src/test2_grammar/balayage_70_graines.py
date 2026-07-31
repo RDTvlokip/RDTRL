@@ -127,6 +127,8 @@ def main():
     if args.fusion:
         fusionner(args.beta)
         return
+    dossier_poids = os.path.join(DOSSIER_SORTIE, "politiques_70")
+    os.makedirs(dossier_poids, exist_ok=True)
     g = Grammaire(longue=False)
     lignes = []
 
@@ -143,11 +145,26 @@ def main():
         branche = "sg" if sg > pl else ("pl" if pl > sg else "ex aequo")
         if min(sg, pl) > 5:
             branche = "les deux"
+        # On garde TOUT ce qui porte de la masse. La version precedente ne
+        # sauvait que moyenne_cond_det, qui est une moyenne non ponderee sur les
+        # six determinants et vaut donc (determinants emis)/6, pas un accord.
+        # masse_par_determinant existait un cran au-dessus et n'arrivait pas
+        # jusqu'ici : meme faute que saturation_pct, deux fonctions plus haut.
         lignes.append({"graine": graine, "beta": args.beta,
                        "masse_valide_pct": ex["masse_valide_pct"],
                        "modes_effectifs": ex["modes_effectifs"],
                        "sg_pct": sg, "pl_pct": pl, "branche": branche,
-                       "p_nom_sachant_det": ex["moyenne_cond_det"]})
+                       "p_nom_sachant_det": ex["moyenne_cond_det"],
+                       "cond_det_pondere": ex["cond_det_pondere"],
+                       "information_mutuelle_det_nom_bits":
+                           ex["information_mutuelle_det_nom_bits"],
+                       "determinants_emis": ex["determinants_emis"],
+                       "masse_par_determinant": ex["masse_par_determinant"],
+                       "cond_det_vers_nom": ex["cond_det_vers_nom"],
+                       "repartition_par_nom": ex["repartition_par_nom"]})
+        # Et les poids, pour ne plus jamais avoir a repondre "je n'ai que les lignes".
+        torch.save(politique.state_dict(),
+                   os.path.join(dossier_poids, f"politique_b{args.beta}_g{graine}.pt"))
         print(f"{graine:>7} {ex['masse_valide_pct']:>9.2f} {ex['modes_effectifs']:>7.1f} "
               f"{sg:>7.1f} {pl:>7.1f} {branche:>8}")
 

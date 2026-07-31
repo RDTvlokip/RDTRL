@@ -1146,6 +1146,88 @@ un déterminant singulier et 2 pour un pluriel. `balayage_graines.py` sauvegarde
 décisive existe déjà et n'est pas regardée, après la sonde d'ordre 1 (§7.10) et le
 balayage multi-graines (§7.5).
 
+### 7.11bis Troisième critique : ma statistique de couplage mesurait la couverture
+
+31/07/2026, même interlocuteur. Il attaque la phrase « aucun des 70 runs
+n'acquiert la conditionnelle » et il a raison sur les quatre points.
+
+**`moyenne_cond_det` est une moyenne NON pondérée sur les six déterminants.** Un
+softmax n'atteint jamais zéro, donc les quatre déterminants morts passent le
+garde-fou `total > 0` et entrent dans la moyenne avec le même poids que les deux
+vivants. **La quantité obtenue est (déterminants émis)/6, pas un taux d'accord.**
+Vérifié sur mes vraies politiques, pas sur des jointes reconstruites : les 8 runs
+dont j'ai l'analyse complète donnent 0,3333 pour 2 déterminants vivants et 0,6667
+pour 4, à quatre décimales.
+
+Conséquence directe et fatale à ma phrase : **un effondrement singulier à 12 modes
+et un effondrement pluriel à 24 modes lisent tous deux 0,3333.** C'est exactement
+la distinction que je faisais porter à ce chiffre.
+
+**Mais son remède est pire que le mal.** Il propose de pondérer par la masse. J'ai
+reconstruit ses quatre structures et passé les trois statistiques dessus :
+
+| structure | modes | non pondérée | pondérée | **I(dét;nom)** |
+|---|---|---|---|---|
+| singulier verrouillé genre | 12,0 | 0,433 | **1,0000** | **0,0000** |
+| pluriel `les`/`des` | 24,0 | 0,400 | **1,0000** | **0,0000** |
+| singulier 24, genre acquis | 24,0 | 0,733 | **1,0000** | **1,0000** |
+| les six, tout couplé | 48,0 | 1,000 | **1,0000** | **1,5000** |
+
+La pondérée vaut 1,0000 pour les quatre : elle ne distingue plus rien. Parce
+qu'un accord parfait s'obtient **par restriction** aussi bien que par
+conditionnement — un produit verrouillé sur un genre est parfaitement accordé
+sans le moindre couplage.
+
+**La quantité qui répond à la question est l'information mutuelle I(dét ; nom).**
+C'est une **dépendance**, pas un taux d'accord : 0 pour un produit, quelle que
+soit sa validité. Ajoutée à `analyse_exacte`, avec `cond_det_pondere` et
+`determinants_emis`.
+
+**Les 70 graines relancées avec la bonne statistique, et ma conclusion survit :**
+
+| | |
+|---|---|
+| I(dét;nom) médiane | **0,0000 bit** |
+| I(dét;nom) maximum sur 70 | **0,0377 bit** |
+| runs au-dessus de 0,05 bit | **0 / 70** |
+| conditionnelle pondérée | 0,9941 ± 0,0393 — inutilisable, comme prévu |
+| déterminants émis | 1 pour 13 runs, 2 pour 57 |
+
+Il faut 1,0 bit pour l'union singulière et 1,5 pour la politique complète. Le
+maximum atteint par 70 runs est **0,038**. « Aucun run n'acquiert la
+conditionnelle » est donc vrai, mais je l'avais affirmé sur une statistique qui
+ne pouvait pas le dire.
+
+**Ses deux autres points, tous deux justes.** Le coin pluriel a un écart nul par
+construction (24 valides, plus grand produit 24), donc mes « 0 violations sur
+70 » sont en réalité **0 sur 37** : seul le coin singulier peut falsifier le
+plafond, ma grammaire est asymétrique comme appareil de mesure. Et sa borne à 36
+est exacte, mesurée à 36,0 modes avec I = 0,918 bit : le recuit à 45,3 franchit
+donc une barre plus haute que les 24 que je m'étais donnés.
+
+**Et l'audit qu'impose la cinquième occurrence.** `masse_par_determinant` existait
+dans `analyse_exacte` et n'arrivait pas au tableau de résultats — même faute que
+`saturation_pct`, un commit plus tôt. J'ai donc audité les huit moyennes non
+pondérées sur une dimension de tokens dans tout le dépôt. **Six sont correctes,
+deux sont fausses, et la ligne de partage est nette :**
+
+| moyenne sur | verdict |
+|---|---|
+| conditionnelles **observées** (`moyenne_cond_det`, `moyenne_cond_nom`) | **faux** |
+| conditionnelles **interventionnelles** (`test_conditionnel`, token forcé) | correct |
+| marginales à politique uniforme (`sonde_ordre1`, `gradient_exact`) | correct |
+
+**Observationnel contre interventionnel.** Quand je force le token, chaque ligne
+existe vraiment et les poids égaux sont justes. Quand je l'observe, les lignes
+mortes sont des artefacts du softmax. Les deux versions sont dans le même fichier
+et j'ai mis la mauvaise dans le tableau. C'est le critère qui manquait, et il vaut
+mieux qu'une sixième correction ponctuelle.
+
+**Sa dernière question : « avez-vous encore les 70 politiques, ou seulement les
+lignes ? »** Seulement les lignes. Relancé en sauvegardant la masse par
+déterminant, la conditionnelle détaillée, l'information mutuelle **et les 70
+poids**.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article

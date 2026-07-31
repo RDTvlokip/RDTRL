@@ -336,7 +336,40 @@ def analyse_exacte(politique, grammaire, device="cpu"):
 
     valeurs_det = [v for v in cond_det.values() if v is not None]
     valeurs_nom = [v for v in cond_nom.values() if v is not None]
+
+    # La moyenne NON PONDEREE ci-dessus compte les six determinants a egalite,
+    # y compris ceux que la politique n'emet jamais. Un softmax n'atteint jamais
+    # zero, donc les lignes mortes passent le garde-fou et entrent dans la
+    # moyenne : la quantite obtenue est (determinants emis)/6, pas un accord.
+    # Deux corrections, et la seconde seule repond a la vraie question.
+    def _pondere(cond, masses):
+        total = sum(masses.values())
+        if total <= 1e-12:
+            return None
+        return round(sum(masses[k] * v for k, v in cond.items() if v is not None) / total, 4)
+
+    masse_par_nom = {}
+    for nom in grammaire.tokens_par_categorie["nom"]:
+        masse_par_nom[nom] = float(jointe[:, grammaire.index[nom], :].sum())
+
+    # Information mutuelle I(det ; nom) en bits. C'est la seule des trois qui
+    # mesure une DEPENDANCE : une politique restreinte a un genre a un accord
+    # parfait sans aucun couplage, parce que son support est un produit. Elle
+    # vaut donc 0 pour un produit et > 0 des que le nom depend du determinant.
+    p_det_nom = np.array([[float(jointe[grammaire.index[d], grammaire.index[n]].sum())
+                           for n in grammaire.tokens_par_categorie["nom"]]
+                          for d in grammaire.tokens_par_categorie["det"]])
+    p_det_nom = p_det_nom / max(p_det_nom.sum(), 1e-30)
+    p_d, p_n = p_det_nom.sum(1, keepdims=True), p_det_nom.sum(0, keepdims=True)
+    produit = p_d * p_n
+    nz = (p_det_nom > 1e-12) & (produit > 1e-30)
+    im_det_nom = float((p_det_nom[nz] * np.log2(p_det_nom[nz] / produit[nz])).sum())
+
     return {
+        "cond_det_pondere": _pondere(cond_det, masse_det),
+        "cond_nom_pondere": _pondere(cond_nom, masse_par_nom),
+        "information_mutuelle_det_nom_bits": round(im_det_nom, 4),
+        "determinants_emis": sum(1 for v in masse_det.values() if v > 0.01),
         "entropie_nom_sachant_det": entropie_nom_sachant_det,
         "masse_par_determinant": masse_det,
         "repartition_familles": {k: round(100 * v, 1) for k, v in familles.items()},
