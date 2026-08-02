@@ -8,6 +8,64 @@ du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
 DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
 entrée ci-dessous.
 
+## [0.4.0] — en cours, non publiée
+
+### Changé — le chemin numérique de la ligne d'avantage
+
+**Le défaut de `entrainer` passe de `float32` à `float64`.** La soustraction
+`récompense − baseline` se fait désormais en Python, donc nativement en double,
+puis on arrondit **une seule fois**. L'ancien chemin poussait les deux valeurs
+dans torch, ce qui arrondissait la baseline **avant** de soustraire : deux
+arrondis au lieu d'un.
+
+```
+  valeur exacte de r - baseline    0.08333333333333337
+  arrondie une fois             -> 0.0833333358168602
+  arrondie deux fois            -> 0.08333331346511841
+```
+
+Aucun compromis : le nouveau chemin est plus juste **et** mesuré **4× plus
+rapide** sur cette ligne (4,6 µs contre 19,5 µs), parce qu'il fait une
+soustraction Python au lieu d'une création de tenseur plus un noyau torch plus un
+`detach`. Rien n'est stocké en double précision, le tenseur produit reste
+float32.
+
+Trouvé par dipankarsarkar. Le dépôt contenait **deux** comportements sans le
+dire : `rl_grammaire.py:141` d'un côté, et six autres fichiers de l'autre. Six
+fichiers de plus n'ont aucun entraînement échantillonné — gradient exact,
+énumérations, formes closes — et ne sont donc pas concernés ; ce sont eux qui
+portent le plafond de produit, l'optimum de Gibbs et les marginales d'ordre 1.
+
+**Ce que ça change, et ce que ça ne change pas.** Vérifié sur 70 graines par
+chemin : **37 / 33 des deux côtés**, même intervalle de Wilson, même p, **zéro
+dépassement du plafond des deux côtés**, `I(dét;nom)` nulle des deux côtés. Les
+conclusions du dépôt ne dépendent pas de l'arrondi. Ce qui bouge, c'est le
+détail par graine : 21 runs sur 70 gardent le même nombre de modes, corrélation
+0,68. **Le coin est décidé par l'initialisation, le remplissage par la
+trajectoire.**
+
+⚠️ **Les tableaux des versions 0.3.x ont été produits sur le chemin `float32`.**
+Pour les reproduire à l'identique, passer `chemin_avantage="float32"`. Le
+paramètre est explicite et conservé pour ça.
+
+### Ajouté
+
+- **`chemin_avantage.py`** — isole les deux chemins, mesure leur divergence sur
+  le flux de récompenses réel, et trace les deux avec sonde exacte.
+- **`relancer_float64.py`** — relance les scripts concernés en bornant le
+  parallélisme, et archive `results_test2/` avant d'écraser.
+- **Épinglage des threads dans `rl_grammaire.py`**, que 14 scripts importent, avec
+  `RDTRL_THREADS` pour revenir en arrière. Auparavant deux fichiers seulement
+  l'épinglaient, les autres dépendaient du shell.
+
+### Corrigé
+
+- **Trois collisions de noms de fichiers**, toutes du même défaut : un nom qui
+  omet une dimension que le run fait varier. Les poids du balayage
+  (`politique_b{β}_g{n}.pt` sans le chemin, 70 politiques écrasées), le motif de
+  fusion (`..._b0.02_*.json` ramassant l'autre chemin et sa propre sortie, 13
+  fichiers pour 6 tranches), et les sorties de `chemin_avantage`.
+
 ## [0.3.2] — 2026-07-31
 
 DOI de version : [10.5281/zenodo.21726512](https://doi.org/10.5281/zenodo.21726512)

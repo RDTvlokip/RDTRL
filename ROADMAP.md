@@ -97,6 +97,35 @@ pression de longueur. On trace concentration en fonction du bouton.
 
 ---
 
+## En cours au 31/07/2026 — bascule vers le chemin float64
+
+Décidé après la quatrième critique de dipankarsarkar : le défaut de `entrainer`
+passe à `float64` (un arrondi au lieu de deux, et 4× plus rapide sur cette
+ligne). Détail en carnet §7.11quinquies et §7.11sexies.
+
+**À relancer**, avec `relancer_float64.py --archiver` qui borne le parallélisme
+et met les résultats float32 de côté d'abord :
+
+| script | état |
+|---|---|
+| `balayage_70_graines.py` | ✅ déjà fait en float64 |
+| `balayage_graines.py` | ⏳ 24 runs |
+| `sonde_ordre1.py` partie B | ⏳ 5 runs grammaire longue |
+| `produit_et_saturation.py` partie B2 | ⏳ 2 runs |
+| `rl_grammaire.py` | ⏳ le plus gros, ~18 runs |
+
+Les six scripts sans entraînement échantillonné n'ont **rien** à refaire, et ce
+sont eux qui portent les résultats les plus forts : plafond de produit, optimum
+de Gibbs, marginales d'ordre 1, sonde de capacité, optimum de la classe produit.
+
+**Après les runs**, le vrai coût : reprendre les chiffres cités dans
+`ANALYSE_TEST2.md`, `docs/ARTICLE.md` et le carnet, puis publier en **v0.4.0**
+avec la mention que les tableaux 0.3.x viennent de l'autre chemin.
+
+**Attention CPU** : ne rien lancer d'autre pendant, 12 cœurs seulement.
+
+---
+
 ## Concurrent apparu le 31/07/2026 — le test de renversement du plafond
 
 Le plafond de produit (carnet §7.11) est le résultat le plus solide du projet, et

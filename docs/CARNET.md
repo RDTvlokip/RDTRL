@@ -1539,6 +1539,57 @@ sortie**, soit 13 fichiers pour 6 tranches, donc des graines comptées deux ou
 trois fois. Les deux sont corrigés, le second avec un garde-fou qui compte les
 doublons et le dit.
 
+### 7.11septies Décision : float64 devient le défaut, et pourquoi c'était facile
+
+Sa question de fin était *« quelle ligne veux-tu canonique ? »*, c'est-à-dire :
+le dépôt contient deux comportements sans le dire, lequel devient **le** bon.
+
+Je m'attendais à un arbitrage entre justesse et vitesse. Il n'y en a pas.
+Mesuré :
+
+```
+  chemin float32 :  19.46 us par appel
+  chemin float64 :   4.57 us par appel   (+77 %)
+```
+
+**Le chemin plus juste est aussi 4× plus rapide sur cette ligne.** Parce que le
+nom est trompeur : rien n'est stocké en double, le tenseur produit est float32
+dans les deux cas. Un `float` Python **est déjà** un double, donc `r - baseline`
+en Python est natif et gratuit, et il ne reste qu'une création de tenseur.
+L'autre chemin crée un tenseur, appelle un noyau torch pour la soustraction
+tenseur-scalaire, puis détache : plus d'opérations, et un arrondi de plus.
+
+Honnêteté sur l'ordre de grandeur : 15 µs gagnées sur un pas qui en coûte
+~6 800, soit **0,2 %** au total. Ce n'est pas un argument de performance, c'est
+que la performance ne s'oppose pas à la justesse ici.
+
+**Le float32 n'était pas un choix, c'était un accident d'écriture** dans une
+seule fonction, minoritaire dans son propre dépôt : six fichiers sur onze
+faisaient déjà l'autre. Défaut basculé.
+
+**Ce que la bascule coûte, inventorié plutôt qu'estimé.**
+
+| catégorie | scripts | à refaire |
+|---|---|---|
+| passent par `entrainer()` | `rl_grammaire`, `balayage_graines`, `balayage_70_graines`, `sonde_ordre1`, `produit_et_saturation` | 5, dont un déjà fait |
+| ligne float64 propre | 6 fichiers | 0 |
+| **aucun entraînement échantillonné** | `gradient_exact`, `optimum_produit`, `optimum_gibbs`, `verifier_dominance`, `sonde_capacite`, `grammaire` | **0** |
+
+Le fait qui rassure et qu'il faut retenir : **les résultats qui portent le plus
+n'ont pas de ligne d'avantage du tout.** Plafond de produit, optimum de Gibbs,
+marginales d'ordre 1, sonde de capacité, optimum de la classe produit — gradient
+exact ou forme close. La bascule ne peut pas les toucher.
+
+**Et le vrai coût n'est pas le calcul.** ~1 h 30 de runs, contre la reprise de
+dizaines de chiffres cités dans l'article publié, `ANALYSE_TEST2.md` et ce
+carnet. C'est la réécriture qui décide, pas le CPU.
+
+**Quatrième collision de noms de la journée, désamorcée avant.** Relancer aurait
+écrasé `rapport.json`, `balayage_graines.json` et les CSV float32.
+`relancer_float64.py --archiver` copie `results_test2/` d'abord. J'ai préféré une
+copie de dossier à un suffixe sur chaque sortie : moins invasif, et ça garde de
+quoi comparer les deux chemins ligne à ligne.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
