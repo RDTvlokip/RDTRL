@@ -33,6 +33,30 @@ corrige le problème.
 
 Balayage du coefficient d'entropie β, 3 graines, 20 000 épisodes, mesures exactes.
 
+**Refait le 31/07/2026 : 10 graines par β au lieu de 3, sur le chemin numérique
+canonique (float64).** L'ancienne version à 3 graines venait de l'autre chemin ;
+les deux tableaux sont donnés parce que l'écart entre eux est lui-même une
+donnée sur la fragilité de ces chiffres.
+
+| β | validité % | modes effectifs / 48 | graines couvrant les 2 branches | sg / pl |
+|---|---|---|---|---|
+| 0,0 | 100,0 ± 0,0 | 1,0 ± 0,0 | 0/10 | 6 / 4 |
+| 0,01 | 100,0 ± 0,0 | 9,3 ± 5,6 | 0/10 | 4 / 6 |
+| 0,02 | 99,7 ± 0,6 | 14,1 ± 5,5 | 0/10 | 3 / 7 |
+| 0,05 | 97,0 ± 3,2 | 22,2 ± 2,0 | 0/10 | 4 / 6 |
+| 0,08 | 86,4 ± 5,4 | **31,4 ± 10,9** | **5/10** | 4 / 6 |
+| 0,12 | 58,6 ± 4,4 | 43,8 ± 1,3 | 10/10 | 7 / 3 |
+| 0,2 | 21,4 ± 1,7 | 44,1 ± 1,9 | 10/10 | 3 / 7 |
+| 0,35 | 5,4 ± 0,5 | 44,9 ± 1,1 | 10/10 | 4 / 6 |
+
+La transition reste à β ≈ 0,08, et c'est là que l'écart-type des modes explose —
+**±10,9** — parce que la moitié des graines couvre les deux familles et l'autre
+moitié non. La colonne sg/pl confirme sur 80 runs ce que les 70 graines du §7.11
+disaient : **le choix de branche est une pièce équilibrée à tous les β**.
+
+<details>
+<summary>Ancienne version, 3 graines, chemin float32</summary>
+
 | β | validité % | modes effectifs / 48 | graines couvrant les 2 branches |
 |---|---|---|---|
 | 0,0 | 100,0 ± 0,0 | 1,0 ± 0,0 | 0/3 |
@@ -43,6 +67,8 @@ Balayage du coefficient d'entropie β, 3 graines, 20 000 épisodes, mesures exac
 | 0,12 | 57,6 ± 1,7 | 45,3 ± 0,6 | 3/3 |
 | 0,2 | 21,3 ± 0,9 | 43,6 ± 2,1 | 3/3 |
 | 0,35 | 5,6 ± 0,7 | 44,1 ± 1,5 | 3/3 |
+
+</details>
 
 ### 1.2 Diversité — l'agent verrouille une sous-famille, pas une phrase
 
