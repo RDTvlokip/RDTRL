@@ -59,12 +59,82 @@ LEXIQUE_LONG = {
 }
 
 
+# Variante RENVERSEE, pour le test de renversement du plafond (carnet 7.12).
+#
+# Le plafond de produit d'un coin est le plus grand ensemble produit
+# entierement valide qu'il contient. Dans le lexique standard il vaut 24 au
+# pluriel et 12 au singulier, parce que 'les' et 'des' sont neutres en genre :
+# ils suppriment la contrainte de genre, donc le coin pluriel EST un produit,
+# alors que le coin singulier est l'union de deux produits (masculin, feminin).
+#
+# Ici on deplace la neutralite de genre vers le singulier, et on marque les
+# pluriels. MEMES 20 tokens, meme espace de 8 000 sequences, memes 48 phrases
+# valides, memes deux coins de 24 : seule la structure de produit est echangee.
+# Le plafond doit donc devenir 24 au singulier et 12 au pluriel.
+#
+# Si le plafond suit ce renversement, c'est une propriete de la structure de la
+# recompense. S'il ne le suit pas, c'etait une coincidence de mon vocabulaire.
+LEXIQUE_COURT_RENVERSE = dict(LEXIQUE_COURT)
+LEXIQUE_COURT_RENVERSE.update({
+    "le":  ("det", None, "sg"),
+    "la":  ("det", None, "sg"),
+    "un":  ("det", "m", "pl"),
+    "une": ("det", "f", "pl"),
+    "les": ("det", "m", "pl"),
+    "des": ("det", "f", "pl"),
+})
+#
+# ATTENTION : cette variante-la ne teste RIEN, et c'est instructif.
+# Les noms et les verbes sont deja symetriques en nombre (2 par genre et par
+# nombre, 3 verbes de chaque). Echanger le nombre des determinants EST donc le
+# renommage sg <-> pl, et les deux grammaires sont isomorphes. Le resultat
+# serait le miroir du standard par construction. Conservee comme contre-exemple
+# documente : un controle peut etre parfaitement symetrique et parfaitement
+# vide. Voir carnet 7.13.
+#
+# Un renommage permute, il ne peut pas changer un RAPPORT. Le vrai test fait
+# donc varier la VALEUR du plafond. Avec trois genres au lieu de deux :
+#
+#   coin singulier : determinants neutres en genre -> 2 det x 6 noms x 3 verbes
+#                    = 36, et c'est un seul produit, donc plafond 36 ;
+#   coin pluriel   : determinants marques -> il faut fixer le genre
+#                    -> 2 det x 2 noms x 3 verbes = 12.
+#
+# Les deux coins contiennent 36 phrases valides, mais leurs plafonds sont dans
+# un rapport de 3 et non de 2. Aucun renommage de la grammaire a deux genres ne
+# peut produire ce rapport : le plus grand produit est un invariant.
+LEXIQUE_TROIS_GENRES = {
+    "le":  ("det", None, "sg"),
+    "un":  ("det", None, "sg"),
+    "les": ("det", "m", "pl"),
+    "des": ("det", "m", "pl"),
+    "ces": ("det", "f", "pl"),
+    "mes": ("det", "f", "pl"),
+    "ses": ("det", "n", "pl"),
+    "tes": ("det", "n", "pl"),
+
+    "chat":   ("nom", "m", "sg"),  "chats":   ("nom", "m", "pl"),
+    "chien":  ("nom", "m", "sg"),  "chiens":  ("nom", "m", "pl"),
+    "table":  ("nom", "f", "sg"),  "tables":  ("nom", "f", "pl"),
+    "fleur":  ("nom", "f", "sg"),  "fleurs":  ("nom", "f", "pl"),
+    "arbre":  ("nom", "n", "sg"),  "arbres":  ("nom", "n", "pl"),
+    "livre":  ("nom", "n", "sg"),  "livres":  ("nom", "n", "pl"),
+
+    "dort":     ("verbe", None, "sg"),  "dorment":  ("verbe", None, "pl"),
+    "mange":    ("verbe", None, "sg"),  "mangent":  ("verbe", None, "pl"),
+    "chante":   ("verbe", None, "sg"),  "chantent": ("verbe", None, "pl"),
+}
+
+
 class Grammaire:
     """Parser deterministe : structure + accords, sans aucune phrase de reference."""
 
-    def __init__(self, longue=False):
+    def __init__(self, longue=False, variante="standard"):
         self.longue = longue
-        self.lexique = dict(LEXIQUE_COURT)
+        self.variante = variante
+        self.lexique = dict({"renverse": LEXIQUE_COURT_RENVERSE,
+                             "trois_genres": LEXIQUE_TROIS_GENRES}
+                            .get(variante, LEXIQUE_COURT))
         if longue:
             self.lexique.update(LEXIQUE_LONG)
 

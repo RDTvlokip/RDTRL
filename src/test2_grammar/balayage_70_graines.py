@@ -88,7 +88,7 @@ def synthese(lignes, beta):
             "branches": dict(compte)}
 
 
-def fusionner(beta, chemin="float32"):
+def fusionner(beta, chemin="float32", variante="standard"):
     """Relit toutes les tranches ecrites par les processus paralleles.
 
     Le motif se termine par [0-9] et non par * : sinon il ramasse aussi les
@@ -97,7 +97,8 @@ def fusionner(beta, chemin="float32"):
     fois. Constate le 31/07/2026 avec 13 fichiers pour 6 tranches.
     """
     import glob
-    marque = "" if chemin == "float32" else f"_{chemin}"
+    marque = (("" if chemin == "float32" else f"_{chemin}")
+              + ("" if variante == "standard" else f"_{variante}"))
     motif = os.path.join(DOSSIER_SORTIE,
                          f"balayage_70_graines_b{beta}{marque}_[0-9]*.json")
     lignes = []
@@ -133,18 +134,25 @@ def main():
     p.add_argument("--fin", type=int, default=None,
                    help="derniere graine exclue ; par defaut --graines")
     p.add_argument("--episodes", type=int, default=20000)
-    p.add_argument("--chemin", choices=["float32", "float64"], default="float32",
+    p.add_argument("--chemin", choices=["float32", "float64"], default="float64",
                    help="ou se fait la soustraction recompense - baseline")
+    p.add_argument("--variante",
+                   choices=["standard", "renverse", "trois_genres"],
+                   default="standard",
+                   help="lexique. 'renverse' est ISOMORPHE au standard et ne "
+                        "teste rien (carnet 7.13) ; 'trois_genres' change le "
+                        "rapport des plafonds de 2 a 3, ce qu'aucun renommage "
+                        "ne peut faire")
     args = p.parse_args()
     fin = args.graines if args.fin is None else args.fin
 
     os.makedirs(DOSSIER_SORTIE, exist_ok=True)
     if args.fusion:
-        fusionner(args.beta, args.chemin)
+        fusionner(args.beta, args.chemin, args.variante)
         return
     dossier_poids = os.path.join(DOSSIER_SORTIE, "politiques_70")
     os.makedirs(dossier_poids, exist_ok=True)
-    g = Grammaire(longue=False)
+    g = Grammaire(longue=False, variante=args.variante)
     lignes = []
 
     print(f"graines {args.debut} a {fin - 1} a beta = {args.beta}, "
@@ -208,7 +216,8 @@ def main():
             print(f"  modes effectifs, branche {br} : moyenne {np.mean(m):.2f} "
                   f"+/- {np.std(m):.2f}  (min {min(m)}, max {max(m)}, n = {len(m)})")
 
-    marque = "" if args.chemin == "float32" else f"_{args.chemin}"
+    marque = (("" if args.chemin == "float32" else f"_{args.chemin}")
+              + ("" if args.variante == "standard" else f"_{args.variante}"))
     chemin = os.path.join(
         DOSSIER_SORTIE,
         f"balayage_70_graines_b{args.beta}{marque}_{args.debut:03d}_{fin:03d}.json")

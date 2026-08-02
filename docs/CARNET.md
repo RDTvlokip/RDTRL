@@ -1762,6 +1762,73 @@ les conclusions établies sur 70 graines ou par énumération.
 remis à jour avec les nouveaux chiffres. Sinon on republie la même fragilité avec
 d'autres décimales.
 
+### 7.13 Le test de renversement : ma première version ne testait rien
+
+Le §7.12 désignait le test de renversement comme la seule expérience qui décide
+si le plafond de produit est une loi ou une coïncidence de mon lexique. Je l'ai
+conçu, et **Théo a vu qu'il était vide avant que je le lance.**
+
+**La version fausse.** J'ai construit un lexique où la neutralité de genre passe
+des déterminants pluriels aux singuliers, en gardant les mêmes 20 tokens, le même
+espace de 8 000, les mêmes 48 phrases valides et les mêmes deux coins de 24.
+Résultat annoncé : plafonds échangés, 24 au singulier et 12 au pluriel, et les
+deux marginales d'ordre 1 échangées aussi. Tout basculait proprement.
+
+**Trop proprement.** Les noms et les verbes du lexique standard sont **déjà
+symétriques en nombre** — 2 par (genre, nombre), 3 verbes de chaque. Échanger le
+nombre des déterminants **est donc le renommage `sg` ↔ `pl`**, et rien d'autre.
+Vérifié sur les multiensembles de traits :
+
+```
+  det     standard avec sg<->pl : {('f','pl'): 2, ('m','pl'): 2, (None,'sg'): 2}
+  det     renverse              : {('f','pl'): 2, ('m','pl'): 2, (None,'sg'): 2}
+  ISOMORPHES sous le renommage sg<->pl : True
+```
+
+Les 70 graines auraient produit l'image miroir **par construction**, en une heure
+de calcul, et j'en aurais tiré une confirmation qui ne confirme rien : elle aurait
+seulement prouvé que mon code ne teste pas les chaînes `"sg"` et `"pl"`.
+
+**Le principe qui manquait, et qui vaut au-delà de ce projet :**
+
+> **Un renommage peut permuter, il ne peut pas changer un rapport.** Un contrôle
+> parfaitement symétrique est souvent un contrôle parfaitement vide. Pour qu'un
+> renversement teste quelque chose, il faut faire varier la **valeur** de la
+> quantité prédite, pas ses étiquettes.
+
+Je garde la variante `renverse` dans le code, documentée comme contre-exemple.
+La supprimer effacerait la leçon.
+
+**La version qui teste : trois genres.**
+
+| | standard | trois_genres |
+|---|---|---|
+| tokens | 20 | 26 |
+| espace | 8 000 | 17 576 |
+| phrases valides | 48 | 72 (force brute confirmée) |
+| taille des deux coins | 24 / 24 | 36 / 36 |
+| **plafonds** | 12 et 24 | **36 et 12** |
+| **rapport** | **2** | **3** |
+
+Le coin singulier a des déterminants neutres en genre, donc c'est un seul produit
+2 × 6 × 3 = 36. Le coin pluriel a des déterminants marqués sur trois genres, donc
+il faut fixer le genre : 2 × 2 × 3 = 12. Les deux coins contiennent le même
+nombre de phrases valides, et leurs plafonds sont dans un rapport de 3. **Aucun
+renommage de la grammaire à deux genres ne peut produire ce rapport**, parce que
+le plus grand produit est un invariant d'isomorphisme.
+
+**Prédiction enregistrée le 31/07/2026, avant de lancer :**
+
+> Sur 70 graines à β = 0,02, chemin float64 : **zéro dépassement**, maximum
+> observé **36 dans le coin singulier et 12 dans le coin pluriel**, résultat modal
+> égal au plafond, modes effectifs sur des produits d'entiers, branche
+> indiscernable d'une pièce, `I(dét;nom)` nulle.
+>
+> **Ce qui réfute :** un coin singulier qui plafonne à 12 ou 24, ou un coin
+> pluriel qui dépasse 12. Le plafond ne suivrait alors pas la structure de
+> produit, et le résultat du §7.11 serait une propriété de mon vocabulaire à deux
+> genres.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
