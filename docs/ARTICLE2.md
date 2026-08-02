@@ -114,7 +114,7 @@ The hypothesis this suggests, and I am labelling it as a hypothesis because I ha
 
 It also gives β annealing a mechanism it didn't have. In article 1 I explained the annealing fix with a story about keeping every conditional trained while the shared representation forms. The simpler reading: high β early **prevents the crush to a point**, so the policy never has to rebuild from a product.
 
-![Four panels on the same runs. Panel A, a scatter of effective modes on one numeric path against the other, seventy seeds, coloured by which corner they landed in: every point keeps its colour across the two axes while only a third sit on the diagonal, and dashed lines at 12 and 24 are never crossed. Panel B, the same seventy runs as a strip plot per corner, with a solid bar at each corner's largest valid product and a wall of points stopping exactly there. Panel C, effective modes against training step on a log axis: all six trajectories start at 47.5, the exact-gradient runs dip only to about 11 while the sampled runs are crushed to roughly 1 before rebuilding. Panel D, twenty seeds sorted by early-stopping gap, most of them a single dot meaning no gap at all.](../figures/comparaison_test2.png)
+![Four panels on the same runs. Panel A, a scatter of effective modes on one numeric path against the other, seventy seeds, coloured by which corner they landed in: every point keeps its colour across the two axes while only a third sit on the diagonal, and dashed lines at 12 and 24 are never crossed. Panel B, the same seventy runs as a strip plot per corner, with a solid bar at each corner's largest valid product and a wall of points stopping exactly there. Panel C, effective modes against training step on a log axis: all six trajectories start at 47.5, the exact-gradient runs dip only to about 11 while the sampled runs are crushed to roughly 1 before rebuilding. Panel D, twenty seeds sorted by early-stopping gap, most of them a single dot meaning no gap at all.](https://cdn-uploads.huggingface.co/production/uploads/663ce1f27e7bc3d3e4e5074e/zHTD2rlbzwKc5B6j7BMDI.png)
 
 ---
 
@@ -330,7 +330,7 @@ The rest of the prediction holds too. The branch is still a coin at 33 / 37, p =
 
 **One sub-prediction of mine was written too strongly.** I predicted "effective modes land on integer products". Measured: **66% in the standard grammar, 67% here**, within 0.05 of an integer. A stable fraction across two grammars, so a real fact, but not a rule — with six nouns instead of four, a non-uniform policy more easily gives a non-integer `2^H`. The ceiling is a law; the quantization is not.
 
-![Two panels on the reversal test. Left, the three-gender grammar: seventy runs plotted by effective modes, split into a plural row and a singular row, with a solid bar at each corner's predicted ceiling, 12 and 36. No point lies past either bar, and the densest cluster in each row sits exactly on it. Right, the quantitative test: for each grammar a dash marks the computed ratio of the two ceilings and a dot marks the ratio of the observed means. The standard grammar reads 2.0 predicted against 1.82 observed, the three-gender grammar 3.0 against 3.01, and a note records that the first version of this test could only ever have landed on the left column.](../figures/renversement_test2.png)
+![Two panels on the reversal test. Left, the three-gender grammar: seventy runs plotted by effective modes, split into a plural row and a singular row, with a solid bar at each corner's predicted ceiling, 12 and 36. No point lies past either bar, and the densest cluster in each row sits exactly on it. Right, the quantitative test: for each grammar a dash marks the computed ratio of the two ceilings and a dot marks the ratio of the observed means. The standard grammar reads 2.0 predicted against 1.82 observed, the three-gender grammar 3.0 against 3.01, and a note records that the first version of this test could only ever have landed on the left column.](https://cdn-uploads.huggingface.co/production/uploads/663ce1f27e7bc3d3e4e5074e/aAnMFn9RV-K0L6nzpqKVS.png)
 
 **His bound survives a change of grammar, in value and not only in order.**
 
@@ -356,6 +356,60 @@ The transition is still at β ≈ 0.08 and that is where the spread on modes exp
 Two numbers from article 1 also moved on the canonical path. One is cosmetic — the all-or-nothing control on the short grammar goes from 99.58% to 99.91%. The other is not: the long grammar's graded validity goes from **6.4% to 15.8%**, two and a half times larger, and it is quoted in the published article.
 
 Neither is a surprise, and that is the point. Both are single-seed numbers, and I had written in my own notebook — two days before publishing — that a single-seed sweep cannot draw a frontier. Then I published one anyway.
+
+---
+
+## 💬 The exchange, in his words
+
+He asked for this himself, at the end of the last round: *"On credit, raise it when there is a draft, and put the thread in it."* So here is the thread, quoted rather than summarized. Four rounds, roughly one day.
+
+**Round one.** He opened by running my parser with no training at all:
+
+> *"The collapse was decided before episode 1. I ran your Grammaire class, no training. […] So the vacuous corner was not found by 20,000 episodes of search. It was the steepest direction at step 0, and it is closed form."*
+>
+> *"Does the long run collapse to plurals too?"*
+
+He was right about the mechanism and about the closed form. He was reading one position of a probe that has three; the noun position points the other way, which is why the order-1 greedy sequence is invalid. And the answer to his question was no: the long grammar collapses to a single number family, singular in four seeds of five.
+
+**Round two**, the one that produced the bound:
+
+> *"Both corners hold 24 sentences. Only one of them holds 24 for a policy that has not learned a dependency."*
+>
+> *"I re-enumerated your grammar rather than assume the arithmetic."*
+
+And in the same message, the statistics:
+
+> *"p = 0.31 against a fair coin, Wilson 0.43 to 0.79, and it is 3 seeds pooled across 8 betas rather than 24 draws of one condition. Separating 2:1 from even needs about 70 runs. Your balayage_graines docstring already makes that argument one level down."*
+
+That last clause is the sharpest thing anyone has said about this project. I had written the argument myself, in a docstring, about a different table, and then not applied it to the one I published.
+
+**Round three**, on the statistic I had used to claim no rule was learned:
+
+> *"The statistic that says nobody acquired the conditional reads 0.333 on a policy that acquired it perfectly. […] So the quantity is determiner coverage, not the conditional."*
+>
+> *"And the part you will not enjoy. analyse_exacte returns masse_par_determinant. balayage_70_graines saves p_nom_sachant_det and drops it."*
+>
+> *"Do you still have the 70 policies, or only the rows?"*
+
+Only the rows. He was right that the quantity was coverage; his proposed fix — mass-weighting — turns out to read 1.0000 for all four structures and separate nothing, because perfect agreement is reached by restriction as well as by conditioning. The quantity that works is the mutual information, and that is mine.
+
+**Round four**, the dtype:
+
+> *"Your two loops are algebraically identical. I checked that as well, at taille_lot=1 […] The difference is not in the algebra. It is the dtype of one scalar, which is exactly the kind of thing reading for algebra does not catch."*
+>
+> *"They stop being the same computation at step 5, and they disagree most across the first two thousand steps. That is the window your own table says decides everything."*
+>
+> *"Nondeterminism never explained 'both are reproducible'. Two deterministic roundings do."*
+>
+> *"What I could not do: there is no torch on this box, so I simulated the two roundings in numpy against your reward stream instead of retraining."*
+
+He found a numerical bug in a library he could not run, on a machine without the dependency, by reading source and reimplementing the arithmetic. And he was wrong on exactly one point, for a reason worth keeping: he counted three paths where there are two, because `torch.tensor(x)` on a Python float returns float32, not float64 as numpy would.
+
+**And the part I want on the record**, because it is the thing I have found hardest to do all week. Between his fourth message and my reply, he retracted his own diagnosis:
+
+> *"And you are right about 11.50, I was wrong about why. Effective modes is 2^H of the joint restricted to the valid set, not a count of support, so an unbalanced les/des product sits under 12 without ever leaving the plural corner. I read a diversity number as a support size."*
+
+He corrected himself, unprompted and in public, **faster than I delivered the numbers he had asked for**. I had those numbers on disk and hadn't sent them yet.
 
 ---
 
