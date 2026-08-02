@@ -8,7 +8,50 @@ du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
 DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
 entrée ci-dessous.
 
-## [0.4.0] — en cours, non publiée
+## [0.4.0] — 2026-07-31
+
+**La version de la revue publique.** Quatre séries de critiques de
+[dipankarsarkar](https://orcid.org/0000-0001-5431-6367) ont produit une borne en
+forme close que je n'avais pas vue, fait tomber quatre de mes chiffres publiés,
+et expliqué une anomalie que j'attribuais au non-déterminisme. Tout est dans
+[docs/ARTICLE2.md](docs/ARTICLE2.md) et au carnet §7.10 à §7.13.
+
+### Ajouté — le test de renversement, qui décide si le plafond est une loi
+
+Le plafond de produit du §7.11 est calculé sur **mon** lexique. Une seule
+expérience décide s'il s'agit d'une loi ou d'une coïncidence de vocabulaire :
+construire une grammaire où les plafonds prennent d'autres **valeurs**, enregistrer
+la prédiction avant de lancer, vérifier.
+
+**Ma première version ne testait rien.** Elle déplaçait la neutralité de genre des
+déterminants pluriels vers les singuliers, à vocabulaire, espace et coins
+identiques. Or noms et verbes sont déjà symétriques en nombre, donc cette
+permutation **est** le renommage `sg ↔ pl` : les deux grammaires sont isomorphes,
+et 70 graines auraient rendu l'image miroir par construction. Conservée dans le
+code comme contre-exemple documenté (`variante="renverse"`).
+
+> **Un renommage peut permuter, il ne peut pas changer un rapport.** Un contrôle
+> parfaitement symétrique est souvent parfaitement vide.
+
+**La version qui teste** (`variante="trois_genres"`) : trois genres au lieu de
+deux. Les deux coins contiennent 36 phrases valides, mais les plafonds valent
+**36 et 12** au lieu de 12 et 24, soit un **rapport de 3 au lieu de 2** — qu'aucun
+renommage ne peut produire, le plus grand produit étant un invariant
+d'isomorphisme.
+
+| coin | n | plafond prédit | max observé | dépassements | pile au plafond |
+|---|---|---|---|---|---|
+| singulier | 33 | **36** | **36,0** | **0** | 2 |
+| pluriel | 37 | **12** | **12,0** | **0** | 7 |
+
+| grammaire | rapport des plafonds | rapport des moyennes observées |
+|---|---|---|
+| standard, 2 genres | 2,0 | 1,82 |
+| **trois genres** | **3,0** | **3,01** |
+
+La moyenne suit le **rapport**, pas seulement l'ordre. Branche toujours à
+pile ou face (33/37, p = 0,72) **malgré l'inversion des deux marginales d'ordre
+1**, et `I(dét;nom)` nulle sur les 70.
 
 ### Changé — le chemin numérique de la ligne d'avantage
 
@@ -63,6 +106,33 @@ paramètre est explicite et conservé pour ça.
   de l'effondrement qui sépare gradient exact et échantillonné, et l'écart
   d'arrêt précoce sur 20 graines. Chaque panneau **affiche le chemin qui l'a
   produit**, calculé depuis la donnée chargée et non écrit en dur.
+- **`figure_renversement.py`** — les 70 runs à trois genres contre leur plafond,
+  et le test du rapport qu'un renommage ne peut pas passer.
+- **`docs/ARTICLE2.md`** — l'article de cette version, avec la conversation citée
+  mot pour mot à la demande de son auteur.
+
+### Changé — les tableaux mono-graine deviennent multi-graines
+
+Le balayage d'entropie de l'article 1 était à **3 graines** et sur l'ancien
+chemin. Refait à **10 graines par β, 80 runs**, sur le chemin canonique. Les
+chiffres bougent, ce qui était attendu : c'est un tableau mono-graine, et le
+§4.2 dit depuis le début qu'un balayage mono-graine ne trace pas une frontière.
+
+| β | validité % | modes / 48 | 2 branches | sg / pl |
+|---|---|---|---|---|
+| 0,0 | 100,0 ± 0,0 | 1,0 ± 0,0 | 0/10 | 6 / 4 |
+| 0,01 | 100,0 ± 0,0 | 9,3 ± 5,6 | 0/10 | 4 / 6 |
+| 0,02 | 99,7 ± 0,6 | 14,1 ± 5,5 | 0/10 | 3 / 7 |
+| 0,05 | 97,0 ± 3,2 | 22,2 ± 2,0 | 0/10 | 4 / 6 |
+| 0,08 | 86,4 ± 5,4 | **31,4 ± 10,9** | **5/10** | 4 / 6 |
+| 0,12 | 58,6 ± 4,4 | 43,8 ± 1,3 | 10/10 | 7 / 3 |
+| 0,2 | 21,4 ± 1,7 | 44,1 ± 1,9 | 10/10 | 3 / 7 |
+| 0,35 | 5,4 ± 0,5 | 44,9 ± 1,1 | 10/10 | 4 / 6 |
+
+La colonne sg/pl est nouvelle et confirme sur 80 runs de plus que **le choix de
+branche est une pièce équilibrée à tous les β**. Deux chiffres de l'article 1
+bougent aussi : le tout-ou-rien court passe de 99,58 % à 99,91 %, et la
+**grammaire longue de 6,4 % à 15,8 %**.
 
 ### Corrigé
 

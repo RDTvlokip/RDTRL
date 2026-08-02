@@ -8,11 +8,13 @@ Two experiments testing whether a policy, initialized with **random weights** an
 
 No pretraining. No input/output pairs. No HuggingFace, no RL library — plain PyTorch.
 
-📄 **Full write-up:** [Teaching a network to write with reward only](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) (Hugging Face blog) — also mirrored in [docs/ARTICLE.md](docs/ARTICLE.md)
+📄 **Article 1:** [Teaching a network to write with reward only](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) (Hugging Face blog) — mirrored in [docs/ARTICLE.md](docs/ARTICLE.md)
+
+🔍 **Article 2:** [docs/ARTICLE2.md](docs/ARTICLE2.md) — a reader ran the code, and four of my numbers didn't survive
 
 🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
 
-📦 **Archived release:** [v0.3.0](docs/RELEASE_v0.3.0.md) — the product ceiling, and four corrections to the record
+📦 **Latest release:** [v0.4.0](docs/RELEASE_v0.4.0.md) — the reversal test, and the numeric path
 
 ---
 
@@ -30,7 +32,9 @@ Both "successes" are empty on inspection. What came out of digging into why:
 - **Mode collapse, causally isolated.** Capacity, the objective, and instability all cleared by independent controls. What remains splits by regime: below β≈0.05 the autoregressive factorization blocks the optimum *even with an exact gradient*; above it, the exact-gradient GRU hits the closed-form optimum to two decimals on 3/3 seeds and only the sampled procedure fails.
 - **Rejection sampling from the untrained network beats 20,000 episodes of REINFORCE** — 100 % validity and ~47.5 effective modes vs 99.99 % and 18.6.
 - **A fix that works:** annealing the entropy coefficient gives 99.97 % validity **and** 45.3/48 modes, dominating both constant-β regimes.
-- **A closed-form ceiling (v0.3.0).** A policy with no determiner→noun coupling has a **product** support, so at full validity it is capped by the largest fully valid product in the sublanguage it entered — 12 on one side, 24 on the other. Over 70 seeds the bound is **never exceeded**, the modal outcome **is** the bound, and the effective modes come out as integer products. It is a **plateau, not a basin**: the exact gradient holds 12.00 modes with I(det;noun) identically zero for a thousand steps, then escapes to 24.00. What separates exact from sampled is the depth of the transient collapse — 10.7 effective modes against **1.09**, a single sentence, before rebuilding.
+- **A closed-form ceiling, found by a reader (v0.3.0).** A policy with no determiner→noun coupling has a **product** support, so at full validity it is capped by the largest fully valid product in the sublanguage it entered — 12 on one side, 24 on the other. Over 70 seeds the bound is **never exceeded** and the modal outcome **is** the bound. It is a **plateau, not a basin**: the exact gradient holds 12.00 modes with I(det;noun) identically zero for a thousand steps, then escapes to 24.00. What separates exact from sampled is the depth of the transient collapse — 10.7 effective modes against **1.09**, a single sentence, before rebuilding. Credit: [Dipankar Sarkar](https://orcid.org/0000-0001-5431-6367).
+- **And it survives a change of grammar (v0.4.0).** A three-gender lexicon puts the ceilings at 36 and 12 instead of 12 and 24 — a **ratio of 3 instead of 2**, which no relabelling can produce. Predicted before the run, zero violations in 70 seeds, maxima of exactly 36.0 and 12.0, and the ratio of the observed means follows: 3.01 against a predicted 3.0.
+- **A last-bit rounding is a better experiment than a seed.** Changing the seed changes the initialization *and* the trajectory. Changing one scalar's dtype changes only the trajectory — same initial weights. Result: **70 of 70 seeds keep their corner, only 21 of 70 keep their mode count.** The initialization decides the region; the trajectory decides how much of it gets filled.
 
 The whole thing is only provable because the short grammar's space is **enumerable** (8,000 sequences), so every number is exact rather than estimated.
 
@@ -189,7 +193,7 @@ per-version DOIs are listed in [CHANGELOG.md](CHANGELOG.md).
   author    = {Charlet, Théo},
   title     = {{RDTRL — Can a network learn to write from reward alone?}},
   year      = {2026},
-  version   = {0.3.2},
+  version   = {0.4.0},
   publisher = {Zenodo},
   doi       = {10.5281/zenodo.21726216},
   url       = {https://doi.org/10.5281/zenodo.21726216}

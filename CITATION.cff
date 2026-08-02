@@ -35,6 +35,13 @@ abstract: >-
   support, so at full validity it is capped by the largest fully valid product
   in the sublanguage it enters. That bound is never exceeded in 70 runs, is
   attained exactly by half of them, and is a plateau rather than a basin.
+  Version 0.4.0 adds the reversal test: a three-gender lexicon puts the two
+  ceilings in a ratio of 3 instead of 2, which no relabelling can produce, and
+  the observed maxima follow the prediction exactly. It also switches the
+  advantage line to a single rounding, which turns out to be a better
+  controlled experiment than a seed, since it perturbs the trajectory while
+  leaving the initialisation bit-identical: 70 of 70 seeds keep their corner
+  while only 21 of 70 keep their mode count.
 
   Acknowledgment. The product bound is due to Dipankar Sarkar
   (ORCID 0000-0001-5431-6367), who derived the order-1 marginals independently
@@ -52,5 +59,5 @@ keywords:
   - reward shaping
   - grammar
 license: MIT
-version: 0.3.2
+version: 0.4.0
 date-released: "2026-07-31"
