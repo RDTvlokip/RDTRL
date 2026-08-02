@@ -209,8 +209,12 @@ def main():
         print("d'arret precoce annonce au carnet (24,0 max contre 11,5 final, soit")
         print("+12,5) est celui d'un seul chemin et vaut +5,4 sur l'autre.")
 
+    # La plage de graines est DANS le nom : sans elle, deux tranches lancees en
+    # parallele sur le meme chemin s'ecrasent. Meme faute que les poids du
+    # balayage, le 31/07/2026.
     suffixe = "_".join(args.chemins) if args.chemins else "tous"
-    chemin = os.path.join(DOSSIER_SORTIE, f"chemin_avantage_{suffixe}.json")
+    plage = f"_{min(args.graines):03d}_{max(args.graines):03d}"
+    chemin = os.path.join(DOSSIER_SORTIE, f"chemin_avantage_{suffixe}{plage}.json")
     with open(chemin, "w", encoding="utf-8") as f:
         json.dump(rapport, f, indent=2, ensure_ascii=False)
     print(f"\nEcrit dans {chemin}")
