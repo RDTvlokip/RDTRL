@@ -88,24 +88,37 @@ def synthese(lignes, beta):
             "branches": dict(compte)}
 
 
-def fusionner(beta):
-    """Relit toutes les tranches ecrites par les processus paralleles."""
+def fusionner(beta, chemin="float32"):
+    """Relit toutes les tranches ecrites par les processus paralleles.
+
+    Le motif se termine par [0-9] et non par * : sinon il ramasse aussi les
+    tranches de l'AUTRE chemin numerique (`..._float64_000_012.json`) et sa
+    propre sortie (`..._fusion.json`), donc il compte des graines deux ou trois
+    fois. Constate le 31/07/2026 avec 13 fichiers pour 6 tranches.
+    """
     import glob
-    motif = os.path.join(DOSSIER_SORTIE, f"balayage_70_graines_b{beta}_*.json")
+    marque = "" if chemin == "float32" else f"_{chemin}"
+    motif = os.path.join(DOSSIER_SORTIE,
+                         f"balayage_70_graines_b{beta}{marque}_[0-9]*.json")
     lignes = []
-    for chemin in sorted(glob.glob(motif)):
-        with open(chemin, encoding="utf-8") as f:
+    for fichier in sorted(glob.glob(motif)):
+        with open(fichier, encoding="utf-8") as f:
             lignes.extend(json.load(f)["detail"])
     lignes.sort(key=lambda l: l["graine"])
     vues = {l["graine"] for l in lignes}
     manquantes = set(range(max(vues) + 1)) - vues if vues else set()
     if manquantes:
         print(f"  ATTENTION : graines manquantes {sorted(manquantes)}")
-    res = {"detail": lignes, "synthese": synthese(lignes, beta)}
-    chemin = os.path.join(DOSSIER_SORTIE, f"balayage_70_graines_b{beta}_fusion.json")
-    with open(chemin, "w", encoding="utf-8") as f:
+    doublons = len(lignes) - len(vues)
+    if doublons:
+        print(f"  ATTENTION : {doublons} graines comptees plusieurs fois, motif trop large")
+    res = {"chemin_avantage": chemin, "detail": lignes,
+           "synthese": synthese(lignes, beta)}
+    sortie = os.path.join(DOSSIER_SORTIE,
+                          f"balayage_70_graines_b{beta}{marque}_fusion.json")
+    with open(sortie, "w", encoding="utf-8") as f:
         json.dump(res, f, indent=2, ensure_ascii=False)
-    print(f"\n  Fusion ecrite dans {chemin}")
+    print(f"\n  Fusion ecrite dans {sortie}")
     return res
 
 
@@ -127,7 +140,7 @@ def main():
 
     os.makedirs(DOSSIER_SORTIE, exist_ok=True)
     if args.fusion:
-        fusionner(args.beta)
+        fusionner(args.beta, args.chemin)
         return
     dossier_poids = os.path.join(DOSSIER_SORTIE, "politiques_70")
     os.makedirs(dossier_poids, exist_ok=True)
@@ -165,9 +178,13 @@ def main():
                        "masse_par_determinant": ex["masse_par_determinant"],
                        "cond_det_vers_nom": ex["cond_det_vers_nom"],
                        "repartition_par_nom": ex["repartition_par_nom"]})
-        # Et les poids, pour ne plus jamais avoir a repondre "je n'ai que les lignes".
+        # Et les poids, pour ne plus jamais avoir a repondre "je n'ai que les
+        # lignes". Le chemin numerique est DANS le nom : sans lui, relancer sur
+        # l'autre chemin ecrase silencieusement la serie precedente, ce qui est
+        # exactement ce qui s'est produit le 31/07/2026.
         torch.save(politique.state_dict(),
-                   os.path.join(dossier_poids, f"politique_b{args.beta}_g{graine}.pt"))
+                   os.path.join(dossier_poids,
+                                f"politique_{args.chemin}_b{args.beta}_g{graine}.pt"))
         print(f"{graine:>7} {ex['masse_valide_pct']:>9.2f} {ex['modes_effectifs']:>7.1f} "
               f"{sg:>7.1f} {pl:>7.1f} {branche:>8}")
 

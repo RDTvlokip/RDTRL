@@ -1481,6 +1481,64 @@ silencieusement pour qui les relance. `torch.set_num_threads` est maintenant dan
 `rl_grammaire.py`, que **14 scripts importent**, avec `RDTRL_THREADS` pour revenir
 en arrière sur les calculs à gros lot.
 
+### 7.11sexies L'arrondi est une meilleure expérience que la graine
+
+Le bug de §7.11quinquies donne, sans le vouloir, le contrôle que je cherchais
+depuis le début du test 2.
+
+**Changer de graine change deux choses à la fois** : l'initialisation *et* toute
+la trajectoire d'échantillonnage. C'est un confondant que je traîne depuis le
+premier balayage. **Changer la ligne d'avantage n'en change qu'une** :
+`fixer_graine` puis `PolitiqueGRU` donnent des poids initiaux identiques au bit
+près, et les deux runs ne divergent qu'au pas 4 ou 5, pendant l'entraînement.
+Même point de départ, trajectoire différente. C'est exactement la dissociation
+qu'une graine ne permet pas.
+
+**Résultat, 70 graines sur chaque chemin.**
+
+| | float32 | float64 |
+|---|---|---|
+| singulier / pluriel | 37 / 33 | **37 / 33** |
+| Wilson 95 % | [0,413 ; 0,641] | **[0,413 ; 0,641]** |
+| p contre 1/2 | 0,7202 | **0,7202** |
+| dépassements du plafond | 0 | **0** |
+| I(dét;nom) max | 0,0377 bit | 0,0158 bit |
+| runs à I > 0,05 | 0/70 | **0/70** |
+| modes, branche sg | 9,41 ± 3,13 | 8,84 ± 3,13 |
+| modes, branche pl | 15,12 ± 5,90 | 16,08 ± 6,23 |
+
+**Les 70 graines sur 70 gardent le même coin.** Zéro bascule, alors que les
+trajectoires diffèrent sur 58 à 79 % des 2 000 premiers pas.
+
+**Mais le remplissage du coin, lui, ne résiste pas.** Seuls 21 runs sur 70 ont les
+mêmes modes effectifs au centième, la corrélation vaut 0,68, l'écart absolu moyen
+est de 2,87 modes et monte à 12,7.
+
+**Énoncé : l'initialisation décide du coin, la trajectoire décide du
+remplissage.** Deux niveaux, deux causes, séparés par une manipulation qui ne
+touche qu'à l'une des deux. Ça recoupe §7.11quater : le coin est choisi tôt, par
+la marginale d'ordre 1 et les poids initiaux ; le remplissage est le produit de
+la reconstruction depuis un point quasi déterministe, où le bruit entre.
+
+**Et les trois conclusions du dépôt sont robustes au dernier bit** : pièce
+équilibrée à l'identique, plafond jamais franchi sur les deux chemins,
+`I(dét;nom)` nulle sur les deux. Ce n'étaient pas des artefacts d'arrondi. Je ne
+connais aucun résultat de RL publié pour lequel ce contrôle ait été fait.
+
+**Le plafond n'est qu'un attracteur faible.** Parmi les 25 runs float32 posés
+exactement sur le plafond de leur coin, 11 y sont encore en float64 (44 %) ; parmi
+les 45 en dessous, 10 gardent leur valeur (22 %). Être au plafond double la
+probabilité de reproduire, sans la garantir.
+
+**Deux bugs à moi, trouvés en fixant ça.** Les poids étaient nommés
+`politique_b{β}_g{graine}.pt` sans le chemin numérique : relancer sur l'autre
+chemin a **écrasé les 70 politiques float32**, une heure après que j'aie écrit
+qu'elles étaient sur disque pour ne plus avoir à réentraîner. Et le motif de
+fusion `..._b0.02_*.json` ramassait les tranches de l'autre chemin **et sa propre
+sortie**, soit 13 fichiers pour 6 tranches, donc des graines comptées deux ou
+trois fois. Les deux sont corrigés, le second avec un garde-fou qui compte les
+doublons et le dit.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
