@@ -139,6 +139,11 @@ def main():
     p.add_argument("--episodes", type=int, default=20000)
     p.add_argument("--graines", type=int, nargs="+", default=[0, 1, 2])
     p.add_argument("--sans-entrainement", action="store_true")
+    p.add_argument("--sans-gradient-exact", action="store_true",
+                   help="saute la partie B1. Le gradient exact n'a AUCUNE ligne "
+                        "d'avantage : il ne depend donc pas du chemin numerique, "
+                        "et le relancer pour une bascule float32/float64 coute "
+                        "six optimisations sur 8 000 sequences pour rien.")
     args = p.parse_args()
 
     os.makedirs(DOSSIER_SORTIE, exist_ok=True)
@@ -156,13 +161,16 @@ def main():
     print("=" * 78)
     print("PARTIE B1 - gradient exact : les runs a 12 modes ET leur temoin a 24")
     print("=" * 78)
+    if args.sans_gradient_exact:
+        print("  sautee : le gradient exact n'a pas de ligne d'avantage, donc rien")
+        print("  a y refaire quand le chemin numerique change.")
     # Les quatre runs a 12,0 modes du tableau publie sont (0.01, 0), (0.01, 1),
     # (0.01, 2) et (0.02, 1). Les deux autres, (0.02, 0) et (0.02, 2), font
     # 24,0 modes DANS LE MEME COIN SINGULIER : ils depassent donc le plafond
     # sans couplage, ce qui n'est possible qu'en ayant acquis la conditionnelle.
     # Sans eux le chiffre a 12 n'est pas interpretable, avec eux c'est un
     # contraste a un seul facteur.
-    for beta in (0.01, 0.02):
+    for beta in ((0.01, 0.02) if not args.sans_gradient_exact else ()):
         for graine in args.graines:
             pol = gradient_exact(g, sequences_t, recompenses_t, beta, graine)
             ex = detail_saturation(pol, g, f"gradient exact beta={beta} graine {graine}")

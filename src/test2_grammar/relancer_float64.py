@@ -40,8 +40,11 @@ TACHES = [
     ("sonde_ordre1_B",
      [sys.executable, "-u", "sonde_ordre1.py", "--graines", "0", "1", "2", "3", "4"],
      "sonde_ordre1.json"),
+    # --sans-gradient-exact : la partie B1 est du gradient exact, sans ligne
+    # d'avantage, donc insensible au chemin numerique. La relancer couterait six
+    # optimisations sur 8 000 sequences pour un resultat identique.
     ("produit_et_saturation_B2",
-     [sys.executable, "-u", "produit_et_saturation.py"],
+     [sys.executable, "-u", "produit_et_saturation.py", "--sans-gradient-exact"],
      "produit_et_saturation.json"),
     ("rl_grammaire",
      [sys.executable, "-u", "rl_grammaire.py"],
