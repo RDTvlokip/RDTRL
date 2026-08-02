@@ -58,13 +58,44 @@ paramètre est explicite et conservé pour ça.
   `RDTRL_THREADS` pour revenir en arrière. Auparavant deux fichiers seulement
   l'épinglaient, les autres dépendaient du shell.
 
+- **`figure_comparaison.py`** — figure de synthèse en quatre panneaux : les deux
+  chemins numériques graine par graine, le plafond jamais franchi, la profondeur
+  de l'effondrement qui sépare gradient exact et échantillonné, et l'écart
+  d'arrêt précoce sur 20 graines. Chaque panneau **affiche le chemin qui l'a
+  produit**, calculé depuis la donnée chargée et non écrit en dur.
+
 ### Corrigé
 
-- **Trois collisions de noms de fichiers**, toutes du même défaut : un nom qui
-  omet une dimension que le run fait varier. Les poids du balayage
-  (`politique_b{β}_g{n}.pt` sans le chemin, 70 politiques écrasées), le motif de
-  fusion (`..._b0.02_*.json` ramassant l'autre chemin et sa propre sortie, 13
-  fichiers pour 6 tranches), et les sorties de `chemin_avantage`.
+- **Cinq collisions de provenance**, toutes du même défaut : un artefact qui
+  n'encode pas la dimension que le run fait varier.
+  - poids du balayage `politique_b{β}_g{n}.pt` sans le chemin → **70 politiques
+    écrasées** ;
+  - motif de fusion `..._b0.02_*.json` ramassant l'autre chemin **et sa propre
+    sortie** → 13 fichiers pour 6 tranches, graines comptées deux ou trois fois ;
+  - sorties de `chemin_avantage` sans la plage de graines → deux tranches
+    parallèles dans un seul fichier ;
+  - `rapport.json` et `balayage_graines.json` qu'une relance aurait écrasés →
+    attrapé avant, dossier archivé dans `results_test2_float32/` ;
+  - étiquette de figure écrite **en dur** à côté d'un chargement avec repli → la
+    figure allait annoncer un chemin en traçant les chiffres de l'autre.
+
+  Correctifs : la dimension est dans le nom, le glob se termine par `_[0-9]*`
+  pour exclure sa propre sortie, un garde-fou compte les doublons après fusion et
+  le signale, et les étiquettes se calculent depuis la donnée réellement lue.
+
+- **Métrique de saturation**, signalée au carnet §3.3 **deux jours** avant d'être
+  corrigée. Un défaut noté et non corrigé donne l'impression d'être traité, donc
+  plus personne ne le regarde : `H` était calculée sur les 8 noms et `H_max` sur
+  les noms compatibles, donc la valeur pouvait dépasser 100 %, et un dépassement
+  signalait une **fuite de masse** qui se lisait comme un succès. Séparée en
+  `masse_accordee_pct` et `saturation_pct`, cette dernière bornée par
+  construction.
+
+- **Écart d'arrêt précoce du §7.9, retiré.** Annoncé à +12,5 modes depuis une
+  seule graine, ramené à +5,38 par le changement de chemin, puis à une **médiane
+  de +0,00 sur 20 graines**, 3 runs sur 20 seulement au-dessus d'un mode. Ce qui
+  survit est conditionnel : les trois sont dans le coin pluriel, 3 sur 8 contre
+  **0 sur 12** au singulier.
 
 ## [0.3.2] — 2026-07-31
 

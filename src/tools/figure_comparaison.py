@@ -181,10 +181,22 @@ def panneau_c(ax):
 
 
 def panneau_d(ax):
-    """L'arret precoce, 20 graines."""
-    lignes = []
-    for f in glob.glob(os.path.join(R2, "chemin_avantage_float32_*.json")):
+    """L'arret precoce, 20 graines, sur le chemin float64.
+
+    Le titre a refuter — "+12,5 modes en s'arretant tot" — est ne au §7.9, dans
+    stabilite_et_trajectoire.py, dont la ligne 79 est deja la version float64.
+    Sa valeur finale de 11,5 modes le confirme : le float32 donne 18,6. C'est
+    donc sur CE chemin qu'il faut le mesurer, et c'est aussi le canonique.
+    """
+    # L'etiquette suit la donnee et n'est jamais ecrite en dur : sinon un repli
+    # silencieux affiche le nom d'un chemin en montrant les chiffres de l'autre.
+    lignes, chemin_utilise = [], "float64 path"
+    for f in sorted(glob.glob(os.path.join(R2, "chemin_avantage_float64_arrondi_*.json"))):
         lignes += charger(f).get("partie_b", [])
+    if not lignes:
+        chemin_utilise = "float32 path — float64 not measured yet"
+        for f in sorted(glob.glob(os.path.join(R2, "chemin_avantage_float32_*.json"))):
+            lignes += charger(f).get("partie_b", [])
     donnees = []
     for l in lignes:
         h = [e for e in l["historique"] if e["masse_valide_pct"] >= 90.0]
@@ -222,7 +234,7 @@ def panneau_d(ax):
     ax.set_xlim(0, 27)
     style(ax, "D · Early stopping gains nothing, except where the ceiling is high",
           f"median gap {np.median(ecarts):+.2f} · only {(ecarts > 1).sum()}/20 above one mode, "
-          f"all three plural", chemin="float32 path")
+          f"all three plural", chemin=chemin_utilise)
     ax.legend(frameon=False, fontsize=8.5, loc="lower right",
               labelcolor=ENCRE_2, handletextpad=0.5)
 
