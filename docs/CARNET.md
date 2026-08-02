@@ -1617,19 +1617,29 @@ battrait la convergence de +12,5 modes » à partir d'**une** graine ; corrigé 
 première fois à +5,38 par le changement de chemin, il tombe à une médiane de zéro
 dès qu'on regarde vingt graines. Ce n'était pas un effet, c'était un run.
 
-**Mais il reste quelque chose, et c'est conditionnel au coin.** Les trois runs
-qui gagnent — graines 0, 6 et 18 — sont **toutes dans le coin pluriel** :
+**J'ai cru qu'il restait quelque chose de conditionnel au coin. C'est faux
+aussi.** Sur le chemin float32, les trois runs qui gagnent sont tous pluriels, et
+j'en avais tiré « l'arrêt précoce n'est utile que là où le plafond est haut ».
+Les mêmes 20 graines sur le chemin **canonique** disent le contraire :
 
-| coin | runs | avec un écart > 1 mode |
+| | float32 | float64 (canonique) |
 |---|---|---|
-| pluriel | 8 | **3** |
-| singulier | 12 | **0** |
+| médiane | +0,00 | +0,03 |
+| runs > 1 mode | 3 / 20 | **5 / 20** |
+| dont coin pluriel | **3 / 8** | 2 / 8 |
+| dont coin singulier | **0 / 12** | **3 / 12** |
 
-Aucun run singulier sur douze ne bénéficie d'un arrêt précoce. Le coin pluriel a
-un plafond de 24 contre 12 : il y a deux fois plus de hauteur à atteindre, donc
-deux fois plus de hauteur à reperdre. **L'arrêt précoce n'est utile que là où le
-plafond est haut**, ce qui relie ce résultat au §7.11ter — c'est aussi le coin le
-moins bien rempli, 6 runs sur 33 à son plafond contre 19 sur 37.
+**Trois des cinq sont singuliers sur le chemin canonique.** Le « 0 sur 12 » qui
+fondait toute l'interprétation était un artefact d'un seul chemin numérique.
+
+Ce qui survit des deux côtés, et seulement ça : **la médiane est nulle, la grande
+majorité des runs ne gagne rien à s'arrêter tôt.** Toute lecture plus fine que
+celle-là n'a pas résisté à un changement d'arrondi.
+
+**Quatrième fois dans la journée**, et cette fois ce n'était même pas une graine
+unique : vingt graines, mais un seul chemin numérique. Le contrôle qui manquait
+n'était pas « plus de graines », c'était **la même mesure sur l'autre chemin** —
+celui-là même que je venais de rendre canonique.
 
 **Ce que ça dit de ma méthode plus que du résultat.** Trois fois aujourd'hui, un
 chiffre publié s'est révélé être une graine : le biais de branche 2 contre 1, la
@@ -1708,6 +1718,49 @@ chiffres.
 Palette réduite à deux teintes catégorielles, validées en mode « toutes paires »
 avant d'écrire la première ligne de tracé : CVD ΔE 24,7 et vision normale 33,6,
 tous deux très au-dessus des seuils.
+
+### 7.11undecies Ce que la bascule a réellement déplacé
+
+Les cinq scripts concernés ont été relancés sur le chemin float64 en 37,8 min.
+Comparaison au dossier archivé, tableau du balayage d'entropie, **graine 0 comme
+avant** :
+
+| β | validité f32 | validité f64 | modes f32 | modes f64 |
+|---|---|---|---|---|
+| 0,0 | 100,00 | 100,00 | 1,0 | 1,0 |
+| 0,01 | 99,84 | 99,99 | **9,9** | **18,0** |
+| 0,02 | 99,99 | 99,94 | **18,6** | **11,5** |
+| 0,05 | 92,65 | **99,76** | 23,8 | 19,9 |
+| 0,08 | **94,87** | **84,11** | 24,4 | 26,5 |
+| 0,12 | 57,13 | 55,31 | 45,9 | 45,4 |
+| 0,2 | 20,59 | 19,96 | 41,2 | 45,0 |
+| 0,35 | 5,27 | 5,27 | 43,5 | 43,5 |
+| 0,5 | 3,01 | 3,01 | 43,6 | 43,6 |
+
+Et deux chiffres qui sortent souvent :
+
+| | float32 | float64 |
+|---|---|---|
+| tout-ou-rien, grammaire courte | 99,58 % | 99,91 % |
+| **grammaire longue, graduée** | **6,4 %** | **15,8 %** |
+
+**Le 6,4 % de la grammaire longue devient 15,8 %, soit 2,5 fois plus.** C'est un
+chiffre cité dans l'article publié.
+
+**Ce n'est pas une surprise, c'est la confirmation d'un défaut déjà écrit.** Le
+§4.2 dit depuis le début que le balayage à graine unique ne permet pas de tracer
+une frontière ; le §7.11sexies a montré sur 70 graines que le détail par graine
+n'est pas robuste au dernier bit. Ce tableau **est** un tableau à graine unique :
+il devait donc bouger, et il bouge.
+
+Ce qui ne bouge pas, et c'est ce qui compte : les valeurs extrêmes (β = 0 → un
+seul mode ; β ≥ 0,35 → validité effondrée), l'allure de la frontière, et toutes
+les conclusions établies sur 70 graines ou par énumération.
+
+**Conséquence pratique pour la v0.4.0** : les tableaux à graine unique doivent
+être remplacés par des moyennes multi-graines avec écart-type, pas simplement
+remis à jour avec les nouveaux chiffres. Sinon on republie la même fragilité avec
+d'autres décimales.
 
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 

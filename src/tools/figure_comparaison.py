@@ -232,9 +232,16 @@ def panneau_d(ax):
     ax.set_ylabel("20 seeds, sorted by gap", color=ENCRE_2, fontsize=9.5)
     ax.set_yticks([])
     ax.set_xlim(0, 27)
-    style(ax, "D · Early stopping gains nothing, except where the ceiling is high",
-          f"median gap {np.median(ecarts):+.2f} · only {(ecarts > 1).sum()}/20 above one mode, "
-          f"all three plural", chemin=chemin_utilise)
+    # Le detail par coin est CALCULE : la version precedente disait "all three
+    # plural" en dur, ce qui etait vrai du float32 et faux du float64, ou trois
+    # des cinq sont singuliers.
+    coins = np.array([c for *_, c in donnees])
+    gros = ecarts > 1
+    par_coin = " · ".join(f"{(gros & (coins == c)).sum()} {n}"
+                          for c, n in (("pl", "plural"), ("sg", "singular")))
+    style(ax, "D · Early stopping gains nothing in most runs",
+          f"median gap {np.median(ecarts):+.2f} · {gros.sum()}/{len(ecarts)} above one mode "
+          f"({par_coin})", chemin=chemin_utilise)
     ax.legend(frameon=False, fontsize=8.5, loc="lower right",
               labelcolor=ENCRE_2, handletextpad=0.5)
 
