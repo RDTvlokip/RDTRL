@@ -1829,6 +1829,46 @@ le plus grand produit est un invariant d'isomorphisme.
 > produit, et le résultat du §7.11 serait une propriété de mon vocabulaire à deux
 > genres.
 
+**RÉSULTAT, 70 graines, β = 0,02, chemin float64.**
+
+| coin | n | plafond prédit | max observé | dépassements | pile au plafond | moyenne |
+|---|---|---|---|---|---|---|
+| singulier | 33 | **36** | **36,0** | **0** | 2 | 19,98 |
+| pluriel | 37 | **12** | **12,0** | **0** | 7 | 6,64 |
+
+**Prédiction confirmée.** Zéro dépassement, et les deux maxima tombent
+exactement sur les plafonds calculés par énumération avant le lancement.
+
+**Et le test quantitatif est plus fort que le test de dépassement.** Ce qui a
+changé entre les deux grammaires n'est pas seulement l'ordre des coins mais le
+**rapport** des plafonds :
+
+| grammaire | rapport des plafonds | rapport des moyennes observées |
+|---|---|---|
+| standard, 2 genres | 2,0 | 1,82 |
+| **trois genres** | **3,0** | **3,01** |
+
+La moyenne des modes effectifs suit le rapport des plafonds, pas seulement leur
+ordre. Un renommage peut inverser un ordre ; il ne peut pas transformer 2 en 3.
+
+**Le reste de la prédiction :** branche à 33 / 37, p = 0,72 contre une pièce
+équilibrée — toujours une pièce, malgré l'inversion des deux marginales d'ordre 1.
+`I(dét;nom)` médiane 0,0000, maximum 0,0326, **0 run sur 70 au-dessus de 0,05
+bit** : aucun run n'acquiert la conditionnelle, comme sur la grammaire standard.
+
+**Une sous-prédiction que j'avais écrite trop fort.** J'annonçais « modes
+effectifs sur des produits d'entiers ». Mesuré : **66 % en standard, 67 % à trois
+genres** à moins de 0,05 d'un entier. C'est une proportion stable d'une grammaire
+à l'autre, donc un fait réel, mais ce n'est pas « les modes sont des entiers ».
+Avec six noms au lieu de quatre, une politique non uniforme sur plus d'items donne
+plus facilement un 2^H non entier. Le **plafond** est une loi ; la quantification
+n'en est pas une.
+
+**Conclusion.** Le plafond de produit n'est pas une coïncidence de mon lexique
+français à deux genres. Il suit la structure de produit de la récompense quand on
+la change, en valeur et pas seulement en ordre. C'était l'expérience désignée au
+§7.12 comme la seule qui décide, et elle passe.
+
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
 **Comme résultat, c'est ce que le projet a produit de plus solide. Comme article
@@ -1859,12 +1899,13 @@ l'avance au lieu d'un calendrier qu'on règle à la main.
 
 **Ce qui manque, par ordre de ce qui tuerait le résultat.**
 
-1. **Le test de renversement — le seul qui compte.** J'ai **un** lexique, et
-   l'ordre plafond pluriel > singulier vient du `None` de genre que j'ai écrit
-   moi-même. Il faut construire un lexique où l'ordre **s'inverse** (déterminant
-   singulier neutre en genre, ou pluriels marqués), **prédire l'inversion avant
-   de lancer**, et vérifier. Si ça s'inverse, c'est une loi ; sinon c'est une
-   coïncidence de mon vocabulaire. Quelques heures, tout l'outillage existe.
+1. ~~**Le test de renversement — le seul qui compte.**~~ **FAIT le 31/07/2026,
+   §7.13, et il passe.** Grammaire à trois genres : plafonds 36 et 12 au lieu de
+   12 et 24, donc un **rapport de 3 au lieu de 2**. Zéro dépassement sur 70
+   graines, maxima exactement sur les plafonds, et le rapport des moyennes
+   observées suit celui des plafonds (3,01 contre 3,0 prédit ; 1,82 contre 2,0
+   sur la grammaire standard). Ma première version du test était **isomorphe** au
+   standard et ne testait rien — le piège est décrit au §7.13.
 2. **Un seul algorithme.** « La procédure échantillonnée » est une affirmation
    sur une famille tirée d'un seul membre, REINFORCE + baseline mobile. Au moins
    PPO, ou une baseline à variance réduite.
@@ -1877,6 +1918,13 @@ l'avance au lieu d'un calendrier qu'on règle à la main.
 **Verdict** : atelier, ou section forte d'un article plus large. Pas un article
 principal autonome sur une grammaire de 20 tokens, et le premier reproche du
 relecteur sera exactement celui que pose déjà ma Q29.
+
+> **Verdict révisé le 31/07/2026, après §7.13.** Le point 1, qui était le seul
+> bloquant, est levé : le plafond suit la structure de produit sur une seconde
+> grammaire, en rapport et pas seulement en ordre. Ce qui reste — un seul
+> algorithme, un seul β, et le mécanisme localisé plutôt que démontré — sont des
+> limites à énoncer, pas des trous qui invalident. Le résultat devient
+> présentable en l'état, avec ses limites écrites.
 
 **Attribution, à trancher avant d'écrire quoi que ce soit.** L'argument du
 produit est **de dipankarsarkar**. Je l'ai vérifié, étendu à la grammaire longue
