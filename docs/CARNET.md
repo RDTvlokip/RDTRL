@@ -1542,6 +1542,9 @@ sortie**, soit 13 fichiers pour 6 tranches, donc des graines comptées deux ou
 trois fois. Les deux sont corrigés, le second avec un garde-fou qui compte les
 doublons et le dit.
 
+> **Ce compte est faux, il y en a eu cinq. Voir §7.11nonies**, écrit après coup :
+> les trois autres sont arrivées dans l'heure qui a suivi ce paragraphe.
+
 ### 7.11septies Décision : float64 devient le défaut, et pourquoi c'était facile
 
 Sa question de fin était *« quelle ligne veux-tu canonique ? »*, c'est-à-dire :
@@ -1634,6 +1637,77 @@ sous-langue « au pluriel », et maintenant l'arrêt précoce. Les trois ont sur
 parce que je n'avais pas de raison de relancer un résultat qui ne me gênait pas.
 La règle à en tirer n'est pas « répliquer », que je savais déjà, c'est
 **répliquer d'abord ce qui arrange**.
+
+### 7.11nonies Cinq fois le même défaut en une session : l'artefact ne porte pas sa provenance
+
+Le §7.11sexies annonçait « deux bugs à moi ». Il y en a eu **cinq**, tous du même
+défaut, et les trois derniers sont arrivés **après** que j'aie écrit ce
+paragraphe. Ce n'est donc pas une série de distractions, c'est un schéma :
+
+> **un artefact qui n'encode pas la dimension que le run fait varier finit en
+> collision silencieuse ou en fausse étiquette.**
+
+| artefact | dimension omise | conséquence |
+|---|---|---|
+| `politique_b{β}_g{n}.pt` | le chemin numérique | **70 politiques écrasées** |
+| motif `..._b0.02_*.json` | idem, **plus sa propre sortie** | 13 fichiers pour 6 tranches |
+| `chemin_avantage_{chemins}.json` | la plage de graines | deux tranches parallèles dans un fichier |
+| `rapport.json`, `balayage_graines.json` | le chemin numérique | attrapé avant, dossier archivé |
+| étiquette « float64 path » d'une figure | **écrite en dur** à côté d'un chargement avec repli | la figure allait annoncer un chemin en traçant les chiffres de l'autre |
+
+**La cinquième est la pire, et elle mérite d'être racontée.** J'avais ajouté aux
+quatre panneaux de `figure_comparaison.py` une mention du chemin numérique,
+précisément parce que trois panneaux sur quatre venaient de chemins différents et
+que la figure ne le disait pas. Une heure plus tard, j'ai basculé le panneau D
+sur le float64 en écrivant l'étiquette **en dur**, alors que les données
+n'existaient pas encore et qu'un repli chargeait le float32. La figure aurait
+annoncé *float64* en traçant du *float32* — le défaut exact que l'étiquette
+venait d'être ajoutée pour empêcher.
+
+Règle générale qui en sort : **une étiquette écrite en dur à côté d'un chargement
+conditionnel est un mensonge en attente.** Elle se calcule depuis la donnée
+réellement lue, et le repli doit dire qu'il s'est déclenché :
+
+```python
+lignes, chemin_utilise = [], "float64 path"
+...
+if not lignes:
+    chemin_utilise = "float32 path — float64 not measured yet"
+```
+
+**Correctifs appliqués :** la dimension variée est dans le nom ; le glob de
+fusion se termine par `_[0-9]*` pour ne pas ramasser sa propre sortie ; un
+garde-fou compte les doublons après fusion et le signale ; `relancer_float64.py`
+archive le dossier de résultats plutôt que de renommer dix sorties ; et les
+étiquettes de figure se calculent.
+
+**Ce que j'en retiens sur la forme des erreurs de ce projet.** Aucune de ces cinq
+n'est une erreur de raisonnement, et aucune n'aurait été trouvée en relisant le
+code pour l'algèbre — exactement ce que dipankarsarkar écrivait à propos de
+l'arrondi : *« it is the dtype of one scalar, which is exactly the kind of thing
+reading for algebra does not catch »*. Les erreurs qui survivent ici ne sont pas
+dans les idées, elles sont dans la plomberie.
+
+### 7.11decies La figure de synthèse
+
+`src/tools/figure_comparaison.py` → `figures/comparaison_test2.png`. Quatre
+panneaux sur les mêmes runs :
+
+| | question |
+|---|---|
+| **A** | les deux chemins graine par graine — 70/70 gardent le coin, 21/70 les modes |
+| **B** | le plafond n'est jamais franchi, et les modes sont des produits d'entiers |
+| **C** | exact contre échantillonné : la profondeur de l'effondrement, 10,7 contre 1,09 |
+| **D** | l'arrêt précoce, 20 graines, médiane +0,00 |
+
+Chaque panneau **affiche le chemin numérique qui l'a produit**, en haut à droite.
+Ce n'est pas une coquetterie : trois panneaux sur quatre viennent de chemins
+différents, et on venait de passer la journée à montrer que le chemin déplace les
+chiffres.
+
+Palette réduite à deux teintes catégorielles, validées en mode « toutes paires »
+avant d'écrire la première ligne de tracé : CVD ΔE 24,7 et vision normale 33,6,
+tous deux très au-dessus des seuils.
 
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
