@@ -6,7 +6,7 @@
 
 ## 👤 What this is
 
-Two days ago I published [an article](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) about training a network to write from a reward signal alone — random weights, no pretraining, no data. Two experiments, both of which "worked" and both of which fell apart on inspection. The code went on GitHub with it.
+My [previous article](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) was about training a network to write from a reward signal alone — random weights, no pretraining, no data. Two experiments, both of which "worked" and both of which fell apart on inspection. The code went on GitHub with it.
 
 Then someone read the code.
 
