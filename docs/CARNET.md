@@ -1525,8 +1525,14 @@ la reconstruction depuis un point quasi déterministe, où le bruit entre.
 
 **Et les trois conclusions du dépôt sont robustes au dernier bit** : pièce
 équilibrée à l'identique, plafond jamais franchi sur les deux chemins,
-`I(dét;nom)` nulle sur les deux. Ce n'étaient pas des artefacts d'arrondi. Je ne
-connais aucun résultat de RL publié pour lequel ce contrôle ait été fait.
+`I(dét;nom)` nulle sur les deux. Ce n'étaient pas des artefacts d'arrondi.
+
+> **Phrase retirée le 31/07/2026.** J'avais écrit ici « je ne connais aucun
+> résultat de RL publié pour lequel ce contrôle ait été fait ». C'est une
+> revendication de nouveauté déduite de ma propre ignorance de la littérature,
+> que je n'ai pas explorée. Le contrôle est bon ; savoir s'il est inédit
+> demanderait une recherche bibliographique que je n'ai pas faite. Ne pas la
+> remettre dans un article.
 
 **Le plafond n'est qu'un attracteur faible.** Parmi les 25 runs float32 posés
 exactement sur le plafond de leur coin, 11 y sont encore en float64 (44 %) ; parmi
