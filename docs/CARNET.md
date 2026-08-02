@@ -937,9 +937,12 @@ non-déterminisme multithread de torch sur CPU. **Je ne l'inscris pas comme acqu
 > non-déterminisme mais **deux chemins d'arrondi déterministes** sur la ligne
 > d'avantage. Et le chiffre du titre change : le pic vaut 24,00 au pas 5 750 sur
 > **les deux** chemins, mais l'écart d'arrêt précoce vaut **+5,38** sur le chemin
-> du balayage et +12,50 sur l'autre. Mesuré aussi : **une seule graine sur trois**
-> montre un écart, +0,28 et 0,00 pour les autres. Le « +12,5 » ne doit pas être
-> cité sans ces deux précisions.
+> du balayage et +12,50 sur l'autre.
+>
+> **RETIRÉ le 31/07/2026 après 20 graines (§7.11octies).** Écart médian
+> **+0,00**, moyenne +1,03, et **3 runs sur 20** seulement dépassent 1 mode. Ce
+> n'était pas un résultat, c'était une graine. Ne pas citer ce paragraphe sans
+> §7.11octies.
 
 ### 7.10 Première critique extérieure : juste sur la méthode, fausse sur la conclusion
 
@@ -1589,6 +1592,48 @@ carnet. C'est la réécriture qui décide, pas le CPU.
 `relancer_float64.py --archiver` copie `results_test2/` d'abord. J'ai préféré une
 copie de dossier à un suffixe sur chaque sortie : moins invasif, et ça garde de
 quoi comparer les deux chemins ligne à ligne.
+
+### 7.11octies L'arrêt précoce ne gagne rien, sauf dans un coin sur deux
+
+Il écrivait, à propos de l'écart d'arrêt précoce : *« same sign, under half the
+size, and it is a headline »*. Il avait raison de le signaler, et la mesure va
+plus loin que sa correction : **le titre ne tient pas du tout.**
+
+Vingt graines tracées sur le chemin canonique, pic restreint aux pas où la
+validité dépasse 90 % :
+
+| | |
+|---|---|
+| écart moyen | +1,03 mode |
+| écart **médian** | **+0,00** |
+| runs avec un écart > 1 mode | **3 / 20** |
+| écart maximum | +8,13 (graine 6) |
+
+**Dix-sept runs sur vingt ne gagnent rien.** Le §7.9 annonçait « un arrêt précoce
+battrait la convergence de +12,5 modes » à partir d'**une** graine ; corrigé une
+première fois à +5,38 par le changement de chemin, il tombe à une médiane de zéro
+dès qu'on regarde vingt graines. Ce n'était pas un effet, c'était un run.
+
+**Mais il reste quelque chose, et c'est conditionnel au coin.** Les trois runs
+qui gagnent — graines 0, 6 et 18 — sont **toutes dans le coin pluriel** :
+
+| coin | runs | avec un écart > 1 mode |
+|---|---|---|
+| pluriel | 8 | **3** |
+| singulier | 12 | **0** |
+
+Aucun run singulier sur douze ne bénéficie d'un arrêt précoce. Le coin pluriel a
+un plafond de 24 contre 12 : il y a deux fois plus de hauteur à atteindre, donc
+deux fois plus de hauteur à reperdre. **L'arrêt précoce n'est utile que là où le
+plafond est haut**, ce qui relie ce résultat au §7.11ter — c'est aussi le coin le
+moins bien rempli, 6 runs sur 33 à son plafond contre 19 sur 37.
+
+**Ce que ça dit de ma méthode plus que du résultat.** Trois fois aujourd'hui, un
+chiffre publié s'est révélé être une graine : le biais de branche 2 contre 1, la
+sous-langue « au pluriel », et maintenant l'arrêt précoce. Les trois ont survécu
+parce que je n'avais pas de raison de relancer un résultat qui ne me gênait pas.
+La règle à en tirer n'est pas « répliquer », que je savais déjà, c'est
+**répliquer d'abord ce qui arrange**.
 
 ### 7.12 Le plafond de produit est-il publiable ? Évaluation honnête, 31/07/2026
 
