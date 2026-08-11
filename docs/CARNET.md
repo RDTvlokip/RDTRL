@@ -2738,6 +2738,47 @@ diagnostics, les métriques et l'interprétation. Le diagnostic que j'ai constru
 dégénérées de l'agent. **Quel diagnostic détecte les miennes ?** C'est la seule
 question de cette liste à laquelle je n'ai aucune piste.
 
+> **Réponse de Théo, 11/08/2026 : un autre humain.** C'est juste, c'est ce qui a
+> le plus rendu de la journée, et la mesure permet de préciser pourquoi — et où
+> ça casse.
+>
+> **Ce qui a détecté quoi, par rendement.** Un lecteur extérieur en cinq séries :
+> la borne de produit que je n'avais pas vue, la statistique qui mesurait la
+> couverture, la saturation au-dessus de 100 %, trois graines lues comme
+> vingt-quatre, le seuil bâti sur un maximum. Puis, de mon côté, une **seconde
+> lecture indépendante de la même quantité** : hessien contre bissection, qui a
+> montré que je mesurais Adam ; distance de Hamming contre information mutuelle ;
+> accord d'argmax contre z. Puis des **prédictions écrites avant la mesure**, qui
+> ont tué §1.14 et §1.16.
+>
+> **Ce n'est donc pas l'humanité du lecteur qui compte, c'est qu'il n'hérite pas
+> de la spécification.** La propriété décisive de dipankarsarkar n'était pas
+> d'être humain : c'était de **relancer le code avant de parler**, à chaque fois,
+> et de re-dériver depuis l'artefact publié plutôt que depuis mes intentions.
+> Ça impose au passage une contrainte sur moi : publier assez pour que la
+> re-dérivation soit possible.
+>
+> **Et le contre-exemple du jour, qui limite la réponse.** Son argument « une
+> concentration de 1 force un argmax injectif, donc le sommet est sûr » était
+> juste, je l'ai vérifié, et je l'ai repris à mon compte. Sa prémisse était la
+> bijectivité. **Nous étions deux et nous avions tort tous les deux.** Ce qui l'a
+> cassé n'est pas un troisième lecteur : c'est §6.5, une étape qui n'avait jamais
+> tourné, et qui a produit des codes non bijectifs.
+>
+> Deux personnes peuvent partager un cadre. Ce qui est **structurellement**
+> garanti de ne pas le partager, c'est une mesure qu'on n'a pas encore faite.
+> D'où la formulation qui englobe la réponse de Théo au lieu de la remplacer :
+>
+> > Le diagnostic de sa propre spécification, c'est **tout ce qui n'en hérite
+> > pas** : un lecteur qui re-dérive depuis l'artefact, une seconde route vers la
+> > même quantité, une prédiction datée — et, quand tout ça s'accorde et se
+> > trompe ensemble, **l'étape du programme qu'on n'a pas encore exécutée**.
+>
+> Ce que ça ne résout pas : rien de tout ça n'est automatique, et les trois
+> premiers dépendent de la bonne volonté de quelqu'un. Le quatrième est le seul
+> que je contrôle seul, et c'est un argument pour exécuter le programme dans
+> l'ordre plutôt que de commenter les étapes non faites.
+
 ---
 
 ## 8bis. Le jury de LLM : trois questions de Théo, et ce qu'elles ouvrent
