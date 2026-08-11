@@ -86,6 +86,38 @@ def matrices_information(codes, verifier_bijectivite=True):
     return matrices
 
 
+def matrices_information_generale(codes):
+    """I(A_i ; M_j) pour un lot de codes QUELCONQUES, bijectifs ou non.
+
+    Necessaire depuis §6.5 : les codes atteints ont 1 a 4 collisions, donc la
+    table TERME ci-dessus ne s'applique pas. Ici on recalcule la marge des tokens
+    au lieu de la supposer uniforme.
+
+    La marge des attributs, elle, reste exactement 9/27 quoi qu'il arrive, chaque
+    valeur d'attribut couvrant neuf referents par construction du monde. D'ou
+
+        I(A_i ; M_j) = somme_{a,t} (c_at/27) log2( 3 c_at / n_t )
+
+    avec n_t le nombre de referents dont le message porte le token t en position j.
+    Plus lent que le chemin bijectif, mais valide partout.
+    """
+    lot = codes.shape[0]
+    matrices = np.empty((lot, N_ATTRIBUTS, N_POSITIONS))
+    tokens = np.stack([TOKEN_PAR_POSITION[j][codes] for j in range(N_POSITIONS)])
+    decalage = (np.arange(lot) * N_VALEURS * N_TOKENS)[:, None]
+    for i in range(N_ATTRIBUTS):
+        for j in range(N_POSITIONS):
+            cases = ATTRIBUT[i][None, :] * N_TOKENS + tokens[j]
+            comptes = np.bincount((cases + decalage).ravel(),
+                                  minlength=lot * N_VALEURS * N_TOKENS)
+            comptes = comptes.reshape(lot, N_VALEURS, N_TOKENS).astype(float)
+            marge_t = comptes.sum(axis=1, keepdims=True)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                terme = (comptes / N) * np.log2(N_VALEURS * comptes / marge_t)
+            matrices[:, i, j] = np.where(comptes > 0, terme, 0.0).sum(axis=(1, 2))
+    return matrices
+
+
 def statistiques(matrices):
     """Les trois quantites, a partir des matrices d'information."""
     par_colonne = matrices.max(axis=1)                     # (B, positions)

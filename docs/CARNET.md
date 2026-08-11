@@ -402,6 +402,42 @@ Le coefficient retenu (0,08) a été choisi sur la seule graine 0, qui se trouve
 (tout-ou-rien, grammaire longue, exclusion de paire, token exclu) ont donc tourné
 sur un régime non représentatif.
 
+### 4.7 Mon critère de falsification du test 3 omettait la variable qui décide — 11/08/2026
+
+C'est le défaut le plus sérieux trouvé aujourd'hui, et le plus gênant, parce que
+l'engagement de TEST3.md §5 avait été enregistré **avant toute donnée**, daté, et
+présenté comme ce qui rendait le test « falsifiable de façon bien plus tranchante
+qu'un seuil arbitraire ». Il l'était. Il était aussi sous-spécifié sur trois points.
+
+**1. Il ne nomme pas la paramétrisation.** Mesuré : `z = −0,12` en tabulaire,
+`−0,25` en factorisé, `+9,92` en structuré. Le même engagement est confirmé sur
+deux paramétrisations et réfuté sur une troisième, et son énoncé ne permet pas de
+dire laquelle il visait. Un critère de falsification qui omet la variable dont
+dépend la réponse ne tranche rien — il enregistre une intuition.
+
+**2. Sa clause d'interprétation est fausse.** Il annonce qu'un dépassement
+signifierait que « le raisonnement des optima à égalité comporte une faille ». Le
+dépassement a lieu, et cette conclusion ne suit pas : §7.15 montre que le
+raisonnement était depuis toujours conditionnel à la symétrie de la
+paramétrisation, ce que ni §3 ni §5 de TEST3.md n'énonçaient. La récompense reste
+indifférente. J'avais donc écrit d'avance la mauvaise interprétation de mon propre
+test.
+
+**3. Sa première moitié est fausse.** « Les codes émergents seront des bijections
+quasi parfaites » : une sur vingt en tabulaire, zéro sur vingt ailleurs, 2 à 5
+collisions. Le succès de tâche est élevé (E[R] ≈ 0,92), mais **récompense élevée et
+bijection quasi parfaite ne sont pas la même chose**, et je les avais confondues.
+
+Ce qui survit intact : *non compositionnels*, sur toutes les paramétrisations, à au
+moins 13 référents sur 27 du plus proche code compositionnel.
+
+**Leçon, et elle vaut au-delà de ce test.** Enregistrer une prédiction à l'avance
+protège de l'ajustement après coup. Ça ne protège **pas** d'avoir omis une
+variable, ni d'avoir écrit d'avance la mauvaise interprétation. Un engagement
+daté doit donc nommer explicitement : sur quelle population, sous quelle
+paramétrisation, et ce que chaque issue prouverait — le troisième point étant celui
+que j'ai raté.
+
 ---
 
 ## 5. Questions ouvertes, non tranchées
@@ -2222,6 +2258,60 @@ Trois nuances qui l'empêchent d'être un résultat plus gros qu'il n'est :
 
 **Ce qui reste dû avant §6.1** : la loi nulle sur la classe réellement atteinte,
 à nombre de collisions apparié.
+
+### 7.17 §6.1 traité : le théorème tient, et mon critère de falsification était sous-spécifié
+
+11/08/2026, `code_emergent.py`. La loi nulle est d'abord corrigée : les codes
+atteints n'étant pas bijectifs, la référence de chaque run est tirée uniformément
+parmi les applications de **même profil de fibres**.
+
+**Pourquoi cette classe-là, et c'est un argument exact et non un rapprochement.**
+Le groupe `S₂₇ × S₂₇` agit par `(π, ρ)·c = π ∘ c ∘ ρ⁻¹`, et deux applications sont
+dans la même orbite **si et seulement si** elles ont le même profil de fibres. La
+paramétrisation tabulaire étant équivariante des deux côtés, la loi de sortie
+conditionnée au profil est exactement uniforme sur ce profil. `z = 0` est donc un
+théorème, pas une attente, et §6.1 devient un test sans paramètre libre.
+
+| | concentration appariée | z | > q99,9 | distance au compositionnel |
+|---|---|---|---|---|
+| tabulaire | 0,1131 ± 0,0296 | **−0,12 ± 0,22** | 0/20 | 21,4 (min 20) |
+| factorisé | 0,1091 ± 0,0343 | **−0,25 ± 0,25** | 0/20 | 21,8 (min 20) |
+| structuré | 0,4240 ± 0,1056 | **+9,92 ± 0,78** | 19/20 | 15,8 (min 13) |
+
+**Le théorème tient en distribution, pas seulement en moyenne.** Les centiles des
+runs dans leur propre nulle doivent être uniformes sur [0, 1] : Kolmogorov-Smirnov
+donne **D = 0,090, p ≈ 0,995** en tabulaire. Et l'écart-type des z vaut **0,97** —
+la nulle appariée a la bonne **forme**, ce qui valide toute la construction, pas
+seulement son centre. La distance de Hamming au compositionnel, qui n'utilise
+aucune information mutuelle, confirme : 21,4 → 15,8.
+
+**La correction sur laquelle j'ai insisté deux fois ne change rien.** Sur les onze
+profils rencontrés, la nulle appariée s'écarte de la bijective de −0,0001 à
++0,0005, quand l'effet vaut 0,30. Elle était nécessaire à **vérifier** — sans quoi
+l'écart mesuré aurait été suspect — et elle ne déplace pas la conclusion. Ce qui
+change vraiment avec la non-bijectivité n'est pas la nulle, c'est le choix de la
+statistique (§1.13).
+
+**Le défaut sérieux du jour, et il est de moi.** Voir §4.7.
+
+### 7.18 Ce que §6.1 ne prouve pas, et que je refuse de laisser croire
+
+Le `z = +9,92` de la paramétrisation structurée n'est **pas** une émergence de la
+compositionnalité. Cette paramétrisation ne peut pas écrire la plupart des
+bijections (§7.16, contrôle de capacité), elle n'atteint pas le code compositionnel
+(0,4240 et non 1,0), et elle paie sa structure en succès de tâche. La récompense
+reste rigoureusement indifférente : c'est la paramétrisation qui sélectionne, et
+c'est très exactement la thèse du projet depuis le test 2, démontrée cette fois des
+deux côtés.
+
+Ce qui est neuf n'est donc pas « la structure émerge », c'est :
+
+1. qu'on peut **prouver** qu'elle ne peut pas émerger d'une paramétrisation
+   équivariante, quel que soit l'algorithme (§7.15) ;
+2. qu'une table d'embedding libre par référent suffit à garantir cette
+   équivariance sans qu'on s'en aperçoive (§7.16) ;
+3. et que la ligne de base contre laquelle tout ça se mesure est calculée
+   exactement, orbite par orbite, plutôt que devinée.
 
 ---
 

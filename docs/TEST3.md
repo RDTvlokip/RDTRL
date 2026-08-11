@@ -198,6 +198,36 @@ chose sélectionne les codes en dehors de la récompense** — et le raisonnemen
 optima à égalité, qui porte tout le projet depuis le test 2, comporte une faille.
 Ce serait le résultat majeur de RDTRL.
 
+### Verdict sur cet engagement, 11/08/2026 : il était sous-spécifié
+
+Il faut le dire avant de donner les chiffres, parce que c'est le défaut le plus
+sérieux trouvé aujourd'hui, et il est de moi.
+
+**L'engagement ne nomme pas la paramétrisation.** Or c'est elle qui décide. Mesuré
+en §6.1 : `z = −0,12 ± 0,22` en tabulaire, `−0,25 ± 0,25` en factorisé,
+`+9,92 ± 0,78` en structuré. Le même engagement est donc **confirmé sur deux
+paramétrisations et réfuté sur une troisième**, et rien dans son énoncé ne permet
+de dire laquelle il visait. Ce n'est ni une réussite ni un échec : c'est un critère
+de falsification qui a omis la variable dont dépend la réponse.
+
+**Et sa clause d'interprétation est fausse.** L'engagement dit qu'un dépassement
+signifierait que « le raisonnement des optima à égalité comporte une faille ». Le
+dépassement a lieu, et cette conclusion **ne suit pas**. §6.7 montre pourquoi : le
+raisonnement était depuis toujours conditionnel à la symétrie de la
+paramétrisation, ce que ni §3 ni §5 n'énonçaient. La récompense reste rigoureusement
+indifférente à la compositionnalité ; c'est la paramétrisation qui sélectionne. La
+clause a donc mal nommé ce qu'un dépassement prouverait.
+
+**Sa première moitié est fausse aussi.** « Les codes émergents seront des bijections
+quasi parfaites » : ils ne sont pas des bijections. Une sur vingt en tabulaire,
+zéro sur vingt ailleurs, avec 2 à 5 collisions. Le succès de tâche est bien élevé
+(E[R] ≈ 0,92), mais « bijection quasi parfaite » et « récompense élevée » ne sont
+pas la même chose, et je les avais confondues en écrivant l'engagement.
+
+Ce qui survit intact : **non compositionnels**, sur toutes les paramétrisations,
+distance minimale au compositionnel de 13 référents sur 27 même dans le meilleur
+cas.
+
 ---
 
 ## 6. Le programme d'investigation
@@ -341,6 +371,48 @@ parfaits. C'est la différence entre « ce n'est pas compositionnel » et « voi
 quelle distance et dans quelle direction ». Le sommet de cette échelle est isolé :
 1,0000 pour un code compositionnel, puis **0,9294** pour le meilleur code non
 compositionnel trouvé.
+
+### Mesuré le 11/08/2026 — `code_emergent.py`
+
+**La loi nulle est d'abord corrigée.** Les codes atteints n'étant pas bijectifs
+(§6.5), la référence est tirée sur la classe réellement atteinte : à chaque run on
+associe son **profil de fibres**, le multi-ensemble des tailles de préimages, et sa
+nulle est tirée uniformément parmi les applications de **même profil**.
+
+Ce n'est pas une référence « plus proche », c'est la seule correcte, et la raison
+est exacte : le groupe `S₂₇ × S₂₇` agit par `(π, ρ)·c = π ∘ c ∘ ρ⁻¹`, et deux
+applications sont dans la **même orbite si et seulement si** elles ont le même
+profil de fibres. La paramétrisation tabulaire étant équivariante des deux côtés
+(§6.7 pour les messages, §6.5 pour les référents), la loi de sortie conditionnée au
+profil est **exactement uniforme sur ce profil**. Donc `z = 0` est ici un théorème,
+pas une attente.
+
+| paramétrisation | concentration appariée | z dans sa propre nulle | > q99,9 | distance au compositionnel |
+|---|---|---|---|---|
+| `tabulaire` | 0,1131 ± 0,0296 | **−0,12 ± 0,22** | 0 / 20 | 21,4 (min 20) |
+| `factorise` | 0,1091 ± 0,0343 | **−0,25 ± 0,25** | 0 / 20 | 21,8 (min 20) |
+| `structure` | 0,4240 ± 0,1056 | **+9,92 ± 0,78** | **19 / 20** | **15,8 (min 13)** |
+
+**Le théorème tient, et pas seulement en moyenne.** Si la sortie est uniforme sur
+l'orbite, les centiles des runs dans leur propre nulle doivent être uniformes sur
+[0, 1]. Kolmogorov-Smirnov, n = 20 : `tabulaire` **D = 0,090, p ≈ 0,995** ;
+`factorise` D = 0,226, p ≈ 0,225 ; `structure` D = 0,999, p ≈ 0. Et l'écart-type
+des z vaut **0,97** en tabulaire — la nulle appariée a donc la bonne **forme**, pas
+seulement la bonne moyenne, ce qui valide la construction entière.
+
+**La distance au compositionnel confirme, sans information mutuelle.** 21,4 → 15,8,
+minimum 13. Deux lectures indépendantes qui s'accordent.
+
+**Et la correction de la loi nulle, sur laquelle j'ai insisté deux fois, ne change
+rien.** Sur les onze profils rencontrés, la nulle appariée s'écarte de la bijective
+de **−0,0001 à +0,0005**, quand l'effet mesuré vaut 0,30. Elle était nécessaire à
+vérifier — sans quoi tout écart mesuré aurait été suspect — et elle ne déplace pas
+la conclusion. C'est un résultat, pas un échec : il fallait le savoir, et il n'y
+avait aucun moyen de le savoir sans le faire.
+
+Ce qui **change** vraiment avec la non-bijectivité, ce n'est pas la nulle, c'est le
+**choix de la statistique** : voir la section précédente, où un code dégénéré
+obtient 1,0000 sous la version max.
 
 ### Tout ce qui précède suppose une bijection, et §6.7 dit que ce ne sera pas le cas
 
@@ -753,7 +825,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément, en long, avec la statistique appariée et la dispersion du maximum entre blocs | — référence de tout le reste |
 | 3 | ~~vérification du certificat des optima à égalité en cadre à deux agents~~ **FAIT le 11/08/2026** (`certificat_deux_agents.py`) : le certificat ne survit pas, un argument d'équivariance le remplace | **§6.7** |
 | 4 | ~~sonde de capacité et code compositionnel construit à la main~~ **FAIT le 11/08/2026** (`representable_atteignable_stable.py`) : les trois réponses sont différentes, et seule une paramétrisation à poids partagés voyant les attributs les sépare | **§6.5** |
-| 5 | entraînement multi-graines | **§6.1** puis **§6.2** |
+| 5 | ~~entraînement multi-graines~~ **§6.1 FAIT le 11/08/2026** (`code_emergent.py`), avec la loi nulle appariée au profil de fibres | **§6.1** puis **§6.2** |
 | 6 | gel d'agent, analyse du gradient initial | **§6.3** puis **§6.4** |
 | 7 | courbe de contrainte | **§6.6** |
 

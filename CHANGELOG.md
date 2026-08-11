@@ -99,8 +99,41 @@ reste. Elle est négative. Carnet §7.15, hypothèses mortes §1.11 et §1.12.
   codes atteints n'étant pas bijectifs, la version appariée devient la seule
   interprétable.
 
+### Corrigé — §6.1 traité, et mon critère de falsification était sous-spécifié
+
+Étape 5 du plan du test 3, précédée de la correction de loi nulle annoncée en
+§6.7. Carnet §7.17, §7.18 et **§4.7**.
+
+- **La loi nulle est appariée au profil de fibres**, et c'est exact plutôt
+  qu'approché : le groupe `S₂₇ × S₂₇` agissant par `(π, ρ)·c = π ∘ c ∘ ρ⁻¹`, deux
+  applications sont dans la même orbite **si et seulement si** elles ont le même
+  profil. La sortie tabulaire y est donc uniforme par théorème, et `z = 0` cesse
+  d'être une attente.
+- **Le théorème tient en distribution** : Kolmogorov-Smirnov sur les centiles des
+  runs dans leur propre nulle donne D = 0,090 et p ≈ 0,995 en tabulaire, et
+  l'écart-type des z vaut 0,97. La nulle appariée a donc la bonne forme, pas
+  seulement la bonne moyenne.
+- **Résultats** : `z = −0,12 ± 0,22` en tabulaire, `−0,25 ± 0,25` en factorisé,
+  `+9,92 ± 0,78` en structuré, avec 19 runs sur 20 au-delà du quantile 99,9 %. La
+  distance de Hamming au compositionnel, qui n'utilise aucune information mutuelle,
+  confirme : 21,4 → 15,8.
+- **La correction de loi nulle ne change rien**, et il fallait le vérifier pour le
+  savoir : sur les onze profils rencontrés elle s'écarte de la bijective de −0,0001
+  à +0,0005, quand l'effet vaut 0,30.
+- **L'engagement enregistré le 29/07/2026 était sous-spécifié sur trois points** :
+  il ne nomme pas la paramétrisation, qui décide ; sa clause d'interprétation
+  attribue un dépassement à une faille du raisonnement des optima à égalité, ce qui
+  ne suit pas ; et sa première moitié, « des bijections quasi parfaites », est
+  fausse — une bijection sur vingt. Enregistrer une prédiction protège de
+  l'ajustement après coup, pas d'avoir omis une variable ni d'avoir écrit d'avance
+  la mauvaise interprétation.
+- **Ce que ça ne prouve pas** : le `z = +9,92` n'est pas une émergence. Cette
+  paramétrisation ne peut pas écrire la plupart des bijections, n'atteint pas le
+  code compositionnel, et paie sa structure en succès de tâche.
+
 ### Ajouté
 
+`src/test3_communication/code_emergent.py` ·
 `src/test3_communication/loi_nulle_longue.py` ·
 `src/test3_communication/variabilite_du_maximum.py` ·
 `src/test3_communication/appariement_vs_distance.py` ·
