@@ -8,7 +8,23 @@ du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
 DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
 entrée ci-dessous.
 
-## [Non publié]
+## [0.5.0] — 2026-08-12
+
+DOI de version : **à ajouter une fois le dépôt Zenodo créé**. Celui de la 0.4.0
+manque également — la release GitHub correspondante n'a jamais été publiée, seul
+son tag existe.
+
+**La version où le test 3 a enfin tourné.** Conçu, discuté et critiqué sans avoir
+jamais été exécuté, son programme d'investigation en sept questions est passé de 0
+à 7 en une journée. Notes de version : [docs/RELEASE_v0.5.0.md](docs/RELEASE_v0.5.0.md).
+Récit complet : [docs/ARTICLE3.md](docs/ARTICLE3.md).
+
+Le résultat central est que le certificat des optima à égalité **ne survit pas** à
+un jeu à deux agents, qu'un argument d'équivariance le remplace en donnant le même
+chiffre pour tout algorithme équivariant, et que **seule la paramétrisation** a
+produit de la compositionnalité — en rendant les alternatives inécrivables, pas en
+les départageant. Le constat non prévu est que huit hypothèses sont mortes en un
+jour dans un monde entièrement énumérable, **aucune par erreur de calcul**.
 
 ### Ajouté — article 3
 
