@@ -21,6 +21,12 @@ identifiers:
   - type: doi
     value: "10.5281/zenodo.21726217"
     description: "Version DOI for v0.3.0"
+  - type: url
+    value: "https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only"
+    description: "Article 1 — teaching a network to write with reward only"
+  - type: url
+    value: "https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments"
+    description: "Article 2 — public review round, the product bound and four retracted numbers"
 abstract: >-
   An experimental bench testing whether a neural network can learn to produce
   language from a scalar reward alone, with random initial weights, no

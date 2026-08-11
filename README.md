@@ -10,7 +10,7 @@ No pretraining. No input/output pairs. No HuggingFace, no RL library — plain P
 
 📄 **Article 1:** [Teaching a network to write with reward only](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) (Hugging Face blog) — mirrored in [docs/ARTICLE.md](docs/ARTICLE.md)
 
-🔍 **Article 2:** [docs/ARTICLE2.md](docs/ARTICLE2.md) — a reader ran the code, and four of my numbers didn't survive
+🔍 **Article 2:** [I published my RL experiments. A reader ran the code, and four of my numbers didn't survive](https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments) (Hugging Face blog) — mirrored in [docs/ARTICLE2.md](docs/ARTICLE2.md)
 
 🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
 
