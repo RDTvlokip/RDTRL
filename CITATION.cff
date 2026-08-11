@@ -49,14 +49,37 @@ abstract: >-
   leaving the initialisation bit-identical: 70 of 70 seeds keep their corner
   while only 21 of 70 keep their mode count.
 
+  Version 0.5.0 adds test 3, a referential game with 27 referents and 27
+  messages in which the optimum set, the null distribution and the gradient are
+  all computed rather than estimated. All 27 factorial perfect codes earn
+  exactly 1, so compositionality is 1296/27! of the optimum set before any
+  training. The single-agent equal-optima certificate does not survive two
+  agents: it requires the tied objects to be the support of the distribution
+  whose entropy is in the objective, which codes are not. An equivariance
+  argument replaces it and gives the same number for any equivariant algorithm,
+  with the corollary that a free per-referent embedding table makes the whole
+  procedure exchangeable on the referent side and therefore ties every code in
+  advance, whatever is done on the message side. Measured over 100 seeds, any
+  residual selection by the dynamics is smaller than 0.0087 in concentration.
+  Channel noise breaks the symmetry while leaving the reward tie exact at every
+  noise level, and produces nothing; population turnover preserves the symmetry
+  and likewise produces nothing. Of everything tested, only the parametrization
+  produced compositionality, and it did so by making the alternatives
+  unrepresentable rather than by selecting among them. The critical entropy
+  coefficient is 1/N in closed form, confirmed by the Hessian at the babbling
+  point. Sixteen refuted hypotheses are recorded with their dates, eight of them
+  from this version alone, and none of them arithmetic errors.
+
   Acknowledgment. The product bound is due to Dipankar Sarkar
   (ORCID 0000-0001-5431-6367), who derived the order-1 marginals independently
   from the published article and then showed that the two degenerate corners
   hold the same number of valid sentences but not the same largest product.
-  Three rounds of his criticism also corrected a statistic that measured
+  Five rounds of his criticism also corrected a statistic that measured
   determiner coverage rather than agreement, a saturation metric that could
-  exceed 100 percent, and a sample-size claim that pooled three seeds into
-  twenty-four rows.
+  exceed 100 percent, a sample-size claim that pooled three seeds into
+  twenty-four rows, a falsification threshold derived from a sample maximum
+  that estimates nothing, and a concentration statistic that let one attribute
+  win two positions.
 keywords:
   - reinforcement learning
   - REINFORCE
