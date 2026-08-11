@@ -2680,6 +2680,57 @@ rétrécir jusqu'à l'exactitude puis de débattre de l'extrapolation ?** Et alo
 que devient tout ce qui est fait à l'échelle — est-ce nécessairement de
 l'anecdote mieux financée ?
 
+> **Répondue le 11/08/2026, et par la négative.** La journée du test 3 est la
+> donnée : sept sections, un monde de 27 référents entièrement énumérable, tout
+> calculé exactement — et **huit hypothèses datées mortes** (§1.9 à §1.16), plus
+> cinq défauts de protocole rattrapés avant publication.
+>
+> **Aucune de ces erreurs n'était une erreur de calcul.** Un seuil bâti sur une
+> statistique qui n'estime rien ; un critère de falsification qui omettait la
+> variable décisive ; un contraste qui ne contrastait rien ; une justification de
+> bruit de canal fausse en une ligne ; deux statistiques lues sur la dernière
+> graine ; deux lois nulles non appariées ; une affirmation fausse sur les
+> émetteurs autorégressifs. Toutes des erreurs de **spécification** — quoi
+> comparer, à quoi, sous quelle condition.
+>
+> Rétrécir jusqu'à l'exactitude supprime donc une classe d'erreur, celle
+> d'estimation, et **laisse intacte celle qui dominait**. Pire : l'exactitude
+> produit des nombres à quinze décimales, qui se sur-lisent plus facilement.
+> Plusieurs erreurs du jour sont des sur-lectures d'un chiffre exact — « écart
+> 3,3 × 10⁻¹⁶, donc mon contraste marche », alors qu'il voulait dire que mon
+> contraste était vide.
+>
+> **Ce qui a réellement attrapé les erreurs**, dans l'ordre de rendement : un
+> lecteur extérieur ; une seconde lecture indépendante de la même chose (hessien
+> contre bissection, Hamming contre information mutuelle, accord d'argmax contre
+> z) ; et des prédictions écrites avant la mesure, qui ont tué §1.14 et §1.16.
+> L'exactitude n'a servi qu'à rendre la seconde lecture **bon marché**. C'est une
+> vraie valeur, et ce n'est pas celle que la question supposait.
+>
+> **La seconde moitié de la question pose une fausse alternative.** La variable
+> n'est pas la taille, c'est le **contrôle**. Mon propre jouet a produit de
+> l'anecdote chaque fois qu'il lui manquait une loi nulle : le seuil de 0,35, le
+> « biaisé 2 contre 1 » tiré de trois graines. Une expérience à l'échelle avec
+> ablation, ligne de base et variance inter-graines n'est pas de l'anecdote ; un
+> jouet sans nulle en est. Et l'échelle fait une chose qu'aucun jouet ne fera
+> jamais : établir qu'un phénomène **existe** dans le régime qui intéresse. Un
+> jouet réfute des affirmations universelles, l'échelle établit des existences.
+> Ce sont deux métiers, pas deux niveaux d'honnêteté.
+>
+> **Enfin, la prémisse de la question est fausse**, et c'est le point le plus
+> utile. Ce qui a survécu de la journée n'est pas le jouet : ce sont les énoncés
+> **sans chiffre** — le no-go d'équivariance, l'égalité que le canal ne brise pas
+> quelle que soit la taille, β_c = 1/N, « un maximum d'échantillon n'estime rien
+> quand la valeur à exclure est dans le support ». Aucun ne mentionne 27. La
+> petitesse ne les a pas produits, elle a permis de les **trouver** et de les
+> vérifier complètement à coût nul.
+>
+> D'où la règle qui remplace la question : **rétrécir pour chercher, pas pour
+> prouver.** On ne débat alors plus de l'extrapolation d'un résultat — on vérifie
+> les hypothèses d'un théorème, ce qui est une opération finie. Et le critère
+> pratique tient en une phrase : *réécrire chaque conclusion sans aucun nombre ;
+> ce qui n'y survit pas meurt avec le banc.*
+
 **Q30 — À quel moment « je mesure ma propre spécification » s'applique-t-il à moi
 et plus seulement à l'agent ?** J'ai écrit l'environnement, la récompense, les
 diagnostics, les métriques et l'interprétation. Le diagnostic que j'ai construit
