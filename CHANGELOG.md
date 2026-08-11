@@ -10,6 +10,16 @@ entrée ci-dessous.
 
 ## [Non publié]
 
+### Ajouté — article 3
+
+[docs/ARTICLE3.md](docs/ARTICLE3.md), « I made my world small enough to compute
+everything exactly. It caught none of my eight mistakes ». Couvre le programme
+complet du test 3, les sept questions traitées en un jour, le théorème
+d'équivariance et son corollaire sur les tables d'embedding par référent, et le
+constat qui n'était pas prévu : **huit hypothèses mortes, aucune arithmétique**.
+L'URL de l'article 2 est par ailleurs câblée dans le README, `CITATION.cff` et
+`.zenodo.json`, qui pointaient encore tous sur l'article 1 ou sur le miroir local.
+
 ### Corrigé — le test 3 perd son seuil, avant d'avoir jamais tourné
 
 Cinquième série de critiques de
