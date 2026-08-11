@@ -2405,6 +2405,68 @@ réussite n'est comparable entre conditions que si toutes peuvent l'atteindre. I
 difficulté. Voir aussi §1.12 : mesurer à travers un instrument qui ne peut pas
 répondre, c'est mesurer l'instrument.
 
+### 1.14 « La paramétrisation structurée préfère le compositionnel dès le premier pas » — morte le 11/08/2026
+
+Écrite avant mesure dans `gradient_premier_pas.py`, et elle semblait sûre : cette
+paramétrisation finit à z = +9,9 en §6.1, donc son biais devait être visible dans
+son gradient initial. Mesuré, cosinus entre ∇J et ∇L(compositionnel) contre 300
+bijections témoins : **z = −0,08 ± 0,24**. Rigoureusement rien.
+
+Le mécanisme, une fois cherché : près de l'uniforme, la contrainte de la
+paramétrisation **ne mord pas**, puisque toute loi est représentable à faible
+confiance. Elle n'apparaît qu'à mesure que la loi se concentre. La courbe le
+montre — z passe de −1,18 au pas 0 à **+4,36 au pas 30**, et n'en bouge plus. La
+préférence est **construite par la trajectoire en quelques dizaines de pas**, pas
+présente au départ. Détail en §7.21.
+
+### 7.21 §6.4 traité : le gradient initial ne voit rien, et la préférence naît au pas 30
+
+11/08/2026, `gradient_premier_pas.py`.
+
+**La prédiction de §4 tient.** Coefficient de variation du gradient dans l'espace
+des lois : 1,0 × 10⁻² pour `∂E[R]/∂S`, 9,8 × 10⁻³ pour `∂E[R]/∂R`. Aucune direction
+préférée à l'initialisation, contrairement au test 2 où le déséquilibre du lexique
+en imposait une dès le pas 1.
+
+**La prédiction que j'avais ajoutée est fausse** (§1.14), et la courbe qui répare
+la réfutation est le meilleur résultat de la section :
+
+| pas | 0 | 10 | 30 | 100 | 300 | 1 000 | 3 000 |
+|---|---|---|---|---|---|---|---|
+| tabulaire | +0,07 | +0,07 | −0,30 | +0,30 | +0,19 | +0,16 | +0,19 |
+| structuré | −1,18 | −0,29 | **+4,36** | +4,25 | +3,91 | +5,81 | +5,85 |
+
+La tabulaire ne préfère **jamais** le compositionnel, à aucune profondeur. La
+structurée s'y met **brutalement entre le pas 10 et le pas 30**. §6.4 demandait
+qu'on nomme la direction si elle existait : elle n'existe pas au départ, elle est
+créée par la concentration de la loi.
+
+**L'issue est-elle écrite dans l'initialisation ?** Témoins appariés au profil de
+fibres du code atteint, faute de quoi on mesurerait l'effet du profil.
+
+| | z du code atteint | centile | argmax initial conservé |
+|---|---|---|---|
+| tabulaire | +6,80 ± 0,18 | 1,000 | 8,7 % ± 5,5 |
+| structuré | −0,52 ± 0,18 | 0,333 | 3,7 % ± 3,7 |
+
+**Deux lectures à concilier plutôt qu'à trier.** Le hasard vaut 3,7 %. En
+tabulaire, l'initialisation classe le code final **premier sur 300** alternatives
+appariées, mais n'en écrit que 8,7 %, soit 2,3 référents sur 27. « L'issue est
+décidée à l'initialisation » serait donc exagéré ; la formulation juste est
+« l'initialisation biaise fortement en agrégat, sans écrire le code ». J'ai ajouté
+la mesure sans loi nulle ni cosinus précisément pour ne pas pouvoir me contenter du
+z, qui est le chiffre le plus flatteur des deux.
+
+En structuré, l'empreinte initiale est **exactement nulle**. Tout vient de la
+trajectoire. C'est le miroir de §7.11sexies au test 2, et le partage
+initialisation/trajectoire s'inverse d'une paramétrisation à l'autre.
+
+**Deux défauts de protocole corrigés avant de lancer**, tous deux déjà commis
+ailleurs aujourd'hui : les cosinus étaient lus sur la **dernière graine** au lieu
+d'être moyennés (§1.6 encore), et les témoins de P4 étaient des bijections alors
+que le code atteint a des collisions (§7.17 encore). Deux pièges que je venais de
+corriger, retombés dedans à deux sections d'intervalle.
+
 ---
 
 ## 8. Vingt questions inconfortables

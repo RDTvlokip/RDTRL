@@ -176,11 +176,32 @@ Carnet §7.20.
   un code aléatoire serait impossible pour la paramétrisation structurée et l'on
   confondrait représentabilité du gelé et apprentissage du libre.
 
+### Corrigé — §6.4 traité : le gradient initial ne voit rien, la préférence naît au pas 30
+
+Carnet §7.21, hypothèse morte §1.14.
+
+- **La prédiction de §4 tient** : coefficient de variation du gradient dans l'espace
+  des lois de 1,0 × 10⁻², donc aucune direction préférée à l'initialisation —
+  contrairement au test 2 où le déséquilibre du lexique en imposait une dès le pas 1.
+- **Ma prédiction supplémentaire est fausse.** J'avais écrit avant mesure que la
+  paramétrisation structurée préférerait le code compositionnel dès le premier pas,
+  puisqu'elle y va à z = +9,9 à convergence. Mesuré : **z = −0,08 ± 0,24**.
+- **La courbe qui répare la réfutation** : z passe de −1,18 au pas 0 à **+4,36 au
+  pas 30**, et n'en bouge plus, quand la tabulaire reste à 0 à toute profondeur.
+  Près de l'uniforme la contrainte ne mord pas, toute loi étant représentable à
+  faible confiance ; elle apparaît quand la loi se concentre.
+- **L'empreinte de l'initialisation** : en tabulaire le code atteint est classé
+  **premier sur 300** témoins appariés au profil, mais seuls **8,7 %** de ses
+  référents sont l'argmax des poids initiaux (hasard 3,7 %). L'initialisation
+  biaise fortement en agrégat sans écrire le code. En structuré, l'empreinte est
+  exactement nulle.
+
 ### Ajouté
 
 `src/test3_communication/code_emergent.py` ·
 `src/test3_communication/dynamique_uniforme.py` ·
 `src/test3_communication/qui_ecrit_le_code.py` ·
+`src/test3_communication/gradient_premier_pas.py` ·
 `src/test3_communication/loi_nulle_longue.py` ·
 `src/test3_communication/variabilite_du_maximum.py` ·
 `src/test3_communication/appariement_vs_distance.py` ·

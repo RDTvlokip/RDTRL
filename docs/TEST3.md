@@ -664,6 +664,76 @@ cadre où la « fonction » de récompense bouge. Prédiction déjà dérivée e
 aucune direction préférée à l'initialisation. Si on observe le contraire, c'est
 que la paramétrisation en introduit une, et il faudra la nommer.
 
+### Mesuré le 11/08/2026 — `gradient_premier_pas.py`
+
+**L'instrument.** Pour un code `c`, sa vraisemblance jointe
+`L(c) = Σ_r log S[r, c(r)] + Σ_r log R[c(r), r]`, et on mesure le **cosinus entre
+∇J et ∇L(c) dans l'espace des paramètres**. C'est exactement « le premier pas
+rapproche-t-il du code `c` ? », et c'est la bonne question à poser à une
+paramétrisation, qui vit dans l'espace des poids et non dans celui des lois.
+
+**La prédiction de §4 tient.** Coefficient de variation du gradient dans l'espace
+des lois : **1,0 × 10⁻²** pour `∂E[R]/∂S`, **9,8 × 10⁻³** pour `∂E[R]/∂R`. Aucune
+direction préférée. C'est le contraste net avec le test 2, où le déséquilibre du
+lexique imposait une direction dès le premier pas.
+
+**Et la prédiction que j'avais ajoutée est fausse.** J'avais écrit, avant de
+mesurer, que la paramétrisation structurée devait préférer le code compositionnel
+dès le premier pas, puisqu'elle y va à z = +9,9 à convergence. Mesuré :
+
+| paramétrisation | cos compositionnel | cos témoins | z | centile |
+|---|---|---|---|---|
+| `tabulaire` | 0,004243 | 0,000902 ± 0,0111 | **+0,32 ± 0,22** | 0,579 |
+| `structure` | 0,033347 | 0,041210 ± 0,0536 | **−0,08 ± 0,24** | 0,459 |
+
+Rigoureusement rien, des deux côtés. **La préférence de la paramétrisation
+structurée n'est pas dans son gradient initial.**
+
+### Alors quand apparaît-elle ? Entre le pas 10 et le pas 30
+
+Même mesure à plusieurs profondeurs, en repartant de la **même** initialisation à
+chaque fois. z du code compositionnel contre 100 bijections témoins, 10 graines :
+
+| pas | 0 | 10 | 30 | 100 | 300 | 1 000 | 3 000 |
+|---|---|---|---|---|---|---|---|
+| `tabulaire` | +0,07 | +0,07 | −0,30 | +0,30 | +0,19 | +0,16 | +0,19 |
+| `structure` | −1,18 | −0,29 | **+4,36** | +4,25 | +3,91 | +5,81 | +5,85 |
+
+> La paramétrisation tabulaire ne préfère **jamais** le code compositionnel, à
+> aucune profondeur. La structurée ne le préfère pas non plus au départ, puis s'y
+> met **brutalement entre le pas 10 et le pas 30**, et n'en bouge plus.
+
+Le mécanisme se laisse nommer, ce que §6.4 demandait explicitement : près de
+l'uniforme, la contrainte de la paramétrisation **ne mord pas**, puisque toute loi
+est représentable à faible confiance. Elle n'apparaît qu'à mesure que la loi se
+concentre, et le seuil est franchi en quelques dizaines de pas.
+
+### L'issue est-elle déjà écrite dans l'initialisation ?
+
+On entraîne, on lit le code atteint, puis on revient à l'initialisation mesurer son
+alignement — contre des témoins **appariés au profil de fibres** du code atteint,
+faute de quoi on mesurerait l'effet du profil en l'appelant prédictibilité.
+
+| paramétrisation | z du code atteint | centile | argmax initial conservé |
+|---|---|---|---|
+| `tabulaire` | **+6,80 ± 0,18** | 1,000 | 8,7 % ± 5,5 |
+| `structure` | −0,52 ± 0,18 | 0,333 | 3,7 % ± 3,7 |
+
+**Deux lectures, et il faut les concilier plutôt que choisir la plus flatteuse.**
+Le hasard vaut 1/27 = 3,7 %. En tabulaire, l'initialisation porte une empreinte
+réelle mais **modeste** : assez pour classer le code final **premier sur 300**
+alternatives appariées, pas assez pour le lire dans les poids — 8,7 %, soit 2,3
+référents sur 27. Dire « l'issue est décidée à l'initialisation » serait donc
+exagéré. La formulation juste est : *l'initialisation biaise fortement en agrégat,
+sans écrire le code*.
+
+En structuré, l'empreinte est **exactement nulle** (3,7 %, le hasard). Tout vient
+de la trajectoire.
+
+C'est le miroir du test 2, où l'initialisation décidait le coin et la trajectoire
+son remplissage (carnet §7.11sexies). Ici le partage dépend de la paramétrisation,
+et il s'inverse d'une paramétrisation à l'autre.
+
 ### 6.5 Représentable, atteignable, stable — les trois séparément
 
 Au test 2 ces trois réponses étaient **différentes**, et c'est précisément ce qui a
@@ -952,7 +1022,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | 3 | ~~vérification du certificat des optima à égalité en cadre à deux agents~~ **FAIT le 11/08/2026** (`certificat_deux_agents.py`) : le certificat ne survit pas, un argument d'équivariance le remplace | **§6.7** |
 | 4 | ~~sonde de capacité et code compositionnel construit à la main~~ **FAIT le 11/08/2026** (`representable_atteignable_stable.py`) : les trois réponses sont différentes, et seule une paramétrisation à poids partagés voyant les attributs les sépare | **§6.5** |
 | 5 | ~~entraînement multi-graines~~ **§6.1 et §6.2 FAITS le 11/08/2026** (`code_emergent.py`, `dynamique_uniforme.py`), loi nulle appariée au profil de fibres, 100 graines, balayage en β | **§6.1** puis **§6.2** |
-| 6 | ~~gel d'agent~~ **§6.3 FAIT le 11/08/2026** (`qui_ecrit_le_code.py`) : ni l'un ni l'autre n'écrit le code, et le déficit est dans le code choisi et non dans l'apprentissage · analyse du gradient initial | **§6.3** puis **§6.4** |
+| 6 | ~~gel d'agent, analyse du gradient initial~~ **§6.3 et §6.4 FAITS le 11/08/2026** (`qui_ecrit_le_code.py`, `gradient_premier_pas.py`) : ni l'un ni l'autre n'écrit le code, le déficit est dans le code choisi, et la préférence de la paramétrisation structurée apparaît entre le pas 10 et le pas 30 | **§6.3** puis **§6.4** |
 | 7 | courbe de contrainte | **§6.6** |
 
 Soit, en termes de questions : **6.7 → 6.5 → 6.1 → 6.2 → 6.3 → 6.4 → 6.6.**
