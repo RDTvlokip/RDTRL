@@ -2313,6 +2313,47 @@ Ce qui est neuf n'est donc pas « la structure émerge », c'est :
 3. et que la ligne de base contre laquelle tout ça se mesure est calculée
    exactement, orbite par orbite, plutôt que devinée.
 
+### 7.19 §6.2 traité à 100 graines : un négatif avec sa borne, et un β qui aide
+
+11/08/2026, `dynamique_uniforme.py`. §6.1 avait répondu à 20 graines, et c'était
+insuffisant : sous le critère du document lui-même (unilatéral p < 0,001, puissance
+80 %), 20 graines ne résolvent que **0,027**. Le scénario « une pression faible
+soulève tous les runs de 0,02 », que Dipankar Sarkar décrivait comme bien plus
+probable qu'un run isolé au-delà d'un seuil, y serait passé inaperçu. Conclure
+« indiscernable » à 20 graines aurait été une conclusion que le dispositif ne
+portait pas — c'est §1.6 sous une autre forme.
+
+| | n | C appariée | z moyen | IC 95 % | KS *p* | > q99,9 |
+|---|---|---|---|---|---|---|
+| tabulaire | 100 | 0,1164 | **−0,01 ± 0,10** | [−0,21 ; +0,19] | 0,386 | 0/100 |
+| factorisé | 100 | 0,1152 | **−0,05 ± 0,10** | [−0,25 ; +0,15] | 0,613 | 0/100 |
+| structuré | 20 | 0,3971 | **+9,01 ± 0,60** | [+7,84 ; +10,18] | 0,000 | 20/20 |
+
+**Le négatif est énoncé avec sa borne, pas comme une absence.** À 100 graines et
+sd de nulle 0,0312 : détectable à partir de **0,0087** (bilatéral p < 0,05) ou
+**0,0123** (unilatéral p < 0,001). Donc toute sélection résiduelle par la dynamique,
+sur paramétrisation équivariante, est plus petite que 0,0087 de concentration.
+
+**Balayage en β** — 20 graines par β, parce qu'un seul β n'est pas une propriété et
+que [0,037 ; 0,170] est bistable. z = +0,12 · +0,41 · −0,01 · +0,12 · +0,02 pour
+β = 0,005 · 0,010 · 0,020 · 0,030 · 0,037, KS *p* de 0,070 à 0,999. Aucun β ne sort.
+
+**Observation non cherchée** : monter β jusqu'au seuil **améliore** le code, E[R] de
+0,887 à 0,931 et collisions de 2,95 à 1,75. L'entropie aide la coordination tant
+qu'elle ne détruit pas le code — l'inverse de l'intuition du test 2, où l'entropie
+était la taxe.
+
+**La phrase juste, et elle est plus étroite que celle que j'aurais écrite.** Ce
+n'est pas « la dynamique tire au hasard parmi les codes ». C'est « la dynamique
+tire au hasard **sur l'orbite**, quand la paramétrisation est équivariante ». Le
+profil de fibres n'est pas tiré au hasard du tout : c'est la dynamique qui le
+choisit. Un test qui ne conditionnerait pas dessus mesurerait ce choix et
+l'appellerait sélection de code.
+
+Les trois issues listées en §6.2 sont donc toutes réalisées, selon la
+paramétrisation — sauf la troisième, « la dynamique fuit activement les codes
+structurés », qui n'est réalisée nulle part.
+
 ---
 
 ## 8. Vingt questions inconfortables

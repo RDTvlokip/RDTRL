@@ -131,9 +131,32 @@ reste. Elle est négative. Carnet §7.15, hypothèses mortes §1.11 et §1.12.
   paramétrisation ne peut pas écrire la plupart des bijections, n'atteint pas le
   code compositionnel, et paie sa structure en succès de tâche.
 
+### Corrigé — §6.2 traité à 100 graines, la taille annoncée par le document
+
+Carnet §7.19.
+
+- **20 graines ne suffisaient pas**, et §6.1 avait conclu dessus. Sous le critère
+  du document (unilatéral p < 0,001, puissance 80 %), 20 graines ne résolvent que
+  0,027 : le scénario « une pression faible soulève tous les runs de 0,02 » y
+  serait passé inaperçu.
+- **À 100 graines** : `z = −0,01 ± 0,10` en tabulaire, `−0,05 ± 0,10` en factorisé,
+  0 run sur 100 au-delà du quantile 99,9 % de chaque côté, KS *p* = 0,386 et 0,613.
+  Témoin structuré : `z = +9,01 ± 0,60`, 20 runs sur 20 au-delà.
+- **Le négatif est énoncé avec sa borne** : toute sélection résiduelle par la
+  dynamique, sur paramétrisation équivariante, est plus petite que **0,0087** de
+  concentration (bilatéral p < 0,05, puissance 80 %), ou 0,0123 sous le critère
+  strict du document.
+- **Balayage en β** sur 0,005 à 0,037, 20 graines chacun : aucun β ne sort. Et une
+  observation non cherchée — monter β jusqu'au seuil **améliore** le code, E[R] de
+  0,887 à 0,931 et collisions de 2,95 à 1,75.
+- **La phrase juste est plus étroite** que « la dynamique tire au hasard » : elle
+  tire au hasard **sur l'orbite**, quand la paramétrisation est équivariante. Le
+  profil de fibres, lui, est choisi par la dynamique, d'où le conditionnement.
+
 ### Ajouté
 
 `src/test3_communication/code_emergent.py` ·
+`src/test3_communication/dynamique_uniforme.py` ·
 `src/test3_communication/loi_nulle_longue.py` ·
 `src/test3_communication/variabilite_du_maximum.py` ·
 `src/test3_communication/appariement_vs_distance.py` ·

@@ -510,6 +510,65 @@ de 0,0101 s'applique alors à la loi nulle et **pas** à la population émergent
 Changer de statistique baisse la référence sans bouger le signal. C'est neutre là
 où ça doit l'être, et favorable là où on veut de la puissance.
 
+### Mesuré le 11/08/2026 — `dynamique_uniforme.py`, 100 graines
+
+§6.1 avait répondu à 20 graines. C'était insuffisant, et il faut le dire : sous le
+critère du document lui-même (unilatéral p < 0,001, puissance 80 %), 20 graines ne
+résolvent que **0,027**. Le scénario « une pression faible soulève tous les runs de
+0,02 » y serait passé inaperçu. Conclure « indiscernable » à 20 graines aurait été
+une conclusion que le dispositif ne portait pas.
+
+| paramétrisation | n | concentration appariée | z moyen | IC 95 % | KS *p* | > q99,9 |
+|---|---|---|---|---|---|---|
+| `tabulaire` | 100 | 0,1164 | **−0,01 ± 0,10** | [−0,21 ; +0,19] | 0,386 | 0 / 100 |
+| `factorise` | 100 | 0,1152 | **−0,05 ± 0,10** | [−0,25 ; +0,15] | 0,613 | 0 / 100 |
+| `structure` (témoin) | 20 | 0,3971 | **+9,01 ± 0,60** | [+7,84 ; +10,18] | 0,000 | 20 / 20 |
+
+**Le négatif, énoncé avec sa borne.** « On n'a rien vu » ne veut rien dire sans dire
+ce qu'on aurait vu. À 100 graines, avec un écart-type de nulle de 0,0312 :
+
+| critère | 20 graines | 100 graines |
+|---|---|---|
+| bilatéral p < 0,05, puissance 80 % | 0,0195 | **0,0087** |
+| unilatéral p < 0,001, puissance 80 % (celui du tableau ci-dessus) | 0,0274 | **0,0123** |
+
+> Toute sélection résiduelle par la dynamique, sur une paramétrisation équivariante,
+> est **plus petite que 0,0087 de concentration**. Ce n'est pas une absence, c'est
+> une borne.
+
+**Le balayage en β, parce qu'un seul β n'est pas une propriété.** La région
+[0,037 ; 0,170] étant bistable (§6.7), rien ne garantissait que ce qui vaut à 0,02
+vaille dans tout le régime de code. 20 graines par β, tabulaire :
+
+| β | 0,005 | 0,010 | 0,020 | 0,030 | 0,037 |
+|---|---|---|---|---|---|
+| E[R] | 0,8870 | 0,9074 | — | 0,9166 | 0,9314 |
+| collisions | 2,95 | 2,45 | — | 2,20 | 1,75 |
+| z moyen | +0,12 ± 0,15 | +0,41 ± 0,24 | −0,01 ± 0,10 | +0,12 ± 0,27 | +0,02 ± 0,22 |
+| KS *p* | 0,342 | 0,070 | 0,386 | 0,519 | 0,999 |
+
+Aucun β ne sort. Au passage, une observation qui n'était pas cherchée : **monter β
+jusqu'au seuil améliore le code**, E[R] de 0,887 à 0,931 et collisions de 2,95 à
+1,75. L'entropie aide la coordination tant qu'elle ne détruit pas le code.
+
+### Comment lire ce résultat, et comment ne pas le lire
+
+Ce n'est **pas** « la dynamique tire au hasard ». C'est :
+
+> La dynamique tire au hasard **sur l'orbite**, quand la paramétrisation est
+> équivariante.
+
+Le profil de fibres, lui, n'est pas tiré au hasard du tout — c'est la dynamique qui
+le choisit, et c'est précisément pourquoi on conditionne dessus. Un test qui ne
+conditionnerait pas mesurerait le choix du profil et l'appellerait sélection de
+code.
+
+Et les trois issues que §6.2 avait listées sont toutes réalisées, selon la
+paramétrisation : indiscernable pour les deux équivariantes, supérieure pour la
+structurée. La troisième — « la dynamique fuit activement les codes structurés » —
+n'est réalisée nulle part : les z négatifs observés (−0,01 et −0,05) sont à moins
+d'un demi écart-type de zéro.
+
 ### 6.3 Qui écrit le code, l'émetteur ou le récepteur ?
 
 **Instrument.** Quatre conditions, en gelant l'un des deux :
@@ -825,7 +884,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément, en long, avec la statistique appariée et la dispersion du maximum entre blocs | — référence de tout le reste |
 | 3 | ~~vérification du certificat des optima à égalité en cadre à deux agents~~ **FAIT le 11/08/2026** (`certificat_deux_agents.py`) : le certificat ne survit pas, un argument d'équivariance le remplace | **§6.7** |
 | 4 | ~~sonde de capacité et code compositionnel construit à la main~~ **FAIT le 11/08/2026** (`representable_atteignable_stable.py`) : les trois réponses sont différentes, et seule une paramétrisation à poids partagés voyant les attributs les sépare | **§6.5** |
-| 5 | ~~entraînement multi-graines~~ **§6.1 FAIT le 11/08/2026** (`code_emergent.py`), avec la loi nulle appariée au profil de fibres | **§6.1** puis **§6.2** |
+| 5 | ~~entraînement multi-graines~~ **§6.1 et §6.2 FAITS le 11/08/2026** (`code_emergent.py`, `dynamique_uniforme.py`), loi nulle appariée au profil de fibres, 100 graines, balayage en β | **§6.1** puis **§6.2** |
 | 6 | gel d'agent, analyse du gradient initial | **§6.3** puis **§6.4** |
 | 7 | courbe de contrainte | **§6.6** |
 
