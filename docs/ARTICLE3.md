@@ -431,6 +431,63 @@ And the asymmetry has to be stated: a toy is good at **refuting** universal clai
 
 ---
 
+## 📋 Everything else I measured that day
+
+I would have cut the following for readability. Publishing it instead, because the selection is itself an editorial judgement, and this article is about eight editorial judgements of mine that were wrong in a single day. Every number below is in the JSON output files in `results_test3/`.
+
+**The null distribution, both statistics, 10 000 000 draws.** Tail quantiles are exact — the top 200 000 values are kept in full rather than sampled.
+
+| | mean | sd | q1 | q50 | q99 | q99.9 | q99.99 | q99.999 | max |
+|---|---|---|---|---|---|---|---|---|---|
+| published (max per column) | 0.1269 | 0.0330 | 0.0661 | 0.1236 | 0.2161 | 0.2525 | 0.2862 | 0.3196 | 0.3979 |
+| matched (one attribute per position) | 0.1168 | 0.0315 | 0.0594 | 0.1130 | 0.2045 | 0.2430 | 0.2788 | 0.3126 | 0.3944 |
+
+**The double count, in full.** 74.65 % of uniform draws have one attribute winning two positions, against 77.8 % if the argmaxes were independent and uniform. Mean inflation over the whole null 0.0100; over the 200 highest 0.0203; largest single inflation observed 0.1081.
+
+**The two statistics against a combinatorial ground truth.** On codes built with exactly *k* of 3 positions cleanly encoding an attribute, 4 000 each:
+
+| k | expected | published | matched | double count |
+|---|---|---|---|---|
+| 0 | 0.0000 | 0.1268 | 0.1170 | 74.0 % |
+| 1 | 0.3333 | 0.4111 | 0.4059 | 48.5 % |
+| 2 | 0.6667 | 0.7045 | **0.7045** | 0.8 % |
+| 3 | 1.0000 | 1.0000 | **1.0000** | 0.0 % |
+
+Ranked against minimum Hamming distance to the nearest compositional code over 1 774 233 separable pairs, the matched form classifies **86.82 %** correctly against **86.34 %** for the published one; Spearman 0.8223 against 0.8143. A real but small improvement — the decisive argument for the matched form is the degenerate code above, not this.
+
+**Worst cases, all lower bounds** since the ascent is local rather than exhaustive: largest gap between the two statistics **0.1443**, on a code scoring 0.2473 published and 0.1030 matched — inside the body of the null. Highest published score reachable **while** double-counting: 0.6314, that code still scoring 0.5560 matched. Highest non-compositional score found: **0.9294**, so the top of the scale is isolated as well — 1.0000, then 0.9294. All three computed over permutations, hence conditional on bijectivity.
+
+**Stability, in full.** Starting from the fitted state, exact ascent then sampled REINFORCE:
+
+| parametrization | code | exact | REINFORCE | code kept |
+|---|---|---|---|---|
+| tabular | compositional | 0.99999988 | 0.996297 | yes |
+| tabular | random ×3 | 0.99999988 | 0.996198 / 0.996211 / 0.996305 | yes |
+| autoregressive | compositional | 0.99999988 | 0.996168 | yes |
+| autoregressive | random ×3 | 0.99999988 | 0.996090 / 0.996200 / 0.996162 | yes |
+| structured | compositional | 0.99999989 | 0.997763 | yes |
+| structured | random ×3 | 0.7776 / 0.7406 / 0.7036 | 0.6946 / 0.6947 / 0.7241 | **no** |
+
+The exact gap between compositional and random is −2.3 × 10⁻¹⁰ for the tabular sender and −2.4 × 10⁻¹⁰ for the autoregressive one; +0.235 for the structured one.
+
+**Reachability at 20 seeds**, before the 100-seed rerun: tabular E[R] 0.9240, 1/20 bijections, 2.00 collisions, concentration 0.1283 ± 0.0405. Autoregressive 0.8092, 0/20, 5.15 collisions, 0.1270 ± 0.0379. Structured 0.8573, 0/20, 3.80 collisions, 0.4233 ± 0.1233.
+
+**The first emergence measurement, at 20 seeds**, superseded by the 100-seed one but not contradicted by it: z = −0.12 ± 0.95, −0.25 ± 1.11, +9.92 ± 3.41, with 0/20, 0/20 and 19/20 runs past the 99.9th percentile. Kolmogorov–Smirnov on the percentiles gave *p* ≈ 0.995 for the tabular case at that sample size.
+
+**The β sweep, in full**, 20 seeds each, tabular:
+
+| β | 0.005 | 0.010 | 0.030 | 0.037 |
+|---|---|---|---|---|
+| E[R] | 0.8870 | 0.9074 | 0.9166 | 0.9314 |
+| collisions | 2.95 | 2.45 | 2.20 | 1.75 |
+| concentration | 0.1205 | 0.1296 | 0.1207 | 0.1175 |
+| z | +0.12 ± 0.15 | +0.41 ± 0.24 | +0.12 ± 0.27 | +0.02 ± 0.22 |
+| KS *p* | 0.342 | 0.070 | 0.519 | 0.999 |
+
+**The structured sender under a frozen partner**, which is where its capacity limit shows inside the game rather than in supervised fitting: frozen on the compositional code it reaches 0.9999; on a random bijection **0.5924**; on a code with two collisions **0.4990**, well below that code's arithmetic ceiling of 0.9259. It cannot write the encoder it is being asked for.
+
+---
+
 ## 🗂️ Summary
 
 - A referential game with 27 referents and 27 messages, small enough for the optimum, the null and the gradient to be **computed exactly**.
@@ -463,6 +520,9 @@ The equivariance argument does not depend on either. The specific numbers do, en
 
 **What is the single most useful thing in here for someone else?**
 Probably the embedding corollary, and the habit of computing a second independent route to every number. The second one caught more of my errors than exactness did.
+
+**Why is there a section dumping numbers you would have cut?**
+Because deciding what a reader does not need is an editorial judgement, and this article documents eight of mine that were wrong in one day. The selection is the part I trust least, so it is the part I stopped making.
 
 ---
 
