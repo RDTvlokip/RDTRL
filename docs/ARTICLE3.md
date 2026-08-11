@@ -303,7 +303,7 @@ So the uncomfortable finding: shrinking a problem until everything is exact remo
 
 Exactness helped only by making the second route cheap. That is real value. It is not the value I thought I was buying.
 
-**And there is a case where a reviewer and I were both wrong.** His argument that concentration 1.0 forces an injective argmax is correct; I verified it and adopted it. Its premise was bijectivity. Two of us, agreeing, and both wrong — and what broke it was not a third reader but running a step that had never been run, which produced non-bijective codes. Then this scores a perfect 1.0000 under the published statistic:
+**And there is a case where a reviewer and I were both wrong**, which matters enough that the next section is about it. His argument that a concentration of 1.0 forces an injective argmax is correct; I verified it and adopted it in my reply. Its premise was bijectivity, and the reached codes are not bijections. So this scores a perfect 1.0000 under the published statistic:
 
 ```
 m₁ = a₁,  m₂ = a₁,  m₃ = a₂          9 of 27 messages used, one attribute discarded
@@ -312,7 +312,33 @@ concentration, published form : 1.000000     ← the top of the scale
 concentration, matched form   : 0.666667     ← two attributes read out of three
 ```
 
-Two people can share a frame. What is structurally guaranteed not to share it is a measurement you have not made yet.
+A code that throws away one attribute in three and uses a third of the message space is handed the value reserved for compositional codes.
+
+---
+
+## 🎣 Two questions I wrote down in July and could not answer
+
+The notebook has a section of thirty uncomfortable questions, written under a rule: no question whose answer I already know, none that flatters the project, and for each one what would settle it. Two of them were about me rather than about the network. Running this experiment settled both, and neither answer is the one I was hoping for.
+
+**Q29 — "If this project's value comes entirely from a toy small enough to enumerate, is the honest way to do ML research to shrink until exactness and then argue about extrapolation? And what becomes of everything done at scale — is it necessarily better-funded anecdote?"**
+
+Answered, and by the negative. This day is the data: a fully enumerable world, everything computed exactly, and eight dead hypotheses of which **not one was arithmetic**. Shrinking to exactness removes the estimation-error class and leaves the specification-error class exactly where it was. It can even make things worse, because exact numbers carry fifteen decimals and invite over-reading.
+
+And the second half sets up a false alternative. **The variable is controls, not size.** My own toy produced anecdote every time it lacked a null — the 0.35 threshold, and in article 2 a bias ratio read off three seeds. A scale experiment with an ablation, a baseline and seed variance is not anecdote; a toy without a null is. And scale does one thing no toy will ever do: establish that a phenomenon **exists** in the regime anyone cares about. A toy refutes universal claims, scale establishes existence. Two jobs, not two levels of honesty.
+
+The premise is also wrong, which is the useful part: what survived this day is not the toy but the statements with no number in them. Smallness did not produce them. It made them cheap to find and complete to check. Hence *shrink to search, not to prove*.
+
+**Q30 — "At what point does 'I am measuring my own specification' apply to me and not only to the agent? I wrote the environment, the reward, the diagnostics, the metrics and the interpretation. The diagnostic I built detects the agent's degenerate sublanguages. What diagnostic detects mine?"**
+
+That was the one question in the list I had no lead on at all. I do now, and it is humbling: **another person.** Five rounds from one outside reader produced five corrections, including the bound that carried the previous article.
+
+But it is not their humanity that does the work. His decisive property was **rerunning the code before speaking, every time**, and re-deriving from the published artifact rather than from my intentions. That puts the burden back on me: publish enough that re-derivation is possible, or lose the diagnostic.
+
+And the day supplied the limit of that answer, in the counterexample above. Two of us, agreeing, both wrong — and what broke it was not a third reader but running a step that had never been run, which produced the non-bijective codes his premise excluded. **Two people can share a frame**, especially when the second is reading the first's documents.
+
+> So: anything that does not inherit your specification. A reader who re-derives from the artifact, a second route to the same quantity, a prediction with a date on it — and when all of those agree and are wrong together, **the step of the programme you have not yet executed.**
+
+Three of those four depend on someone else's goodwill. The fourth is the only one I control alone, and it is a concrete argument for running the programme in order instead of commenting on the parts I have not run.
 
 ---
 
@@ -351,7 +377,7 @@ Everything above happens in a 27 × 27 world. The honest filter is to **rewrite 
 - **A sample maximum estimates nothing** when the value you want to exclude belongs to the support of the null.
 - **A concentration of 1 does not imply compositionality** once the code stops being injective, and the counterexample generalises.
 
-The rule I take away: **shrink to search, not to prove.** A small enumerable world is a discovery device — it makes arguments cheap to find and complete to check. What leaves it are the arguments that no longer mention its size. There is then no extrapolation to argue about; there are a theorem's hypotheses to verify, which is a finite operation.
+Hence the rule, already stated as the answer to Q29 and worth repeating as the operative one: **shrink to search, not to prove.** A small enumerable world is a discovery device — it makes arguments cheap to find and complete to check. What leaves it are the arguments that no longer mention its size. There is then no extrapolation to argue about; there are a theorem's hypotheses to verify, which is a finite operation.
 
 And the asymmetry has to be stated: a toy is good at **refuting** universal claims and can never **establish** that something happens at scale. Everything negative in this article is worth more than the one positive result — which is itself half circular, since I built the parametrization that produced it and then measured that it can barely write anything else.
 
@@ -383,6 +409,7 @@ And the asymmetry has to be stated: a toy is good at **refuting** universal clai
 - At 100 seeds, any residual selection is **smaller than 0.0087** in concentration.
 - Channel noise breaks the symmetry, leaves the reward tie exact, and **produces nothing**. Breaking symmetry is necessary and not sufficient.
 - **Eight of my hypotheses died in one day, none of them arithmetic.**
+- Two questions I wrote down in July got answered: shrinking to exactness does **not** protect you, and the diagnostic for your own specification is **anything that does not inherit it** — including the experiment you have not run.
 
 ---
 
