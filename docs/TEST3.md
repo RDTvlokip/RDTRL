@@ -342,6 +342,46 @@ quelle distance et dans quelle direction ». Le sommet de cette échelle est iso
 1,0000 pour un code compositionnel, puis **0,9294** pour le meilleur code non
 compositionnel trouvé.
 
+### Tout ce qui précède suppose une bijection, et §6.7 dit que ce ne sera pas le cas
+
+Ajouté le 11/08/2026, après §6.7, et ça change la conclusion précédente.
+
+L'argument qui rendait le sommet de l'échelle sûr est : une concentration de 1
+force chaque colonne à déterminer entièrement un attribut, et deux positions
+déterminant le **même** attribut effondreraient neuf référents sur trois messages,
+ce qu'une bijection ne peut pas faire. L'argument est juste. Sa prémisse ne l'est
+pas dans le régime qui nous attend — §6.5 mesure que les codes atteints ont 1 à 4
+collisions.
+
+Le contre-exemple se construit à la main. Soit le code `m₁ = a₁`, `m₂ = a₁`,
+`m₃ = a₂`, qui duplique le premier attribut sur deux positions et jette purement
+et simplement le troisième :
+
+```
+messages distincts utilises : 9 sur 27          bijectif : non
+
+I(A_i ; M_j) en bits        concentration MAX      : 1.000000
+[[1.585 1.585 0.   ]        concentration APPARIEE : 0.666667
+ [0.    0.    1.585]
+ [0.    0.    0.   ]]
+```
+
+> **La statistique publiée décerne 1,0000 — le sommet réservé aux codes
+> compositionnels — à un code qui jette un attribut sur trois et n'utilise qu'un
+> tiers de l'espace des messages.** La statistique appariée rend 0,667, qui est la
+> bonne réponse : deux attributs lus sur trois.
+
+Le double compte n'est donc pas un défaut « du milieu de l'échelle » réservé aux
+codes sans structure, comme la mesure sur les bijections le laissait croire. Dès
+qu'on quitte les bijections, **il atteint le sommet**. Ça règle la question de
+§6.1 sans discussion : la version appariée n'est pas une amélioration marginale de
+0,48 point de concordance, c'est la seule des deux qui reste interprétable dans le
+régime où l'expérience se trouvera.
+
+Les trois bornes du paragraphe précédent — 0,1443 · 0,6314 · 0,9294 — ont été
+obtenues par montée locale **sur des permutations**. Elles restent vraies sous
+cette condition, et cessent de valoir hors d'elle.
+
 **Changer l'instrument maintenant est gratuit, et ça ne le restera pas.** Aucun
 entraînement du test 3 n'a été lancé : il n'existe aucune concentration émergente
 mesurée. La même correction faite après un premier run serait invérifiable de
@@ -514,8 +554,8 @@ Mesuré, 8 départs par β, montée de gradient exacte :
 bissection sur la montée donnait 0,0381, soit 3 % au-dessus de la prédiction, et
 réduire la perturbation de 10⁻² à 10⁻⁵ ne refermait pas l'écart (0,0383 · 0,0381 ·
 0,0382 · 0,0375). Ce n'était donc pas la taille de la perturbation. La plus grande
-valeur propre du hessien au point de babil — gradient nul, donc point critique —
-croise zéro en **0,037037037**, à 3,4 × 10⁻¹² de 1/27.
+valeur propre du hessien au point de babil — gradient nul à 2,7 × 10⁻²⁰, donc point
+critique — croise zéro en **0,037037037**, à 2,4 × 10⁻¹¹ de 1/27.
 
 > Le 0,0381 mesurait **Adam**, pas l'objectif. Adam normalise ses pas, donc il ne
 > ralentit pas là où le gradient s'annule et quitte un maximum local que

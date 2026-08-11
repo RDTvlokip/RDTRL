@@ -159,6 +159,29 @@ dont la plus grande valeur propre croise zéro en **0,037037037** — à 3,4 × 
 1/27. La prédiction était exacte ; c'est l'instrument de mesure qui mesurait autre
 chose.
 
+### 1.13 « Le sommet de l'échelle de concentration est sûr » — morte le 11/08/2026
+
+Argument de Dipankar Sarkar, que j'avais vérifié et repris à mon compte le matin
+même : une concentration de 1 force chaque colonne à déterminer entièrement un
+attribut, et deux positions déterminant le **même** attribut effondreraient neuf
+référents sur trois messages, ce qu'une bijection ne peut pas faire. L'argument est
+juste. **Sa prémisse tombe** : §6.5 mesure que les codes atteints ont 1 à 4
+collisions, donc ne sont pas des bijections.
+
+Contre-exemple explicite, `m₁ = a₁`, `m₂ = a₁`, `m₃ = a₂` — le premier attribut
+dupliqué sur deux positions, le troisième jeté, 9 messages utilisés sur 27 :
+**concentration max = 1,000000**, concentration appariée = 0,666667. La statistique
+publiée décerne le sommet réservé aux codes compositionnels à un code qui perd un
+attribut sur trois.
+
+Conséquence : le double compte n'est pas un défaut du milieu de l'échelle réservé
+aux codes sans structure, comme la mesure sur les bijections nous l'avait fait
+croire à tous les deux. Hors des bijections, **il atteint le sommet**. La version
+appariée cesse d'être une amélioration marginale de 0,48 point de concordance pour
+devenir la seule interprétable. Et les trois bornes de §7.14 — 0,1443, 0,6314,
+0,9294 — restent vraies mais **conditionnellement à la bijectivité**, la montée
+locale ayant été faite sur des permutations.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
