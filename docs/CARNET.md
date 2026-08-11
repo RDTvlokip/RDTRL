@@ -2564,10 +2564,19 @@ procédure entière, transitivité sur les 27! codes, donc P(compositionnel) =
 est au niveau de l'architecture et je ne l'ai pas trouvé énoncé sous cette forme,
 mais c'est une affirmation sur ma recherche, pas sur la littérature.
 
-**Leur théorème 2 explique mon §6.6, et le confirme au lieu de le contredire.** Ils
-prouvent que la compositionnalité devient optimale sous **deux** conditions
-conjointes : une perte **factorisée** par trait, et un canal bruité avec ε sous un
-seuil. Or §6.6 mesure que le bruit seul ne produit rien, et démontre en une ligne
+**Leur théorème 2 explique mon §6.6, et le confirme au lieu de le contredire.**
+Énoncé vérifié sur deux rendus indépendants du papier : *« a language ℓ\* minimizes
+J over all languages ℓ which are one-to-one mappings if and only if ℓ\* is
+compositional »*, sous deux conditions conjointes. La perte
+`J(ℓ,f) = 𝔼[H(ρ(f′,f))]` est bâtie sur la **distance de Hamming entre traits
+corrompus et traits d'origine**, donc crédit partiel par trait et non
+tout-ou-rien. Et le bruit doit vérifier **ε < (|𝒜|−1)/|𝒜|**, soit ε < 0,667 pour
+mon alphabet de trois tokens — mon balayage allait à 0,5, dans leur domaine.
+
+**Distinction à ne pas effacer** : leur théorème dit quel langage **minimise** la
+perte sur les bijections. §6.6 dit lequel la dynamique **atteint**. Leur condition
+satisfaite n'implique pas qu'une méthode de gradient y arrive, et à ε = 0,5 mon
+système s'effondrait au babil avant de structurer quoi que ce soit. Or §6.6 mesure que le bruit seul ne produit rien, et démontre en une ligne
 que sous une récompense **tout-ou-rien** l'égalité des codes survit à tout ε. Les
 deux résultats sont la même chose vue des deux côtés :
 

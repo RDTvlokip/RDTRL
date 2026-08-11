@@ -445,7 +445,11 @@ I did this last. It should have been first, and I had written that down myself t
 
 The scopes differ and I am not going to inflate the difference: their theorem is about the **data distribution**, mine is about the **parameter map** — equivariance of the whole procedure, transitivity on the 27! codes, hence exactly 1 296/27!. The per-referent embedding corollary is at the level of the architecture and I have not found it stated in that form, but that is a statement about my search, not about the field.
 
-**Their Theorem 2 explains my constraint curve, and confirms it rather than contradicting it.** They prove compositionality becomes optimal under **two joint conditions**: a **factorized** per-feature loss, and a noisy channel below a noise threshold. Which is exactly the shape of what I measured:
+**Their Theorem 2 explains my constraint curve, and confirms it rather than contradicting it.** Verbatim: *"Then a language ℓ\* minimizes J over all languages ℓ which are one-to-one mappings if and only if ℓ\* is compositional"* — under two joint conditions. The loss `J(ℓ,f) = 𝔼[H(ρ(f′,f))]` is built on the **Hamming distance between corrupted and original features**, so it is per-feature partial credit, not exact match. And the noise must satisfy **ε < (|𝒜|−1)/|𝒜|**, which for my three-token alphabet is ε < 0.667 — my sweep ran to 0.5, inside their range.
+
+Note what their theorem is about: which language **minimizes** the loss, over bijections. Mine is about which one the dynamics **reaches**. Their condition being satisfied does not imply a gradient method finds it, and at ε = 0.5 my system collapsed to babble before structuring anything.
+
+Which is exactly the shape of what I measured:
 
 | | mine | theirs |
 |---|---|---|
