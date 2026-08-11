@@ -2354,6 +2354,57 @@ Les trois issues listées en §6.2 sont donc toutes réalisées, selon la
 paramétrisation — sauf la troisième, « la dynamique fuit activement les codes
 structurés », qui n'est réalisée nulle part.
 
+### 7.20 §6.3 traité : personne n'écrit le code, et j'avais mesuré le mauvais écart
+
+11/08/2026, `qui_ecrit_le_code.py`.
+
+**La réponse à la question du titre est « ni l'un ni l'autre ».** Geler l'émetteur
+et laisser apprendre le récepteur, ou l'inverse, donne **139 pas dans les deux
+sens** et la même valeur finale **à huit décimales** (0,99992302). Le problème est
+exactement symétrique : c'est la bilinéarité de §4 rendue visible. Et geler sur le
+code compositionnel ou sur une bijection quelconque est le même problème, à
+6 × 10⁻⁹ près — équivariance, pour la troisième fois de la journée.
+
+**L'erreur, et elle était dans l'interprétation, pas dans le code.** J'avais
+d'abord écrit « coût de la coordination = 0,049 », en comparant la paire libre
+(E[R] = 0,911) à un agent gelé sur une **bijection** (0,9999). Deux défauts :
+
+1. un code à *k* collisions plafonne **arithmétiquement** à (27 − *k*)/27, deux
+   référents envoyés sur le même message étant indistinguables quoi que fasse le
+   récepteur. Comparer une paire à 2,4 collisions à un agent qui a reçu une
+   bijection compare deux **plafonds**, pas deux apprentissages ;
+2. mon seuil de vitesse, « pas pour atteindre 0,99 », est **inatteignable dès la
+   première collision**. Il mesurait une capacité en croyant mesurer une vitesse.
+
+Le plafond est maintenant vérifié et non supposé : gelé sur un code à 2 collisions,
+l'agent libre atteint 0,9259, soit exactement 25/27, à −0,0000 près.
+
+**Le vrai résultat, une fois la mesure corrigée :**
+
+| les deux libres | E[R] | collisions | plafond | E[R]/plafond |
+|---|---|---|---|---|
+| S tabulaire | 0,9111 | 2,40 | 0,9110 | **1,0000** |
+| S structuré | 0,8777 | 3,30 | 0,8777 | **1,0000** |
+
+> La paire libre exécute son code exactement aussi bien qu'un agent à qui on
+> aurait donné ce même code tout fait. Le déficit n'est **pas** dans
+> l'apprentissage : il est entièrement dans le code sur lequel les deux se posent.
+
+La coordination coûte en vitesse (260 pas contre 139) et en qualité du code atteint
+(2,4 collisions au lieu de 0), et **rien** en exécution. C'est exactement la
+localisation que §6.3 cherchait, et elle est plus nette que ce que j'espérais.
+
+**Et une condition où l'échec change de nature** : `R gelé aléatoire, S structuré
+libre` plafonne à 0,5924. C'est la première du test 3 où l'échec vient de la
+**représentabilité** et non de la coordination — §6.5 l'avait mesuré en supervisé,
+on le retrouve dans le jeu.
+
+**Leçon d'instrument, la deuxième du genre aujourd'hui.** Un seuil absolu de
+réussite n'est comparable entre conditions que si toutes peuvent l'atteindre. Ici
+0,99 était hors de portée d'une condition sur deux, par arithmétique et non par
+difficulté. Voir aussi §1.12 : mesurer à travers un instrument qui ne peut pas
+répondre, c'est mesurer l'instrument.
+
 ---
 
 ## 8. Vingt questions inconfortables

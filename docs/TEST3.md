@@ -586,6 +586,73 @@ l'apprentissage du code mais dans la **coordination** sur lequel choisir. C'est
 une localisation, pas un constat — la version test 3 du gel de position qui avait
 tout localisé au test 2.
 
+### Mesuré le 11/08/2026 — `qui_ecrit_le_code.py`
+
+**Un agent gelé n'a pas de paramétrisation** : il est représenté par une matrice
+stochastique fixe. Sans ça, « geler sur un code aléatoire » serait impossible à
+poser pour la paramétrisation structurée, qui ne sait pas écrire la plupart des
+bijections (§6.5), et on confondrait une limite de représentabilité du **gelé**
+avec une difficulté d'apprentissage du **libre**.
+
+| condition | pas pour 99 % de sa propre valeur finale | E[R] final |
+|---|---|---|
+| S gelé compositionnel, R libre | 139 | 0,99992302 |
+| S gelé aléatoire, R libre | 139 | 0,99992303 |
+| S gelé à 2 collisions, R libre | 139 | 0,9259 |
+| R gelé compositionnel, S tabulaire libre | 139 | 0,99992302 |
+| R gelé aléatoire, S tabulaire libre | 139 | 0,99992302 |
+| R gelé compositionnel, S `structure` libre | 148 | 0,99991 |
+| R gelé aléatoire, S `structure` libre | 308 | **0,5924** |
+| les deux libres, S tabulaire | 260 | 0,9111 ± 0,0296 |
+| les deux libres, S `structure` | 216 | 0,8777 ± 0,0525 |
+
+**La réponse à la question du titre est : ni l'un ni l'autre.** Geler l'émetteur et
+laisser apprendre le récepteur, ou l'inverse, donne **139 pas dans les deux sens**
+et la même valeur finale **à huit décimales**. Le problème est exactement
+symétrique — c'est la bilinéarité de §4 rendue visible. Aucun des deux agents
+n'écrit le code ; il est écrit par la coordination.
+
+**Et geler sur le compositionnel ou sur un code quelconque est le même problème**,
+à 6 × 10⁻⁹ près pour le récepteur et 8 × 10⁻¹⁰ pour l'émetteur tabulaire. Les deux
+codes sont reliés par un renommage des messages, et un agent tabulaire est
+équivariant : c'est encore §6.7, sous une troisième forme.
+
+### Le déficit n'est pas dans l'apprentissage, il est dans le code choisi
+
+C'est le résultat de cette section, et **mon premier libellé disait l'inverse**.
+J'avais écrit « coût de la coordination = 0,049 », en comparant la paire libre à un
+agent gelé sur une **bijection**. Deux défauts, tous deux miens :
+
+1. un code à *k* collisions plafonne **arithmétiquement** à (27 − *k*)/27 — deux
+   référents envoyés sur le même message sont indistinguables, quoi que fasse le
+   récepteur. Comparer une paire à 2,4 collisions à un agent qui a reçu une
+   bijection compare deux plafonds, pas deux apprentissages ;
+2. mon seuil de vitesse était « pas pour atteindre 0,99 », **inatteignable dès la
+   première collision**. Il mesurait une capacité en croyant mesurer une vitesse.
+   Remplacé par « 99 % de sa propre valeur finale ».
+
+Le plafond est **vérifié et non supposé** : gelé sur un code à 2 collisions,
+l'agent libre atteint 0,9259, soit exactement 25/27, à −0,0000 de la prédiction.
+
+| les deux libres | E[R] | collisions | plafond | **E[R] / plafond** |
+|---|---|---|---|---|
+| S tabulaire | 0,9111 | 2,40 | 0,9110 | **1,0000** |
+| S `structure` | 0,8777 | 3,30 | 0,8777 | **1,0000** |
+
+> La paire libre exécute son code **exactement aussi bien** qu'un agent à qui on
+> aurait donné ce même code tout fait. Le déficit n'est pas dans l'apprentissage :
+> il est entièrement dans le code sur lequel les deux se posent.
+
+La coordination coûte donc en **vitesse** (260 pas contre 139) et en **qualité du
+code atteint** (2,4 collisions au lieu de 0), mais **rien** en exécution une fois
+le code choisi. C'est la localisation que §6.3 cherchait.
+
+**Une condition où l'échec change de nature.** `R gelé aléatoire, S structure
+libre` plafonne à 0,5924, et `R gelé à 2 collisions` à 0,4990. C'est la première
+condition du test 3 où un échec vient de la **représentabilité** et non de la
+coordination : l'émetteur structuré ne sait pas écrire l'encodeur demandé. §6.5
+l'avait mesuré en supervisé, on le retrouve ici dans le jeu.
+
 ### 6.4 Que voit le gradient au premier pas, avec un partenaire qui apprend aussi ?
 
 **Instrument.** Le point (c) de §4 donne le gradient exact et gratuit. On le
@@ -885,7 +952,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | 3 | ~~vérification du certificat des optima à égalité en cadre à deux agents~~ **FAIT le 11/08/2026** (`certificat_deux_agents.py`) : le certificat ne survit pas, un argument d'équivariance le remplace | **§6.7** |
 | 4 | ~~sonde de capacité et code compositionnel construit à la main~~ **FAIT le 11/08/2026** (`representable_atteignable_stable.py`) : les trois réponses sont différentes, et seule une paramétrisation à poids partagés voyant les attributs les sépare | **§6.5** |
 | 5 | ~~entraînement multi-graines~~ **§6.1 et §6.2 FAITS le 11/08/2026** (`code_emergent.py`, `dynamique_uniforme.py`), loi nulle appariée au profil de fibres, 100 graines, balayage en β | **§6.1** puis **§6.2** |
-| 6 | gel d'agent, analyse du gradient initial | **§6.3** puis **§6.4** |
+| 6 | ~~gel d'agent~~ **§6.3 FAIT le 11/08/2026** (`qui_ecrit_le_code.py`) : ni l'un ni l'autre n'écrit le code, et le déficit est dans le code choisi et non dans l'apprentissage · analyse du gradient initial | **§6.3** puis **§6.4** |
 | 7 | courbe de contrainte | **§6.6** |
 
 Soit, en termes de questions : **6.7 → 6.5 → 6.1 → 6.2 → 6.3 → 6.4 → 6.6.**

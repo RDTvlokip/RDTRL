@@ -153,10 +153,34 @@ Carnet §7.19.
   tire au hasard **sur l'orbite**, quand la paramétrisation est équivariante. Le
   profil de fibres, lui, est choisi par la dynamique, d'où le conditionnement.
 
+### Corrigé — §6.3 traité : personne n'écrit le code
+
+Carnet §7.20.
+
+- **Ni l'émetteur ni le récepteur.** Geler l'un ou l'autre donne **139 pas dans
+  les deux sens** et la même valeur finale **à huit décimales**. Le problème est
+  exactement symétrique. Et geler sur le compositionnel ou sur une bijection
+  quelconque est le même problème, à 6 × 10⁻⁹ près.
+- **Le déficit n'est pas dans l'apprentissage mais dans le code choisi.** Un code
+  à *k* collisions plafonne arithmétiquement à (27 − *k*)/27, vérifié et non
+  supposé : gelé sur 2 collisions, l'agent libre atteint exactement 25/27. Rapporté
+  à ce plafond, la paire libre obtient **E[R]/plafond = 1,0000** dans les deux
+  paramétrisations. La coordination coûte en vitesse (260 pas contre 139) et en
+  qualité du code atteint, et **rien** en exécution.
+- **Deux défauts de mesure corrigés avant publication** : je comparais la paire
+  libre à un agent gelé sur une *bijection*, donc deux plafonds et non deux
+  apprentissages ; et mon seuil de vitesse (« pas pour atteindre 0,99 ») est
+  inatteignable dès la première collision, donc mesurait une capacité en croyant
+  mesurer une vitesse. Remplacé par « 99 % de sa propre valeur finale ».
+- **Un agent gelé est une matrice fixe, sans paramétrisation**, sans quoi geler sur
+  un code aléatoire serait impossible pour la paramétrisation structurée et l'on
+  confondrait représentabilité du gelé et apprentissage du libre.
+
 ### Ajouté
 
 `src/test3_communication/code_emergent.py` ·
 `src/test3_communication/dynamique_uniforme.py` ·
+`src/test3_communication/qui_ecrit_le_code.py` ·
 `src/test3_communication/loi_nulle_longue.py` ·
 `src/test3_communication/variabilite_du_maximum.py` ·
 `src/test3_communication/appariement_vs_distance.py` ·
