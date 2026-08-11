@@ -130,6 +130,34 @@ The parametrization that actually breaks the tie is one where the referent enter
 
 ---
 
+## 🌡️ A phase diagram, and a threshold in closed form
+
+The same exact objective gives a second result for free, and it is the cleanest prediction-then-measurement of the day.
+
+Linearising the best response `S[r,m] ∝ exp(R[m,r]/β)` around the uniform point: a perturbation of the receiver comes back multiplied by `(1/(Nβ))²`, so the round trip contracts as soon as `Nβ > 1`. **The babbling point becomes stable at β = 1/N**, which here is 1/27 = 0.037037…
+
+Measured, 8 starts per β, exact ascent:
+
+| β | 0.010 | 0.020 | 0.030 | 0.035 | 0.037 | 0.040 | ≥ 0.050 |
+|---|---|---|---|---|---|---|---|
+| leaves the babble | 100 % | 100 % | 100 % | 100 % | **100 %** | **0 %** | 0 % |
+
+The transition brackets the prediction. But a bisection on the dynamics put it at **0.0381**, three percent high, and shrinking the perturbation from 10⁻² to 10⁻⁵ did not close the gap: 0.0383, 0.0381, 0.0382, 0.0375. So it was not the perturbation size, which was my first explanation and my fourth dead hypothesis of the day.
+
+It was **Adam**. Its steps are normalised by gradient magnitude, so it does not slow down where the gradient vanishes, and it walks out of a local maximum the objective calls stable. Settled without any dynamics at all, by the Hessian at the babbling point — where the gradient is 2.7 × 10⁻²⁰, confirming it is a critical point:
+
+> The largest eigenvalue crosses zero at **β = 0.037037037**, within 2.4 × 10⁻¹¹ of 1/27.
+
+> Measuring a stability threshold through an optimiser measures the optimiser.
+
+**A second threshold, and the region between them.** A pure code is worth J = 1; the babble is worth 1/27 + 2β·ln 27, which predicts a crossover at 0.1461. That is a lower bound: the optimised code branch keeps some entropy and is therefore worth more than 1, so it survives past it. Measured by bisection: **0.1701**.
+
+Between the two, on β ∈ [0.040, 0.146] by the grid, **both are local maxima** and the outcome depends entirely on the initialization. A single threshold would have hidden that the system is bistable.
+
+Neither number is about 27. The first is 1/N. The second is the crossing of `1` and `1/N + 2β·ln N`, plus an entropy correction that has to be measured.
+
+---
+
 ## 🧪 Representable, reachable, stable — and the ceiling I nearly mismeasured
 
 With a hand-built compositional code available, three questions that share a name and demand opposite remedies.
@@ -228,6 +256,12 @@ The theorem holds **in distribution**, not only in the mean. Under uniformity th
 > Any residual selection by the dynamics, on an equivariant parametrization, is **smaller than 0.0087** in concentration units. That is a bound, not an absence.
 
 And it justifies rerunning: at 20 seeds the bound was 0.027, so the scenario my reader had described as far likelier than an isolated outlier — a weak pressure lifting every run by 0.02 — would have gone unnoticed.
+
+**A second route to the same conclusion, using no mutual information at all.** The minimum Hamming distance from a code to the nearest of the 1 296 compositional ones is a purely combinatorial readout, and it moves the same way: **21.4 and 21.8 for the two equivariant parametrizations, 15.8 for the structured one**, with a minimum of 13 out of 27 against 20 elsewhere. Two instruments that share no assumption, agreeing.
+
+**And the correction I insisted on twice turns out not to matter.** Because the reached codes are not bijections, I rebuilt the null on the orbit matched to each run's collision profile — arguing at length that the bijective null was the wrong reference. Across the eleven profiles encountered, the matched null departs from the bijective one by **−0.0001 to +0.0005**, against an effect of 0.30. It had to be checked to be known, and it changes nothing. What the non-bijectivity *does* change is the choice of statistic, not the reference.
+
+**One thing I was not looking for.** Sweeping β below the stability threshold, raising it **improves** the code: E[R] from 0.887 to 0.931 and collisions from 2.95 to 1.75. Entropy helps coordination as long as it does not destroy the code — the opposite of its role in experiment 2, where it was the tax.
 
 ---
 
