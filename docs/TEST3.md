@@ -867,6 +867,90 @@ théorie du codage. Ce qui serait nouveau ici, ce n'est pas le phénomène : c'e
 le mesurer **contre une ligne de base calculée exactement** plutôt que contre une
 intuition.
 
+### Mesuré le 11/08/2026 — `courbe_de_contrainte.py`
+
+**La justification écrite dans la table ci-dessus est fausse, et ça se voit sans
+entraîner quoi que ce soit.** « Un code compositionnel ne perd qu'un attribut quand
+un token est corrompu ; un code holistique perd tout » — vrai en information, sans
+effet sur cette récompense. Pour un émetteur déterministe sur un code `c` et le
+décodeur optimal, `E[R]* = (1/27) Σ_m' max_r C[c(r), m']`, et `c` étant une
+bijection sur les 27 messages, `max_r C[c(r), m'] = max_m C[m, m']` :
+**indépendant de `c`**.
+
+| ε | 0,00 | 0,05 | 0,10 | 0,20 | 0,30 | 0,50 |
+|---|---|---|---|---|---|---|
+| compositionnel − 200 bijections | 0 | −1,1e−16 | −1,1e−16 | 0 | +1,1e−16 | −5,6e−17 |
+
+Perdre « un seul attribut » ne rapporte rien quand le crédit est tout-ou-rien sur
+le référent exact.
+
+**Mais le canal brise bel et bien la symétrie**, et c'est ce qui rend l'expérience
+intéressante. À ε = 0,2, l'écart maximal entre `C` et sa version permutée vaut
+**0,00e+00** sur le groupe structurel et au minimum **0,050** sur 200 permutations
+quelconques. Donc :
+
+> Le certificat des optima à égalité continue de dire que **rien** ne distingue les
+> bijections en récompense, exactement, à tout ε. Et le théorème d'équivariance de
+> §6.7 ne s'applique plus. Toute sélection observée opérerait donc **entièrement
+> hors de la récompense** — le cas le plus pur que ce banc pouvait produire.
+
+**Et il ne se passe rien.** 15 graines par ε, émetteur tabulaire :
+
+| ε | 0,00 | 0,05 | 0,10 | 0,20 | 0,30 | 0,50 |
+|---|---|---|---|---|---|---|
+| E[R] | 0,9333 | 0,8344 | 0,7598 | 0,6104 | 0,4840 | 0,0370 |
+| concentration appariée | 0,1030 | 0,1152 | 0,1080 | 0,1286 | 0,1216 | 0,1160 |
+| **z** | −0,44 ± 0,20 | −0,05 ± 0,22 | −0,28 ± 0,30 | **+0,38 ± 0,29** | +0,15 ± 0,26 | −0,02 ± 0,20 |
+| > q99,9 | 0/15 | 0/15 | 0/15 | 0/15 | 0/15 | 0/15 |
+
+Aucun ε ne sort. À 15 graines la borne est |z| < 0,72, soit 0,024 de concentration —
+à comparer aux **+9,9** que la paramétrisation structurée produit en §6.1, un
+facteur quatorze. À ε = 0,5 le système s'effondre au babil pur (E[R] = 1/27, 9,4
+collisions) : le canal détruit le code avant de le structurer.
+
+> **Briser la symétrie est nécessaire, et pas suffisant.** C'est un affaiblissement
+> de l'hypothèse unificatrice que j'avais tirée de §6.7 le matin même.
+
+**Le renouvellement de population ne fait rien non plus, et c'était prédit.**
+Remplacer un récepteur tabulaire par un neuf est une opération échangeable, donc
+l'équivariance sous `S₂₇` **survit** et le théorème de §6.7 s'applique encore :
+
+| période | aucun | 1 000 | 300 | 100 |
+|---|---|---|---|---|
+| E[R] | 0,9333 | 0,9476 | 0,9449 | 0,8821 |
+| z | +0,33 ± 0,29 | +0,17 ± 0,25 | −0,34 ± 0,25 | −0,15 ± 0,27 |
+
+Prédiction confirmée. Si l'*iterated learning* produit de la compositionnalité, ça
+ne peut donc pas venir du renouvellement seul — il faut un biais inductif du
+réapprenant ou un goulot structuré. Je le formule comme une conclusion sur **ce
+banc** ; je n'ai pas fait la revue de littérature.
+
+### Ce qu'il aurait fallu, calculé exactement
+
+Le mécanisme de la table existe — il demande une récompense à **crédit partiel par
+attribut**, où le décodeur est noté sur le nombre d'attributs qu'il retrouve. Alors
+l'égalité se brise, et largement :
+
+| ε | 0,05 | 0,10 | 0,20 | 0,30 | 0,50 |
+|---|---|---|---|---|---|
+| compositionnel − aléatoire, crédit partiel | +0,034 | +0,063 | **+0,108** | +0,138 | +0,153 |
+
+**Mais ça déplace la compositionnalité dans la spécification.** Une récompense par
+attribut dit à l'agent que les attributs comptent séparément, ce qui est
+exactement l'information qu'un code compositionnel encode. C'est le « oracle sur le
+monde, dedans » de §1, d'un cran plus profond : non plus dans le choix des
+référents, mais dans la fonction de récompense elle-même.
+
+### La conclusion de §6.6, et elle est plus dure que la courbe attendue
+
+De tout ce qui a été testé aujourd'hui, **une seule chose a produit de la
+compositionnalité : la paramétrisation** — et elle l'a fait en rendant les
+alternatives inécrivables, pas en les départageant. La seule contrainte
+d'environnement qui marcherait le fait en mettant la préférence dans la récompense.
+
+> Sur ce banc, la compositionnalité n'a jamais été **sélectionnée**. Elle a été
+> soit impossible, soit spécifiée.
+
 ### 6.7 Le certificat des optima à égalité survit-il à un jeu à deux agents ? — **TRAITÉ le 11/08/2026**
 
 C'était « la question la plus inconfortable, et je ne connais pas la réponse ».
@@ -1023,7 +1107,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | 4 | ~~sonde de capacité et code compositionnel construit à la main~~ **FAIT le 11/08/2026** (`representable_atteignable_stable.py`) : les trois réponses sont différentes, et seule une paramétrisation à poids partagés voyant les attributs les sépare | **§6.5** |
 | 5 | ~~entraînement multi-graines~~ **§6.1 et §6.2 FAITS le 11/08/2026** (`code_emergent.py`, `dynamique_uniforme.py`), loi nulle appariée au profil de fibres, 100 graines, balayage en β | **§6.1** puis **§6.2** |
 | 6 | ~~gel d'agent, analyse du gradient initial~~ **§6.3 et §6.4 FAITS le 11/08/2026** (`qui_ecrit_le_code.py`, `gradient_premier_pas.py`) : ni l'un ni l'autre n'écrit le code, le déficit est dans le code choisi, et la préférence de la paramétrisation structurée apparaît entre le pas 10 et le pas 30 | **§6.3** puis **§6.4** |
-| 7 | courbe de contrainte | **§6.6** |
+| 7 | ~~courbe de contrainte~~ **FAIT le 11/08/2026** (`courbe_de_contrainte.py`) : ni le bruit de canal ni le renouvellement ne produisent quoi que ce soit, et la justification écrite dans la table de §6.6 était fausse pour une récompense tout-ou-rien | **§6.6** |
 
 Soit, en termes de questions : **6.7 → 6.5 → 6.1 → 6.2 → 6.3 → 6.4 → 6.6.**
 
@@ -1050,6 +1134,11 @@ Le chiffre survit par un argument de symétrie, mais l'ordre du programme change
   `S₂₇` vers un groupe respectant la structure de produit, dont les codes
   compositionnels sont exactement une orbite. À vérifier contrainte par contrainte,
   mais ça remplace une liste de recettes par une question unique.
+
+  **Corrigé le soir même par §6.6.** L'hypothèse est fausse sur deux points. Le
+  renouvellement de population **ne brise pas** `S₂₇` du tout, étant échangeable.
+  Et le bruit de canal le brise sans produire quoi que ce soit : z reste nul à tous
+  les ε. **Briser la symétrie est nécessaire, pas suffisant.**
 
 **Pourquoi §6.6 descend en dernier.** C'est la plus coûteuse — un balayage complet
 par contrainte, sur plusieurs graines — et elle n'a aucun sens tant que la ligne de

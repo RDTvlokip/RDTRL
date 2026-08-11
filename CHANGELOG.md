@@ -196,8 +196,37 @@ Carnet §7.21, hypothèse morte §1.14.
   biaise fortement en agrégat sans écrire le code. En structuré, l'empreinte est
   exactement nulle.
 
+### Corrigé — §6.6 traité : la seule chose qui a marché est la paramétrisation
+
+Dernière étape du programme du test 3. Carnet §7.22, hypothèses mortes §1.15 et
+§1.16.
+
+- **La justification écrite dans ma table de §6.6 est fausse**, et ça se démontre
+  sans entraîner : pour un émetteur déterministe et le décodeur optimal,
+  `E[R]* = (1/27) Σ_m' max_r C[c(r), m']`, et `c` étant une bijection sur les 27
+  messages, ce max ne dépend pas de `c`. Écart compositionnel/aléatoire **≤ 1,1 ×
+  10⁻¹⁶ à tout ε**. Perdre « un seul attribut » ne rapporte rien quand le crédit
+  est tout-ou-rien.
+- **Le canal brise pourtant la symétrie** : écart 0,00e+00 sur le groupe
+  structurel, ≥ 0,050 sur 200 permutations quelconques. Donc le certificat des
+  optima à égalité tient toujours et le théorème d'équivariance ne s'applique plus.
+- **Et il ne se passe rien** : z de −0,44 à +0,38 sur six valeurs d'ε, 0 run sur 90
+  au-delà du quantile 99,9 %. Borne à 15 graines : |z| < 0,72, contre +9,9 pour la
+  paramétrisation structurée.
+- **Briser la symétrie est nécessaire, pas suffisant.** Ça réfute l'hypothèse
+  unificatrice que j'avais tirée de §6.7 le matin même.
+- **Le renouvellement de population ne fait rien non plus, et c'était prédit** :
+  remplacer un agent tabulaire par un neuf est échangeable, donc l'équivariance
+  survit. z de −0,34 à +0,33 sur quatre périodes.
+- **Ce qu'il aurait fallu, calculé exactement** : une récompense à crédit partiel
+  par attribut brise l'égalité (+0,108 à ε = 0,2). Mais ça met la
+  compositionnalité dans la spécification.
+- **Conclusion** : sur ce banc, la compositionnalité n'a jamais été *sélectionnée*.
+  Elle a été soit impossible, soit spécifiée.
+
 ### Ajouté
 
+`src/test3_communication/courbe_de_contrainte.py` ·
 `src/test3_communication/code_emergent.py` ·
 `src/test3_communication/dynamique_uniforme.py` ·
 `src/test3_communication/qui_ecrit_le_code.py` ·

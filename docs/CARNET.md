@@ -2165,6 +2165,13 @@ goulot de vocabulaire, pression de longueur, renouvellement de population brisen
 tous `S₂₇` vers un groupe respectant la structure de produit. Une liste de recettes
 devient une question unique.
 
+**⚠️ Cette dernière phrase est fausse, et §6.6 l'a montrée le soir même.** Le
+renouvellement ne brise pas `S₂₇` du tout, et le bruit de canal le brise sans rien
+produire. Briser la symétrie est **nécessaire, pas suffisant**. Voir §1.16 et
+§7.22. Je laisse la phrase ici plutôt que de la réécrire : elle a été formulée
+avant la mesure, elle a orienté l'expérience qui l'a réfutée, et c'est exactement
+ce qu'une hypothèse doit faire.
+
 **Trois erreurs à moi dans ce fichier, trouvées avant de le committer.**
 
 1. J'avais écrit qu'une ligne d'émetteur autorégressif est une loi produit. Faux :
@@ -2466,6 +2473,74 @@ ailleurs aujourd'hui : les cosinus étaient lus sur la **dernière graine** au l
 d'être moyennés (§1.6 encore), et les témoins de P4 étaient des bijections alors
 que le code atteint a des collisions (§7.17 encore). Deux pièges que je venais de
 corriger, retombés dedans à deux sections d'intervalle.
+
+### 1.15 « Le bruit de canal favorise les codes compositionnels » — morte le 11/08/2026
+
+Écrite dans la table de TEST3.md §6.6 comme justification du bouton le plus
+prometteur : « un code compositionnel ne perd qu'un attribut quand un token est
+corrompu ; un code holistique perd tout ». Vrai en information, **sans aucun effet
+sur cette récompense**, et ça se démontre en une ligne sans entraîner quoi que ce
+soit. Pour un émetteur déterministe sur un code `c` et le décodeur optimal,
+`E[R]* = (1/27) Σ_m' max_r C[c(r), m']`, et `c` étant une bijection sur les 27
+messages, `max_r C[c(r), m'] = max_m C[m, m']` — **indépendant de `c`**. Mesuré :
+écart compositionnel/aléatoire ≤ 1,1 × 10⁻¹⁶ à tout ε de 0 à 0,8.
+
+Perdre un seul attribut ne rapporte rien quand le crédit est tout-ou-rien sur le
+référent exact. Sous une récompense à **crédit partiel par attribut**, l'égalité se
+brise (+0,108 à ε = 0,2) — mais ça met la compositionnalité dans la spécification.
+
+### 1.16 « Briser la symétrie suffit à produire de la compositionnalité » — morte le 11/08/2026
+
+Hypothèse unificatrice que j'avais tirée de §6.7 le matin même, et qui remplaçait
+la liste de recettes de §6.6 par une question unique. Elle est fausse sur deux
+points, mesurés le soir. Le renouvellement de population **ne brise pas** `S₂₇` du
+tout, étant une opération échangeable — donc le théorème s'applique encore, et z
+reste nul à toutes les périodes, comme prédit. Et le bruit de canal, lui, **brise
+bien** la symétrie (écart 0,00e+00 sur le groupe structurel, ≥ 0,050 sur 200
+permutations quelconques) sans rien produire : z de −0,44 à +0,38 sur six valeurs
+d'ε, aucun run sur 90 au-delà du quantile 99,9 %.
+
+**Briser la symétrie est nécessaire, pas suffisant.** Détail en §7.22.
+
+### 7.22 §6.6 traité : la seule chose qui a marché aujourd'hui est la paramétrisation
+
+11/08/2026, `courbe_de_contrainte.py`. Dernière étape du programme du test 3.
+
+**Le dispositif le plus pur que ce banc pouvait produire.** Le canal laisse
+l'égalité des récompenses **exactement** intacte (§1.15) tout en brisant la
+symétrie de l'objectif. Donc le certificat des optima à égalité continue de dire
+que rien ne distingue les bijections, et le théorème d'équivariance ne s'applique
+plus : toute sélection observée opérerait entièrement hors de la récompense.
+
+**Et il ne se passe rien.** 15 graines par ε, émetteur tabulaire :
+
+| ε | 0,00 | 0,05 | 0,10 | 0,20 | 0,30 | 0,50 |
+|---|---|---|---|---|---|---|
+| E[R] | 0,9333 | 0,8344 | 0,7598 | 0,6104 | 0,4840 | 0,0370 |
+| z | −0,44 | −0,05 | −0,28 | +0,38 | +0,15 | −0,02 |
+
+Borne à 15 graines : |z| < 0,72, soit 0,024 de concentration, contre +9,9 pour la
+paramétrisation structurée — un facteur quatorze. À ε = 0,5 le canal détruit le
+code avant de le structurer (babil pur, 9,4 collisions).
+
+**Le renouvellement ne fait rien non plus, et c'était prédit** : z de −0,34 à +0,33
+sur quatre périodes. L'équivariance survit à une opération échangeable, donc le
+théorème s'applique encore. Si l'*iterated learning* produit de la
+compositionnalité, ça ne peut pas venir du renouvellement seul sur ce banc — il
+faut un biais inductif du réapprenant. Je n'ai pas fait la revue de littérature,
+donc c'est une conclusion sur mon dispositif, pas sur les travaux des autres.
+
+**La conclusion, et elle est plus dure que la courbe que j'attendais.**
+
+> De tout ce qui a été testé aujourd'hui, une seule chose a produit de la
+> compositionnalité : la **paramétrisation**. Et elle l'a fait en rendant les
+> alternatives inécrivables, pas en les départageant. La seule contrainte
+> d'environnement qui marcherait le fait en mettant la préférence dans la
+> récompense. Sur ce banc, la compositionnalité n'a jamais été **sélectionnée** :
+> elle a été soit impossible, soit spécifiée.
+
+C'est la thèse du projet depuis le test 2, poussée aussi loin que ce banc le
+permet, et elle survit à tout ce que je lui ai opposé aujourd'hui.
 
 ---
 
