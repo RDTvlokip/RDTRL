@@ -46,8 +46,9 @@ def bloc(n, generateur, taille_lot):
     pool = np.empty(0)
     while pas < n:
         lot = min(taille_lot, n - pas)
+        # permutations par construction, donc verifier serait une perte seche
         codes = np.argsort(generateur.random((lot, N)), axis=1)
-        cm, _, _ = statistiques(matrices_information(codes))
+        cm, _, _ = statistiques(matrices_information(codes, verifier_bijectivite=False))
         somme += cm.sum()
         somme_carres += (cm * cm).sum()
         pool = np.concatenate([pool, cm])

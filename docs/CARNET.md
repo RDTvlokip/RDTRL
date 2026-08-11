@@ -134,6 +134,31 @@ L'inflation suit la **structure**, pas le niveau, et les deux ne sont pas le mê
 axe. Conséquence utile : elle est exactement nulle partout où §6.1 a quelque chose
 à lire. Je n'aurais pas trouvé ça en balayant une seule des deux populations.
 
+### 1.11 « Le certificat des optima à égalité s'applique tel quel à deux agents » — morte le 11/08/2026
+
+Écrite en §3 de TEST3.md, et elle porte tout le calcul des 1,19 × 10⁻²⁵. Le
+certificat exige que **les objets à égalité soient le support de la loi dont
+l'entropie figure dans l'objectif**. Au test 2 c'était le cas — objets à égalité :
+des séquences ; entropie : celle de la loi des séquences. Au test 3 les objets à
+égalité sont des **codes**, et aucune loi sur les codes n'apparaît dans l'objectif.
+La récompense étant de coordination, étaler l'émetteur sur K codes fait chuter
+`E[R]` comme 1/K : mesuré 1,0000 / 0,5000 / 0,3416 / 0,2237 / 0,1511 / 0,0713 pour
+K = 1, 2, 3, 5, 10, 27. Le chiffre survit par un argument de symétrie, qui est plus
+fort mais plus étroit. Détail en §7.15.
+
+### 1.12 « L'écart entre le seuil mesuré et 1/27 vient de la taille de la perturbation » — morte le 11/08/2026
+
+La bissection sur la montée donnait β = 0,0381 contre 1/27 = 0,0370 prédit. Mon
+explication : la perturbation vaut 10⁻³, pas un infinitésimal, donc elle franchit
+une barrière peu profonde. Testée en réduisant le bruit de 10⁻² à 10⁻⁵ : 0,0383 ·
+0,0381 · 0,0382 · 0,0375. L'écart ne se referme pas, et la suite n'est même pas
+monotone. La vraie cause est **Adam** : ses pas sont normalisés, donc il ne
+ralentit pas là où le gradient s'annule et quitte un maximum local que l'objectif
+tient pour stable. Tranché sans aucune dynamique, par le hessien au point de babil,
+dont la plus grande valeur propre croise zéro en **0,037037037** — à 3,4 × 10⁻¹² de
+1/27. La prédiction était exacte ; c'est l'instrument de mesure qui mesurait autre
+chose.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -2044,6 +2069,79 @@ trouvé entre les deux statistiques vaut 0,1443, sur un code de concentration
 haute concentration atteinte **avec** double compte vaut 0,6314, et ce code vaut
 encore 0,5560 en apparié. Le sommet reste isolé : 1,0000 pour un compositionnel,
 puis 0,9294 pour le meilleur non compositionnel trouvé.
+
+### 7.15 §6.7 traité : le certificat tombe, et son remplaçant désigne le coupable
+
+11/08/2026, `certificat_deux_agents.py`. C'était « la question la plus
+inconfortable, et je ne connais pas la réponse », et « le premier endroit du projet
+où un résultat que j'ai publié pourrait s'effondrer sur un point technique que je
+n'ai pas vérifié ». Il s'est effondré.
+
+**Ce qui casse, et pas où je le cherchais.** Je soupçonnais le terme d'entropie,
+qui porte sur deux politiques séparément. Le défaut est en amont : le certificat
+exige que les objets à égalité soient le support de la loi dont l'entropie est dans
+l'objectif. Détail en §1.11.
+
+**Le remplaçant, plus fort et plus étroit.** `c → π ∘ c` est transitive sur les 27!
+bijections, donc une paramétrisation tabulaire à initialisation échangeable rend les
+27! codes exactement équiprobables — sans Gibbs. Vérifié : 8 essais sur 8 rendent
+exactement `π ∘ c`. C'est un **théorème sur la paramétrisation**, valable pour tout
+algorithme équivariant, et non un résultat d'optimisation.
+
+**Le compte qui tombe juste, et qui est le vrai résultat.** Les renommages
+respectant la décomposition en (m₁, m₂, m₃) forment un groupe d'ordre **exactement
+1 296** — compté par retour arrière et pas seulement construit, les lignes du monde
+étant exactement les triangles du graphe de Hamming H(3,3). Et les 1 296 codes
+compositionnels sont **exactement l'orbite du code canonique sous ce groupe**, les
+deux ensembles étant construits par deux chemins de code indépendants. Autrement
+dit : la seule paramétrisation dont le groupe est plus petit que `S₂₇` est
+précisément celle dont le groupe distingue les codes compositionnels.
+
+**Ce que ça change au programme, et c'est beaucoup.** §6.1 et §6.2 sur un émetteur
+tabulaire ne peuvent **rien découvrir** : leur issue est un théorème. Ils gardent
+une valeur comme détecteurs de bogue — un écart au hasard prouverait que
+l'implémentation a cassé la symétrie. L'expérience réelle est le contraste
+tabulaire / structuré. Et §6.6 reçoit une hypothèse unificatrice : bruit de canal,
+goulot de vocabulaire, pression de longueur, renouvellement de population brisent
+tous `S₂₇` vers un groupe respectant la structure de produit. Une liste de recettes
+devient une question unique.
+
+**Trois erreurs à moi dans ce fichier, trouvées avant de le committer.**
+
+1. J'avais écrit qu'une ligne d'émetteur autorégressif est une loi produit. Faux :
+   `P(m₁)P(m₂|m₁)P(m₃|m₁,m₂)` représente n'importe quelle loi sur 27 messages.
+   L'argument porte sur la **symétrie de la paramétrisation**, pas sur
+   l'expressivité — un π quelconque ne correspond à aucune permutation des poids,
+   donc l'équivariance tombe même à expressivité pleine. Même forme qu'au test 2,
+   où l'effondrement venait de la factorisation et non de l'objectif. Le 1 296 est
+   donc un **majorant** : une architecture concrète peut être bien moins symétrique.
+2. Mon tableau de phase lisait **un seul départ par β**, et la variation entre β
+   voisins (0,926 puis 0,889 puis 0,963) était du bruit d'initialisation. C'est la
+   faute de §1.6 recommise. En 8 départs le tableau devient unanime : 100 %
+   d'échappement jusqu'à 0,037, 0 % à partir de 0,040, min = max.
+3. Le 0,0381 mesurait Adam et non l'objectif. Voir §1.12.
+
+**Un résultat de §6.5 arrivé avec deux étapes d'avance.** Les valeurs atteintes
+depuis le babil sont 0,8518 · 0,8888 · 0,9259 · 0,9629 · 1,0000, soit exactement
+23/27 à 27/27. **La montée de gradient exacte, sans le moindre échantillonnage, ne
+rejoint presque jamais un code parfait depuis le babil** — un départ sur 40 — et se
+pose sur des codes où 1 à 4 référents entrent en collision. Partie *sur* un code
+parfait, elle y reste à 1,0000. C'est *atteignable ≠ stable*, sans pouvoir
+l'imputer au bruit d'échantillonnage puisqu'il n'y en a aucun.
+
+**Et le piège que ça ouvre, fermé le jour même.** La loi nulle de §6.1 est tirée sur
+des **bijections**, et le chemin vectorisé de `loi_nulle_longue.py` s'appuie sur
+l'identité « les deux marges d'un code bijectif sont uniformes ». Sur un code
+non bijectif il rend des nombres faux **sans lever d'erreur** : mesuré 0,110573 au
+lieu de 0,108071, soit 0,0025, un cinquième de ce que §6.2 doit résoudre. Garde
+ajoutée. Mais le fond demeure et doit être traité **avant** §6.1 : comparer un code
+émergent non bijectif à une loi nulle bijective compare deux supports différents.
+La sortie retenue est de tirer la nulle sur la classe réellement atteinte, à nombre
+de collisions apparié run par run.
+
+**Ce qui rend tout ça vérifiable.** Aucun entraînement n'a tourné. Deuxième fois
+dans la journée que ce point sauve une correction : elle ne peut pas avoir été
+choisie au vu d'un résultat, et l'historique git le montre.
 
 ---
 

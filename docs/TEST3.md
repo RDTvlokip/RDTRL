@@ -1,12 +1,13 @@
 # Test 3 — Efficacité communicative : conception, instruments, seuil
 
-État : **instruments construits, aucun entraînement lancé.** Ce document fixe le
-dispositif et le critère de falsification **avant** d'écrire du code, ce que les
-tests 1 et 2 n'ont jamais eu. Les étapes 1 et 2 de §7 existent (`grammaire3.py`,
-`loi_nulle_longue.py`, `variabilite_du_maximum.py`, `appariement_vs_distance.py`) ;
-les étapes 3 à 7 n'existent pas. Aucune concentration émergente n'a donc été
-mesurée à ce jour, ce qui rend les corrections d'instrument du 11/08/2026
-vérifiables : elles ne peuvent pas avoir été choisies au vu d'un résultat.
+État : **instruments construits, étape 3 traitée, aucun entraînement lancé.** Ce
+document fixe le dispositif et le critère de falsification **avant** d'écrire du
+code, ce que les tests 1 et 2 n'ont jamais eu. Les étapes 1 à 3 de §7 existent
+(`grammaire3.py`, `loi_nulle_longue.py`, `variabilite_du_maximum.py`,
+`appariement_vs_distance.py`, `certificat_deux_agents.py`) ; les étapes 4 à 7
+n'existent pas. Aucune concentration émergente n'a donc été mesurée à ce jour, ce
+qui rend les corrections d'instrument du 11/08/2026 vérifiables : elles ne peuvent
+pas avoir été choisies au vu d'un résultat.
 
 ---
 
@@ -79,9 +80,40 @@ fraction compositionnelle     : 1 296 / 27! ≈ 1,19 × 10^-25
 
 **Toutes ces bijections rapportent exactement 1.** Elles sont à égalité parfaite.
 
-Le certificat de §2.2 du carnet s'applique donc tel quel : sous max-entropie, des
-optima à égalité sont équiprobables. **À l'optimum de l'objectif, la probabilité
-que le code soit compositionnel est de l'ordre de 10⁻²⁵.**
+**Correction du 11/08/2026 — le certificat invoqué ici ne s'applique pas.** J'avais
+écrit que le certificat de §2.2 du carnet s'appliquait « tel quel ». C'est faux, et
+§6.7 le vérifie (`certificat_deux_agents.py`).
+
+Le certificat exige que **les objets à égalité soient le support de la loi dont
+l'entropie figure dans l'objectif**. Au test 2 c'était le cas : les objets à
+égalité étaient des séquences, et l'entropie portait sur la loi des séquences,
+donc étaler la masse sur les optima était gratuit. Ici les objets à égalité sont
+des **codes**, et aucune loi sur les codes n'apparaît dans l'objectif —
+l'entropie porte sur les lignes de `S` et de `R`. La récompense est de plus une
+récompense de **coordination**, donc étaler l'émetteur sur plusieurs codes casse
+le décodage. Mesuré, en mélangeant K codes tirés au hasard des deux côtés :
+
+| K | 1 | 2 | 3 | 5 | 10 | 27 |
+|---|---|---|---|---|---|---|
+| E[R] | 1,0000 | 0,5000 | 0,3416 | 0,2237 | 0,1511 | 0,0713 |
+
+Il n'existe donc aucune loi optimale qui « charge également » les 27! optima : la
+phrase n'a pas de sens dans ce cadre.
+
+**Le chiffre survit, par un argument de symétrie qui est plus fort.** Renommer les
+27 messages par une permutation π agit sur les codes par `c → π ∘ c`, et cette
+action est **transitive** sur les 27! bijections — pour aller de `c₁` à `c₂`, il
+suffit de prendre `π = c₂ ∘ c₁⁻¹`. Si la paramétrisation et l'initialisation sont
+équivariantes sous ce groupe, alors les 27! codes sont **exactement**
+équiprobables, sans aucune hypothèse de Gibbs.
+
+> **À l'optimum, pour une paramétrisation tabulaire, la probabilité que le code
+> soit compositionnel vaut exactement 1 296/27! ≈ 1,19 × 10⁻²⁵.**
+
+C'est désormais un **théorème sur la paramétrisation**, pas une conséquence du
+max-entropie, et il vaut pour tout algorithme équivariant. Le prix à payer est
+qu'il ne vaut plus que pour le cas tabulaire : voir §6.7 pour ce qui se passe
+quand la paramétrisation voit les tokens et les positions.
 
 ### Ce que ça signifie
 
@@ -436,28 +468,144 @@ théorie du codage. Ce qui serait nouveau ici, ce n'est pas le phénomène : c'e
 le mesurer **contre une ligne de base calculée exactement** plutôt que contre une
 intuition.
 
-### 6.7 Le certificat des optima à égalité survit-il à un jeu à deux agents ?
+### 6.7 Le certificat des optima à égalité survit-il à un jeu à deux agents ? — **TRAITÉ le 11/08/2026**
 
-**La question la plus inconfortable, et je ne connais pas la réponse.**
+C'était « la question la plus inconfortable, et je ne connais pas la réponse ».
+Réponse : **le certificat ne survit pas**, il est remplacé par un argument plus
+fort, et ce remplacement désigne l'endroit exact où la compositionnalité peut
+naître. `certificat_deux_agents.py`, aucun entraînement, tout en calcul exact.
 
-Tout le raisonnement de §3 importe un résultat du test 2 : *sous max-entropie, des
-optima à récompense égale sont équiprobables*. Ce résultat a été établi pour un
-**agent unique** optimisant `E[R] + β·H`.
+**Ce qui casse, et pas pour la raison que j'avais écrite.** J'avais soupçonné le
+terme d'entropie, qui porte sur deux politiques séparément. Le vrai défaut est
+plus simple : le certificat exige que les objets à égalité soient **le support de
+la loi dont l'entropie est dans l'objectif**. Au test 2, les objets à égalité
+étaient des séquences et l'entropie portait sur les séquences. Ici les objets à
+égalité sont des codes, et il n'y a aucune loi sur les codes dans l'objectif.
+Mesuré en §3 : mélanger K codes fait chuter `E[R]` comme 1/K. Les 27! optima ne
+sont pas occupables ensemble.
 
-Ici l'objectif conjoint est `(1/27)·tr(S R) + β·(H(S) + H(R))`. Rien ne garantit
-que son optimum soit encore une loi de Gibbs sur les paires, ni que les 27! optima
-globaux restent équiprobables. Le terme d'entropie porte sur **deux** politiques
-séparément, pas sur la distribution jointe des messages.
+**Ce qui remplace le certificat.** L'action `c → π ∘ c` du renommage des messages
+est transitive sur les 27! bijections. Une paramétrisation **tabulaire** avec
+initialisation échangeable est équivariante sous `S₂₇` tout entier, donc les 27!
+codes sont exactement équiprobables. Vérifié numériquement, montée de gradient
+exacte donc déterministe : **8 essais sur 8** rendent exactement `π ∘ c` après
+renommage des messages. Avec échantillonnage, l'équivariance devient
+distributionnelle et non plus exacte par run — ce qui est précisément ce que teste
+§6.2, une loi sur 50 à 100 graines.
 
-**Instrument.** L'espace étant énumérable, on peut résoudre numériquement le
-problème `max (1/27)·tr(S R) + β·(H(S)+H(R))` sur les matrices stochastiques, par
-montée de gradient exacte en paramétrisation tabulaire, et **regarder à quoi
-ressemble l'optimum**. Si les 27! solutions n'y sont pas équiprobables, alors
-mon calcul des 10⁻²⁵ repose sur une hypothèse fausse et il faut le refaire.
+### Le diagramme de phase, et un seuil en forme close
 
-**C'est le premier endroit du projet où un résultat que j'ai publié pourrait
-s'effondrer sur un point technique que je n'ai pas vérifié.** Il passe donc en
-tête de liste, avant tout entraînement.
+Deux seuils, et il fallait les deux : un seul aurait masqué que le système est
+**bistable** entre les deux.
+
+**β_c = 1/27**, où le babil cesse d'être instable. Dérivé par linéarisation de la
+meilleure réponse `S[r,m] ∝ exp(R[m,r]/β)` autour de l'uniforme : une perturbation
+du récepteur revient multipliée par `(1/(27β))²`, donc l'aller-retour est
+contractant dès que `27β > 1`.
+
+Mesuré, 8 départs par β, montée de gradient exacte :
+
+| β | 0,010 | 0,020 | 0,030 | 0,035 | 0,037 | 0,040 | ≥ 0,050 |
+|---|---|---|---|---|---|---|---|
+| quitte le babil | 100 % | 100 % | 100 % | 100 % | **100 %** | **0 %** | 0 % |
+| E[R] moyen atteint | 0,907 | 0,931 | 0,935 | 0,921 | 0,926 | 0,037 | 0,037 |
+
+**Le seuil est exact, et c'est le hessien qui le dit, pas la dynamique.** Une
+bissection sur la montée donnait 0,0381, soit 3 % au-dessus de la prédiction, et
+réduire la perturbation de 10⁻² à 10⁻⁵ ne refermait pas l'écart (0,0383 · 0,0381 ·
+0,0382 · 0,0375). Ce n'était donc pas la taille de la perturbation. La plus grande
+valeur propre du hessien au point de babil — gradient nul, donc point critique —
+croise zéro en **0,037037037**, à 3,4 × 10⁻¹² de 1/27.
+
+> Le 0,0381 mesurait **Adam**, pas l'objectif. Adam normalise ses pas, donc il ne
+> ralentit pas là où le gradient s'annule et quitte un maximum local que
+> l'objectif dit stable. Mesurer un seuil de stabilité à travers un optimiseur,
+> c'est mesurer l'optimiseur.
+
+**Le second seuil, β ≈ 0,17**, où un code cesse d'être un maximum local. J'avais
+prédit 0,1461 en égalisant `J = 1` d'un code **pur** et `J = 1/27 + 2β ln 27` du
+babil. La prédiction est un minorant : la branche optimisée garde de l'entropie et
+vaut donc plus que 1 (J = 1,0089 à β = 0,146), donc elle survit au-delà. Mesuré
+par bissection : **0,1701**.
+
+Entre les deux, sur `β ∈ [0,040 ; 0,146]` d'après la grille, **les deux sont des
+maxima locaux** et l'issue dépend entièrement de l'initialisation.
+
+### Et un résultat de §6.5 qui arrive avec deux étapes d'avance
+
+Les valeurs atteintes depuis le babil ne sont pas quelconques : 0,8518, 0,8888,
+0,9259, 0,9629, 1,0000. Soit exactement **23/27, 24/27, 25/27, 26/27, 27/27**.
+
+> **La montée de gradient exacte, sans le moindre échantillonnage, ne rejoint
+> presque jamais un code parfait depuis le babil.** Un départ sur 40. Elle se pose
+> sur des codes où 1 à 4 référents entrent en collision. Partie **sur** un code
+> parfait, elle y reste à E[R] = 1,0000.
+
+C'est la séparation *atteignable ≠ stable* de §6.5, obtenue ici gratuitement, et
+sans pouvoir l'imputer au bruit d'échantillonnage puisqu'il n'y en a aucun.
+
+**Conséquence de méthode, à traiter avant §6.1.** La loi nulle de §6.1 est tirée
+**sur des bijections**, et les deux statistiques de concentration s'appuient sur
+cette hypothèse — le chemin vectorisé de `loi_nulle_longue.py` suppose les deux
+marges uniformes, ce qui n'est vrai que pour une bijection, et rend sinon des
+nombres faux **sans lever d'erreur** (mesuré : 0,110573 au lieu de 0,108071, soit
+0,0025, un cinquième de ce que §6.2 doit résoudre). Une garde a été ajoutée.
+Mais le fond reste : comparer un code émergent non bijectif à une loi nulle
+bijective compare deux supports différents. Trois issues, et la troisième est celle
+à retenir :
+
+1. ne garder que les runs atteignant une bijection parfaite — ça vide l'expérience,
+   c'est 1 sur 40 ;
+2. garder la nulle bijective telle quelle — malhonnête, l'écart va dans le sens du
+   résultat prédit ;
+3. **tirer la loi nulle sur la classe réellement atteinte** : codes uniformes parmi
+   ceux ayant le même nombre de collisions que le run auquel on les compare.
+   Appariable run par run, et toujours énumérable.
+
+C'est un **théorème sur la paramétrisation**, pas un résultat d'optimisation : il
+tient pour tout algorithme équivariant. Conséquence directe pour le plan
+d'expériences : **§6.1 et §6.2 sur un émetteur tabulaire ne peuvent rien
+découvrir**. Leur issue est connue d'avance. Ils gardent une valeur, mais comme
+**détecteur de bogue** — si la mesure s'écarte du hasard, c'est l'implémentation
+qui a cassé la symétrie, pas le monde.
+
+**Où la garantie tombe, et le compte qui tombe juste.** Renommer les messages
+n'agit naturellement sur les paramètres que si le renommage respecte la
+décomposition en `(m₁, m₂, m₃)`. Ces permutations forment un groupe dont l'ordre
+exact, **compté par retour arrière et pas seulement construit**, vaut **1 296** —
+les « lignes » du monde étant exactement les triangles du graphe de Hamming
+H(3,3), préserver la structure de produit revient à préserver l'adjacence, et
+l'énumération est alors complète. Le groupe tombe donc de 27! ≈ 1,09 × 10²⁸ à
+1 296, et il n'est plus transitif.
+
+Et le compte tombe juste :
+
+> **Les 1 296 codes compositionnels sont exactement l'orbite du code canonique
+> sous ce groupe d'ordre 1 296.** Vérifié : les deux ensembles, construits par
+> deux chemins de code indépendants, sont identiques.
+
+Autrement dit, la seule paramétrisation dont le groupe de symétrie est plus petit
+que `S₂₇` est précisément celle dont le groupe de symétrie **distingue les codes
+compositionnels**.
+
+**Le piège où je suis tombé en écrivant ce fichier, et qui vaut d'être noté.**
+J'avais d'abord écrit que la ligne d'un émetteur autorégressif est une loi produit.
+C'est faux : `P(m₁)·P(m₂|m₁)·P(m₃|m₁,m₂)` représente **n'importe quelle** loi sur
+les 27 messages. L'argument ne porte pas sur l'**expressivité** mais sur la
+**symétrie de la paramétrisation** : un π quelconque ne correspond à aucune
+permutation des poids, donc l'équivariance tombe même à expressivité pleine. C'est
+exactement la forme de l'argument du test 2, où l'effondrement de mode venait de la
+factorisation et non de l'objectif. Le 1 296 est donc un **majorant** pour toute
+paramétrisation qui voit tokens et positions ; une architecture concrète peut être
+bien moins symétrique — un émetteur récurrent à couche de sortie partagée n'admet
+même pas les permutations de positions. Le majorant suffit, puisqu'il suffit de
+perdre la transitivité.
+
+**Ce que ce résultat ne dit pas.** Perdre la transitivité ne **prédit pas** que les
+codes compositionnels reçoivent plus de masse. Ça retire seulement la garantie
+qu'ils en reçoivent exactement 1 296/27!. C'est une **impossibilité** d'un côté
+(tabulaire ⟹ hasard, quoi qu'on fasse) et une simple ouverture de l'autre. Le sens
+du déplacement reste entièrement à mesurer, et c'est §6.2.
 
 ---
 
@@ -472,7 +620,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 |---|---|---|
 | 1 | `grammaire3.py` : les 27 référents, les 27 messages, le comptage exact des bijections et des codes compositionnels, la matrice d'information mutuelle, la statistique de concentration | — infrastructure |
 | 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément, en long, avec la statistique appariée et la dispersion du maximum entre blocs | — référence de tout le reste |
-| 3 | vérification du certificat des optima à égalité en cadre à deux agents, paramétrisation tabulaire et gradient exact | **§6.7** |
+| 3 | ~~vérification du certificat des optima à égalité en cadre à deux agents~~ **FAIT le 11/08/2026** (`certificat_deux_agents.py`) : le certificat ne survit pas, un argument d'équivariance le remplace | **§6.7** |
 | 4 | sonde de capacité et code compositionnel construit à la main | **§6.5** |
 | 5 | entraînement multi-graines | **§6.1** puis **§6.2** |
 | 6 | gel d'agent, analyse du gradient initial | **§6.3** puis **§6.4** |
@@ -480,11 +628,29 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 
 Soit, en termes de questions : **6.7 → 6.5 → 6.1 → 6.2 → 6.3 → 6.4 → 6.6.**
 
-**Pourquoi §6.7 remonte en troisième position.** C'est la seule question dont une
-réponse négative invalide tout le reste du document. Si le certificat des optima à
-égalité ne tient pas dans un jeu à deux agents, le calcul des 10⁻²⁵ de §3 est faux
-et il faut le refaire avant de lancer le moindre entraînement. La faire en dernier
-reviendrait à construire six expériences sur une hypothèse non vérifiée.
+**Pourquoi §6.7 remontait en troisième position.** C'était la seule question dont
+une réponse négative invalidait tout le reste du document. Si le certificat des
+optima à égalité ne tenait pas dans un jeu à deux agents, le calcul des 10⁻²⁵ de §3
+était faux et il fallait le refaire avant de lancer le moindre entraînement. La
+faire en dernier revenait à construire six expériences sur une hypothèse non
+vérifiée.
+
+**Ce que ça a rapporté, le 11/08/2026.** Le certificat ne tenait effectivement pas.
+Le chiffre survit par un argument de symétrie, mais l'ordre du programme change :
+
+- **§6.1 et §6.2 sur un émetteur tabulaire ne peuvent rien découvrir** — leur
+  résultat est un théorème. Ils restent utiles comme détecteurs de bogue, pas comme
+  mesure. L'expérience réelle est le contraste tabulaire / structuré, et c'est ce
+  contraste qu'il faut construire, pas un entraînement de plus.
+- **§6.5 est partiellement répondu sans être lancé** : atteignable ≠ stable, avec
+  gradient exact et sans échantillonnage.
+- **Une correction est due avant §6.1** : la loi nulle est bijective, les codes
+  atteints ne le sont pas.
+- **§6.6 reçoit une hypothèse unificatrice** : bruit de canal, goulot de
+  vocabulaire, pression de longueur et renouvellement de population brisent tous
+  `S₂₇` vers un groupe respectant la structure de produit, dont les codes
+  compositionnels sont exactement une orbite. À vérifier contrainte par contrainte,
+  mais ça remplace une liste de recettes par une question unique.
 
 **Pourquoi §6.6 descend en dernier.** C'est la plus coûteuse — un balayage complet
 par contrainte, sur plusieurs graines — et elle n'a aucun sens tant que la ligne de

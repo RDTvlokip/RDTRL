@@ -41,11 +41,44 @@ Cinquième série de critiques de
   résout un déplacement de 0,0130, quand le seuil retiré exigeait 0,223 sur un
   seul run — dix-sept fois plus sensible, et sur la bonne alternative.
 
+### Corrigé — §6.7 traité : le certificat des optima à égalité ne survit pas
+
+L'étape 3 du plan du test 3, celle dont une réponse négative invalidait tout le
+reste. Elle est négative. Carnet §7.15, hypothèses mortes §1.11 et §1.12.
+
+- **Le certificat de §2.2 ne s'applique pas à un jeu à deux agents.** Il exige que
+  les objets à égalité soient le support de la loi dont l'entropie est dans
+  l'objectif. Au test 2 c'étaient des séquences ; ici ce sont des codes, et aucune
+  loi sur les codes n'apparaît dans l'objectif. Mesuré : mélanger K codes fait
+  chuter `E[R]` comme 1/K.
+- **Le 1,19 × 10⁻²⁵ survit par un argument de symétrie**, qui est plus fort — c'est
+  un théorème sur la paramétrisation, valable pour tout algorithme équivariant — et
+  plus étroit, puisqu'il ne vaut que pour le cas tabulaire. Vérifié 8 fois sur 8.
+- **Le groupe de l'émetteur structuré a pour ordre exactement 1 296**, compté par
+  retour arrière et non seulement construit, et **les 1 296 codes compositionnels
+  sont exactement l'orbite du code canonique sous ce groupe**.
+- **Conséquence sur le plan d'expériences** : §6.1 et §6.2 sur un émetteur
+  tabulaire ne peuvent rien découvrir, leur issue est un théorème. Ils deviennent
+  des détecteurs de bogue. L'expérience réelle est le contraste tabulaire/structuré.
+- **β_c = 1/27 en forme close**, confirmé par le hessien au point de babil
+  (croisement en 0,037037037). La bissection sur la montée donnait 0,0381 : elle
+  mesurait Adam, dont les pas normalisés ne ralentissent pas là où le gradient
+  s'annule. Second seuil à 0,1701, et région **bistable** entre les deux.
+- **Résultat de §6.5 obtenu avec deux étapes d'avance** : la montée exacte, sans
+  aucun échantillonnage, ne rejoint un code parfait depuis le babil qu'une fois sur
+  quarante. Elle se pose sur des codes à 1 à 4 collisions (23/27 à 26/27).
+- **Garde ajoutée dans `loi_nulle_longue.py`** : le chemin vectorisé suppose les
+  marges uniformes, vrai seulement pour une bijection, et rendait sinon des nombres
+  faux sans lever d'erreur (0,110573 au lieu de 0,108071). Les codes émergents
+  n'étant pas bijectifs, la loi nulle devra être tirée sur la classe réellement
+  atteinte.
+
 ### Ajouté
 
 `src/test3_communication/loi_nulle_longue.py` ·
 `src/test3_communication/variabilite_du_maximum.py` ·
-`src/test3_communication/appariement_vs_distance.py`
+`src/test3_communication/appariement_vs_distance.py` ·
+`src/test3_communication/certificat_deux_agents.py`
 
 ## [0.4.0] — 2026-07-31
 

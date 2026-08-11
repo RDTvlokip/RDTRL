@@ -49,8 +49,29 @@ TERME = np.array([0.0] + [(c / N) * math.log2(c / N_VALEURS)
 APPARIEMENTS = list(permutations(range(N_ATTRIBUTS)))
 
 
-def matrices_information(codes):
-    """I(A_i ; M_j) pour un lot de codes bijectifs. Sortie (B, attributs, positions)."""
+def matrices_information(codes, verifier_bijectivite=True):
+    """I(A_i ; M_j) pour un lot de codes BIJECTIFS. Sortie (B, attributs, positions).
+
+    DANGER, et c'est pour ca que la verification est active par defaut. La table
+    TERME suppose les deux marges uniformes, ce qui n'est vrai QUE pour un code
+    bijectif. Sur un code non bijectif ce chemin rend des nombres faux sans lever
+    la moindre erreur.
+
+    Ce n'est pas une precaution theorique : §6.7 mesure que la montee de gradient
+    exacte, partie du babil, se pose sur des codes ou 1 a 4 referents entrent en
+    collision (E[R] = 23/27 a 26/27). Les codes emergents ne seront donc pas
+    bijectifs, et il faudra leur appliquer `grammaire3.matrice_information`, qui
+    recalcule les marges au lieu de les supposer.
+
+    `verifier_bijectivite=False` uniquement quand la bijectivite est garantie par
+    construction, comme dans le tirage de la loi nulle.
+    """
+    if verifier_bijectivite:
+        for code in codes:
+            if len(np.unique(code)) != N:
+                raise ValueError(
+                    "code non bijectif : ce chemin vectorise suppose les marges "
+                    "uniformes. Utiliser grammaire3.matrice_information.")
     lot = codes.shape[0]
     matrices = np.empty((lot, N_ATTRIBUTS, N_POSITIONS))
     # tokens[j, b, r] = token en position j du message emis pour le referent r
@@ -126,8 +147,10 @@ def tirer(n_total, graine, taille_lot, garder_extremes=200_000, reservoir=2_000_
     debut = time.time()
     while pas < n_total:
         lot = min(taille_lot, n_total - pas)
+        # argsort d'un vecteur de reels rend une permutation : bijectif par
+        # construction, donc la verification serait une perte seche a 10^7 tirages
         codes = np.argsort(generateur.random((lot, N)), axis=1)
-        cm, ca, dc = statistiques(matrices_information(codes))
+        cm, ca, dc = statistiques(matrices_information(codes, verifier_bijectivite=False))
         somme += cm.sum()
         somme_carres += (cm * cm).sum()
         n_double += int(dc.sum())

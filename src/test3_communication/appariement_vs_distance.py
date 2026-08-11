@@ -231,18 +231,20 @@ if __name__ == "__main__":
     print("C. PIRE CAS — jusqu'ou la redondance peut-elle pousser le max ?")
     print("-" * 78)
 
+    # les voisins par transposition d'une permutation restent des permutations,
+    # donc on coupe la verification dans la boucle chaude de la montee
     def objectif_inflation(lot):
-        cm, ca, _ = statistiques(matrices_information(lot))
+        cm, ca, _ = statistiques(matrices_information(lot, verifier_bijectivite=False))
         return cm - ca
 
     def objectif_max_en_double(lot):
-        cm, _, dc = statistiques(matrices_information(lot))
+        cm, _, dc = statistiques(matrices_information(lot, verifier_bijectivite=False))
         return np.where(dc, cm, -1.0)      # interdit les codes sans double compte
 
     ensemble_compositionnel = {tuple(int(x) for x in c) for c in COMPOSITIONNELS}
 
     def objectif_max_non_compositionnel(lot):
-        cm, _, _ = statistiques(matrices_information(lot))
+        cm, _, _ = statistiques(matrices_information(lot, verifier_bijectivite=False))
         interdit = np.array([tuple(int(x) for x in c) in ensemble_compositionnel
                              for c in lot])
         return np.where(interdit, -1.0, cm)
