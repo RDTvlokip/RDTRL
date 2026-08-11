@@ -16,6 +16,8 @@ I ran the entire seven-question investigation programme in one day. Here is what
 
 The scientific result and the methodological result are both in here, and I am not sure which one is worth more.
 
+One thing up front, because a reader deciding whether to continue deserves it: **the central argument of this article was published in 2021**, and I found that out by doing the literature review after everything else. It is [its own section](#-then-i-read-the-literature-and-my-main-argument-was-published-in-2021), and it changes what I claim.
+
 ---
 
 ## 📐 The world, and why it is this small
@@ -304,6 +306,8 @@ No run out of 90 past the 99.9th percentile. The bound at 15 seeds is |z| < 0.72
 
 **What would have been needed, computed exactly.** A per-attribute partial-credit reward *does* break the tie: +0.034 at ε = 0.05, **+0.108** at ε = 0.2, +0.153 at ε = 0.5. The mechanism in my table is real — it just works by changing the **reward**, not by adding a constraint outside it. And a per-attribute reward tells the agent that attributes count separately, which is exactly what a compositional code encodes.
 
+That pair of results turns out to be a published theorem, which I found only after writing this. Kuciński et al. 2021 prove compositionality becomes optimal under a **factorized** loss **and** channel noise together. My negative is their missing first condition, and my +0.108 is their regime. See the literature section below.
+
 ### The conclusion, and it is harsher than the curve I expected
 
 Of everything tested that day, **one thing produced compositionality: the parametrization.** And it did so by making the alternatives unwritable, not by choosing between them. The one environmental constraint that would work does so by putting the preference into the reward.
@@ -404,7 +408,7 @@ His power calculation reproduces exactly: 0.0130 at 100 seeds, 0.0184 at 50, aga
 
 Everything above happens in a 27 × 27 world. The honest filter is to **rewrite each conclusion without any number** and discard what does not survive. What survives mentions no 27:
 
-- **A no-go.** If your training procedure — parametrization, initialization, algorithm — is equivariant under a group acting transitively on the outcome set, the outcome is uniform on that set. No algorithm change alters it.
+- **A no-go**, whose data-side version is Theorem 1 of Kuciński et al. 2021. If your training procedure — parametrization, initialization, algorithm — is equivariant under a group acting transitively on the outcome set, the outcome is uniform on that set. No algorithm change alters it.
 - **Its corollary.** A free per-referent embedding table makes the procedure exchangeable on the referent side, which alone is enough. Checkable by reading the architecture.
 - **Channel noise does not break a tie between codes** under an exact-match reward, for any code size and any channel. Partial credit does.
 - **The critical entropy coefficient is 1/N**, not "1/27" — the linearization gives a round-trip factor of (1/(Nβ))².
@@ -423,11 +427,38 @@ And the asymmetry has to be stated: a toy is good at **refuting** universal clai
 
 **Exact gradients do not scale.** Sampled REINFORCE gives different results, not approximate ones — experiment 2 established that. Everything measured here through the exact objective is a statement about the exact objective.
 
-**No literature review.** I have not surveyed emergent-communication work. Where something here looks new to me, that is a statement about my reading and nothing else. The equivariance argument is elementary; someone has very likely written it down.
+**The literature review was done last, and it should have been first.** See the section below: the core argument here was published in 2021, and I found that out after running seven experiments, writing this article and cutting a release. It took twenty minutes.
 
 **The positive result is close to tautological.** The attribute-structured sender cannot write most bijections. Finding that it writes a structured code is not emergence, it is capacity. It also does not reach a compositional code — it stops at 0.42 rather than 1.0 — and it pays for the structure in task success, 0.92 down to 0.86.
 
 **The recorded commitment was underspecified, and that is the most serious defect I found.** It was dated before any data, and presented as what made the test sharply falsifiable. It failed to name the parametrization, which is what decides the answer; its interpretation clause said an excess would prove a flaw in the equal-optima reasoning, which does not follow; and its first half predicted near-perfect bijections, of which there was one in twenty. Recording a prediction in advance protects against fitting after the fact. It does not protect against omitting a variable, nor against writing down the wrong interpretation in advance.
+
+---
+
+## 📚 Then I read the literature, and my main argument was published in 2021
+
+I did this last. It should have been first, and I had written that down myself the same morning as "the first step". It took twenty minutes and it changed the status of two results out of three.
+
+**Kuciński, Korbak, Kołodziej and Miłoś, *Catalytic Role of Noise and Necessity of Inductive Biases in the Emergence of Compositional Communication*, NeurIPS 2021** ([arXiv:2111.06464](https://arxiv.org/abs/2111.06464)).
+
+**Their Theorem 1 is my no-go.** They show that for a uniform distribution over features and a permutation π, the permuted distribution is still uniform — so compositionality cannot be learned without an inductive bias. Same symmetry argument, published five years before I re-derived it.
+
+The scopes differ and I am not going to inflate the difference: their theorem is about the **data distribution**, mine is about the **parameter map** — equivariance of the whole procedure, transitivity on the 27! codes, hence exactly 1 296/27!. The per-referent embedding corollary is at the level of the architecture and I have not found it stated in that form, but that is a statement about my search, not about the field.
+
+**Their Theorem 2 explains my constraint curve, and confirms it rather than contradicting it.** They prove compositionality becomes optimal under **two joint conditions**: a **factorized** per-feature loss, and a noisy channel below a noise threshold. Which is exactly the shape of what I measured:
+
+| | mine | theirs |
+|---|---|---|
+| noise, exact-match reward | tie survives at every ε, proven in one line; nothing emerges | outside their Theorem 2, which requires a factorized loss |
+| noise, per-attribute credit | tie breaks, +0.108 at ε = 0.2 | Theorem 2's regime: compositionality is optimal |
+
+> My one-line proof establishes **why their factorized-loss condition is necessary**, and my +0.108 is the empirical counterpart of their theorem. Two routes, one conclusion.
+
+And their phrase — noise is **necessary but not sufficient** — is word for word the conclusion I reached that same day and recorded as a dead hypothesis, having believed the opposite that morning.
+
+So what is left that I would defend as mine? An exactly computed baseline instead of an empirical regularity; the corollary stated at the level of the architecture; and the eight dead hypotheses, which are nobody else's. That is less than I thought I had at midnight, and it is worth more than what I would have published without checking.
+
+**The lesson is about order, not about content.** Doing the review last does not make the measurements wrong — they reproduce, and they agree with a published theorem, which is the best outcome available for a re-derivation. It means I spent a day finding something findable in twenty minutes, and that the article you are reading nearly claimed a small novelty it does not have.
 
 ---
 
@@ -501,6 +532,7 @@ The exact gap between compositional and random is −2.3 × 10⁻¹⁰ for the t
 - Channel noise breaks the symmetry, leaves the reward tie exact, and **produces nothing**. Breaking symmetry is necessary and not sufficient.
 - **Eight of my hypotheses died in one day, none of them arithmetic.**
 - Two questions I wrote down in July got answered: shrinking to exactness does **not** protect you, and the diagnostic for your own specification is **anything that does not inherit it** — including the experiment you have not run.
+- And the literature review, done last when it should have been first, found the central argument **already published in 2021** — with the constraint-curve negative turning out to be the complementary half of the same theorem.
 
 ---
 
@@ -513,7 +545,7 @@ Because at 27 the null distribution, the optimum set and the gradient are exact 
 It cannot establish that a phenomenon occurs at scale. It can refute a universal claim, and it can produce arguments that never mention the toy's size. Those are the ones I would defend.
 
 **Isn't "the parametrization decides, not the reward" already the consensus?**
-As far as I can tell, yes. I have not surveyed the field, so I make no novelty claim. What may be worth something is that here it is a theorem with an exactly computed baseline rather than an empirical regularity — and that the corollary about per-referent embeddings is checkable without running anything.
+Yes, and stronger than consensus: it is a published theorem, Kuciński et al. 2021. I checked after writing this article rather than before, which is the wrong order and is its own section above. What survives as mine is an exactly computed baseline rather than an empirical regularity, and the corollary about per-referent embeddings, which is checkable without running anything.
 
 **Would a bigger vocabulary or longer messages change it?**
 The equivariance argument does not depend on either. The specific numbers do, entirely.

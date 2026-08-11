@@ -867,6 +867,25 @@ théorie du codage. Ce qui serait nouveau ici, ce n'est pas le phénomène : c'e
 le mesurer **contre une ligne de base calculée exactement** plutôt que contre une
 intuition.
 
+**Revue de littérature faite le 12/08/2026, et elle est décisive pour cette
+section.** Kuciński, Korbak, Kołodziej et Miłoś, *Catalytic Role of Noise and
+Necessity of Inductive Biases in the Emergence of Compositional Communication*,
+NeurIPS 2021 ([arXiv:2111.06464](https://arxiv.org/abs/2111.06464)) :
+
+- leur **théorème 1** est l'argument de symétrie de §6.7, côté loi des données :
+  une loi uniforme sur les traits reste uniforme sous permutation, donc la
+  compositionnalité ne s'apprend pas sans biais inductif ;
+- leur **théorème 2** établit que la compositionnalité devient optimale sous
+  **deux** conditions conjointes — une perte **factorisée** par trait, et un canal
+  bruité sous un seuil.
+
+Le second explique exactement ce que §6.6 mesure. Le bruit seul ne produit rien
+ici parce que la récompense est **tout-ou-rien** : la preuve en une ligne
+ci-dessous établit pourquoi leur condition de perte factorisée est nécessaire, et
+le +0,108 mesuré sous crédit partiel est la contrepartie empirique de leur
+théorème. Leur formule « le bruit est nécessaire mais pas suffisant » est celle de
+§1.16, atteinte par un autre chemin. Détail et conséquences en §7.23.
+
 ### Mesuré le 11/08/2026 — `courbe_de_contrainte.py`
 
 **La justification écrite dans la table ci-dessus est fausse, et ça se voit sans

@@ -8,6 +8,30 @@ du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
 DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
 entrée ci-dessous.
 
+## [Non publié]
+
+### Corrigé — la revue de littérature, faite après la 0.5.0 et pas avant
+
+Carnet §7.23. C'était le dernier blocage de fond identifié, et il fallait le lever :
+l'article 3 écrivait « someone has very likely written it down » à propos du
+théorème d'équivariance. Quelqu'un l'a écrit — **Kuciński, Korbak, Kołodziej et
+Miłoś, NeurIPS 2021** ([arXiv:2111.06464](https://arxiv.org/abs/2111.06464)).
+
+- **Leur théorème 1 est le no-go de §6.7**, côté loi des données plutôt que côté
+  carte des paramètres. L'argument de symétrie est publié depuis 2021.
+- **Leur théorème 2 explique §6.6 et le confirme** : la compositionnalité devient
+  optimale sous deux conditions conjointes, une perte **factorisée** par trait et
+  un canal bruité. Le négatif de §6.6 est leur première condition manquante, et le
+  +0,108 mesuré sous crédit partiel est la contrepartie empirique de leur théorème.
+  Leur « le bruit est nécessaire mais pas suffisant » est mot pour mot §1.16.
+- **Ce qui survit comme mien** : une ligne de base calculée exactement plutôt
+  qu'une régularité empirique, le corollaire au niveau de l'architecture, et les
+  huit hypothèses mortes.
+- **Les notes de la 0.5.0 ne sont pas réécrites.** Elles sont déposées sur Zenodo
+  sous [10.5281/zenodo.21895549](https://doi.org/10.5281/zenodo.21895549) ; la
+  revue leur est postérieure, et corriger un artefact archivé serait pire que le
+  laisser daté. L'article 3, lui, n'était pas publié : il est corrigé.
+
 ## [0.5.0] — 2026-08-12
 
 DOI de version : [10.5281/zenodo.21895549](https://doi.org/10.5281/zenodo.21895549)

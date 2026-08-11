@@ -2542,6 +2542,54 @@ donc c'est une conclusion sur mon dispositif, pas sur les travaux des autres.
 C'est la thèse du projet depuis le test 2, poussée aussi loin que ce banc le
 permet, et elle survit à tout ce que je lui ai opposé aujourd'hui.
 
+### 7.23 La revue de littérature, faite après coup : mon no-go est publié depuis 2021
+
+12/08/2026, après la release 0.5.0. C'était le dernier blocage de fond que
+j'identifiais, et il fallait le lever : l'article 3 écrivait « someone has very
+likely written it down » à propos du théorème d'équivariance, ce qui est honnête
+mais paresseux. Vérifié, quelqu'un l'a écrit.
+
+**Kuciński, Korbak, Kołodziej, Miłoś — « Catalytic Role of Noise and Necessity of
+Inductive Biases in the Emergence of Compositional Communication », NeurIPS 2021**
+([arXiv:2111.06464](https://arxiv.org/abs/2111.06464)).
+
+**Leur théorème 1 est mon no-go, sous une autre forme.** Ils montrent que pour une
+loi uniforme μ sur les traits et une permutation π, la loi μ∘π⁻¹ est encore
+uniforme — donc l'apprentissage non supervisé de la compositionnalité est
+impossible sans biais inductif. C'est le même argument de symétrie que le mien.
+Différence de portée, et je ne la surestime pas : leur théorème porte sur la
+**loi des données**, le mien sur la **carte des paramètres** (équivariance de la
+procédure entière, transitivité sur les 27! codes, donc P(compositionnel) =
+1296/27! exactement). Le corollaire sur la table d'embedding libre par référent
+est au niveau de l'architecture et je ne l'ai pas trouvé énoncé sous cette forme,
+mais c'est une affirmation sur ma recherche, pas sur la littérature.
+
+**Leur théorème 2 explique mon §6.6, et le confirme au lieu de le contredire.** Ils
+prouvent que la compositionnalité devient optimale sous **deux** conditions
+conjointes : une perte **factorisée** par trait, et un canal bruité avec ε sous un
+seuil. Or §6.6 mesure que le bruit seul ne produit rien, et démontre en une ligne
+que sous une récompense **tout-ou-rien** l'égalité des codes survit à tout ε. Les
+deux résultats sont la même chose vue des deux côtés :
+
+> Ma preuve en une ligne établit **pourquoi leur condition de perte factorisée est
+> nécessaire**, et mon +0,108 à ε = 0,2 sous crédit partiel est la contrepartie
+> empirique de leur théorème 2.
+
+Et leur formule « le bruit est nécessaire mais pas suffisant » est mot pour mot ma
+conclusion de §1.16, atteinte par un autre chemin le même jour.
+
+**Ce que ça change à l'article 3**, qui n'est pas encore publié : la section Limits
+ne peut plus dire « pas de revue » ; le no-go doit être attribué ; et le §6.6 doit
+dire que son négatif est la moitié complémentaire d'un théorème publié plutôt
+qu'une découverte isolée. Les notes de la 0.5.0 restent telles qu'elles ont été
+déposées sur Zenodo — la revue est postérieure, et réécrire un artefact archivé
+serait pire que le laisser daté.
+
+**La leçon d'ordre.** J'ai fait la revue en dernier, après sept expériences, un
+article et une release. Elle a coûté vingt minutes et elle a changé le statut de
+deux résultats sur trois. L'ordre correct était l'inverse, et je le savais : je
+l'avais écrit le matin même comme « le premier pas ».
+
 ---
 
 ## 8. Vingt questions inconfortables
