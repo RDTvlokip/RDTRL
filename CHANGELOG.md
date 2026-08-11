@@ -73,12 +73,39 @@ reste. Elle est négative. Carnet §7.15, hypothèses mortes §1.11 et §1.12.
   n'étant pas bijectifs, la loi nulle devra être tirée sur la classe réellement
   atteinte.
 
+### Corrigé — §6.5 traité, et il complète §6.7
+
+Étape 4 du plan du test 3. Carnet §7.16, hypothèse morte §1.13.
+
+- **Les trois réponses sont différentes**, comme au test 2. Représentable : oui
+  pour tous, mais **pas pour tous les codes** dès que la paramétrisation est
+  structurée. Atteignable : 1 bijection sur 20. Stable : oui partout, sauf un code
+  aléatoire sous paramétrisation structurée.
+- **§6.7 était incomplet** : `c → c ∘ ρ⁻¹`, le renommage des **référents**, est lui
+  aussi transitif sur les 27! bijections, donc l'équivariance d'**un seul des deux
+  côtés** suffit à égaliser tous les codes. Une table d'embedding libre par
+  référent annule d'avance tout ce que la structure du message pourrait apporter.
+  Mesuré : la paramétrisation autorégressive par référent ne préfère rien
+  (écart 3,3 × 10⁻¹⁶, puis −0,0013 sur 20 graines).
+- **Un émetteur voyant les attributs avec poids partagés déplace la concentration
+  de 0,1283 à 0,4233**, soit 7,3 écarts-types, à récompense et objectif identiques.
+  Mais il ne peut pas écrire la plupart des bijections (contrôle de capacité à
+  20 000 pas), donc c'est une contrainte de capacité et non une émergence, et il
+  n'atteint pas le code compositionnel : il s'arrête à 0,4233, en payant 0,067
+  d'E[R].
+- **Le sommet de l'échelle n'est sûr que pour les bijections.** Le code
+  `m₁ = a₁, m₂ = a₁, m₃ = a₂`, qui jette un attribut et n'utilise que 9 messages
+  sur 27, obtient **concentration max = 1,000000** contre 0,666667 en apparié. Les
+  codes atteints n'étant pas bijectifs, la version appariée devient la seule
+  interprétable.
+
 ### Ajouté
 
 `src/test3_communication/loi_nulle_longue.py` ·
 `src/test3_communication/variabilite_du_maximum.py` ·
 `src/test3_communication/appariement_vs_distance.py` ·
-`src/test3_communication/certificat_deux_agents.py`
+`src/test3_communication/certificat_deux_agents.py` ·
+`src/test3_communication/representable_atteignable_stable.py`
 
 ## [0.4.0] — 2026-07-31
 

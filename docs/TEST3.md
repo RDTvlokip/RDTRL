@@ -485,6 +485,97 @@ peu près s'y maintenir, et ne pouvait pas l'atteindre.
 des remèdes opposés. Si le code compositionnel est instable, aucune initialisation
 intelligente ne sauvera quoi que ce soit.
 
+### Traité le 11/08/2026 — `representable_atteignable_stable.py`
+
+§6.7 avait rendu cette étape décisive plutôt que descriptive, en fournissant une
+prédiction à réfuter : sous paramétrisation tabulaire, la montée est équivariante
+sous le renommage des messages, lequel est transitif sur les 27! bijections, donc
+**le code compositionnel doit se comporter exactement comme une bijection tirée au
+hasard**. Pas « à peu près » : à la précision machine.
+
+**Le contraste est construit pour n'avoir qu'une seule différence** : même
+objectif, même optimiseur, même récepteur tabulaire, et surtout même expressivité
+pour les deux premières paramétrisations. Seule la carte des paramètres change.
+
+| paramétrisation | ce que voit l'émetteur | poids |
+|---|---|---|
+| `tabulaire` | le référent comme **indice**, 27 → 27 | 729 libres |
+| `factorise` | idem, mais `p(m₁) p(m₂\|m₁) p(m₃\|m₁,m₂)` par référent | 1 053 libres |
+| `structure` | le référent par ses **attributs**, poids **partagés** | 81 + 9 |
+
+**1. Représentable.** Ajustement supervisé vers un code imposé, 3 000 pas :
+
+| paramétrisation | compositionnel | aléatoire (3 codes) | écart |
+|---|---|---|---|
+| `tabulaire` | 0,99947 en **2 198** pas | 0,99947 en **2 198** pas | −1,1 × 10⁻⁷ |
+| `factorise` | 0,99939 en 2 365 pas | 0,99939 en 2 364–2 365 pas | −1,1 × 10⁻⁷ |
+| `structure` | 0,99939 en 2 367 pas | **0,11573**, jamais atteint | **+0,884** |
+
+Les deux premières lignes sont l'équivariance rendue visible **jusque dans le
+nombre de pas**, identique à l'unité près. La troisième dit que la
+représentabilité, pour une paramétrisation structurée, **n'est pas la même pour
+tous les codes** — ce qui est exactement ce que §6.5 cherchait. Contrôle : poussé à
+20 000 pas et lr 0,2, `structure` atteint 1,00000 sur le compositionnel en **704
+pas** et plafonne à 0,09–0,24 sur les bijections quelconques. C'est une limite de
+capacité, pas un échec d'optimisation.
+
+**2. Stable.** On repart de l'état ajusté :
+
+| paramétrisation | code | E[R] exact | E[R] REINFORCE | conservé |
+|---|---|---|---|---|
+| `tabulaire` | compositionnel | 1,000000 | 0,996297 | oui |
+| `tabulaire` | aléatoire | 1,000000 | 0,996238 | oui |
+| `factorise` | compositionnel | 1,000000 | 0,996168 | oui |
+| `factorise` | aléatoire | 1,000000 | 0,996151 | oui |
+| `structure` | compositionnel | 1,000000 | 0,997763 | oui |
+| `structure` | aléatoire | **0,740621** | **0,704479** | **non** |
+
+Écart compositionnel − aléatoire, montée exacte : **−2,3 × 10⁻¹⁰** en tabulaire,
+**−2,4 × 10⁻¹⁰** en factorisé, **+0,235** en structuré.
+
+**3. Atteignable.** Depuis l'aléatoire, 20 graines, β = 0,02 :
+
+| paramétrisation | E[R] moyen | bijections | collisions | concentration appariée |
+|---|---|---|---|---|
+| `tabulaire` | 0,9240 | **1 / 20** | 2,00 | 0,1283 ± 0,0405 |
+| `factorise` | 0,8092 | 0 / 20 | 5,15 | 0,1270 ± 0,0379 |
+| `structure` | 0,8573 | 0 / 20 | 3,80 | **0,4233 ± 0,1233** |
+
+### Ce que ça dit, et ce que ça ne dit pas
+
+**Ce que ça dit.** Le contraste `factorise` − `tabulaire` vaut **−0,0013** : deux
+paramétrisations très différentes, indiscernables. Le contraste `structure` −
+`tabulaire` vaut **+0,2950**, soit 7,3 écarts-types. Récompense identique,
+objectif identique, optimiseur identique : **la paramétrisation décide seule**.
+
+**Et ça corrige §6.7 sur un point que j'avais manqué.** J'y avais raisonné sur le
+renommage des **messages**. Mais `c → c ∘ ρ⁻¹`, le renommage des **référents**, est
+lui aussi transitif sur les 27! bijections. L'équivariance d'**un seul des deux
+côtés** suffit donc à égaliser tous les codes. C'est pourquoi `factorise`, malgré
+sa factorisation en tokens, ne préfère rien : ses paramètres sont indexés par
+référent, sans partage. Conséquence pratique, et elle n'est pas anodine : **une
+table d'embedding libre par référent annule d'avance tout ce que la structure du
+message pourrait apporter.** La plupart des implémentations feraient ça sans le
+savoir.
+
+**Ce que ça ne dit pas, et c'est important.** `structure` **ne peut pas** écrire la
+plupart des bijections. Trouver qu'il produit des codes structurés est donc en
+grande partie une conséquence de ce qu'il peut écrire, et non une émergence. Ce
+n'est pas « la compositionnalité est apparue » : c'est une **contrainte de
+capacité**, exactement ce que §6.6 prévoyait, mesurée ici contre une ligne de base
+calculée exactement plutôt que contre une intuition.
+
+Trois nuances qui empêchent de surinterpréter :
+
+1. `structure` **n'atteint pas** un code compositionnel. Il rendrait 1,0000 ; il
+   rend 0,4233. La contrainte produit de la structure **partielle**.
+2. Elle la paie : E[R] tombe de 0,9240 à 0,8573, et les collisions passent de 2,00
+   à 3,80. C'est la taxe de mise en forme de §2.3 du carnet, dans un autre décor.
+3. La ligne « loi nulle appariée = 0,1168 ± 0,0315 » n'est **pas** une référence
+   valide ici, les codes atteints n'étant pas bijectifs. Le contraste entre
+   paramétrisations reste valide, lui, puisque les trois populations sont
+   comparées entre elles avec la même statistique.
+
 ### 6.6 La courbe qui remplace le verdict
 
 **La vraie mesure du test 3.** Puisque la récompense est indifférente à la
@@ -661,7 +752,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | 1 | `grammaire3.py` : les 27 référents, les 27 messages, le comptage exact des bijections et des codes compositionnels, la matrice d'information mutuelle, la statistique de concentration | — infrastructure |
 | 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément, en long, avec la statistique appariée et la dispersion du maximum entre blocs | — référence de tout le reste |
 | 3 | ~~vérification du certificat des optima à égalité en cadre à deux agents~~ **FAIT le 11/08/2026** (`certificat_deux_agents.py`) : le certificat ne survit pas, un argument d'équivariance le remplace | **§6.7** |
-| 4 | sonde de capacité et code compositionnel construit à la main | **§6.5** |
+| 4 | ~~sonde de capacité et code compositionnel construit à la main~~ **FAIT le 11/08/2026** (`representable_atteignable_stable.py`) : les trois réponses sont différentes, et seule une paramétrisation à poids partagés voyant les attributs les sépare | **§6.5** |
 | 5 | entraînement multi-graines | **§6.1** puis **§6.2** |
 | 6 | gel d'agent, analyse du gradient initial | **§6.3** puis **§6.4** |
 | 7 | courbe de contrainte | **§6.6** |

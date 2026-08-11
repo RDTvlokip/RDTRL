@@ -2166,6 +2166,63 @@ de collisions apparié run par run.
 dans la journée que ce point sauve une correction : elle ne peut pas avoir été
 choisie au vu d'un résultat, et l'historique git le montre.
 
+### 7.16 §6.5 traité : les trois réponses sont différentes, et §6.7 était incomplet
+
+11/08/2026, `representable_atteignable_stable.py`. Trois paramétrisations
+d'émetteur, même objectif, même optimiseur, même récepteur tabulaire. Seule la
+carte des paramètres change.
+
+**L'équivariance rendue visible.** En tabulaire, l'ajustement supervisé vers le
+code compositionnel et vers une bijection quelconque prend **2 198 pas dans les
+deux cas**, à l'unité près, et l'écart d'E[R] vaut −1,1 × 10⁻⁷. En stabilité,
+l'écart vaut −2,3 × 10⁻¹⁰. La prédiction de §6.7 tient à la précision machine.
+
+**Et §6.7 était incomplet, ce que seule cette mesure a révélé.** J'y avais raisonné
+sur le renommage des **messages**. Or `c → c ∘ ρ⁻¹`, le renommage des
+**référents**, est lui aussi transitif sur les 27! bijections : l'équivariance
+d'**un seul des deux côtés** suffit. C'est pourquoi la paramétrisation `factorise`
+— autorégressive en tokens, mais à paramètres libres **par référent** — ne préfère
+rien du tout : écart 3,3 × 10⁻¹⁶, puis −0,0013 sur 20 graines. J'avais construit ce
+contraste en croyant qu'il contrasterait ; il ne contrastait rien, et c'est la
+mesure qui me l'a appris, pas le raisonnement.
+
+> **Une table d'embedding libre par référent annule d'avance tout ce que la
+> structure du message pourrait apporter.** La plupart des implémentations feraient
+> ça sans le savoir.
+
+**Le contraste qui contraste.** Un émetteur où le référent entre par ses
+**attributs** avec des **poids partagés** (81 + 9 poids contre 729 libres) :
+
+| | E[R] | bijections | collisions | concentration appariée |
+|---|---|---|---|---|
+| tabulaire | 0,9240 | 1/20 | 2,00 | 0,1283 ± 0,0405 |
+| factorisé | 0,8092 | 0/20 | 5,15 | 0,1270 ± 0,0379 |
+| structuré | 0,8573 | 0/20 | 3,80 | **0,4233 ± 0,1233** |
+
+`structure − tabulaire = +0,2950`, soit 7,3 écarts-types, à récompense et objectif
+identiques.
+
+**Ce que je refuse d'en conclure.** `structure` ne peut pas écrire la plupart des
+bijections : contrôle à 20 000 pas et lr 0,2, il atteint 1,00000 sur le
+compositionnel en 704 pas et plafonne à 0,09–0,24 sur les bijections quelconques.
+C'est donc une limite de **capacité**, pas un échec d'optimisation — et trouver
+qu'une paramétrisation qui ne peut écrire que des codes structurés produit un code
+structuré n'est pas une émergence. C'est ce que §6.6 prévoyait déjà, mesuré ici
+contre une ligne de base calculée exactement.
+
+Trois nuances qui l'empêchent d'être un résultat plus gros qu'il n'est :
+
+1. `structure` **n'atteint pas** le code compositionnel — il rendrait 1,0000, il
+   rend 0,4233. La contrainte produit de la structure partielle ;
+2. elle la paie : E[R] de 0,9240 à 0,8573 et collisions de 2,00 à 3,80. C'est la
+   taxe de mise en forme de §2.3 dans un autre décor ;
+3. la loi nulle appariée (0,1168 ± 0,0315) n'est pas une référence valide ici, les
+   codes atteints n'étant pas bijectifs. Seul le contraste entre paramétrisations
+   est valide, les trois populations étant comparées entre elles.
+
+**Ce qui reste dû avant §6.1** : la loi nulle sur la classe réellement atteinte,
+à nombre de collisions apparié.
+
 ---
 
 ## 8. Vingt questions inconfortables
