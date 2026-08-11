@@ -10,9 +10,7 @@ entrée ci-dessous.
 
 ## [0.5.0] — 2026-08-12
 
-DOI de version : **à ajouter une fois le dépôt Zenodo créé**. Celui de la 0.4.0
-manque également — la release GitHub correspondante n'a jamais été publiée, seul
-son tag existe.
+DOI de version : **à ajouter une fois le dépôt Zenodo créé.**
 
 **La version où le test 3 a enfin tourné.** Conçu, discuté et critiqué sans avoir
 jamais été exécuté, son programme d'investigation en sept questions est passé de 0
@@ -264,6 +262,8 @@ Dernière étape du programme du test 3. Carnet §7.22, hypothèses mortes §1.1
 `src/test3_communication/representable_atteignable_stable.py`
 
 ## [0.4.0] — 2026-07-31
+
+DOI de version : [10.5281/zenodo.21895365](https://doi.org/10.5281/zenodo.21895365)
 
 **La version de la revue publique.** Quatre séries de critiques de
 [dipankarsarkar](https://orcid.org/0000-0001-5431-6367) ont produit une borne en
