@@ -10,7 +10,7 @@ entrée ci-dessous.
 
 ## [0.5.0] — 2026-08-12
 
-DOI de version : **à ajouter une fois le dépôt Zenodo créé.**
+DOI de version : [10.5281/zenodo.21895549](https://doi.org/10.5281/zenodo.21895549)
 
 **La version où le test 3 a enfin tourné.** Conçu, discuté et critiqué sans avoir
 jamais été exécuté, son programme d'investigation en sept questions est passé de 0
