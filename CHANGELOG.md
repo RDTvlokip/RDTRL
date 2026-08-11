@@ -8,6 +8,45 @@ du badge et du BibTeX, il résout toujours vers la version la plus récente. Les
 DOI de version, propres à une release donnée et figés, sont indiqués sous chaque
 entrée ci-dessous.
 
+## [Non publié]
+
+### Corrigé — le test 3 perd son seuil, avant d'avoir jamais tourné
+
+Cinquième série de critiques de
+[dipankarsarkar](https://orcid.org/0000-0001-5431-6367), cette fois sur
+[docs/TEST3.md](docs/TEST3.md), qui décrit un test **non implémenté**. Carnet
+§7.14, hypothèses mortes §1.9 et §1.10.
+
+- **Le seuil « ~0,35 » de §6.1 est retiré.** Il était dérivé du maximum observé
+  sur 20 000 tirages de la loi nulle. Deux raisons, et la première est la pire :
+  §5 abandonnait explicitement le critère pass/fail trois paragraphes plus haut,
+  et §6.1 en réintroduisait un. Ensuite, un maximum d'échantillon n'estime rien
+  ici — les 1 296 codes compositionnels **sont** des bijections, donc le supremum
+  de la loi nulle vaut exactement 1. Douze blocs indépendants de 10 000 000
+  donnent des maxima de 0,3775 à 0,4283, étendue 1,54 écart-type de la loi ;
+  q99,9 % varie de 0,0006 sur les mêmes blocs. Remplacé par un quantile.
+- **La loi nulle passe de 20 000 à 10 000 000 de tirages**, queue exacte et non
+  échantillonnée. Une seule ligne du tableau bouge, celle qui portait le seuil.
+- **`concentration_appariee()` ajoutée** : un attribut par position, hongrois
+  exact sur six appariements. `concentration()` prend le max colonne par colonne
+  sans contrainte, donc un attribut peut gagner deux positions — 74,6 % des
+  bijections uniformes. Les deux restent publiées : la forme sans contrainte est
+  celle du standard du domaine (posdis, Chaabouni et coll. 2020), l'appariée est
+  celle que §6.1 lit comme une position.
+- **Mesure qui corrige ma propre lecture** : l'écart entre les deux statistiques
+  ne vit pas « au milieu de l'échelle » mais dans la région **sans structure**. Il
+  est exactement nul jusqu'à 9 transpositions d'un code compositionnel, et nul à
+  k = 2 et k = 3 positions propres. Il ne peut donc pas fausser §6.1.
+- **§6.2 reçoit son calcul de puissance** : à 100 graines le test distributionnel
+  résout un déplacement de 0,0130, quand le seuil retiré exigeait 0,223 sur un
+  seul run — dix-sept fois plus sensible, et sur la bonne alternative.
+
+### Ajouté
+
+`src/test3_communication/loi_nulle_longue.py` ·
+`src/test3_communication/variabilite_du_maximum.py` ·
+`src/test3_communication/appariement_vs_distance.py`
+
 ## [0.4.0] — 2026-07-31
 
 **La version de la revue publique.** Quatre séries de critiques de

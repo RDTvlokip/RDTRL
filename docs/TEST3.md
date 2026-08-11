@@ -1,7 +1,12 @@
 # Test 3 — Efficacité communicative : conception, instruments, seuil
 
-État : **conçu, pas implémenté.** Ce document fixe le dispositif et le critère de
-falsification **avant** d'écrire du code, ce que les tests 1 et 2 n'ont jamais eu.
+État : **instruments construits, aucun entraînement lancé.** Ce document fixe le
+dispositif et le critère de falsification **avant** d'écrire du code, ce que les
+tests 1 et 2 n'ont jamais eu. Les étapes 1 et 2 de §7 existent (`grammaire3.py`,
+`loi_nulle_longue.py`, `variabilite_du_maximum.py`, `appariement_vs_distance.py`) ;
+les étapes 3 à 7 n'existent pas. Aucune concentration émergente n'a donc été
+mesurée à ce jour, ce qui rend les corrections d'instrument du 11/08/2026
+vérifiables : elles ne peuvent pas avoir été choisies au vu d'un résultat.
 
 ---
 
@@ -198,27 +203,117 @@ minorant de 1/3, en supposant implicitement que l'information mutuelle
 s'additionnait à travers la matrice. C'est faux, et le calcul le montre : le
 minimum observé sur 20 000 bijections uniformes est **0,0305**.
 
-### Valeurs mesurées — `grammaire3.py`, 20 000 tirages
+### Valeurs mesurées — `loi_nulle_longue.py`, 10 000 000 tirages
 
-| | concentration |
-|---|---|
-| code compositionnel (les 1 296, vérifiés un par un) | **1,000000** |
-| bijection uniforme, moyenne | **0,1273** |
-| bijection uniforme, écart-type | 0,0332 |
-| bijection uniforme, minimum observé | 0,0305 |
-| bijection uniforme, **maximum observé** | **0,3305** |
-| quantiles 1 % / 50 % / 99 % / 99,9 % | 0,066 / 0,125 / 0,217 / 0,254 |
+| | max par colonne | appariée |
+|---|---|---|
+| code compositionnel (les 1 296, vérifiés un par un) | **1,000000** | **1,000000** |
+| bijection uniforme, moyenne | **0,1269** | 0,1168 |
+| bijection uniforme, écart-type | 0,0330 | 0,0315 |
+| quantile 99 % | 0,2161 | 0,2045 |
+| quantile 99,9 % | 0,2525 | 0,2430 |
+| quantile 99,99 % | 0,2862 | 0,2788 |
+| quantile 99,999 % | 0,3196 | 0,3126 |
+| maximum observé | 0,3979 | 0,3944 |
 
-Un code compositionnel est à **26,3 écarts-types** de la moyenne nulle. Aucun des
-20 000 tirages n'atteint 0,34.
+Un code compositionnel est à **26,5 écarts-types** de la moyenne nulle.
 
-**Conséquence pratique** : une concentration mesurée au-dessus de ~0,35 serait déjà
-hors de portée du tirage uniforme. Ce seuil n'est pas choisi, il est **dérivé de la
-loi nulle** — c'est exactement ce qu'un seuil arbitraire n'aurait pas su faire.
+**Le seuil « ~0,35 » est retiré (11/08/2026).** Il figurait ici, dérivé du maximum
+observé sur 20 000 tirages (0,3305). Deux raisons de le retirer, et la première
+est la pire.
+
+**1. Il contredisait §5.** Trois paragraphes plus haut, §5 écrit « on abandonne
+délibérément le critère pass/fail » et enregistre un engagement portant sur une
+**distribution** — indiscernabilité statistique. §6.1 réintroduisait un pass/fail
+et se félicitait qu'il soit dérivé plutôt qu'arbitraire. Un seuil dérivé d'une
+mauvaise ligne reste un mauvais seuil ; le défaut n'était pas l'arbitraire, c'était
+le pass/fail lui-même, que §5 avait déjà écarté pour de bonnes raisons.
+
+**2. Un maximum d'échantillon n'estime rien d'utile ici.** Les 1 296 codes
+compositionnels **sont** des bijections : ils appartiennent à la loi nulle, avec
+probabilité 1 296/27! ≈ 1,19 × 10⁻²⁵, et ils valent 1. Le supremum de la loi nulle
+vaut donc exactement **1** — la valeur même qu'on voulait déclarer hors d'atteinte.
+Le maximum d'échantillon n'estime pas un seuil, il estime 1, infiniment lentement.
+Aucune taille de tirage n'y change quoi que ce soit.
+
+Ça se voit sans théorie, en tirant douze blocs indépendants de 10 000 000
+(`variabilite_du_maximum.py`) :
+
+| ligne | moyenne sur 12 blocs | étendue entre blocs |
+|---|---|---|
+| moyenne | 0,1269 | 0,0000 |
+| écart-type | 0,0330 | 0,0000 |
+| quantile 99,9 % | 0,2527 | **0,0006** |
+| quantile 99,99 % | 0,2863 | 0,0019 |
+| **maximum** | 0,3950 | **0,0509** |
+
+L'étendue du maximum vaut **1,54 écart-type de la loi nulle elle-même**, contre
+0,02 pour le quantile 99,9 %. Un seuil posé sur cette ligne hérite de cette
+dispersion : il mesure la patience du tirage, pas la loi.
+
+**Ce qui le remplace** : on cite un quantile, qui est un estimateur. q99,9 % =
+**0,2525**, stable à la quatrième décimale entre blocs. Et surtout, le seuil ne
+servait à rien que §6.2 ne fasse mieux — voir le calcul de puissance là-bas.
+
+### Le max par colonne compte parfois deux fois le même attribut
+
+`concentration()` prend, colonne par colonne, l'attribut le mieux expliqué, sans
+contrainte entre colonnes. Un même attribut peut donc gagner deux positions.
+**C'est le cas dans 74,6 % des bijections uniformes** (Dipankar Sarkar, 11/08/2026,
+reproduit ici). D'où une seconde statistique, `concentration_appariee()`, qui
+impose un attribut par position — hongrois exact, six appariements en 3 × 3, donc
+énumérés.
+
+La question n'est pas de savoir laquelle est « la bonne » dans l'abstrait, mais
+laquelle lit la structure que §6.1 prétend lire. Mesuré sur des codes dont la
+structure est **connue par construction** — k positions sur 3 encodent proprement
+un attribut, le reste étant brouillé conditionnellement (`appariement_vs_distance.py`) :
+
+| k | valeur attendue | max par colonne | appariée | double compte |
+|---|---|---|---|---|
+| 0 | 0,0000 | 0,1268 | 0,1170 | 74,0 % |
+| 1 | 0,3333 | 0,4111 | 0,4059 | 48,5 % |
+| 2 | 0,6667 | 0,7045 | **0,7045** | 0,8 % |
+| 3 | 1,0000 | 1,0000 | **1,0000** | 0,0 % |
+
+Et le long d'une échelle allant du code compositionnel au code quelconque par
+transpositions, l'écart entre les deux statistiques est **exactement nul jusqu'à
+9 transpositions**, puis monte pour rejoindre 0,0103 à 21 — c'est-à-dire la valeur
+qu'il prend sur la loi nulle.
+
+**Conclusion, contre-intuitive et mesurée** : l'écart entre les deux statistiques
+ne vit pas « au milieu de l'échelle ». Il vit **là où le code n'a aucune structure
+positionnelle**, et il est nul partout où il y en a une à lire. Le double compte ne
+peut donc pas fausser une position lue par §6.1 : il ne se produit pas dans cette
+région. Le vérifier valait mieux que le supposer — le premier balayage, mené sur la
+loi nulle, donnait l'inflation en hausse avec la concentration, et l'échelle donne
+l'inverse au même niveau de concentration. Les deux sont vrais : l'inflation suit
+la structure, pas le niveau.
+
+Le pire cas existe quand même et il est borné (montée locale, donc minorants) :
+l'écart maximal trouvé vaut **0,1443**, sur un code dont la concentration vaut
+0,2473 — soit à l'intérieur du corps de la loi nulle, là où il n'y a de toute façon
+rien à conclure. La plus haute concentration atteinte **avec** un double compte
+vaut 0,6314, et ce code vaut encore 0,5560 en apparié : même poussé, le max ne
+transforme pas un code sans structure en code structuré.
+
+**Les deux sont publiées, et c'est délibéré.** La forme sans contrainte est celle
+du standard du domaine — posdis (Chaabouni et coll. 2020) prend lui aussi l'argmax
+indépendamment par position — donc la retirer coûterait la comparabilité. La forme
+appariée est celle que §6.1 lit comme une position, parce qu'elle ordonne les codes
+un peu mieux contre une vérité terrain combinatoire (86,82 % contre 86,34 % de
+paires bien classées) et que, là où ça compte, elle est numériquement identique.
 
 **Ce qu'on apprend.** Pas un binaire, une **position** dans l'espace des codes
 parfaits. C'est la différence entre « ce n'est pas compositionnel » et « voici à
-quelle distance et dans quelle direction ».
+quelle distance et dans quelle direction ». Le sommet de cette échelle est isolé :
+1,0000 pour un code compositionnel, puis **0,9294** pour le meilleur code non
+compositionnel trouvé.
+
+**Changer l'instrument maintenant est gratuit, et ça ne le restera pas.** Aucun
+entraînement du test 3 n'a été lancé : il n'existe aucune concentration émergente
+mesurée. La même correction faite après un premier run serait invérifiable de
+l'extérieur, et devrait être refusée.
 
 ### 6.2 La dynamique tire-t-elle vraiment au hasard parmi les codes parfaits ?
 
@@ -245,6 +340,31 @@ codes réellement émergents à cette loi nulle.
 
 Le modèle est minuscule, donc 50 à 100 graines sont accessibles. C'est ce qui rend
 ce test faisable ici et nulle part ailleurs.
+
+**Ce que cet instrument résout, chiffré avant de le lancer** (Dipankar Sarkar,
+11/08/2026, reproduit ici). Test unilatéral à p < 0,001 et 80 % de puissance, donc
+δ = 3,93 · σ/√n :
+
+| graines | max par colonne | appariée |
+|---|---|---|
+| 50 | 0,0184 | 0,0175 |
+| 100 | **0,0130** | 0,0124 |
+
+À comparer à ce que le seuil retiré exigeait : **0,223 sur un seul run**. À 100
+graines, le test distributionnel est donc **dix-sept fois plus sensible** que le
+seuil qui figurait à côté de lui. Et il détecte la bonne chose : une pression
+extérieure faible a bien plus de chances de soulever tous les runs de 0,02 — un
+résultat à six sigma ici, invisible pour le seuil — que d'en projeter un seul
+au-delà de 0,35.
+
+**La statistique appariée est le bon choix pour ce test, et l'argument n'est pas
+celui qu'on croit.** Sous l'hypothèse nulle enregistrée en §5 — les codes émergents
+sont des bijections quelconques — les deux statistiques sont décalées de la même
+quantité et le changement s'annule exactement. Mais sous l'alternative, si une
+pression crée de la structure positionnelle, le double compte disparaît : l'écart
+de 0,0101 s'applique alors à la loi nulle et **pas** à la population émergente.
+Changer de statistique baisse la référence sans bouger le signal. C'est neutre là
+où ça doit l'être, et favorable là où on veut de la puissance.
 
 ### 6.3 Qui écrit le code, l'émetteur ou le récepteur ?
 
@@ -351,7 +471,7 @@ peut invalider le reste passe en tête, ce qui coûte cher passe en dernier.
 | étape | à construire | question traitée |
 |---|---|---|
 | 1 | `grammaire3.py` : les 27 référents, les 27 messages, le comptage exact des bijections et des codes compositionnels, la matrice d'information mutuelle, la statistique de concentration | — infrastructure |
-| 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément | — référence de tout le reste |
+| 2 | la loi nulle : distribution de la concentration sur des permutations tirées uniformément, en long, avec la statistique appariée et la dispersion du maximum entre blocs | — référence de tout le reste |
 | 3 | vérification du certificat des optima à égalité en cadre à deux agents, paramétrisation tabulaire et gradient exact | **§6.7** |
 | 4 | sonde de capacité et code compositionnel construit à la main | **§6.5** |
 | 5 | entraînement multi-graines | **§6.1** puis **§6.2** |

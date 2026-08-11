@@ -111,6 +111,29 @@ REINFORCE se pose sur 12 une fois sur deux : il est à un optimum **local** de l
 classe restreinte. Ce qui survit : conditionnellement au coin, il atteint le
 produit maximal de ce coin environ une fois sur deux. Détail en §7.11ter.
 
+### 1.9 « Le seuil de 0,35 du test 3 est dérivé, donc solide » — morte le 11/08/2026
+
+Écrite dans TEST3.md §6.1 : le seuil venait du maximum observé sur 20 000 tirages
+de la loi nulle, donc il n'était pas arbitraire. La dérivation était correcte, la
+ligne dérivée ne l'était pas. Un maximum d'échantillon n'estime rien ici : les
+1 296 codes compositionnels **sont** des bijections, ils appartiennent à la loi
+nulle avec probabilité 1,19 × 10⁻²⁵ et valent 1, donc le supremum de la nulle vaut
+exactement 1 — la valeur qu'on voulait déclarer hors d'atteinte. Douze blocs
+indépendants de 10 000 000 donnent des maxima de 0,3775 à 0,4283, étendue 1,54
+écart-type de la loi elle-même, quand le quantile 99,9 % varie de 0,0006. Détail
+en §7.14.
+
+### 1.10 « L'inflation du double compte croît avec la concentration » — morte le 11/08/2026
+
+Tirée d'un balayage par tranches de concentration sur la loi nulle : l'inflation y
+passait de 0,0014 sous 0,05 à 0,0228 au-dessus de 0,30, donc elle semblait suivre
+le niveau. L'échelle par transpositions dit l'inverse **au même niveau** : à
+concentration 0,27, un code issu de la nulle est inflaté de 0,021, un code à 14
+transpositions d'un compositionnel l'est de 0,0022. Les deux mesures sont justes.
+L'inflation suit la **structure**, pas le niveau, et les deux ne sont pas le même
+axe. Conséquence utile : elle est exactement nulle partout où §6.1 a quelque chose
+à lire. Je n'aurais pas trouvé ça en balayant une seule des deux populations.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -1937,6 +1960,90 @@ produit est **de dipankarsarkar**. Je l'ai vérifié, étendu à la grammaire lo
 et confronté à 70 graines, mais je ne l'ai pas trouvé. Si ça se publie, c'est une
 co-signature ou au minimum un crédit en tête d'article, et ça se décide
 maintenant, pas quand le brouillon existe.
+
+### 7.14 Cinquième critique : il est allé au test 3, et y a trouvé une contradiction interne
+
+11/08/2026. Dipankar Sarkar, environ 22 heures après la publication de l'article 2,
+n'a pas commenté l'article : il est allé lire le document de conception du test 3,
+qui n'a jamais tourné. Il a d'abord reproduit `grammaire3.py` à la graine 0 — les
+huit chiffres du tableau, à la décimale près — puis il a refait la même statistique
+à 10 000 000 de tirages au lieu de 20 000, en vectorisant, et en validant son
+vectorisé contre mon scalaire sur 3 000 codes (écart maximal 5,6 × 10⁻¹⁷).
+
+**Ce qu'il a trouvé.** Toutes les lignes du tableau tiennent sauf une. La moyenne
+passe de 0,1273 à 0,1269, l'écart-type de 0,0332 à 0,0330, q99,9 de 0,2537 à
+0,2525. Le maximum passe de 0,3305 à 0,3979. Multiplier le tirage par 500 déplace
+q99,9 de 0,0012 et le maximum de 0,067. Or **le seuil de ~0,35 de §6.1 était bâti
+sur cette ligne-là**, la seule encore en mouvement.
+
+**Ma reproduction, indépendante.** Les huit chiffres à 20 000 tombent exactement.
+À 10 000 000, tirage indépendant du sien : moyenne 0,1269, sd 0,0330, q99,9 0,2525,
+q99,999 0,3196 contre ses 0,3195, maximum 0,39788 contre ses 0,3979, et **14
+tirages au-dessus de 0,35 comme lui**. La coïncidence sur le maximum est réelle —
+la statistique est discrète, 2 951 valeurs distinctes sur 2 000 000 de tirages,
+mais les barreaux du sommet sont des singletons, donc elle n'explique rien. Douze
+blocs indépendants le montrent : maxima de 0,3775 à 0,4283.
+
+**Ce que j'ajoute à son diagnostic, et qui est pire.** Son argument est que le
+maximum bouge encore. Le vrai problème est qu'il ne peut pas s'arrêter de bouger.
+Les 1 296 codes compositionnels **sont** des bijections : ils sont dans la loi
+nulle, avec probabilité 1 296/27! ≈ 1,19 × 10⁻²⁵, et ils valent 1. Le supremum de
+la nulle vaut exactement 1. Le maximum d'échantillon estime 1, infiniment
+lentement, et un seuil bâti dessus mesure la taille du tirage.
+
+**Et la vraie faute est en amont.** §5 écrit noir sur blanc « on abandonne
+délibérément le critère pass/fail » et enregistre un engagement portant sur une
+**distribution**. §6.1, trois paragraphes plus bas, réintroduit un pass/fail et se
+félicite qu'il soit dérivé plutôt qu'arbitraire. Il ne m'a pas fallu une critique
+extérieure pour écrire les deux ; il en a fallu une pour que je les lise ensemble.
+Le seuil ne contredisait pas seulement une bonne pratique, il contredisait mon
+propre document à trois paragraphes de distance.
+
+**Le calcul de puissance qu'il propose, reproduit.** Test unilatéral, p < 0,001,
+80 % de puissance : δ = 3,93 σ/√n. À 100 graines, 0,0130 ; à 50, 0,0184. Le seuil
+retiré exigeait 0,223 sur un seul run. Rapport **17**. Et il détecte la bonne
+chose : une pression faible soulève tous les runs de 0,02 bien plus volontiers
+qu'elle ne projette un run isolé au-delà de 0,35.
+
+**Sa seconde question, sur laquelle il se disait moins sûr.** `concentration()`
+prend le max colonne par colonne sans contrainte, donc un attribut peut gagner
+deux positions : 74,6 % des tirages uniformes chez lui, 74,6 % chez moi. Sur ses
+200 plus hauts, un appariement hongrois rend 0,2640 au lieu de 0,2810. Il dit :
+ça s'annule dans la comparaison de §6.2, mais pas dans la lecture de §6.1, où un
+code à 0,28 se voit créditer 0,017 de structure qu'il n'a pas ; l'inflation serait
+réelle au milieu et nulle aux deux bouts.
+
+**Mesuré, ce n'est pas « au milieu ».** Sur des codes dont la structure est connue
+par construction (k positions propres sur 3), l'écart entre les deux statistiques
+vaut 0,0098 à k=0, 0,0052 à k=1, et **exactement 0,0000 à k=2 et k=3**. Le long
+d'une échelle par transpositions, il est **nul jusqu'à 9 transpositions** puis
+monte rejoindre la valeur de la loi nulle à 21. L'inflation ne suit pas le niveau
+de concentration, elle suit la **structure** : elle est nulle partout où §6.1 a
+quelque chose à lire. C'est l'inverse de ce que mon premier balayage suggérait
+(§1.10), et je ne l'aurais pas vu sur une seule des deux populations.
+
+**Ce que je change quand même, et pourquoi ce n'est pas de la complaisance.** Les
+deux statistiques sont publiées. La forme sans contrainte est celle du standard du
+domaine — posdis, Chaabouni et coll. 2020, prend l'argmax indépendamment par
+position — donc la retirer coûterait la comparabilité. La forme appariée devient
+celle que §6.1 lit comme une position : elle classe un peu mieux contre une vérité
+terrain combinatoire (86,82 % contre 86,34 %), elle est identique là où ça compte,
+et sous l'alternative de §6.2 elle baisse la référence sans bouger le signal — donc
+neutre sous H0, favorable sous H1.
+
+**Ce qui rend cette correction vérifiable.** Aucun entraînement du test 3 n'a
+tourné. Il n'existe aucune concentration émergente mesurée. Changer l'instrument
+aujourd'hui ne peut pas avoir été motivé par un résultat, et la même correction
+faite après un premier run devrait être refusée. C'est la première fois du projet
+qu'une critique arrive avant les données plutôt qu'après, et c'est de loin la
+position la plus confortable pour la recevoir.
+
+**Le pire cas, borné et honnête.** Montée locale, donc minorants : l'écart maximal
+trouvé entre les deux statistiques vaut 0,1443, sur un code de concentration
+0,2473 — dans le corps de la loi nulle, là où il n'y a rien à conclure. La plus
+haute concentration atteinte **avec** double compte vaut 0,6314, et ce code vaut
+encore 0,5560 en apparié. Le sommet reste isolé : 1,0000 pour un compositionnel,
+puis 0,9294 pour le meilleur non compositionnel trouvé.
 
 ---
 

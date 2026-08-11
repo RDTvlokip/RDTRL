@@ -102,10 +102,38 @@ def concentration(code=None, matrice=None):
 
     Le denominateur est 3 x log2(3) = log2(27), l'information totale d'un code
     parfait : la statistique vaut donc exactement 1 pour un code compositionnel.
+
+    LE MAX EST PRIS COLONNE PAR COLONNE, SANS CONTRAINTE. Un meme attribut peut
+    donc gagner deux positions et etre compte deux fois : ca arrive dans 74,6 %
+    des bijections uniformes (Dipankar Sarkar, 11/08/2026). C'est la forme du
+    standard du domaine — posdis, Chaabouni et coll. 2020, prend lui aussi
+    l'argmax independamment par position — et c'est pourquoi elle reste publiee
+    telle quelle. Pour la lecture « position dans l'espace des codes parfaits »
+    de TEST3.md §6.1, utiliser `concentration_appariee` ci-dessous.
     """
     if matrice is None:
         matrice = matrice_information(code)
     return float(matrice.max(axis=0).sum() / INFORMATION_TOTALE)
+
+
+def concentration_appariee(code=None, matrice=None):
+    """La meme somme, mais sous contrainte d'un attribut par position.
+
+    Hongrois exact : en 3 x 3 il n'y a que 6 appariements, donc on les enumere
+    plutot que d'appeler un solveur. Toujours <= `concentration`, et egale a 1
+    exactement pour les memes codes, un code compositionnel n'ayant pas de double
+    compte a corriger.
+
+    Mesure de l'ecart entre les deux (11/08/2026, results_test3/) : nul jusqu'a
+    9 transpositions d'un code compositionnel, donc EXACTEMENT NUL partout ou le
+    code a une structure positionnelle a lire ; il ne vaut 0,010 en moyenne que
+    sur la loi nulle elle-meme, ou il n'y a rien a lire.
+    """
+    if matrice is None:
+        matrice = matrice_information(code)
+    return float(max(sum(matrice[sigma[j], j] for j in range(N_POSITIONS))
+                     for sigma in permutations(range(N_ATTRIBUTS)))
+                 / INFORMATION_TOTALE)
 
 
 def loi_nulle(n_echantillons, graine=0):
