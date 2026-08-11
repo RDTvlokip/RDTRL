@@ -2617,6 +2617,29 @@ réponse est non, alors la compositionnalité n'est **jamais** apprenable depuis
 récompense seule, à aucune échelle, et toute la littérature sur l'émergence de
 langage mesure l'effet de contraintes annexes en croyant mesurer l'effet du RL.
 
+> **Répondue le 12/08/2026 par la revue de littérature, et par l'affirmative.**
+> Le théorème 2 de Kuciński et coll. (§7.23) en exhibe une : sous la perte
+> `J(ℓ,f) = 𝔼[H(ρ(f′,f))]` bâtie sur la distance de Hamming entre traits, et un
+> canal bruité avec ε < (|𝒜|−1)/|𝒜|, un langage minimise J sur les bijections
+> **si et seulement si** il est compositionnel. C'est exactement l'objet demandé.
+>
+> **Mais la clause « sans qu'on ait codé la compositionnalité à la main » ne tient
+> pas.** Cette perte est factorisée sur les traits mêmes dont la compositionnalité
+> parle : elle dit à l'agent que les attributs comptent séparément. §6.6 le montre
+> par la négative — sous une récompense tout-ou-rien, l'égalité des bijections
+> survit à tout ε, donc la factorisation est **porteuse** et non décorative.
+>
+> Le conditionnel de Q11 ne se déclenche donc pas. Ce qui survit est plus étroit
+> et plus juste : **une récompense qui départage les codes compositionnels doit
+> déjà connaître la décomposition en traits.** Ce n'est pas « depuis la récompense
+> seule » au sens où ce projet l'entend, c'est la spécification déplacée d'un cran.
+>
+> **Et ma dernière phrase était injuste.** J'accusais la littérature de mesurer des
+> contraintes annexes en croyant mesurer le RL. Kuciński et coll. font exactement
+> l'inverse : ils énoncent la condition de biais inductif **comme un théorème**, et
+> séparent explicitement ce que la récompense fait de ce que le biais fait. J'ai
+> écrit cette accusation sans avoir lu, ce qui est le défaut que §7.23 documente.
+
 **Q12 — Toute récompense d'alignement a-t-elle cette forme ?** Un modèle de
 récompense départage mal deux comportements qu'il note pareil. Si « aligné » et
 « qui a l'air aligné » sont à égalité sous le reward model, alors l'alignement par
