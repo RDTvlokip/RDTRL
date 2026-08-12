@@ -39,7 +39,7 @@ DOI de version : [10.5281/zenodo.21895549](https://doi.org/10.5281/zenodo.218955
 **La version où le test 3 a enfin tourné.** Conçu, discuté et critiqué sans avoir
 jamais été exécuté, son programme d'investigation en sept questions est passé de 0
 à 7 en une journée. Notes de version : [docs/RELEASE_v0.5.0.md](docs/RELEASE_v0.5.0.md).
-Récit complet : [docs/ARTICLE3.md](docs/ARTICLE3.md).
+Récit complet : [article 3](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything), mirroré dans [docs/ARTICLE3.md](docs/ARTICLE3.md).
 
 Le résultat central est que le certificat des optima à égalité **ne survit pas** à
 un jeu à deux agents, qu'un argument d'équivariance le remplace en donnant le même
@@ -50,8 +50,9 @@ jour dans un monde entièrement énumérable, **aucune par erreur de calcul**.
 
 ### Ajouté — article 3
 
-[docs/ARTICLE3.md](docs/ARTICLE3.md), « I made my world small enough to compute
-everything exactly. It caught none of my eight mistakes ». Couvre le programme
+[« I made my world small enough to compute everything exactly. It caught none of
+my eight mistakes »](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything),
+mirroré dans [docs/ARTICLE3.md](docs/ARTICLE3.md). Couvre le programme
 complet du test 3, les sept questions traitées en un jour, le théorème
 d'équivariance et son corollaire sur les tables d'embedding par référent, et le
 constat qui n'était pas prévu : **huit hypothèses mortes, aucune arithmétique**.

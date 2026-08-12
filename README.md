@@ -12,11 +12,11 @@ No pretraining. No input/output pairs. No HuggingFace, no RL library — plain P
 
 🔍 **Article 2:** [I published my RL experiments. A reader ran the code, and four of my numbers didn't survive](https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments) (Hugging Face blog) — mirrored in [docs/ARTICLE2.md](docs/ARTICLE2.md)
 
-🔬 **Article 3:** [docs/ARTICLE3.md](docs/ARTICLE3.md) — I made my world small enough to compute everything exactly, and it caught none of my eight mistakes
+🔬 **Article 3:** [I made my world small enough to compute everything exactly. It caught none of my eight mistakes](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything) (Hugging Face blog) — mirrored in [docs/ARTICLE3.md](docs/ARTICLE3.md)
 
-🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
+🧪 **Results:** [test 1](docs/ANALYSE.md) · [test 2](docs/ANALYSE_TEST2.md) · [test 3](docs/TEST3.md) · 🪦 **Lab notebook (refuted hypotheses included):** [CARNET.md](docs/CARNET.md)
 
-📦 **Latest release:** [v0.4.0](docs/RELEASE_v0.4.0.md) — the reversal test, and the numeric path
+📦 **Latest release:** [v0.5.0](docs/RELEASE_v0.5.0.md) — test 3, seven questions in a day, and eight dead hypotheses
 
 ---
 

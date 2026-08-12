@@ -5,7 +5,8 @@ about and criticised without ever being executed, and the whole seven-question
 investigation programme of [docs/TEST3.md](TEST3.md) went from 0 to 7 in one day.
 
 The full account, with the exchange quoted and every measurement including the
-ones I would have cut, is [docs/ARTICLE3.md](ARTICLE3.md).
+ones I would have cut, is [article 3](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything),
+mirrored in [docs/ARTICLE3.md](ARTICLE3.md).
 
 ## The world
 
@@ -124,7 +125,8 @@ conditions.
   `CITATION.cff` and `.zenodo.json`, and the Zenodo description had stopped at
   0.3.1 without ever mentioning the reversal test. The acknowledgment said three
   rounds of criticism; it has been five.
-- **Article 3** — [docs/ARTICLE3.md](ARTICLE3.md), including a section publishing
+- **Article 3** — [published on Hugging Face](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything),
+  mirrored in [docs/ARTICLE3.md](ARTICLE3.md), including a section publishing
   every measurement I would have cut for readability.
 
 ## New code

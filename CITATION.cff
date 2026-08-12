@@ -33,6 +33,9 @@ identifiers:
   - type: url
     value: "https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments"
     description: "Article 2 — public review round, the product bound and four retracted numbers"
+  - type: url
+    value: "https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything"
+    description: "Article 3 — test 3 in full, the equivariance theorem, and eight dead hypotheses"
 abstract: >-
   An experimental bench testing whether a neural network can learn to produce
   language from a scalar reward alone, with random initial weights, no
