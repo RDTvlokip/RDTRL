@@ -352,6 +352,8 @@ concentration, matched form   : 0.666667     ← two attributes read out of thre
 
 A code that throws away one attribute in three and uses a third of the message space is handed the value reserved for compositional codes.
 
+**And it turns out one collision is enough**, not eighteen. Re-running the worst-case bounds with a floor on distinct messages rather than over permutations — see the appendix — the double count does not degrade gradually as codes lose injectivity. It arrives almost entirely at the **first** collision, and 97 of 100 runs are already there. So the matched statistic is not merely the one that stays interpretable at the edge of the regime: the published one is unusable in the regime this experiment actually operates in.
+
 ---
 
 ## 🎣 Two questions I wrote down in July and could not answer
@@ -490,7 +492,20 @@ I would have cut the following for readability. Publishing it instead, because t
 
 Ranked against minimum Hamming distance to the nearest compositional code over 1 774 233 separable pairs, the matched form classifies **86.82 %** correctly against **86.34 %** for the published one; Spearman 0.8223 against 0.8143. A real but small improvement — the decisive argument for the matched form is the degenerate code above, not this.
 
-**Worst cases, all lower bounds** since the ascent is local rather than exhaustive: largest gap between the two statistics **0.1443**, on a code scoring 0.2473 published and 0.1030 matched — inside the body of the null. Highest published score reachable **while** double-counting: 0.6314, that code still scoring 0.5560 matched. Highest non-compositional score found: **0.9294**, so the top of the scale is isolated as well — 1.0000, then 0.9294. All three computed over permutations, hence conditional on bijectivity.
+**Worst cases, re-run after publication and superseded.** I first reported three bounds from a hill-climb over permutations: largest gap 0.1443, highest published score while double-counting 0.6314, highest non-compositional score 0.9294. I annotated them as conditional on bijectivity and left them standing. `dipankarsarkar` pointed out that annotation is not the fix, and he was right twice over.
+
+**The climber moved by transpositions**, and a transposition of a permutation is a permutation. The move set could not leave the bijective regime even in principle — the constraint was not an assumption I failed to check, it was welded into the operator. Reassigning one referent to any message lets collisions in, and changes everything. Same climber and budget at every floor on distinct messages R:
+
+| R floor | 27 | 26 | 25 | 24 | 23 |
+|---|---|---|---|---|---|
+| largest gap | 0.0526 | **0.1362** | 0.1783 | 0.1850 | 0.2152 |
+| highest score while double-counting | 0.1943 | **0.6409** | 0.6530 | 0.6700 | 0.7015 |
+
+**One collision is the whole effect.** Going from a bijection to a single collision multiplies the reachable gap by 2.6 and takes the double-counting ceiling from 0.19 to 0.64; everything after that is a slow slope. His independent implementation lands on 0.6409 with matched 0.5812 at R = 26 — the same four decimals from a different climber — and one collision beats the 0.6314 my permutation-restricted search found across the entire space of bijections.
+
+The winning code at R = 26 has one attribute claimed by all three positions, which is the shape of the degenerate example above at one collision instead of eighteen.
+
+**And this is not the boundary of the regime, it is the regime.** Over 100 tabular seeds: R = 27 in **3** runs, 26 in 37, **25 in 43**, 24 in 16, 23 in 1. Ninety-seven of a hundred runs sit at or past the first collision, and the median run is one collision beyond where the effect has already arrived. Mean R rises from 24.05 to 25.25 across the entropy sweep and never reaches 27.
 
 **Stability, in full.** Starting from the fitted state, exact ascent then sampled REINFORCE:
 

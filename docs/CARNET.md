@@ -2599,6 +2599,55 @@ article et une release. Elle a coûté vingt minutes et elle a changé le statut
 deux résultats sur trois. L'ordre correct était l'inverse, et je le savais : je
 l'avais écrit le matin même comme « le premier pas ».
 
+### 7.24 Sixième critique : annoter une borne périmée n'est pas la corriger
+
+12/08/2026, après publication de l'article 3. Dipankar Sarkar fait remarquer que
+les trois bornes de « Bounding the damage » ont été mesurées par montée locale sur
+des **permutations**, alors que §6.5 et §6.7 établissent que les codes atteints ont
+1 à 4 collisions. Je l'avais écrit — « conditionnelles à la bijectivité » — puis je
+les avais laissées telles quelles. Sa remarque : la suite n'était pas de les
+annoter mais de les **relancer**.
+
+**Le diagnostic est pire que « mesuré dans le mauvais régime ».** Mon grimpeur
+bougeait par **transpositions**, et une transposition d'une permutation est une
+permutation. Le jeu de mouvements ne pouvait donc pas quitter le régime bijectif,
+même en principe. Ce n'était pas une hypothèse que j'avais omis de vérifier :
+elle était **soudée dans l'opérateur**. Troisième fois cette semaine que c'est
+l'instrument, et non le raisonnement, qui décide de la réponse.
+
+**Sa mesure reproduite** (`bornes_par_messages_distincts.py`, réaffectation d'un
+référent, plancher R sur les messages distincts, budget identique par colonne) :
+
+| plancher R | 27 | 26 | 25 | 24 | 23 |
+|---|---|---|---|---|---|
+| écart max, lui | 0,0396 | 0,1628 | 0,1850 | 0,2002 | 0,2112 |
+| écart max, moi | 0,0526 | **0,1362** | 0,1783 | 0,1850 | 0,2152 |
+| max en double compte, moi | 0,1943 | **0,6409** | 0,6530 | 0,6700 | 0,7015 |
+
+**Une collision fait tout l'effet.** Et le second chiffre tombe à l'identique chez
+nous deux : **0,6409 avec apparié 0,5812** au plancher 26, deux grimpeurs
+différents, quatre décimales. Ma borne sur permutations valait 0,6314 : **une seule
+collision bat une recherche restreinte à la bijectivité sur tout l'espace.**
+
+**Sa question, et la réponse tient sur mes propres données.** Il demande si R = 26
+est assez fréquent pour être le cas modal plutôt que la frontière. Non — **le mode
+est R = 25**. Sur 100 graines tabulaires à β = 0,02 : R = 27 dans **3** runs, 26
+dans 37, **25 dans 43**, 24 dans 16, 23 dans 1. Quatre-vingt-dix-sept sur cent sont
+à la première collision ou au-delà, et le run médian est une collision plus loin
+que le point où l'effet est déjà arrivé. Le balayage en β le confirme : R moyen de
+24,05 à 25,25, jamais 27. Les deux autres paramétrisations sont plus profondes
+encore, modes R = 21 et R = 23.
+
+**Ce que ça durcit.** J'écrivais que la statistique appariée est la seule qui reste
+interprétable une fois la bijectivité perdue. L'énoncé correct est le sien : le
+double compte ne se dégrade pas graduellement, **il arrive presque entièrement à la
+première collision** — et la première collision, c'est 97 % des runs. Donc la
+statistique publiée n'est pas fragile au bord du régime : elle est **inutilisable
+dans le régime où l'expérience opère**.
+
+Les trois bornes sont remplacées par le tableau indexé par R, pas supprimées, avec
+le diagnostic de l'opérateur écrit à côté.
+
 ---
 
 ## 8. Vingt questions inconfortables
