@@ -2648,6 +2648,68 @@ dans le régime où l'expérience opère**.
 Les trois bornes sont remplacées par le tableau indexé par R, pas supprimées, avec
 le diagnostic de l'opérateur écrit à côté.
 
+### 7.25 Septième critique : j'avais corrigé le dénominateur, le mal était au numérateur
+
+12/08/2026. Dipankar Sarkar croise **sa** loi nulle par R avec **ma** distribution
+p(R) sur 100 graines, et le produit renverse mon diagnostic de §7.24.
+
+**Sa mesure, 200 000 tirages par cellule.** La nulle appariée vaut 0,11679 à
+R = 27 et 0,11697 à R = 24 ; mélangée sur mon p(R) elle donne 0,11696, soit
+**+0,00016** par rapport à la nulle bijective, pour une erreur type de 7,0 × 10⁻⁵.
+Autrement dit : **plate sur tout le support que mon procédé visite.** Ça recoupe
+ma propre mesure par profil de fibres (onze profils, −0,0001 à +0,0005), obtenue
+par un découpage différent — deux routes, même conclusion.
+
+**Et son coup, qui est juste.** Le pire cas atteignable, lui, bouge énormément :
+0,0396 à R = 27 contre 0,1751 mélangé sur p(R) chez lui. Le null bouge de 0,00016,
+la mesure de 0,1355. **J'ai passé une section à reconstruire la référence quand le
+dommage était dans l'ensemble atteignable de la recherche.** Le numérateur, pas le
+dénominateur. Et mes trois bornes n'étaient donc pas trop généreuses : elles
+étaient **trop petites**. Une rétractation qui allait dans le mauvais sens.
+
+**Correction de magnitude, à moi.** Son « 22,6 % de votre propre effet » compare
+*son* grimpeur à R = 27 (0,0396) à *son* mélange. Ma borne publiée valait 0,1443,
+obtenue par transpositions, et vaut **90 % de mon propre mélange (0,1604)**. Le
+sous-comptage est de 11 %, pas d'un facteur 4. La structure de son argument tient,
+son chiffre ne décrit pas mon chiffre.
+
+**Sa question : l'effet baisse-t-il quand β monte, ou R cesse-t-il de le prédire ?**
+150 runs, 5 β × 30 graines, `effet_par_beta.py`, sur des codes **réellement
+émergents** et non sur un pire cas de recherche.
+
+| β | 0,005 | 0,010 | 0,020 | 0,030 | 0,037 |
+|---|---|---|---|---|---|
+| R moyen | 24,57 | 24,53 | 25,10 | 24,87 | 25,10 |
+| écart observé | 0,0077 | 0,0094 | 0,0100 | 0,0175 | 0,0106 |
+
+| R | 27 | 26 | 25 | 24 | 23 |
+|---|---|---|---|---|---|
+| écart observé | 0,0096 | 0,0120 | 0,0139 | 0,0076 | 0,0106 |
+| n | 8 | 30 | 53 | 47 | 12 |
+
+**Réponse : ni l'un ni l'autre.** L'effet ne baisse pas avec β (corrélation
+**+0,158**, aucune tendance au-delà du bruit), et R n'a **jamais** prédit l'écart
+observé — corrélation **+0,091**, et **4 % de variance expliquée**. Conditionner
+sur R ne retire presque rien : la corrélation résiduelle avec β reste à +0,144
+contre +0,158 sans conditionnement. Ce n'est pas que R *cesse* d'être la variable,
+c'est qu'il ne l'a jamais été pour cette quantité-là.
+
+**Et la distinction que la mesure impose, qu'aucun de nous deux n'avait posée.**
+
+> Le **pire cas atteignable** sous un plancher R et l'**écart réellement produit**
+> par la dynamique sont deux fonctions différentes de R. Le premier est fortement
+> monotone — 0,0526 à R = 27 contre 0,2152 à R = 23. Le second est plat.
+
+Rapport entre les deux : **15,2**. Les codes émergents ne s'approchent nulle part
+du pire cas qu'une recherche adverse atteint dans le même régime.
+
+Son mélange reste la bonne construction **pour une borne**, et sa réserve sur β se
+règle par le calcul : mélangé sur le p(R) propre à chaque β, le pire cas va de
+0,1564 à 0,1773, soit **0,0209 d'amplitude sur toute la plage**. Le déplacement de
+p(R) avec β existe et il est petit. Ce qui reste vrai, et c'est le fond : une borne
+doit être mélangée sur le régime visité, et une mesure d'effet ne doit pas être
+lue sur la même table.
+
 ---
 
 ## 8. Vingt questions inconfortables
