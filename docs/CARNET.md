@@ -2710,6 +2710,41 @@ p(R) avec β existe et il est petit. Ce qui reste vrai, et c'est le fond : une b
 doit être mélangée sur le régime visité, et une mesure d'effet ne doit pas être
 lue sur la même table.
 
+### 7.25bis Le seul contraste au-delà de deux sigma n'a pas survécu au second tirage
+
+Même échange, tour suivant. Il relève dans le tableau par R le seul contraste qui
+dépasse deux sigma — R = 25 contre R = 24, écart 0,0063, t = 2,53 — et note que sur
+dix contrastes disponibles c'est exactement ce qu'on trouve en regardant. Il ne le
+croit pas, et demande trente graines de plus dans ces deux cellules.
+
+**Détail qu'il ne pouvait pas voir : R est une sortie du run, pas un réglage.** Ces
+deux cellules portent 100 runs sur 150, donc trente tirages de plus coûtent environ
+quarante-cinq runs. J'en ai lancé soixante, graine indépendante.
+
+**Le signe s'inverse.** Sur les soixante nouveaux seuls : −0,0053, SE 0,0033,
+**t = −1,60**. Sur les 210 réunis, tout va vers le nul et rien ne s'en éloigne :
+
+| | n = 150 | n = 210 |
+|---|---|---|
+| R = 25 contre R = 24 | +0,0063, t = 2,53 | **+0,0028, t = 1,47** |
+| η² | 4,11 % | **1,2 %** |
+| F | F(4,145) = 1,552, p = 0,19 | **F(6,203) = 0,419, p = 0,87** |
+| pente par unité de R | +0,001180, t = 1,12 | **+0,000507, t = 0,61** |
+
+**Deux reformulations à lui, que j'adopte, et que la réplication rend plus fortes.**
+« R explique 4 % » devient « **R n'est pas distinguable de n'expliquer rien du
+tout** » — à n = 210, η² = 1,2 % et p = 0,87. Et son cadrage par la puissance
+remplace mon rapport de 15,2 : la pente observée vaut +0,000507 ± 0,000836, la
+détectable à 80 % vaut 0,00234, celle du pire cas −0,04065, soit **17,4 fois ma
+propre résolution** — contre 13,9 avant réplication. Le rapport invitait l'objection
+« ce sont deux échelles » ; la puissance l'interdit.
+
+**Ce que ça généralise, et ce n'est pas sur R.** Le seul contraste au-delà de deux
+sigma dans un tableau qui en offrait dix était très exactement celui à ne pas
+croire, et le moyen le moins cher de le savoir était de **retirer**, pas d'en
+discuter. Quatrième fois de cet échange que la réponse est un second tirage, et la
+première où je le fais avant de publier plutôt qu'après.
+
 ---
 
 ## 8. Vingt questions inconfortables
