@@ -180,7 +180,61 @@ croire à tous les deux. Hors des bijections, **il atteint le sommet**. La versi
 appariée cesse d'être une amélioration marginale de 0,48 point de concordance pour
 devenir la seule interprétable. Et les trois bornes de §7.14 — 0,1443, 0,6314,
 0,9294 — restent vraies mais **conditionnellement à la bijectivité**, la montée
-locale ayant été faite sur des permutations.
+locale ayant été faite sur des permutations. Corrigées depuis, et dans l'autre
+sens que je croyais : voir §7.24 et §7.25.
+
+### 1.14 « La paramétrisation structurée préfère le compositionnel dès le premier pas » — morte le 11/08/2026
+
+Écrite avant mesure dans `gradient_premier_pas.py`, et elle semblait sûre : cette
+paramétrisation finit à z = +9,9 en §6.1, donc son biais devait être visible dans
+son gradient initial. Mesuré, cosinus entre ∇J et ∇L(compositionnel) contre 300
+bijections témoins : **z = −0,08 ± 0,24**. Rigoureusement rien.
+
+Le mécanisme, une fois cherché : près de l'uniforme, la contrainte de la
+paramétrisation **ne mord pas**, puisque toute loi est représentable à faible
+confiance. Elle n'apparaît qu'à mesure que la loi se concentre. La courbe le
+montre — z passe de −1,18 au pas 0 à **+4,36 au pas 30**, et n'en bouge plus. La
+préférence est **construite par la trajectoire en quelques dizaines de pas**, pas
+présente au départ. Détail en §7.21.
+
+### 1.15 « Le bruit de canal favorise les codes compositionnels » — morte le 11/08/2026
+
+Écrite dans la table de TEST3.md §6.6 comme justification du bouton le plus
+prometteur : « un code compositionnel ne perd qu'un attribut quand un token est
+corrompu ; un code holistique perd tout ». Vrai en information, **sans aucun effet
+sur cette récompense**, et ça se démontre en une ligne sans entraîner quoi que ce
+soit. Pour un émetteur déterministe sur un code `c` et le décodeur optimal,
+`E[R]* = (1/27) Σ_m' max_r C[c(r), m']`, et `c` étant une bijection sur les 27
+messages, `max_r C[c(r), m'] = max_m C[m, m']` — **indépendant de `c`**. Mesuré :
+écart compositionnel/aléatoire ≤ 1,1 × 10⁻¹⁶ à tout ε de 0 à 0,8.
+
+Perdre un seul attribut ne rapporte rien quand le crédit est tout-ou-rien sur le
+référent exact. Sous une récompense à **crédit partiel par attribut**, l'égalité se
+brise (+0,108 à ε = 0,2) — mais ça met la compositionnalité dans la spécification.
+Détail en §7.22.
+
+### 1.16 « Briser la symétrie suffit à produire de la compositionnalité » — morte le 11/08/2026
+
+Hypothèse unificatrice que j'avais tirée de §6.7 le matin même, et qui remplaçait
+la liste de recettes de §6.6 par une question unique. Elle est fausse sur deux
+points, mesurés le soir. Le renouvellement de population **ne brise pas** `S₂₇` du
+tout, étant une opération échangeable — donc le théorème s'applique encore, et z
+reste nul à toutes les périodes, comme prédit. Et le bruit de canal, lui, **brise
+bien** la symétrie (écart 0,00e+00 sur le groupe structurel, ≥ 0,050 sur 200
+permutations quelconques) sans rien produire : z de −0,44 à +0,38 sur six valeurs
+d'ε, aucun run sur 90 au-delà du quantile 99,9 %.
+
+**Briser la symétrie est nécessaire, pas suffisant.** Détail en §7.22.
+
+### 1.17 « L'écart max/appariée dépend de R » — morte le 12/08/2026
+
+Implicite dans ma façon de lire le tableau du pire cas par plancher R, qui est
+fortement monotone : 0,0526 à R = 27 contre 0,2152 à R = 23. J'ai laissé croire que
+l'écart **observé** suivait le même index. Mesuré sur 210 runs : corrélation
++0,09 linéaire, η² = 1,2 %, F(6,203) = 0,419 à **p = 0,87**. Le pire cas
+atteignable par une recherche et l'écart produit par la dynamique sont **deux
+fonctions différentes de R**, la première monotone et la seconde plate, dans un
+rapport de 15. Détail en §7.25 et §7.25bis.
 
 ---
 
@@ -2412,20 +2466,6 @@ réussite n'est comparable entre conditions que si toutes peuvent l'atteindre. I
 difficulté. Voir aussi §1.12 : mesurer à travers un instrument qui ne peut pas
 répondre, c'est mesurer l'instrument.
 
-### 1.14 « La paramétrisation structurée préfère le compositionnel dès le premier pas » — morte le 11/08/2026
-
-Écrite avant mesure dans `gradient_premier_pas.py`, et elle semblait sûre : cette
-paramétrisation finit à z = +9,9 en §6.1, donc son biais devait être visible dans
-son gradient initial. Mesuré, cosinus entre ∇J et ∇L(compositionnel) contre 300
-bijections témoins : **z = −0,08 ± 0,24**. Rigoureusement rien.
-
-Le mécanisme, une fois cherché : près de l'uniforme, la contrainte de la
-paramétrisation **ne mord pas**, puisque toute loi est représentable à faible
-confiance. Elle n'apparaît qu'à mesure que la loi se concentre. La courbe le
-montre — z passe de −1,18 au pas 0 à **+4,36 au pas 30**, et n'en bouge plus. La
-préférence est **construite par la trajectoire en quelques dizaines de pas**, pas
-présente au départ. Détail en §7.21.
-
 ### 7.21 §6.4 traité : le gradient initial ne voit rien, et la préférence naît au pas 30
 
 11/08/2026, `gradient_premier_pas.py`.
@@ -2473,34 +2513,6 @@ ailleurs aujourd'hui : les cosinus étaient lus sur la **dernière graine** au l
 d'être moyennés (§1.6 encore), et les témoins de P4 étaient des bijections alors
 que le code atteint a des collisions (§7.17 encore). Deux pièges que je venais de
 corriger, retombés dedans à deux sections d'intervalle.
-
-### 1.15 « Le bruit de canal favorise les codes compositionnels » — morte le 11/08/2026
-
-Écrite dans la table de TEST3.md §6.6 comme justification du bouton le plus
-prometteur : « un code compositionnel ne perd qu'un attribut quand un token est
-corrompu ; un code holistique perd tout ». Vrai en information, **sans aucun effet
-sur cette récompense**, et ça se démontre en une ligne sans entraîner quoi que ce
-soit. Pour un émetteur déterministe sur un code `c` et le décodeur optimal,
-`E[R]* = (1/27) Σ_m' max_r C[c(r), m']`, et `c` étant une bijection sur les 27
-messages, `max_r C[c(r), m'] = max_m C[m, m']` — **indépendant de `c`**. Mesuré :
-écart compositionnel/aléatoire ≤ 1,1 × 10⁻¹⁶ à tout ε de 0 à 0,8.
-
-Perdre un seul attribut ne rapporte rien quand le crédit est tout-ou-rien sur le
-référent exact. Sous une récompense à **crédit partiel par attribut**, l'égalité se
-brise (+0,108 à ε = 0,2) — mais ça met la compositionnalité dans la spécification.
-
-### 1.16 « Briser la symétrie suffit à produire de la compositionnalité » — morte le 11/08/2026
-
-Hypothèse unificatrice que j'avais tirée de §6.7 le matin même, et qui remplaçait
-la liste de recettes de §6.6 par une question unique. Elle est fausse sur deux
-points, mesurés le soir. Le renouvellement de population **ne brise pas** `S₂₇` du
-tout, étant une opération échangeable — donc le théorème s'applique encore, et z
-reste nul à toutes les périodes, comme prédit. Et le bruit de canal, lui, **brise
-bien** la symétrie (écart 0,00e+00 sur le groupe structurel, ≥ 0,050 sur 200
-permutations quelconques) sans rien produire : z de −0,44 à +0,38 sur six valeurs
-d'ε, aucun run sur 90 au-delà du quantile 99,9 %.
-
-**Briser la symétrie est nécessaire, pas suffisant.** Détail en §7.22.
 
 ### 7.22 §6.6 traité : la seule chose qui a marché aujourd'hui est la paramétrisation
 
