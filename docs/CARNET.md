@@ -2803,13 +2803,18 @@ paramétrique avec effectifs retirés au sort, puisque R est une sortie du run e
 | | E[max \|t\|] | q90 | P(≥ 2,40) |
 |---|---|---|---|
 | le sien | 1,620 | 2,427 | 0,1066 |
-| σ connu | 1,619 | 2,427 | 0,1004 |
-| σ réestimé à 145 ddl | 1,628 | 2,452 | 0,1071 |
-| permutation sur le plan réel | 1,625 | 2,429 | 0,1075 |
+| σ connu | 1,619 | 2,427 | **0,1066** |
+| σ réestimé à 145 ddl | 1,628 | 2,452 | 0,1130 |
+| permutation sur le plan réel | 1,624 | 2,428 | 0,1069 |
 | effectifs retirés au sort | 1,623 | 2,439 | 0,1100 |
 
-Sa loi est juste. Le seul écart visible est qu'un σ réestimé a des queues un peu plus
-lourdes qu'un σ connu : 0,025 sur le q90 et rien d'autre. Les magnitudes tombent
+Sa loi est juste, et sa ligne est ma ligne à σ connu aux trois chiffres sur les trois
+colonnes. Le seul écart visible est qu'un σ réestimé a des queues un peu plus lourdes
+qu'un σ connu : 0,025 sur le q90 et 0,006 sur le P. Les effectifs retirés au sort
+bougent moins que ça, donc l'approximation à cellules fixes qu'il était obligé de
+faire est gratuite — ce qui valait la peine d'être vérifié, puisque le fait que R
+soit une sortie était la seule chose qu'il ne pouvait pas contrôler de l'extérieur.
+Les magnitudes tombent
 aussi : E[|d| du gagnant] 0,00658 et 0,00662 contre son 0,00657 ; E[|d| sachant que
 le gagnant est la paire 25/24] 0,00415 et 0,00421 contre son 0,00414. Cette paire
 gagne 13,7 % du temps, c'est pourquoi elle gagne pour moins cher.
@@ -2858,7 +2863,7 @@ deux tours.
 **Cinq contrastes au-delà de deux sigma, pas un.** Et le plus grand des cinq est dans
 la ligne où j'avais écrit « aucune tendance au-delà du bruit sur la ligne elle-même »,
 phrase posée sans test alors que l'omnibus de cette ligne valait F(4,145) = 2,595,
-p = 0,039. Corrigé sur les vingt par permutation, mon contraste R passe de 0,101 à
+p = 0,039. Corrigé sur les vingt par permutation, mon contraste R passe de 0,10 à
 **0,200** ; celui de beta est à 0,053.
 
 **La ligne beta meurt de la même façon.** Les soixante runs indépendants la tranchent
