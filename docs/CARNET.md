@@ -236,6 +236,25 @@ atteignable par une recherche et l'écart produit par la dynamique sont **deux
 fonctions différentes de R**, la première monotone et la seconde plate, dans un
 rapport de 15. Détail en §7.25 et §7.25bis.
 
+### 1.18 « La ligne beta ne porte aucune tendance au-delà du bruit » — morte le 14/08/2026
+
+Écrite au septième tour, sans test, pour justifier de ne pas m'y arrêter. La ligne
+portait **trois contrastes au-delà de deux sigma**, dont le plus grand de tout le
+tableau : beta = 0,005 contre beta = 0,03, t = −2,968, plus grand que le contraste
+en R (t = 2,430) sur lequel deux tours de relecture ont porté. Son omnibus valait
+F(4,145) = 2,595 à p = 0,039.
+
+Ce qui rend cette mort particulière : la conclusion était **juste**. Les soixante
+runs indépendants font passer le contraste de −0,00981 à −0,00135 (t = −0,34) et
+l'omnibus à F(4,55) = 1,790, p = 0,144. La ligne est bien plate. Mais je l'avais
+affirmé sans mesure, et **avoir raison en ne regardant pas n'est pas avoir raison**.
+La faute n'est pas dans la conclusion, elle est dans le fait que la même phrase
+aurait été écrite si la ligne avait porté un effet.
+
+Conséquence de méthode : le jeu de sélection d'un tableau inclut les lignes qu'on a
+regardées et pas rapportées. Vingt contrastes et non dix, ce qui fait passer le p
+corrigé du contraste en R de 0,101 à 0,200. Règle en §7.26.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -2724,10 +2743,15 @@ lue sur la même table.
 
 ### 7.25bis Le seul contraste au-delà de deux sigma n'a pas survécu au second tirage
 
-Même échange, tour suivant. Il relève dans le tableau par R le seul contraste qui
-dépasse deux sigma — R = 25 contre R = 24, écart 0,0063, t = 2,53 — et note que sur
-dix contrastes disponibles c'est exactement ce qu'on trouve en regardant. Il ne le
+Même échange, tour suivant. Il relève dans le tableau par R un contraste qui dépasse
+deux sigma — R = 25 contre R = 24, écart 0,0063, t = 2,43 — et note que sur dix
+contrastes disponibles c'est exactement ce qu'on trouve en regardant. Il ne le
 croit pas, et demande trente graines de plus dans ces deux cellules.
+
+*(Deux corrections apportées par §7.26 : le t vaut 2,43 et non 2,53, la valeur 2,53
+venant des erreurs types intra-cellule et non de l'écart-type mis en commun ; et les
+contrastes disponibles ce jour-là étaient vingt et non dix, dont cinq au-delà de deux
+sigma. Corrigé ici plutôt qu'annoté plus bas, par la leçon de §7.24.)*
 
 **Détail qu'il ne pouvait pas voir : R est une sortie du run, pas un réglage.** Ces
 deux cellules portent 100 runs sur 150, donc trente tirages de plus coûtent environ
@@ -2738,7 +2762,7 @@ quarante-cinq runs. J'en ai lancé soixante, graine indépendante.
 
 | | n = 150 | n = 210 |
 |---|---|---|
-| R = 25 contre R = 24 | +0,0063, t = 2,53 | **+0,0028, t = 1,47** |
+| R = 25 contre R = 24 | +0,0063, t = 2,43 | **+0,0028, t = 1,35** |
 | η² | 4,11 % | **1,2 %** |
 | F | F(4,145) = 1,552, p = 0,19 | **F(6,203) = 0,419, p = 0,87** |
 | pente par unité de R | +0,001180, t = 1,12 | **+0,000507, t = 0,61** |
@@ -2751,11 +2775,141 @@ détectable à 80 % vaut 0,00234, celle du pire cas −0,04065, soit **17,4 fois
 propre résolution** — contre 13,9 avant réplication. Le rapport invitait l'objection
 « ce sont deux échelles » ; la puissance l'interdit.
 
-**Ce que ça généralise, et ce n'est pas sur R.** Le seul contraste au-delà de deux
-sigma dans un tableau qui en offrait dix était très exactement celui à ne pas
-croire, et le moyen le moins cher de le savoir était de **retirer**, pas d'en
-discuter. Quatrième fois de cet échange que la réponse est un second tirage, et la
-première où je le fais avant de publier plutôt qu'après.
+**Ce que ça généralise, et ce n'est pas sur R.** Le contraste au-delà de deux sigma
+que j'avais retenu était très exactement celui à ne pas croire, et le moyen le moins
+cher de le savoir était de **retirer**, pas d'en discuter. Quatrième fois de cet
+échange que la réponse est un second tirage, et la première où je le fais avant de
+publier plutôt qu'après.
+
+*(Ce paragraphe disait « le seul contraste au-delà de deux sigma dans un tableau qui
+en offrait dix ». Les deux nombres sont faux : cinq contrastes sur vingt. §7.26.)*
+
+---
+
+### 7.26 Neuvième critique : le tableau offrait vingt contrastes, et le plus grand n'était pas celui que j'ai lu
+
+14/08/2026. Il met ma procédure sous le nul contre lequel elle argumentait. Loi du
+maximum de dix contrastes par paires, sur mes cellules 8/30/53/47/12, 400 000
+tirages : E[max |t|] = 1,620, q90 = 2,427, P(max |t| ≥ 2,40) = 0,107. Le contraste
+qui nous a fait regarder deux fois portait donc un p corrigé de la sélection de 0,10,
+contre 0,016 nominal. Six fois et demie moins cher qu'il ne se lisait.
+
+**Trois routes vers sa loi, parce qu'une seule ne vaut rien ici.** Paramétrique à
+cellules fixes comme lui ; par permutation des 150 écarts sur les étiquettes du plan
+réel, qui ne suppose ni normalité ni écart-type commun ni effectifs fixes ; et
+paramétrique avec effectifs retirés au sort, puisque R est une sortie du run et que
+8/30/53/47/12 est lui-même une réalisation.
+
+| | E[max \|t\|] | q90 | P(≥ 2,40) |
+|---|---|---|---|
+| le sien | 1,620 | 2,427 | 0,1066 |
+| σ connu | 1,619 | 2,427 | 0,1004 |
+| σ réestimé à 145 ddl | 1,628 | 2,452 | 0,1071 |
+| permutation sur le plan réel | 1,625 | 2,429 | 0,1075 |
+| effectifs retirés au sort | 1,623 | 2,439 | 0,1100 |
+
+Sa loi est juste. Le seul écart visible est qu'un σ réestimé a des queues un peu plus
+lourdes qu'un σ connu : 0,025 sur le q90 et rien d'autre. Les magnitudes tombent
+aussi : E[|d| du gagnant] 0,00658 et 0,00662 contre son 0,00657 ; E[|d| sachant que
+le gagnant est la paire 25/24] 0,00415 et 0,00421 contre son 0,00414. Cette paire
+gagne 13,7 % du temps, c'est pourquoi elle gagne pour moins cher.
+
+**Trois de mes chiffres tombent, tous dans son sens.**
+
+*Mon t vaut 2,43, pas 2,53.* Avec l'écart-type mis en commun sur les cinq cellules —
+l'estimateur qu'utilise un test de contraste — c'est 2,430, et l'écart-type vaut
+0,012969 contre son 0,012942. Mon 2,53 était la version intra-cellule, celle dont je
+lui avais moi-même écrit qu'elle était le moins bon estimateur à n = 8 avant de
+l'utiliser pour le chiffre de tête. Son 2,40 lu sur le tableau était plus près du
+vrai que le mien.
+
+*Sa mise en commun compare deux procédures différentes.* Mon +0,0028 n'est pas une
+pondération par variance inverse de deux moitiés : c'est le contraste relancé sur les
+210 runs bruts, qui réestime conjointement moyennes et écart-type. Mis en commun
+comme son nul le fait, mes deux estimations indépendantes donnent **+0,00206, SE
+0,00207, t = 1,00**, avec 63,5 % du poids sur la découverte. Contre son nul
+conditionné sur la paire (+0,00263), P = 0,634 ; contre le nul non conditionné
+(+0,00418), P = 0,822. Pas 0,434. **Mon nombre mis en commun est au 63ᵉ–82ᵉ centile
+d'un tableau où il n'y a rien.** Seule la réplication seule reste publiable :
+−0,0053, SE 0,0033. Et le t = 1,47 publié à n = 210 est lui aussi la version
+intra-cellule : mis en commun, d = +0,00285, **t = 1,35**.
+
+*Son ω² est exact et non approché.* Sous le nul, η² suit exactement une loi bêta de
+paramètres ddl1/2 et ddl2/2, donc son espérance vaut exactement ddl1/(ddl1+ddl2).
+Ses 2,68 % et 2,87 % sont 4/149 et 6/209 à la décimale — vérifié sur 400 000 tirages,
+2,683 % et 2,867 %. À n = 150 le chiffre débiaisé valait déjà +1,45 % et non 4,11 % ;
+à n = 210 il vaut **−1,69 %**, c'est-à-dire que mes sept niveaux de R sont moins
+structurés qu'une partition au hasard des mêmes 210 runs.
+
+**Ce que ni lui ni moi n'avions vu.** Il corrige pour dix contrastes. **Le tableau en
+offrait vingt.** Les mêmes 150 runs portent une ligne beta, cinq niveaux, dix
+contrastes de plus, imprimés dans la même réponse et lus le même après-midi. Son plus
+grand vaut **|t| = 2,968** — plus grand que celui sur lequel nous discutions depuis
+deux tours.
+
+| | contraste | d | t |
+|---|---|---|---|
+| beta | 0,005 contre 0,03 | −0,00981 | **−2,968** |
+| beta | 0,010 contre 0,03 | −0,00806 | −2,439 |
+| R | 25 contre 24 | +0,00631 | +2,430 |
+| beta | 0,020 contre 0,03 | −0,00744 | −2,253 |
+| beta | 0,030 contre 0,037 | +0,00691 | +2,093 |
+
+**Cinq contrastes au-delà de deux sigma, pas un.** Et le plus grand des cinq est dans
+la ligne où j'avais écrit « aucune tendance au-delà du bruit sur la ligne elle-même »,
+phrase posée sans test alors que l'omnibus de cette ligne valait F(4,145) = 2,595,
+p = 0,039. Corrigé sur les vingt par permutation, mon contraste R passe de 0,101 à
+**0,200** ; celui de beta est à 0,053.
+
+**La ligne beta meurt de la même façon.** Les soixante runs indépendants la tranchent
+aussi, et je ne l'avais jamais regardée : le contraste 0,005 contre 0,03 passe de
+−0,00981 (t = −2,97) à −0,00135 (**t = −0,34**), et l'omnibus de F(4,145) = 2,595,
+p = 0,039 à F(4,55) = 1,790, **p = 0,144**. Moyennes par cellule, découverte puis
+réplication, sur 0,005 / 0,010 / 0,020 / 0,030 / 0,037 : 0,0077 0,0094 0,0100
+**0,0175** 0,0106, puis 0,0087 0,0099 **0,0024** 0,0101 0,0121. Le pic que j'aurais
+décrit comme « beta = 0,03 ressort » a disparu, et la cellule qui s'effondre au second
+tirage est une autre. Le p = 0,029 à n = 210 est à 71 % de la découverte et ne
+confirme rien. **J'ai eu raison sur cette ligne en ne regardant pas assez**, ce qui
+est pire que l'erreur sur R : là au moins j'avais écrit le nombre.
+
+**Sa question, et la réponse que je ne voulais pas donner.** Il demande si le carnet a
+une règle sur le nombre de contrastes qu'un tableau offre avant qu'on ait le droit de
+lire le plus grand, ou si c'est décidé par tableau après l'avoir vu. C'est décidé par
+tableau après l'avoir vu, il n'y a jamais eu de règle, et la ligne beta le démontre :
+j'ai regardé les deux lignes, jugé que celle en R méritait un contraste et celle en
+beta une phrase, et retenu **le plus petit des deux maxima**. Une décision prise par
+tableau après avoir vu le tableau ne garantit même pas qu'on en sélectionne le plus
+grand élément.
+
+**Règle adoptée, quatre lignes, avant la prochaine graine.** *K se déclare avant les
+données* : tout contraste par paires que le plan offre, sommé sur tout facteur lu dans
+la même séance, rapporté ou non — vingt ici, et les dix que je n'ai pas rapportés sont
+ceux qui le font vingt. *Tout |t| ≥ 2 s'imprime*, pas le plus grand : cinq lignes ici,
+et en taire quatre est ce qui m'a permis d'appeler une ligne plate pendant qu'elle
+portait un 2,97. *Le p corrigé vient d'une permutation de la sortie sur les étiquettes
+du plan* : quelques secondes, aucune hypothèse, et c'est l'arbitre quand la version
+paramétrique et celle du lecteur divergent, comme ci-dessus de 0,025 sur le q90. *Un
+contraste sélectionné ne se publie jamais mis en commun avec sa propre réplication* —
+la réplication seule, avec son erreur type.
+
+Pour ce plan la règle donne un seuil qu'il vaut la peine d'écrire, parce qu'il n'est
+pas voisin de celui que j'utilisais : sur les vingt contrastes, q90 = 2,73,
+**q95 = 2,99**, q99 = 3,56, contre 1,98 nominal. Tout mon tableau était sous le q90
+corrigé.
+
+**Sur le « zéro run ».** Il a raison que la loi du max de K et E[η²] sont des fonctions
+du plan, calculables avant la première graine, et il concède lui-même que le second
+tirage est la réponse la plus forte. Je durcis dans le sens qui me coûte : disponible
+*avant la première graine*, ce calcul change le plan et pas seulement la lecture —
+savoir que cinq niveaux de R et cinq de beta exigent |t| = 2,99 m'aurait forcé soit à
+nommer un contraste d'avance, soit à budgéter la réplication dès le lancement. Je n'ai
+fait ni l'un ni l'autre parce que je ne savais pas que je choisissais. Ce que la route
+à zéro run ne pouvait pas faire : m'apprendre que le signe s'inversait, ni que la ligne
+beta mourait aussi. C'est le moyen le moins cher de savoir qu'il ne faut pas croire un
+nombre ; ce n'est pas un moyen de savoir ce que vaut le nombre.
+
+Code : `src/test3_communication/correction_de_selection.py` et
+`correction_de_selection_suite.py`. Réponse dans `docs/REPONSE_ORDRE10.md`.
 
 ---
 
