@@ -255,6 +255,30 @@ Conséquence de méthode : le jeu de sélection d'un tableau inclut les lignes q
 regardées et pas rapportées. Vingt contrastes et non dix, ce qui fait passer le p
 corrigé du contraste en R de 0,101 à 0,200. Règle en §7.26.
 
+### 1.19 « R est un facteur de ce plan » — morte le 15/08/2026
+
+Présupposé de tout §7.25, §7.25bis et §7.26 : j'ai lu, corrigé, répliqué et
+re-corrigé des contrastes sur une ligne indexée par R, en discutant pendant trois
+tours de leur multiplicité et de leur réplication. Aucun de ces trois tours n'a
+demandé si la colonne était un facteur.
+
+Elle ne l'est pas. Le fichier de résultats porte la récompense finale de chaque run,
+que personne n'avait ouverte : **|récompense − k/27| < 10⁻³ pour un entier k dans 150
+cas sur 150**, avec k = R dans 141 et k = R − 1 dans 9. corr(R, récompense) = +0,9725.
+R est l'objectif du run, arrondi à une grille de 1/27. Stratifier par R revient à
+trier les runs par le score qu'ils ont atteint, puis à demander si un biais de mesure
+diffère entre ceux qui ont fait 25/27 et ceux qui ont fait 24/27.
+
+**Ce qui rend cette mort plus coûteuse que les précédentes :** la ligne était
+disqualifiée avant l'arrivée des données, par lecture du générateur, et trois tours
+de correction statistique de plus en plus fine n'ont pas pu s'en apercevoir parce
+qu'ils tarifaient tous un contraste au lieu de demander si la colonne méritait un
+tarif. Le bump d'une cellule relevé au dixième tour n'est pas la raison : la ligne
+n'aurait pas dû être publiée même si toutes ses cellules avaient été plates.
+
+Règles 5 et 6 en §7.27. La ligne beta, elle, survit : beta est réglé avant le run,
+et χ²(16) = 15,67 à p = 0,476 montre qu'il ne déplace pas R.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -2899,8 +2923,14 @@ la réplication seule, avec son erreur type.
 
 Pour ce plan la règle donne un seuil qu'il vaut la peine d'écrire, parce qu'il n'est
 pas voisin de celui que j'utilisais : sur les vingt contrastes, q90 = 2,73,
-**q95 = 2,99**, q99 = 3,56, contre 1,98 nominal. Tout mon tableau était sous le q90
-corrigé.
+**q95 = 2,99**, q99 = 3,56, contre 1,98 nominal.
+
+*(Ce paragraphe se terminait par « tout mon tableau était sous le q90 corrigé ».
+Faux : le maximum du tableau vaut 2,968 et le q90 vaut 2,73. Mon propre p de 0,053,
+écrit deux lignes plus haut, le disait déjà — 0,053 tombe entre q95 et q90 par
+construction. Relevé au dixième tour, §7.27. Et la règle 1 telle qu'écrite ici — « tout
+facteur lu dans la même séance » — fait dépendre le p publié de mon défilement ; elle
+est remplacée par Scheffé en §7.27.)*
 
 **Sur le « zéro run ».** Il a raison que la loi du max de K et E[η²] sont des fonctions
 du plan, calculables avant la première graine, et il concède lui-même que le second
@@ -2915,6 +2945,118 @@ nombre ; ce n'est pas un moyen de savoir ce que vaut le nombre.
 
 Code : `src/test3_communication/correction_de_selection.py` et
 `correction_de_selection_suite.py`. Réponse dans `docs/REPONSE_ORDRE10.md`.
+
+### 7.27 Dixième critique : R n'est pas un facteur, c'est l'objectif divisé par 27
+
+15/08/2026. `results_test3/` est gitignoré, mais le générateur est semé de bout en
+bout et `monter()` ne tire jamais : il régénère mes 150 runs au bit près avec
+`--graine 0`, puis lance mes propres scripts dessus. Tout reproduit — écart-type
+0,012969, t = 2,430, les quatre routes de la loi du max, +0,00631 / −0,00535 /
++0,00206, 0,822 et 0,634, le p corrigé 0,2002, ω² à +1,45 % et −1,69 %. Ce sont mes
+runs recalculés, pas une expérience à lui.
+
+**Ma phrase était fausse et mon propre p le disait.** J'avais écrit « tout mon tableau
+était sous le q90 corrigé » deux lignes sous un p de 0,053. Or 0,053 tombe entre q95
+et q90 par construction, donc le nombre que je venais de publier contredisait la
+phrase que j'écrivais dessus. 2,968 n'est pas sous 2,73.
+
+**Son bump, vérifié.** Retrait d'une cellule à la fois sur les vingt-cinq : celle à
+beta = 0,03, R = 25, treize runs, fait passer t(R) de 2,430 à **1,134** et t(beta) de
+−2,968 à −1,250. Les cinq écarts internes à beta tombent aussi à la décimale : le
+contraste R vaut +0,00003, +0,00284, +0,00161, **+0,02013**, +0,00267 par niveau de
+beta. Un niveau à +0,0201 et quatre à +0,0022 en moyenne.
+
+**Sa diagnostique est elle-même un maximum sur vingt-cinq retraits**, ce qui est
+exactement la faute qu'il m'a apprise un étage plus haut. Loi nulle de la chute
+maximale par permutation : E = 0,430, q99 = 1,070, chute observée **1,295**,
+P = 0,0008. **Elle survit à sa propre correction.** Je suis allé la chercher et elle
+n'est pas là.
+
+**Ce qu'il a choisi.** Il annonce « les 19 autres cellules déplacent t(R) d'au plus
+0,27 ». Il y en a vingt-deux, et le retrait de beta = 0,005, R = 25 déplace t de
+**0,517** — plus que deux des trois cellules qu'il montre. Vers le haut, 2,430 →
+2,947, ce qui explique probablement son absence de la liste. Son 0,27 est juste pour
+les déplacements vers le bas seulement. Même forme que mon erreur : une phrase qui
+couvre les lignes non montrées, fausse dans le sens qui sert le propos.
+
+**Quatre crans plus loin.**
+
+*Ce ne sont pas treize runs, ce sont deux.* Nombre de rupture — plus petit nombre de
+runs dont le retrait adverse fait passer sous 1,98 : **2 sur 150 (1,3 %)** pour le
+contraste R, 3 sur 150 pour celui de beta. Et la cellule n'est pas une cellule, elle
+est bimodale : 0,0496 0,0488 0,0477 0,0445 puis 0,0253 0,0245 … Le saut vaut 0,0192
+là où le plus grand saut ailleurs dans la cellule vaut 0,0084. Les quatre premiers
+ont un max de concentration moyen de 0,182, au-dessus du q90 du plan entier (0,171) ;
+les neuf autres sont à 0,123 et la médiane du plan vaut 0,124. **Quatre runs
+inhabituels posés sur neuf parfaitement ordinaires.**
+
+*L'interaction qu'il nomme a un test, et il ne passe pas sa propre barre.* Ajustement
+des moyennes de cellules contre le modèle additif : **F(11,127) = 1,748**, p nominal
+0,070, p par permutation 0,075 — avant toute correction de multiplicité. Et sur les
+soixante runs indépendants, F(6,40) = 1,425, p = 0,229, avec la cellule qui s'inverse
+de **+0,0201 à −0,0088**.
+
+*R est l'objectif.* Le fichier porte une colonne que ni lui ni moi n'avions ouverte :
+la récompense finale. Sur les 150 runs, |récompense − k/27| < 10⁻³ pour un entier k
+dans **150 cas sur 150**, avec k = R dans 141 et k = R − 1 dans 9. corr(R, récompense)
+= **+0,9725**. Chaque cellule du tableau a une seule valeur de récompense à cinq
+décimales : 0,92586 sur les treize runs de la cellule du bump, 0,88882 une colonne
+plus loin. **Stratifier par R, c'est stratifier les runs par la valeur de l'objectif
+que l'optimiseur maximisait**, puis demander si un biais de mesure diffère entre ceux
+qui ont fait 25/27 et ceux qui ont fait 24/27. Le bump n'est pas la raison pour
+laquelle cette ligne n'aurait pas dû être publiée : elle n'aurait pas dû l'être même
+si toutes les cellules avaient été plates.
+
+*La grandeur est une fonction du max, pas de R.* corr(max, écart) = +0,4317, contre
+corr(appariée, écart) = +0,0665 et corr(max, R) = +0,0172. L'écart mesure surtout où
+le max non contraint est tombé, et cela n'a rien à voir avec R. C'est le mécanisme
+sous le bump : un amas de runs à max élevé tombé dans une cellule d'un tableau indexé
+par quelque chose d'orthogonal — ce qui explique aussi qu'il s'inverse au tirage
+suivant, rien ne le tenait.
+
+*Pour la ligne beta, qui reste légitime :* beta ne déplace pas R. χ²(16) = 15,67 à
+p = 0,476 sur le croisement complet. Composante linéaire faible, corr = +0,197 à
+p = 0,016, donc médiation marginale. Beta est un facteur que j'ai réglé, ses
+problèmes restent ceux déjà au dossier : p corrigé 0,053, Scheffé 0,072, t = −0,34 en
+réplication.
+
+**Sa question, et pourquoi j'en réponds une autre.** Il demande s'il existe une règle
+disant quand un contraste a le droit d'être rapporté comme un fait sur le facteur qui
+l'étiquette plutôt que sur la seule cellule où il vit. La question présuppose que
+l'étiquette est un facteur, et pour cette ligne elle ne l'est pas.
+
+**Règle 5. Un contraste n'est un fait sur une colonne que si la colonne a été
+réglée avant le run.** Pas mesurée, pas dérivée, pas « une sortie qui indexe
+commodément » : assignée. R échoue au niveau le plus fort possible, étant l'objectif
+sur une grille. Aucune diagnostique n'aurait pu sauver cette ligne, et aucune n'était
+nécessaire : elle est disqualifiée avant l'arrivée des données, en lisant le
+générateur. **Ça supprime toute la ligne R de §7.25 et §7.25bis**, ce qui est plus que
+ne fait son bump, et c'est la première règle qui me coûte un résultat que je croyais
+encore plutôt qu'un que j'avais déjà lâché.
+
+**Règle 6, pour les colonnes qui passent la règle 5 : publier le nombre de rupture.**
+Plus petit nombre de runs dont le retrait adverse fait passer sous la barre. Un entier,
+aucune loi, aucune famille, quelques secondes, et il se moque de savoir si la
+fragilité est une cellule, une valeur aberrante ou un amas. Ici 2 sur 150 et 3 sur
+150. Un contraste qui meurt à 1,3 % de l'échantillon se rapporte avec cet entier
+collé dessus, ou ne se rapporte pas.
+
+Aucune des deux n'est une règle sur la sélection. Il a raison que mes quatre
+premières l'étaient toutes, et c'était le défaut : j'avais construit quatre façons de
+tarifer un contraste et aucune pour demander si la colonne méritait un tarif.
+
+**Et la règle 1 avait bien un journal intime dedans.** « Tout facteur lu dans la même
+séance » fait dépendre le p publié de mon défilement. Scheffé à 145 ddl demande 2,817
+à famille 0,10 et donne 0,213 à mon contraste R contre mon 0,200 dépendant de la
+séance, 0,072 à celui de beta contre 0,053. Mêmes nombres, fixés par le plan avant la
+première graine, sans journal. La règle 1 devient : **K est celui du plan, et la barre
+est celle de Scheffé.**
+
+Sixième fois de cet échange que la réponse était déjà sur le disque. Cette fois
+c'était une colonne du même fichier, à douze caractères de celle dont nous discutions.
+
+Code : `src/test3_communication/anatomie_du_bump.py`. Réponse dans
+`docs/REPONSE_ORDRE11.md`.
 
 ---
 
