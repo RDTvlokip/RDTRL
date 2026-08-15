@@ -279,6 +279,34 @@ n'aurait pas dû être publiée même si toutes ses cellules avaient été plate
 Règles 5 et 6 en §7.27. La ligne beta, elle, survit : beta est réglé avant le run,
 et χ²(16) = 15,67 à p = 0,476 montre qu'il ne déplace pas R.
 
+*(Correction du 15/08/2026 au soir, §7.28 : la flèche est à l'envers. `R` est la
+taille d'alphabet du code argmax, et R symboles n'admettent au plus que R référents
+décodables, donc **récompense ≤ R/27** par dénombrement — vérifié 150/150 et 60/60,
+déficit dans {0, 1} sur les 210 runs. R n'est pas l'objectif sur une grille : c'est
+une structure qui **borne** l'objectif. Ma formulation décrivait les 141 runs où la
+borne est serrée et laissait tomber les neuf où l'optimiseur rate le plafond, qui
+sont les informatifs. La ligne reste disqualifiée, et pour une raison plus large.)*
+
+### 1.20 « Le nombre de rupture est une diagnostique » — morte le 15/08/2026, née la veille
+
+Proposée en règle 6 le 15/08/2026 au matin, réfutée le soir même : la plus courte
+espérance de vie de toutes les hypothèses de ce carnet. L'idée était qu'un entier —
+plus petit nombre de runs dont le retrait fait passer le contraste sous la barre —
+mesure la fragilité sans supposer de loi.
+
+Il ne demande aucune loi pour se calculer et ne peut pas s'interpréter sans une. Sur
+un effet **vrai** planté à la taille observée, la médiane du nombre de rupture vaut 2,
+3 ou 4 selon que les résidus viennent d'une gaussienne, des moyennes par niveau de R
+ou des moyennes de cellules — même plan, même effet, même n. Le 2 observé se lit donc
+comme la médiane d'un nul, « la moitié des effets vrais » dans un autre, « un quart »
+dans un troisième.
+
+**Leçon transposable :** une statistique vendue comme sans hypothèse ne l'est
+généralement pas ; l'hypothèse est déplacée vers l'étape de calibration, là où
+personne ne la cherche. Ce qui reste après ce tour est le **plancher de détection**,
+2,80 × SE, fonction du plan seul et calculable avant la première graine. Détail en
+§7.28.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -3057,6 +3085,164 @@ c'était une colonne du même fichier, à douze caractères de celle dont nous d
 
 Code : `src/test3_communication/anatomie_du_bump.py`. Réponse dans
 `docs/REPONSE_ORDRE11.md`.
+
+### 7.28 Onzième critique : le plancher de détection, et le seuil que personne n'a écrit
+
+15/08/2026, même soir. Il attaque les deux règles nées la veille. La 6 publiait un
+entier nu — « meurt à 2 runs sur 150 » ne veut rien dire tant qu'on ne sait pas à
+combien de runs meurt un effet **vrai** de cette taille. Il plante donc l'effet et
+mesure : résidus des moyennes par niveau de R, rééchantillonnés, décalage constant
+sur les runs à R = 25 calibré pour E[t] = 2,430, effectifs 53 et 47.
+
+**La règle 6 meurt plus salement qu'il ne la tue.** Je suis allé construire ce nul et
+il n'est pas identifié. Même plan, même effet planté, même n, même retrait glouton ;
+seule varie la provenance des résidus, qui ne devrait rien changer :
+
+| source des résidus | médiane | moyenne | P(≤2) | P(≤3) | puissance |
+|---|---|---|---|---|---|
+| moyennes par niveau de R | 3 | 4,3 | 0,488 | 0,568 | 0,682 |
+| moyennes des 25 cellules | 4 | 5,6 | 0,354 | 0,432 | 0,796 |
+| gaussiens de même sd | 2 | 4,0 | 0,518 | 0,598 | 0,626 |
+| les siens | 4 | 5,5 | 0,252 | 0,398 | 0,665 |
+
+Sa médiane et sa moyenne tombent sur ma ligne « par cellule », sa puissance sur ma
+ligne « par niveau de R ». Aucune spécification unique ne produit ses quatre nombres,
+et je le rapporte plutôt que de régler jusqu'à ce que ça colle. **L'écart entre les
+trois est le résultat** : le 2 observé se lit comme la médiane d'un nul, « la moitié
+des effets vrais » dans un deuxième, « un quart » dans un troisième, et rien ne les
+départage qu'un choix de modélisation sans rapport avec l'effet planté — l'asymétrie
+des résidus vaut 1,37 par niveau de R contre 0,96 par cellule, et ce seul écart
+déplace la référence d'un facteur deux. **Retirée, pas amendée** : c'était une
+statistique de robustesse avec le modèle caché dans l'étape de calibration, ce qui
+est la même faute qu'un entier nu avec le modèle caché dans la tête du lecteur.
+
+**Son chiffre surprenant est son p en costume.** Il annonce « le plan a deux tiers de
+puissance à la taille qu'il a trouvée, 0,665 ». La puissance calculée à la taille
+d'effet **observée** est une fonction biunivoque décroissante du p (Hoenig et Heisey
+2001) : elle ne peut rien contenir que t ne contienne déjà.
+
+| t | p bilatéral | puissance à la taille observée |
+|---|---|---|
+| 1,98 | 0,0496 | 0,503 |
+| **2,43** | **0,0163** | **0,675** |
+| 2,97 | 0,0035 | 0,839 |
+| 3,50 | 0,0006 | 0,935 |
+
+C'est un fait sur l'observation, pas sur le plan, et la phrase l'attribue au plan.
+Son *usage* est légitime — calibrer un effet planté à la taille observée n'est pas la
+même chose. C'est la phrase isolée qui ne tient pas.
+
+**Sa flèche, acceptée.** `R = len(np.unique(code))` est la taille d'alphabet du code
+argmax, et la récompense est le succès aller-retour sur les mêmes 27 référents : R
+symboles n'admettent au plus que R référents décodables. Dénombrement, pas régression.
+recompense ≤ R/27 dans **150/150 et 60/60**, déficit dans {0, 1}, jamais 2, jamais
+négatif sur les 210. Mon « R est la récompense fois vingt-sept » décrivait les 141
+runs où la borne est serrée et laissait tomber en silence les neuf où elle ne l'est
+pas — or ce sont les informatifs, ceux où le code porte R symboles et où R − 1 seulement
+décodent. La direction fait mordre la règle 5 plus fort : une colonne qui **borne**
+l'objectif est disqualifiée aussi dans les runs où l'optimiseur rate le plafond.
+
+Un point qu'il n'a pas vérifié et que j'attendais déterminant : **aucun des neuf runs
+à collision n'est dans la cellule du bump**, zéro sur treize, et leur écart moyen vaut
+0,01142 contre 0,01102 pour les autres. La collision de récepteur n'est le mécanisme
+de rien.
+
+**Le plancher de détection, qui remplace la colonne des p.** Quantité du plan seul,
+2,80 × SE :
+
+| contraste | n | SE | plancher | observé | observé/plancher |
+|---|---|---|---|---|---|
+| R 27 contre 26 | 8+30 | 0,00516 | 0,01445 | −0,00249 | 0,17 |
+| R 26 contre 25 | 30+53 | 0,00296 | 0,00830 | −0,00186 | 0,22 |
+| R 25 contre 24 | 53+47 | 0,00260 | 0,00728 | +0,00631 | **0,87** |
+| R 24 contre 23 | 47+12 | 0,00419 | 0,01175 | −0,00298 | 0,25 |
+| beta 0,005 contre 0,03 | 30+30 | 0,00330 | 0,00925 | −0,00981 | **1,06** |
+| beta 0,005 contre 0,037 | 30+30 | 0,00330 | 0,00925 | −0,00289 | 0,31 |
+
+**Tout effet observé du tableau est à son plancher ou dessous**, et les deux qui ont
+occupé quatre tours sont ceux à 0,87 et 1,06 : la définition du régime où ce qui
+émerge est gonflé. Le plancher se calcule avant la première graine, ne demande aucune
+donnée et ne se truque pas.
+
+Pour porter le contraste beta à 90 % de puissance : **36 graines par niveau, 179
+runs**, une demi-heure — commandable. Pour celui en R : 89 par cellule, 266 runs, mais
+les cellules R ne se règlent pas. C'est la règle 5 sous un autre costume : **la
+colonne qu'on ne peut pas alimenter en puissance est celle qu'on n'avait pas le droit
+de contraster.**
+
+**Ce que ni la puissance ni le plancher ne posent.** Le plancher répond « qu'aurais-je
+pu voir ». Onze tours n'ont jamais demandé « qu'aurait-il fallu voir pour que quelque
+chose change ». Le tableau de §7.25 existait pour savoir si l'écart produit par la
+dynamique approche le pire cas atteignable : 0,1443 contre 0,0110, rapport 13,1.
+
+| rapport visé | hausse nécessaire | contre le plus grand effet observé |
+|---|---|---|
+| 2 | 0,0611 | 6,2 × |
+| 5 | 0,0178 | 1,8 × |
+| 8 | 0,0070 | 0,7 × |
+
+**Je m'arrête là plutôt que de prendre le chiffre qui m'arrange.** Le seuil est
+choisi, pas dérivé, et le verdict bascule entre le rapport 5 et le rapport 8. Si
+« nulle part près » veut dire un facteur deux, tout le tableau est six fois sous ce
+qui pourrait compter. Si ça veut dire un facteur huit, les contrastes sont dans la
+plage et l'exercice était légitime. Je ne peux plus nommer ce seuil sans qu'il ait
+l'air choisi, **et c'est le résultat** : c'est le seul nombre de tout cet échange qui
+devait être fixé avant les données et ne l'a pas été. Le plancher reste calculable
+honnêtement aujourd'hui ; le seuil de pertinence devient incalculable dès qu'on a vu
+les résultats.
+
+Code : `src/test3_communication/plancher_de_detection.py`. Réponse dans
+`docs/REPONSE_ORDRE12.md`. Les cinq questions de fond que cet échange dessine sont en
+§8ter.
+
+---
+
+## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
+
+Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
+questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en
+précision **en restant au même étage**.
+
+**1. Quand une colonne est-elle une variable ?** Une colonne de tableau ressemble à un
+facteur qu'on l'ait réglée ou non. R a survécu à quatre tours de statistique de plus
+en plus soignée parce que chacun tarifait un contraste au lieu de demander ce qu'était
+la colonne. Dans ce domaine presque tout ce qu'on rapporte comme facteur est une
+sortie : perte finale, rang effectif, nombre de features actives, pas où la
+convergence est arrivée, architecture ayant survécu à un balayage. Le test est de
+savoir si la colonne a été assignée avant le run, et il se répond en lisant le
+générateur, pas les données.
+
+**2. Une diagnostique de robustesse peut-elle exister sans modèle génératif ?** La
+règle 6 dit non. Le nombre de rupture ne demande aucune loi pour se **calculer** et ne
+peut pas s'**interpréter** sans une, et l'interprétation bouge d'un facteur deux selon
+des choix sans rapport avec l'effet. Je soupçonne que ça vaut pour toute statistique
+vendue comme sans hypothèse : l'hypothèse n'est pas absente, elle est **déplacée vers
+l'étape de calibration**, là où personne ne la cherche.
+
+**3. Lesquels de nos nombres sont des fonctions du plan, et lesquels des données ?**
+Seuls les premiers peuvent être fixés avant la première graine, et seuls les premiers
+ne se truquent pas. Plancher de détection : plan. Barre de Scheffé : plan. K : plan.
+p, η², nombre de rupture et puissance observée : données. La puissance observée en est
+la démonstration propre, puisqu'elle **ressemble** à une quantité de plan et **est** un
+p.
+
+**4. Quel est le plus petit effet qui aurait changé une conclusion ?** Une expérience
+sans ce nombre ne peut être ni sous-puissante ni sur-puissante, la puissance étant
+relative à un effet que personne n'a nommé. Il doit s'écrire avant les données, et
+après les données il ne peut plus s'écrire honnêtement. Le nôtre n'a jamais été écrit,
+d'où un tableau dont la réponse dépend d'un rapport que je choisis.
+
+**5. Quelle part de la méthode empirique est une machinerie pour tarifer des mesures
+qui ne pouvaient pas compter ?** Onze tours sur le prix correct d'un contraste, porté
+par une colonne non éligible, mesurant une grandeur dont le seuil de pertinence n'a
+jamais été fixé, dans un tableau où tout effet est à son plancher de détection ou
+dessous. Chaque correction était juste. **La suite n'a jamais demandé si la chose
+corrigée valait la peine d'être mesurée**, et aucun outil que l'un ou l'autre a
+saisi n'était un outil pour cette question.
+
+Je n'ai pas de règle pour 4 et 5. La seule chose faisable est de mettre la colonne des
+planchers et un seuil de pertinence écrit dans le document de conception **avant** le
+prochain run, où le second est encore écrivable.
 
 ---
 
