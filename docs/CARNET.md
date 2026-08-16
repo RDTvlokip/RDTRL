@@ -307,6 +307,40 @@ personne ne la cherche. Ce qui reste après ce tour est le **plancher de détect
 2,80 × SE, fonction du plan seul et calculable avant la première graine. Détail en
 §7.28.
 
+### 1.21 « La colonne observé/plancher est une quantité du plan » — morte le 15/08/2026, née le jour même
+
+Proposée en §7.28 le soir, réfutée dans la nuit : elle bat le record de §1.20 de
+quelques heures. `plancher = 2,80 × se` et `t = d / se` dans le même fichier, donc la
+colonne imprimée **est** |t| / 2,80 identiquement — écart 0,00e+00 sur les six lignes.
+Le verdict « tout effet est à son plancher ou dessous » est donc |t| < 2,80, soit
+p > 0,0058 : un alpha 8,6 fois plus strict que le 0,05 de la définition du plancher.
+
+J'avais publié le même fait deux fois dans le même message, une fois comme p
+(t = 2,97 → p = 0,0035) et une fois comme rapport (1,06), en n'en signalant qu'un — et
+**un message après avoir expliqué que la puissance observée est un p redimensionné**.
+Le plancher **absolu** survit et sert ; c'est le rapport qui est retiré.
+
+**Leçon :** « est-ce une fonction du plan » se vérifie sur l'expression imprimée, pas
+sur l'intention. Voir §7.29.
+
+### 1.22 « L'écart max/appariée est une grandeur continue » — morte le 15/08/2026
+
+Présupposé de tout §7.24 à §7.29 et de la comparaison à la borne qui les précède
+tous. **63 des 210 runs ont un écart exactement nul** — 30 % — parce que l'argmax non
+contraint y est déjà une bijection. La grandeur est une masse ponctuelle plus une
+partie positive asymétrique (asymétrie +1,34 ; ni elle ni son log ne passent Shapiro).
+
+Trois dégâts. Le rapport publié à la borne compare **un mélange à une conditionnelle**,
+la borne étant un pire cas sachant collision : 13,9 devient 9,8 apparié, et 2,4 si on
+compare deux pires cas. La grandeur est en réalité **deux** — P(collision) = 0,700 et
+E[inflation | collision] = 0,01479 — dont le produit vaut la moyenne publiée, et qui
+ont des consommateurs différents. Et le contraste en R, défendu sur quatre tours,
+passe de p = 0,0156 à **p = 0,062** en Mann-Whitney et 0,146 sur le log.
+
+**Leçon :** `min`, `max` et un compte de zéros exacts auraient tout attrapé au premier
+tour. Douze tours d'inférence de plus en plus correcte sur une variable que personne
+n'avait tracée. Détail en §7.29bis.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -3194,6 +3228,163 @@ les résultats.
 Code : `src/test3_communication/plancher_de_detection.py`. Réponse dans
 `docs/REPONSE_ORDRE12.md`. Les cinq questions de fond que cet échange dessine sont en
 §8ter.
+
+### 7.29 Douzième critique : le plancher était un p redimensionné, et la variable n'est pas continue
+
+15/08/2026, tard. Il trouve une identité exacte dans le code que j'ai publié une
+heure plus tôt. `plancher = 2,80 × se` et `t = d / se` dans le même fichier, donc la
+colonne « observé / plancher » **est** |t| / 2,80, identiquement, avant qu'aucune
+donnée n'existe. Vérifié sur mes six lignes : écart 0,00e+00 partout.
+
+Donc « tout effet observé est à son plancher ou dessous » est |t| < 2,80, soit
+**p > 0,0058** à 145 ddl : un alpha **8,6 fois plus strict** que le 0,05 inscrit dans
+la définition du plancher. Et j'avais publié le même fait deux fois dans le même
+message — la section C imprimait t = 2,97 → p = 0,0035, qui est la ligne à 1,06 de la
+section D — en n'en signalant qu'un. **J'ai remplacé une colonne de p par une colonne
+de p redimensionnée un message après avoir expliqué que la puissance observée est un
+p redimensionné.** Colonne retirée. Correction à la question 3 de §8ter : « est-ce
+une fonction du plan » se vérifie sur l'expression imprimée, pas sur l'intention.
+
+**Le plancher absolu survit, et il condamne quelque chose de plus ancien.** Son usage
+prospectif est la vraie trouvaille, et il remonte plus loin que la ligne où il
+l'applique :
+
+| | n | plancher | effet à confirmer | rapport |
+|---|---|---|---|---|
+| beta .005/.03 découverte | 30+30 | 0,00925 | 0,00981 | 1,06 |
+| beta .005/.03 **réplication** | 12+12 | **0,01462** | 0,00981 | **0,67** |
+| R 25 vs 24 découverte | 53+47 | 0,00728 | 0,00631 | 0,87 |
+| R 25 vs 24 **réplication** | 30+12 | **0,01240** | 0,00631 | **0,51** |
+
+**Les soixante runs de §7.25bis ne pouvaient confirmer aucun des deux contrastes,
+même vrais.** Je les ai rapportés comme un test — « le signe s'inverse », « ça ne
+réplique pas », « l'omnibus passe à p = 0,144 » — alors que ce n'était qu'un
+estimateur. La conclusion survit ; la raison que j'en donnais, non : j'ai lu un échec
+à franchir une barre que le tirage ne pouvait pas franchir.
+
+**Sa solution échoue ici, et pour une raison structurelle.** Il propose
+`2,80 × σ_pilote × √(1/na + 1/nb)` dans le document de conception. Or σ n'est pas
+transférable : Bartlett χ² = 19,176 à **p = 0,0007** entre niveaux de beta, rapport
+des sd 2,07, et un σ commun mésestime le plancher de 12 % à 38 % selon la cellule.
+Le mécanisme est ce qui compte : **l'écart est borné par zéro en bas** — le max non
+contraint est toujours au moins la valeur appariée — et sur les 18 cellules à n ≥ 4,
+corr(moyenne, sd) = **+0,874** Pearson, +0,917 Spearman, pente 0,82, CV médian 1,07.
+**σ n'est pas une échelle de nuisance, c'est à peu près la grandeur mesurée.** Un
+pilote ne fixe le plancher que si sa moyenne coïncide avec celle du run, c'est-à-dire
+seulement si on connaît déjà l'effet.
+
+**Mais plus de la question 4 remonte avant le run qu'il ne le proposait, dans une
+autre unité.** Si sd ≈ CV × moyenne avec CV stable près de 1, alors
+plancher/moyenne = 2,80 × CV × √(1/na + 1/nb), qui ne demande aucun σ. À 30 graines
+par cellule et CV ≈ 1,2 : **0,89**, vérifié contre le tableau réel (0,00925 / 0,01035
+= 0,894). Écrit avant la première graine, en une ligne, sans pilote : *à trente
+graines par cellule, ce plan voit un quasi-doublement de l'écart et rien de plus
+petit.* C'est la forme honnête pour toute grandeur positive massée en zéro, et c'est
+**CV** qu'il faut piloter, pas σ.
+
+**Sa reformulation de la question 4, que j'adopte.** Il écrit que le seuil de
+pertinence est devenu inécrivable *par moi*, ce qui n'est pas la même chose
+qu'incalculable : le défaut n'est pas que les données soient arrivées d'abord, c'est
+que « qu'est-ce que cette mesure alimente » n'a jamais été posé — et cette
+question-là ne référence pas les résultats, donc elle reste répondable aujourd'hui à
+pleine honnêteté. Il a raison, et c'est un meilleur diagnostic que le mien.
+
+Alors je l'ai posée, et **elle a une réponse datée.** L'écart max − appariée mesure
+l'inflation due à publier la statistique de concentration sous sa forme argmax non
+contraint plutôt qu'appariée. Son consommateur était le seuil de 0,35 de TEST3 §6.1.
+**Ce seuil a été retiré le 11/08/2026, §1.9.** Les tours six à douze ont tarifé une
+mesure dont le consommateur avait été supprimé au tour cinq. Distinction qui garde
+ça honnête : la **borne** a encore un consommateur, puisque je publie la forme max et
+qu'un lecteur doit savoir qu'elle peut être gonflée de 0,14. Le **tableau de
+contrastes** n'en a jamais eu — aucune décision ne change à aucune valeur de cette
+dépendance, ce qui est exactement pourquoi le rapport de pertinence était libre de
+valoir 2 ou 8.
+
+Le plan le dit aussi, si on l'interroge sur la question qui avait un consommateur.
+Celle-là est à un échantillon, pas un contraste : moyenne 0,01035, SE 0,00085, IC 95 %
+[0,00869 ; 0,01201], distance au pire cas **158 erreurs types**, plancher à un
+échantillon 0,00237 contre 0,00728–0,01445 pour les contrastes. **Les mêmes runs sont
+trois à six fois plus fins sur la question à consommateur que sur les contrastes qui
+n'en avaient pas**, et ils y avaient répondu à 158 sigma avant que tout ceci commence.
+
+**Règle 7 : quand une affirmation est retirée, lister toute mesure dont elle était
+l'unique consommateur, et arrêter de la mesurer.** Une rétractation se propage vers
+l'aval et rien dans mon processus ne la faisait se propager. §1.9 a tué le seuil ; la
+grandeur qu'il justifiait a continué d'être mesurée, contrastée, corrigée pour la
+multiplicité, répliquée, re-corrigée et défendue sur sept tours — tout cela correct,
+rien de tout cela rattaché à quoi que ce soit. Contrairement aux six précédentes, elle
+ne coûte rien à exécuter et ne se truque pas : c'est une liste, écrite au moment du
+retrait.
+
+Code : `src/test3_communication/plancher_de_detection.py` et `masse_en_zero.py`.
+Réponse dans `docs/REPONSE_ORDRE13.md`.
+
+### 7.29bis Ce que ni lui ni moi n'avions ouvert : la variable n'est pas continue
+
+Trouvé en vérifiant son pilote, le même soir, et c'est la plus grosse chose du
+fichier. **63 des 210 runs ont un écart exactement nul.** Trente pour cent. L'écart
+vaut zéro précisément quand l'argmax non contraint est déjà une bijection : aucune
+position de message ne réclame l'attribut qu'une autre a réclamé. Ce n'est donc pas
+une grandeur continue avec un plancher, c'est **une masse ponctuelle plus une partie
+positive asymétrique** — et tous les t, toutes les permutations, toutes les barres de
+Scheffé et tous les bootstraps de douze tours l'ont traitée comme n'étant ni l'un ni
+l'autre.
+
+**Première conséquence, sur le nombre que je défends depuis le septième tour.** La
+borne 0,1443 vient du grimpeur par transpositions cherchant le **pire** code, qui a
+nécessairement une collision d'argmax : c'est un pire cas **sachant collision**. Mon
+0,0104 est non conditionnel, à 30 % de zéros. **Le rapport publié compare un mélange
+à une conditionnelle.**
+
+| quantité | valeur | rapport à 0,1443 |
+|---|---|---|
+| E[écart] sur 210 runs (publié) | 0,01035 | **13,9** |
+| E[écart \| écart > 0] — comparaison appariée | 0,01479 | **9,8** |
+| médiane des écarts > 0 | 0,01254 | 11,5 |
+| q95 des écarts > 0 | 0,04049 | 3,6 |
+| maximum observé sur 210 runs | 0,05927 | **2,4** |
+
+Le rapport que je cite depuis quatre tours vaut 13,9 contre 9,8 apparié — et si l'on
+compare les deux objets de même nature, un pire cas contre un pire cas, **2,4**.
+« Les codes émergents n'approchent nulle part ce qu'une recherche adverse atteint »
+reposait sur l'appariement qui l'arrange, et j'ai choisi cet appariement sans
+remarquer qu'il y en avait un à choisir.
+
+**Deuxième conséquence : la grandeur en est deux, à consommateurs distincts.**
+P(collision d'argmax) = 0,700 [IC95 0,633 ; 0,761] et E[inflation | collision] =
+0,01479 (SE 0,00101), dont le produit vaut exactement la moyenne publiée 0,01035. À
+quelle fréquence la statistique publiée est fausse, et de combien quand elle l'est.
+Deux questions différentes pour un lecteur, et les moyenner n'en répond à aucune.
+Jamais séparées dans aucune version du document.
+
+**Troisième conséquence : les tests.** Asymétrie +1,34, et ni la variable ni son
+logarithme ne passent Shapiro (1,7 × 10⁻⁹ et 2,2 × 10⁻⁶) — ce n'est donc pas non plus
+une log-normale.
+
+| contraste | Student brut | sur log(écart > 0) | Mann-Whitney |
+|---|---|---|---|
+| R 25 contre 24 | t = +2,462, p = 0,0156 | t = +1,471, **p = 0,1459** | **p = 0,0619** |
+| beta .005/.03 | t = −2,589, p = 0,0122 | t = −2,113, p = 0,0405 | p = 0,0285 |
+
+**Le contraste en R — quatre tours, une correction de sélection, une réplication, une
+analyse de bump, un argument de dénombrement — passe à p = 0,062 dès qu'on le pose
+sous une forme que la variable peut porter.** C'était en partie la machinerie
+gaussienne lisant une masse ponctuelle comme de la donnée. Et la décomposition dit
+que les contrastes ne portent pas sur le taux de collision : 13 % et 17 % viennent de
+la proportion de zéros, Fisher p = 0,66 et 0,55. Ils portent sur la taille de
+l'inflation quand elle a lieu, c'est-à-dire sur la moitié à plus petit n — 39 et 32
+runs, pas 53 et 47.
+
+**Un nombre que je ne revendique pas.** Le taux de zéros observé, 0,300, diffère de
+6/27 = 0,2222 à p = 0,0098 binomial, 6/27 étant le taux de permutation si les trois
+argmax étaient indépendants et uniformes. Ils sont les argmax d'informations
+mutuelles corrélées, donc cette référence n'est pas un nul justifié et le p n'est pas
+un résultat. C'est un nombre, imprimé comme tel.
+
+**Leçon.** `min`, `max` et un compte de zéros exacts l'auraient attrapé au premier
+tour, sans coûter un calcul ni demander un argument — et avant la comparaison à la
+borne dont tout le reste découlait. Douze tours d'inférence de plus en plus correcte
+sur une variable que personne n'avait tracée.
 
 ---
 
