@@ -341,6 +341,37 @@ passe de p = 0,0156 à **p = 0,062** en Mann-Whitney et 0,146 sur le log.
 tour. Douze tours d'inférence de plus en plus correcte sur une variable que personne
 n'avait tracée. Détail en §7.29bis.
 
+### 1.23 « L'écart max/appariée est une propriété des codes émergents » — morte le 16/08/2026
+
+Présupposé de §7.24 à §7.29bis en entier, et de la phrase publiée « les codes
+émergents n'approchent nulle part ce qu'une recherche adverse atteint ».
+
+Ce n'est pas une propriété des codes émergents. C'est **l'inflation propre de la loi
+nulle**, reproduite par eux parce qu'ils en sont indistinguables :
+
+| | nulle 10⁷ (11/08) | 210 runs | |
+|---|---|---|---|
+| P(collision d'argmax) | 0,7465 | 0,7000 | binomial p = 0,13 |
+| E[inflation] | 0,01005 | 0,01035 | z = 0,36 |
+| E[inflation \| collision] | 0,01346 | 0,01479 | z = 1,32 |
+
+Et KS des 210 concentrations max contre la nulle : D = 0,0508, **p = 0,638**.
+
+**Ce qui rend cette mort la plus coûteuse du carnet :** les trois nombres de la
+colonne de gauche étaient dans `loi_nulle_longue_n10000000_g0.json` depuis le
+11/08/2026, sous les noms `taux_global`, `inflation_moyenne_globale` et
+`inflation_maximale`. Et §6.2, publié le même jour, avait déjà établi que les codes
+émergents sont tirés de la nulle (z = −0,0098 ± 0,1025, KS p = 0,386). La question
+était répondue **avant d'être posée**, par deux fichiers du même répertoire aux
+horodatages identiques.
+
+Conséquence sur le rapport publié : mon 15 comparait une **moyenne** à un **maximum**
+sur des tailles d'échantillon séparées de cinq ordres de grandeur. De même nature,
+c'est 0,1443 contre 0,1081 — la recherche adverse fait **34 % de mieux que le hasard,
+pas quinze fois**.
+
+Règle 8 en §7.30 : quand un résultat est établi, lister ce à quoi il répond.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -3385,6 +3416,113 @@ un résultat. C'est un nombre, imprimé comme tel.
 tour, sans coûter un calcul ni demander un argument — et avant la comparaison à la
 borne dont tout le reste découlait. Douze tours d'inférence de plus en plus correcte
 sur une variable que personne n'avait tracée.
+
+### 7.30 Treizième critique : la réponse était dans un champ nommé `inflation_moyenne_globale`, écrit le 11/08
+
+16/08/2026. Il relève que j'ai lu un Fisher p = 0,66 sans son plancher — très
+exactement la faute de tout l'échange, une section après avoir retiré la même lecture
+pour la puissance observée.
+
+**Ses trois jambes, vérifiées.** L'identité sur le CV du mélange est exacte sur mes
+210 : CV_pos²/p = 0,9736, (1−p)/p = 0,4286, somme 1,4022 contre un CV_mélange² mesuré
+à 1,4022. Donc **30,6 % du CV² qu'on écrirait dans un document de conception est le
+taux de collision**, sans échelle dedans. Planchers relatifs : mélange à 30+30 =
+0,8561, conditionnel à 21+21 = 0,7133, gain de 17 %. Fenêtres sur la proportion :
+détectable seulement si le taux monte à 0,956 ou descend à 0,361 à 30+30 — soit
+**15 % de la marge disponible vers le haut**. IC bootstrap sur la part portée par les
+zéros : [1 %, 53 %] et [0 %, 56 %]. Une part dont l'intervalle va jusqu'à la moitié ne
+soutient pas « ils portent sur la taille de l'inflation ». **Phrase retirée.**
+
+**Une correction qui améliore sa solution.** Il veut préinscrire CV_pos. Il n'est pas
+assez stable non plus : 0,57 à 0,95 entre niveaux de beta, rapport 1,67, Bartlett
+p = 0,0004. **Le log stabilise** — Levene sur log de la partie positive p = 0,071
+contre 0,020 en brut. La quantité préinscriptible est l'écart-type du log, pas le CV.
+
+**Sa question, et le fichier où elle mène.** Il demande s'il existe une règle qui se
+déclenche à la *création* d'une mesure, ou si la liste ne s'écrit jamais qu'à la
+descente. Je suis allé l'écrire. Avant de l'écrire, j'ai cherché quel aurait été le
+consommateur de cette mesure au 11/08 — et j'ai trouvé que **la question avait déjà
+une réponse**.
+
+`results_test3/loi_nulle_longue_n10000000_g0.json`, généré le 11/08/2026, dix
+millions de codes. Bloc `double_compte` :
+
+```json
+"taux_global": 0.7464519,
+"inflation_moyenne_globale": 0.010049794802284647,
+"inflation_maximale": 0.10807050074977963
+```
+
+| quantité | nulle 10⁷ (11/08) | 210 runs (12–15/08) | |
+|---|---|---|---|
+| P(collision d'argmax) | 0,7465 | 0,7000 | binomial p = 0,13 |
+| E[inflation] | **0,01005** | **0,01035** | z = 0,36 |
+| E[inflation \| collision] | 0,01346 | 0,01479 | z = 1,32 |
+| inflation maximale | 0,10807 | 0,05927 | |
+
+**L'écart que j'ai mesuré, borné, contrasté, corrigé pour la multiplicité, répliqué,
+défendu sur huit tours et décomposé hier comme une nouveauté est l'inflation propre
+de la loi nulle.** Pas « proche de » : c'est elle.
+
+Et le contrôle de premier ordre que personne n'a lancé non plus : Kolmogorov-Smirnov
+des 210 concentrations max contre 20 000 tirages de la nulle, **D = 0,0508,
+p = 0,638**. La distribution observée est sur la nulle à chaque quantile — 3 % sous
+q5, 50 % sous q50, 95 % sous q95, 99 % sous q99. Ce que **mon propre §6.2 avait établi
+le 11/08** sur la concentration appariée, à 100 graines : z = −0,0098 ± 0,1025,
+KS p = 0,386. Je l'ai publié, puis j'ai passé huit tours à contraster une différence
+entre deux statistiques calculées sur des codes que j'avais déjà montrés
+nul-distribués.
+
+**Troisième correction du rapport de tête en deux jours.**
+
+| comparaison | rapport |
+|---|---|
+| moyenne observée contre pire cas de recherche (publié) | **13,9** |
+| moyenne observée contre moyenne de la nulle | 0,97 |
+| max observé sur 210 runs contre pire cas de recherche | 2,4 |
+| **max de la nulle sur 10⁷ contre pire cas de recherche** | **1,34** |
+
+Mon 15 était une **moyenne** contre un **maximum**, sur des tailles d'échantillon
+séparées de cinq ordres de grandeur. La comparaison de même nature est le pire cas
+qu'une recherche adverse trouve contre le pire que dix millions de tirages au hasard
+produisent seuls : **0,1443 contre 0,1081**. La recherche fait 34 % de mieux que le
+hasard, pas quinze fois. « Les codes émergents n'approchent nulle part ce qu'une
+recherche adverse atteint » est faux tel qu'écrit — ils tombent exactement où
+tombent les codes au hasard, et les codes au hasard arrivent au tiers de la recherche.
+
+**Règle 8, et c'est l'autre sens que celui qu'il suppose.** *Quand un résultat est
+établi, lister toute grandeur encore mesurée à laquelle il répond, et arrêter de la
+mesurer.* La règle 7 se déclenche au retrait : une affirmation meurt, on liste ce
+qu'elle alimentait — direction bon marché, et elle a attrapé une chose, le seuil de
+0,35 mort le 11/08. La règle 8 se déclenche à l'établissement, et c'est elle qui
+aurait tout arrêté le jour où ça a commencé : §6.2 a atterri le 11/08 en disant que
+les codes émergents sont tirés de la nulle, et le fichier de la nulle, généré le même
+jour, contenait l'inflation de cette nulle à sept chiffres sous un nom de champ qui
+**est** la grandeur. Entre les deux, tout le programme §7.24–§7.29 était répondu avant
+d'être lancé — la moyenne, le taux, la conditionnelle et le maximum, les quatre.
+
+Personne n'écrit la liste d'établissement parce qu'établir un résultat donne le
+sentiment de finir quelque chose, pas d'en contracter une obligation. Un retrait
+s'annonce ; un résultat qui répond en silence à trois autres questions ouvertes
+n'annonce rien, et j'en avais deux dans le même répertoire avec des horodatages
+identiques.
+
+**Ce qui survit.** La décomposition reste publiable, pour la raison inverse de celle
+que j'avançais : P(collision) = 0,700 et E[inflation | collision] = 0,01479 ne
+décrivent pas une propriété de ce que produit la dynamique, ils décrivent **la nulle,
+reproduite par la dynamique** — ce qui est le vrai résultat et concorde avec tout
+§6.1 à §6.6. L'inflation n'est pas une donnée sur les codes émergents, c'est un fait
+sur la statistique, valable pour n'importe quel code. Et ça règle le seuil de
+pertinence que je ne pouvais pas nommer deux tours plus tôt : il n'y avait rien à
+choisir parce que la grandeur ne dépend de rien que l'expérience fasse varier. La
+colonne honnête à côté n'est ni un p, ni un plancher, ni un seuil — c'est la valeur
+de la nulle.
+
+Treize tours. Chaque correction était juste, chacune plus fine que la précédente, et
+la chose qu'elles affinaient toutes avait été calculée correctement le premier jour
+et classée sous son propre nom.
+
+Réponse dans `docs/REPONSE_ORDRE14.md`.
 
 ---
 
