@@ -372,6 +372,27 @@ pas quinze fois**.
 
 Règle 8 en §7.30 : quand un résultat est établi, lister ce à quoi il répond.
 
+### 1.24 « Le maximum d'inflation de la nulle vaut 0,1081 » — morte le 17/08/2026
+
+Publiée dans `loi_nulle_longue_n10000000_g0.json` sous `inflation_maximale`, puis
+reprise en §7.30 pas plus tard qu'hier pour corriger un rapport. Elle sort du
+réservoir, qui cesse de se remplir à 2 000 000 tirages, et s'imprime sous « toute la
+loi ». **Le vrai maximum sur 10⁷ vaut 0,122365, et 13 tirages dépassent le nombre
+publié.** Le rapport à la borne de recherche passe de 1,34 à 1,18.
+
+Deuxième défaut du même bloc, celui-là trouvé en vérifiant le premier :
+`taux_global` = 0,7465 compte les collisions d'argmax, pas celles qui coûtent quelque
+chose, lesquelles font 0,6762. Mon observé étant calculé sur le coût, la comparaison
+publiée hier mélangeait deux définitions — corrigée, **E[inflation | > 0] passe de
+z = 1,32 à z = −0,07**.
+
+**Ce qui rend celle-ci différente des vingt-trois précédentes :** ce n'est pas une
+faute de raisonnement, c'est un plafond de tampon jamais relu, dans un fichier public
+depuis le 12/08 et utilisé par moi aux tours 7, 8 et 13. Elle a survécu à treize tours
+de critique statistique parce que personne ne relisait le code qui produisait les
+nombres qu'on corrigeait. Corrigé dans la source, avec les comptes de dépassement que
+le script réservait à la colonne voisine. Détail en §7.31.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -3523,6 +3544,104 @@ la chose qu'elles affinaient toutes avait été calculée correctement le premie
 et classée sous son propre nom.
 
 Réponse dans `docs/REPONSE_ORDRE14.md`.
+
+### 7.31 Quatorzième critique : le maximum publié était celui du premier cinquième
+
+17/08/2026. Il lit `tirer` dans `loi_nulle_longue.py` et trouve que `inflation_maximale`
+sort du réservoir, lequel cesse de se remplir à 2 000 000 tirages, puis s'imprime sous
+« toute la loi ». Le maximum publié est donc celui du premier cinquième du tirage.
+
+**Vérifié en relançant les 10⁷, même graine, même flux :**
+
+| n | vrai max | max réservoir | n réservoir | max du pool |
+|---|---|---|---|---|
+| 100 000 | 0,097594 | 0,097594 | 100 000 | 0,097594 |
+| 500 000 | 0,103746 | 0,103746 | 500 000 | 0,103746 |
+| 2 000 000 | 0,108071 | 0,108071 | 2 000 000 | 0,108071 |
+| 5 000 000 | 0,111111 | **0,108071** | 2 000 000 | 0,111111 |
+| 10 000 000 | **0,122365** | **0,108071** | 2 000 000 | 0,122365 |
+
+**13 tirages sur 10⁷ sont au-dessus du nombre que j'avais publié comme maximum.** Le
+rapport d'hier passe de 1,34 à **1,18**. Et sa lecture du pool est juste sur les deux
+points : il porte bien le vrai maximum à chaque jalon, et c'est de la chance — il est
+retenu sur `conc_max`, l'inflation n'est pas monotone en `conc_max`, et la garantie
+que le docstring de `quantile_exact` gagne pour les quantiles appariés n'existe pas
+pour cette colonne. Corrigé dans la source : `inflation_max`, `inflation_moyenne`,
+`taux_inflation`, `inflation_moyenne_si_positive` et un dict `inflation_depassements`,
+tous accumulés dans la boucle. Vérifié contre son jalon : à 500 000 le code corrigé
+rend 0,10374624404828912.
+
+**Le second défaut du même bloc, qu'il n'a pas relevé.** `taux_global` n'est pas le
+taux auquel j'ai comparé mes runs. Dans `statistiques`, `dc = ~distincts` compte
+**P(deux positions partagent un argmax)** = 0,7464519. Sur les mêmes 10⁷ tirages,
+**P(inflation > 0) = 0,6762074**. Sept points d'écart : dans 7 % des tirages l'argmax
+collisionne et l'appariement égale le max exactement, donc la collision ne coûte rien.
+
+Mon 0,700 observé est calculé comme `ecart > 0`. Le tableau d'hier comparait donc un
+taux observé fondé sur le coût à un taux nul fondé sur la structure, et la moyenne
+conditionnelle en héritait. Apparié :
+
+| | nulle (comme publiée) | nulle (appariée) | observé | |
+|---|---|---|---|---|
+| P(collision qui coûte) | 0,74645 | **0,67621** | 0,70000 | p = 0,507 |
+| E[inflation] | 0,01005 | 0,01005 | 0,01035 | z = 0,36 |
+| E[inflation \| > 0] | 0,01346 | **0,01486** | 0,01479 | **z = −0,07** |
+
+La ligne conditionnelle passe de z = 1,32 à **z = −0,07**, et le taux de p = 0,13 à
+p = 0,51. **La seule ligne du tableau d'hier qui ne tombait pas sur la nulle était un
+mélange de définitions à moi**, et la corriger rend l'accord exact sur les trois. Les
+deux taux sont maintenant exportés séparément.
+
+**La clôture, qui est tout ce que huit tours de contrastes ont acheté.** La nulle ne
+contient que des bijections — `np.argsort` d'un vecteur aléatoire est une permutation,
+donc R = 27 pour les 10⁷ tirages. Neuf de mes 210 runs le sont ; le R médian observé
+vaut 25. Comparer mes runs à cette nulle exige donc que l'inflation ne dépende pas de
+R, et c'est exactement le contraste sur lequel huit tours ont porté : Welch R = 27
+contre R < 27, **t = −0,65, p = 0,53**, et le sous-ensemble apparié des neuf bijections
+donne 0,00849 contre 0,01005, z = −0,55. **Le contraste en R valait précisément une
+chose — autoriser la comparaison à une nulle de bijections — et en huit tours aucun de
+nous ne l'a dit.** Ce n'était jamais un résultat sur R, c'était une condition de
+validité pour la comparaison qui rend R sans objet.
+
+**Ce que j'ai construit puis n'ai pas publié.** Son compte de dépassement à 0 est une
+borne, pas une estimation, donc j'ai ajusté la queue pour la convertir : log-linéaire
+sur neuf seuils, R² = 0,990, longueur caractéristique 0,00753. Puis j'ai réajusté sur
+des sous-fenêtres — 2,60e−08, 1,85e−08, 1,38e−08, 1,06e−08, 7,45e−09 selon le seuil de
+départ, soit **un facteur 3,5** en extrapolant 5,9 longueurs caractéristiques au-delà
+du dernier seuil à comptes utilisables. **Point d'estimation non publié.** La colonne
+honnête reste la sienne : 0 sur 10⁷, p < 3,0e−7 par la règle de trois, plus une phrase
+disant que la forme de la queue place la vraie valeur un à deux ordres de grandeur
+dessous sans dire lequel. C'est le piège de §1.9 douze tours plus tard : une grandeur
+dérivée qui a l'air de converger, issue d'un ajustement dont j'aurais choisi la
+fenêtre après l'avoir vue.
+
+**Sa question : la règle 8 se déclenche-t-elle aussi sur une méthode ?** Oui, et c'est
+là qu'elle mord — `depassements` avait établi le 11/08, sur la colonne voisine, dans
+la même fonction et le même commit, que le tarif de cette nulle est le compte de
+dépassement.
+
+**Règle 9. Un choix de méthode est une affirmation sur une classe de grandeurs. Écrire
+la classe, dans le même commit que la méthode.** Avec sa limite, que je ne crois pas
+résolue : écrire la classe déplace le jugement vers l'endroit où passe la frontière,
+tracée une fois, tôt, par celui qui voit le moins ce qui viendra s'en approcher. Je ne
+peux pas construire la phrase que j'aurais plausiblement écrite en août couvrant
+« toute grandeur qu'on comparera un jour à un optimum adverse » — en août il n'y avait
+pas d'optimum adverse dans le projet. **La classe qui devait exister n'existait pas
+encore.** Les règles 7 et 8 se déclenchent sur un événement déjà survenu ; celle-ci
+demande de la prévoyance, et toutes ses versions se réduisent à « sois plus prudent »
+dès que la frontière est contestée.
+
+**Quatre questions posées en retour**, parce que quatorze tours où il trouve et je
+vérifie sont eux-mêmes un plan que je n'ai pas audité : ce qui l'a fait ouvrir `tirer`
+ce tour-ci et pas aux tours 7, 8 ou 13 (déclencheur post-hoc de même forme que celui
+qu'il m'a reproché ?) ; borne ou extrapolation instable, laquelle va dans l'article ;
+**quel est son propre taux d'erreur et comment le saurait-il**, lui qui n'a pas
+d'adversaire là où j'en ai un — l'argument de l'article 3 retourné ; et s'il existe une
+version vérifiable de la règle 9, ou s'il faut la laisser tomber plutôt que d'expédier
+une règle qui se lit comme un conseil.
+
+Code : `src/test3_communication/queue_de_inflation.py`, correctif dans
+`loi_nulle_longue.py`. Réponse dans `docs/REPONSE_ORDRE15.md`.
 
 ---
 

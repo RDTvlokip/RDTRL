@@ -156,6 +156,11 @@ def valider(n_codes, graine):
 
 
 SEUILS = (0.28, 0.30, 0.32, 0.35, 0.40, 0.45)
+# Seuils d'inflation : le meme traitement par comptes exacts que SEUILS, que le
+# script d'origine ne donnait qu'a la concentration. 0,05927 est le maximum
+# observe sur les 210 runs, 0,1443 le pire cas de la recherche adverse.
+SEUILS_INFLATION = (0.05, 0.05927, 0.06, 0.07, 0.08, 0.09, 0.10, 0.11,
+                    0.12, 0.13, 0.1443)
 
 
 def tirer(n_total, graine, taille_lot, garder_extremes=200_000, reservoir=2_000_000):
@@ -171,6 +176,14 @@ def tirer(n_total, graine, taille_lot, garder_extremes=200_000, reservoir=2_000_
     somme = somme_carres = 0.0
     n_double = 0
     depassements = {s: 0 for s in SEUILS}
+    # l'inflation se suit sur TOUT le tirage, pas dans le reservoir : celui-ci
+    # cesse de se remplir a `reservoir` et son maximum est alors celui du debut
+    # du tirage. Corrige le 16/08/2026, voir §7.31 du carnet.
+    infl_max = 0.0
+    infl_somme = 0.0
+    infl_n_positifs = 0
+    infl_somme_positifs = 0.0
+    infl_depassements = {s: 0 for s in SEUILS_INFLATION}
     pool_max = np.empty(0)
     pool_apparie = np.empty(0)
     res_max, res_apparie, res_double = [], [], []
@@ -188,6 +201,14 @@ def tirer(n_total, graine, taille_lot, garder_extremes=200_000, reservoir=2_000_
         n_double += int(dc.sum())
         for s in SEUILS:
             depassements[s] += int((cm >= s).sum())
+        inflation = cm - ca
+        infl_max = max(infl_max, float(inflation.max()))
+        infl_somme += float(inflation.sum())
+        positifs = inflation[inflation > 0]
+        infl_n_positifs += int(positifs.size)
+        infl_somme_positifs += float(positifs.sum())
+        for s in SEUILS_INFLATION:
+            infl_depassements[s] += int((inflation >= s).sum())
         # queue exacte : on fusionne puis on retaille
         pool_max = np.concatenate([pool_max, cm])
         pool_apparie = np.concatenate([pool_apparie, ca])
@@ -212,6 +233,14 @@ def tirer(n_total, graine, taille_lot, garder_extremes=200_000, reservoir=2_000_
         "n_double_compte": n_double,
         "taux_double_compte": n_double / n_total,
         "depassements": depassements,
+        # `taux_double_compte` compte les collisions d'argmax ; `taux_inflation`
+        # compte celles qui coutent quelque chose. Elles different de 7 points :
+        # une collision peut laisser l'appariement egaler le max exactement.
+        "inflation_max": infl_max,
+        "inflation_moyenne": infl_somme / n_total,
+        "taux_inflation": infl_n_positifs / n_total,
+        "inflation_moyenne_si_positive": infl_somme_positifs / infl_n_positifs,
+        "inflation_depassements": infl_depassements,
         "hauts_max": pool_max[ordre],
         "hauts_apparie": pool_apparie[ordre],
         "echantillon_max": np.concatenate(res_max),
