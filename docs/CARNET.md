@@ -3679,6 +3679,36 @@ construction, le dénominateur étant une statistique d'ordre : 1,335 à 2·10�
 six chiffres (E[inflation] 0,0100490 contre son 0,01005099 ; P(infl > 0) 0,676207
 contre son 0,6761844).
 
+**Son 3·10⁹ est-il vérifiable ?** Question de Théo, et le seul angle que je n'avais
+pas pris : j'ai vérifié ses chiffres un par un depuis neuf tours, jamais l'ensemble.
+Tirage à 3·10⁸ — un dixième de son n, monoprocesseur, flux de graines différent :
+
+| | lui (3·10⁹) | moi (3·10⁸) | écart relatif |
+|---|---|---|---|
+| E[inflation] | 0,0100510 | 0,0100522 | 0,012 % |
+| P(inflation > 0) | 0,6761844 | 0,6761580 | 0,004 % |
+
+| seuil | son compte à 3·10⁹ | attendu à 3·10⁸ | mon compte | p de Poisson |
+|---|---|---|---|---|
+| 0,125 | 42 | 4,2 | 5 | 0,41 |
+| 0,130 | 7 | 0,7 | 0 | 0,50 |
+| 0,135 | 3 | 0,3 | 0 | 0,74 |
+
+Rien hors du bruit de Poisson, et le maximum est sur la trajectoire : 0,122365 à 10⁷,
+**0,127468 à 3·10⁸**, son 0,139048 à 3·10⁹. Ce contrôle vaut pour le comptage et pas
+pour la définition : il partage mon `statistiques`.
+
+**Audit de tous ses chiffres depuis le début**, puisque lui comme moi pouvons avoir
+tort depuis le départ. Une vingtaine reproduisent exactement. Un était faux — le
+« 0,27 » du dixième tour, qu'il a concédé. **Deux n'ont jamais reproduit** : le
+P = 0,434 du neuvième tour (j'obtenais 0,634 et 0,822) et le P(≤ 2) = 0,252 du onzième
+(j'obtenais 0,354 / 0,488 / 0,518 selon la provenance des résidus). Ce sont
+précisément les deux nombres qui **portaient l'argument de leur tour**. J'avais
+signalé les écarts et poursuivi parce que la conclusion ne bougeait pas — mais elle ne
+bougeait pas parce que mes chiffres allaient toujours **plus loin dans son sens** que
+les siens, jamais moins. Un désaccord qui ne renforce jamais que l'autre partie est un
+désaccord qu'on n'a jamais vraiment testé.
+
 **Sa règle appliquée à l'autre moitié, ce qu'il n'a pas fait.** Il propose : *tout
 nombre entrant dans un rapport voit sa provenance relue, car un rapport cache le n
 des deux moitiés.* Il a relu une moitié. `recherche_pire_cas(objectif, generateur,
