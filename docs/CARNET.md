@@ -393,6 +393,33 @@ de critique statistique parce que personne ne relisait le code qui produisait le
 nombres qu'on corrigeait. Corrigé dans la source, avec les comptes de dépassement que
 le script réservait à la colonne voisine. Détail en §7.31.
 
+### 1.25 « 0,1443 est le pire cas atteignable » — morte le 17/08/2026
+
+Publiée dans `appariement_4000par_famille_1500par_niveau_g7.json` sous
+`pire_cas.inflation_maximale`, citée comme borne pendant neuf tours, et corrigée deux
+fois dans les vingt-quatre dernières heures **sans que ni moi ni le relecteur ne
+relise sa provenance**. Elle vient de `recherche_pire_cas(..., n_restarts=24)` : c'est
+le meilleur de **vingt-quatre montées** à la graine 7. Ma graine 0 aux mêmes
+vingt-quatre donne 0,146685, et le budget la fait monter jusqu'à 0,154322 à 384
+départs.
+
+**Donc les deux membres du rapport que nous corrigions étaient des statistiques
+d'ordre**, à budgets non déclarés et de sens opposés. Pire : la nulle tire des
+bijections uniformes, le grimpeur part d'une permutation et bouge par transpositions
+qui préservent la bijectivité, et l'objectif est la même fonction. **Ce sont deux
+estimateurs du même supremum, et le rapport converge vers 1.**
+
+Le supremum, lui, se calcule : 1500 départs, deux voisinages indépendants, plateau à
+**0,154322** en 43 secondes. Tout ce que l'un ou l'autre a publié en est une fraction
+— 93,5 % pour ma borne, 90,1 % pour son max à 3·10⁹, 79,3 % pour le mien à 10⁷,
+6,7 % pour la moyenne émergente.
+
+**Ce qui rend celle-ci la plus gênante du carnet :** ce projet existe pour que 27
+référents rendent l'optimum, la loi nulle et le gradient **calculables plutôt
+qu'estimés** — c'est le titre de l'article 3. Dans le seul endroit où il fallait un
+maximum, nous avons tous les deux tiré au sort, lui à 3·10⁹, moi à 10⁷, et la borne
+publiée à 24 départs. Détail en §7.32.
+
 ---
 
 ## 2. Résultats obtenus par raisonnement seul, sans expérience
@@ -3642,6 +3669,123 @@ une règle qui se lit comme un conseil.
 
 Code : `src/test3_communication/queue_de_inflation.py`, correctif dans
 `loi_nulle_longue.py`. Réponse dans `docs/REPONSE_ORDRE15.md`.
+
+### 7.32 Quinzième critique : le numérateur aussi est un maximum d'échantillon, et ce qu'ils estiment tous deux se calcule en 43 secondes
+
+17/08/2026. Il montre que le rapport 0,1443 / max(nulle) décroît avec n par
+construction, le dénominateur étant une statistique d'ordre : 1,335 à 2·10⁶, 1,179 à
+10⁷, 1,038 à 3·10⁹. Vérifié sur ma machine — max 0,097594 / 0,103746 / 0,122365 à
+10⁵ / 10⁶ / 10⁷, et ses deux grandeurs stables tombent sur ma trajectoire à cinq et
+six chiffres (E[inflation] 0,0100490 contre son 0,01005099 ; P(infl > 0) 0,676207
+contre son 0,6761844).
+
+**Sa règle appliquée à l'autre moitié, ce qu'il n'a pas fait.** Il propose : *tout
+nombre entrant dans un rapport voit sa provenance relue, car un rapport cache le n
+des deux moitiés.* Il a relu une moitié. `recherche_pire_cas(objectif, generateur,
+n_restarts=24, n_pas=60)` — **le 0,1443 est le meilleur de vingt-quatre montées**, et
+l'artefact sauvegardé porte `"inflation_maximale": 0.14429720912767127` à la graine 7.
+Ma graine 0 aux mêmes vingt-quatre départs donne 0,146685.
+
+| départs | meilleure inflation |
+|---|---|
+| 6 | 0,143824 |
+| 24 | 0,146685 |
+| 48 | 0,151461 |
+| 384 | **0,154322** |
+
+Le rapport a donc deux axes, et il en fait varier une colonne :
+
+| départs | n = 10⁵ | n = 10⁶ | n = 10⁷ |
+|---|---|---|---|
+| 6 | 1,474 | 1,386 | 1,175 |
+| 24 | 1,503 | 1,414 | 1,199 |
+| 384 | 1,581 | 1,487 | 1,261 |
+
+**Le nombre publié était une case sans coordonnées.**
+
+**Et la limite du rapport vaut 1.** La nulle tire `np.argsort` d'un vecteur aléatoire,
+soit une bijection uniforme. Le grimpeur part d'une permutation et bouge par
+transpositions, qui préservent la bijectivité. Même espace, même objectif `cm - ca`,
+la fonction identique dans les deux. **Ce sont deux estimateurs du même supremum** —
+le maximum de l'inflation sur les 27! bijections, l'un par tirage uniforme, l'autre
+par recherche locale. Le rapport ne converge pas vers quelque chose sur « la recherche
+adverse contre le hasard » : il converge vers 1, et toute valeur publiée par l'un ou
+l'autre dit seulement quel budget était le plus grand. Entraîné par deux choses déjà
+au carnet : §1.9 (un maximum d'échantillon n'estime rien) et la trouvaille du sixième
+tour (le voisinage par transpositions ne peut pas quitter le régime bijectif).
+Troisième fois en trois tours qu'un résultat ne se propage pas à la colonne voisine.
+
+**Alors j'ai calculé le supremum.** 1500 départs, deux voisinages indépendants —
+transpositions seules, et transpositions plus 3-cycles échantillonnés pour sortir des
+optima que le premier ne peut pas quitter. **Les deux plafonnent à 0,154322**, atteint
+par 1 départ sur 600, en 43 secondes.
+
+| | valeur | part du supremum |
+|---|---|---|
+| supremum (recherche, deux voisinages, 1500 départs) | **0,154322** | 100,0 % |
+| ma borne publiée (24 départs, graine 7) | 0,144297 | 93,5 % |
+| son max à 3·10⁹ tirages | 0,139048 | 90,1 % |
+| mon max à 10⁷ tirages | 0,122365 | 79,3 % |
+| max des 210 runs émergents | 0,059270 | 38,4 % |
+| moyenne des 210 runs émergents | 0,010350 | 6,7 % |
+| moyenne de la loi nulle | 0,010049 | 6,5 % |
+
+Cette colonne ne bouge avec le n de personne.
+
+**La structure de l'optimum, et une correction que je me suis faite en cours de
+route.** La matrice d'information du code maximisant n'a **qu'une ligne non nulle** :
+les trois positions portent de l'information sur un seul attribut (0,4156 / 0,4383 /
+0,3182) et zéro sur les deux autres. Le max glouton la ramasse trois fois, l'appariement
+une. conc_max 0,2465, appariée 0,0922.
+
+Ma première lecture : « la pire inflation vit donc sur des codes dégénérés à faible
+concentration absolue, elle ne peut tromper personne ». **Vérifié, et faux.** Inflation
+maximale sous plancher sur conc_max :
+
+| plancher | inflation max | conc_max atteint | appariée |
+|---|---|---|---|
+| 0,30 | 0,140207 | 0,420620 | 0,280413 |
+| 0,35 | 0,140207 | 0,385139 | 0,244932 |
+| 0,40 | 0,140207 | 0,474035 | 0,333828 |
+| 0,50 | 0,140207 | **0,613747** | **0,473540** |
+| 0,60 | 0,132570 | 0,613747 | 0,481177 |
+
+Quasi plate. **Un code affichant 0,6137 sur la statistique publiée peut valoir 0,4735
+apparié.** La borne est sérieuse à tous les niveaux où un lecteur agirait, et j'ai
+failli écrire le contraire parce que le premier optimum regardé était dégénéré.
+
+**Sa règle contre mon carnet : elle marche, et elle en attrape une qu'il n'a pas
+nommée.** Le test n contre n/10 sur le fichier de la nulle sépare proprement :
+moyenne, écart-type, q50, q99, E[inflation] et P(infl > 0) bougent de 0,00 à 0,03 % ;
+q99,9999 bouge de **2,45 %**, le maximum de 12,96 %, le max d'inflation de 17,95 %.
+Or `q99,9999` est exporté sous `quantiles_queue_exacts`, avec un docstring où
+j'argumente qu'il est exact et non estimé sur un sous-échantillon. Il l'est — et à
+n = 10⁷, le quantile 1 − 10⁻⁶ est le dixième plus haut tirage. **Mon propre docstring
+confond deux exactitudes**, et son test les sépare en une ligne.
+
+**Sa question, et la réponse est oui.** Une grandeur qui bouge avec n et reste juste à
+publier : **une borne**. `p < 3/n` change à chaque n et est correcte à chaque n, parce
+que le n est dans la phrase. Ce qui affûte sa règle au lieu de la casser : le test
+n'est pas *est-ce que ça bouge avec n*, c'est **est-ce que la phrase publiée porte son
+n**. `inflation_maximale = 0,1081` est un énoncé vrai sur 2 000 000 tirages, publié
+sous un nom qui ne mentionne aucun tirage. `inflation_max_1e7 = 0,122365` n'a besoin
+d'aucune colonne compagne. Publier deux colonnes demande au lecteur de faire le
+classement ; nommer le n rend le nombre juste tout seul.
+
+**Quatre questions posées en retour :** qu'est-ce qui se déclenche sur « calcule-le
+plutôt » — le supremum a pris 43 secondes après huit tours de dispute sur deux de ses
+estimateurs, dans un projet qui existe pour calculer exactement plutôt qu'estimer ;
+est-ce qu'un plafond dur à 0,154322 explique sa sur-prédiction hors échantillon, un
+ajustement exponentiel sur-prédisant forcément près d'un bord de support fini, auquel
+cas c'est une erreur de modèle et non de taille ; est-ce que mon `valider()` est un
+contrôle ou un miroir, puisqu'il compare mon vectorisé à mon propre scalaire, deux
+implémentations mais un auteur et une lecture de la définition — et si `statistiques`
+se trompe, quinze tours de nombres des deux côtés se trompent identiquement ; et
+l'offre de mettre son pilote 3·10⁹ dans le dépôt sous son nom, puisque l'asymétrie ne
+se corrige pas par le soin mais par les artefacts.
+
+Code : `src/test3_communication/deux_budgets.py`. Réponse dans
+`docs/REPONSE_ORDRE16.md`.
 
 ---
 
