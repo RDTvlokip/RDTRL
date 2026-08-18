@@ -305,10 +305,16 @@ objectif** : J = 0,96395 depuis l'aléatoire contre **J = 1,00000** à l'état
 compositionnel ajusté puis remonté. Écart +0,03605. Le paysage a des optima locaux et
 Adam tombe dedans 95 % du temps.
 
+**Et ce n'est pas Adam.** Le gradient de J tombe à 3,65 × 10⁻⁷ (relatif 1,1 × 10⁻⁹)
+au plateau, et 20 000 pas de SGD n'en sortent pas : c'est un vrai point critique de
+l'objectif. **Les attracteurs sous-optimaux sont une propriété du paysage**, pas de
+l'optimiseur, donc aucune méthode locale n'y échappe.
+
 **Conséquence sur l'énoncé publié.** « La compositionnalité n'a jamais été
-sélectionnée » devient : *Adam depuis l'aléatoire ne sort jamais d'un optimum local
-situé 0,036 sous le global, et les codes compositionnels sont au global.* Vrai, et
-beaucoup plus petit. La question du plan — que trancherait la récompense parmi des
+sélectionnée » devient : *l'objectif a des optima locaux en k/27 qui piègent la
+dynamique 95 % du temps, et les codes compositionnels sont à l'optimum global que le
+flot n'atteint pas depuis un départ aléatoire.* Vrai, beaucoup plus petit, et non
+réparable en changeant d'optimiseur. La question du plan — que trancherait la récompense parmi des
 optima liés — n'a été posée que sur 60 runs, avec 0 compositionnel et une borne
 supérieure de 6,0 % contre un nul de 1,19 × 10⁻²⁵ : vingt-quatre ordres de grandeur de
 jeu, donc aucune puissance.
@@ -4342,23 +4348,67 @@ viendrait d'ailleurs. **La dynamique ne tranche pas entre elles : elle n'arrive
 jamais.** Elle converge dans un bassin sous-optimal à ~1,8 référents non décodables,
 et les codes compositionnels sont à l'optimum global qu'elle n'atteint pas.
 
-Donc « la compositionnalité n'a jamais été sélectionnée » est aujourd'hui étayé sous
-la forme : **Adam depuis l'aléatoire ne sort jamais d'un optimum local situé 0,036
-sous le global, et les codes compositionnels sont au global.** C'est vrai, et c'est
-beaucoup plus petit. Ça ne dit rien de ce que la récompense trancherait parmi les
-optima liés, puisque ceux-ci sont visités dans 5 % des runs et jamais dans le bras
-factorisé.
+**Et une correction que je me suis faite dans l'heure, dans le sens qui me coûte le
+plus.** Mon premier jet accusait Adam, sur le précédent de §1.12. J'ai donc appliqué
+la leçon de §1.12 au lieu de la citer, et regardé le gradient plutôt que la boucle :
+
+| pas | E[R] | ‖grad J‖ | relatif | collisions |
+|---|---|---|---|---|
+| 0 | 0,037037 | 2,107e−05 | 5,58e−05 | 10 |
+| 1000 | 0,888496 | 5,005e−05 | 2,69e−07 | 3 |
+| 3000 | 0,888833 | 6,594e−06 | 3,04e−08 | 3 |
+| 30 000 | **0,888889** | **3,653e−07** | **1,13e−09** | 3 |
+
+**Le gradient tombe à zéro**, et 20 000 pas de SGD à lr = 1,0 depuis le plateau
+déplacent E[R] de 7 × 10⁻⁵. C'est un **vrai point critique de J**, pas Adam qui cale —
+et 0,888889 vaut exactement 24/27, la récompense d'un code à 24 messages distincts.
+
+Donc la critique n'est pas celle que j'avais saisie, et la vraie est pire pour le
+plan : **les attracteurs sous-optimaux sont une propriété du paysage de l'objectif**,
+pas un artefact de l'optimiseur. Aucune méthode locale n'en sort. « La
+compositionnalité n'a jamais été sélectionnée » s'étaye donc sous la forme :
+**l'objectif a des optima locaux en k/27 qui piègent la dynamique 95 % du temps, et
+les codes compositionnels sont à l'optimum global que le flot n'atteint pas depuis un
+départ aléatoire.** Ce n'est pas réparable en changeant d'optimiseur, et ça ne dit
+rien de ce que la récompense trancherait parmi les optima liés, visités dans 5 % des
+runs et jamais dans le bras factorisé.
 
 **Ce qui survit intact :** le no-go d'équivariance de §6.7, propriété de l'objectif
 et valable pour tout optimiseur ; et l'uniformité intra-classe de fibres, bien mesurée
 sur la population qu'elle décrit.
 
-**Et c'est la troisième fois que ce projet mesure Adam en rapportant l'objectif.**
-§1.12 est morte le 11/08 pour exactement ça — un beta critique à 0,0381 à travers une
-boucle d'optimisation, 0,037037037 par le hessien. La leçon a été écrite ce jour-là.
-Puis §6.1 à §6.7 ont mesuré où la dynamique atterrit, à travers Adam, et dix-huit
-tours ont affiné la statistique sans que l'un ou l'autre demande si la dynamique
-atteignait l'ensemble dont parlait le plan.
+### 7.35quater Trois vérifications qui passent, et une hypothèse fausse sans conséquence
+
+Même jour, en réponse à *« on n'est jamais sûr que le code soit juste depuis le
+début »*. La relecture extérieure couvrait la mesure. J'ai vérifié le reste.
+
+**`tirer_profil` — validé, deux fois, et ça n'avait jamais été fait.** C'est le
+tirage qui produit la loi nulle de **chaque** z de §6.2. Sur un profil bijectif il
+doit coïncider avec `np.argsort(random)` de `loi_nulle_longue`, écrit
+indépendamment : KS D = 0,0027, **p = 0,9985**, écart des moyennes −0,20 SE, et la
+table marginale 27 × 27 est uniforme (χ² = 678,0 à 676 ddl, p = 0,47). Pour les
+profils **non** bijectifs — 95 % des runs — il n'existait aucun second
+échantillonneur, donc j'en ai écrit un par construction différente (permuter les
+tailles sur les messages, puis partitionner les référents). Accord sur trois
+profils : KS p = 0,78 / 0,21 / 0,95, plus grand écart 2,17 SE sur trois comparaisons.
+
+**`objectif()` — validé par reconstruction depuis la définition.** E[R] = tr(SR)/N
+reconstruit à **0,00e+00**, à l'initialisation comme après 3000 pas, et
+J − E[R] = 0,02 × (H_S + H_R) en nats à la dernière décimale. À l'initialisation
+E[R] = 0,037037078, soit 1/27.
+
+**Une hypothèse fausse, et sa conséquence est petite.** §6.2 moyenne des z venant de
+lois nulles différentes, ce qui suppose z ∼ N(0,1) sous H0. Faux : l'asymétrie vaut
+**+0,48 à +0,58** selon le profil et Shapiro rend p ≈ 10⁻²⁰. Mais l'échelle est
+bonne (sd 0,99–1,01, P(|z| > 1,96) = 0,040–0,046), et après cumul sur 1200 le
+théorème central limite absorbe presque tout : l'intervalle empirique vaut
+[−0,0534 ; +0,0581] contre [−0,0564 ; +0,0564] nominal. **Environ 4 % sur chaque
+queue, la droite plus longue** — donc un z positif est légèrement moins surprenant
+que publié, ce qui va dans le sens du 2,18 σ d'hier qui n'a pas survécu.
+
+C'est la première fois de cet échange que je rapporte une hypothèse violée dont la
+conséquence est négligeable. Ça vaut d'être nommé comme catégorie : le contrôle qui
+passe et le contrôle qui échoue coûtent le même prix, et seul le second se raconte.
 
 Réponse dans `docs/REPONSE_ORDRE19.md`.
 
