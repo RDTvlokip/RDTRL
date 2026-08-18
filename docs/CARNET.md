@@ -287,6 +287,36 @@ n'aurait pas dû être publiée même si toutes ses cellules avaient été plate
 Règles 5 et 6 en §7.27. La ligne beta, elle, survit : beta est réglé avant le run,
 et χ²(16) = 15,67 à p = 0,476 montre qu'il ne déplace pas R.
 
+### 1.28 « La dynamique choisit parmi les optima liés » — morte le 18/08/2026
+
+Prémisse de tout le test 3, écrite dans le document de conception et reprise comme
+arithmétique de tête de l'article : les 27! bijections valent toutes récompense 1,
+1296 sont compositionnelles, donc un résultat compositionnel ne peut pas s'expliquer
+par la récompense (1,19 × 10⁻²⁵ sous tirage uniforme).
+
+**La dynamique n'entre jamais dans cet ensemble.** Sur 1200 runs, le bras tabulaire
+finit bijectif **60 fois (5,0 %)** et le factorisé **1 fois (0,1 %)**. Le reste
+converge à récompense 0,93 avec ~1,8 collisions — et les 1296 codes compositionnels
+étant tous bijectifs, un run à collisions **ne peut pas** être compositionnel.
+
+Et ce n'est pas une troncature. La montée converge : 0,92896 à 3000 pas, 0,92901 à
+12 000, 0,92901 à 30 000. Elle converge vers un point **strictement pire de son propre
+objectif** : J = 0,96395 depuis l'aléatoire contre **J = 1,00000** à l'état
+compositionnel ajusté puis remonté. Écart +0,03605. Le paysage a des optima locaux et
+Adam tombe dedans 95 % du temps.
+
+**Conséquence sur l'énoncé publié.** « La compositionnalité n'a jamais été
+sélectionnée » devient : *Adam depuis l'aléatoire ne sort jamais d'un optimum local
+situé 0,036 sous le global, et les codes compositionnels sont au global.* Vrai, et
+beaucoup plus petit. La question du plan — que trancherait la récompense parmi des
+optima liés — n'a été posée que sur 60 runs, avec 0 compositionnel et une borne
+supérieure de 6,0 % contre un nul de 1,19 × 10⁻²⁵ : vingt-quatre ordres de grandeur de
+jeu, donc aucune puissance.
+
+Survivent intacts : le no-go d'équivariance de §6.7, propriété de l'objectif ; et
+l'uniformité intra-classe de fibres, bien mesurée sur sa population. Détail en
+§7.35ter.
+
 *(Correction du 15/08/2026 au soir, §7.28 : la flèche est à l'envers. `R` est la
 taille d'alphabet du code argmax, et R symboles n'admettent au plus que R référents
 décodables, donc **récompense ≤ R/27** par dénombrement — vérifié 150/150 et 60/60,
@@ -4262,6 +4292,73 @@ l'objectif et survit à tout optimiseur ; le no-go de §6.7 s'en moque. J'affirm
 projet s'est déjà fait prendre une fois par exactement cette confusion, et que le run
 qui trancherait — REINFORCE depuis l'aléatoire, mêmes graines, même mesure — n'a
 jamais été lancé et coûte une nuit.
+
+### 7.35ter La dynamique n'atteint jamais l'ensemble dont parle la prémisse
+
+18/08/2026, sur deux relances de Théo : *« cherche ce qui était sous notre nez »* et
+*« on n'est jamais sûr que le code soit juste depuis le début »*. La seconde donne
+l'angle : la relecture extérieure du relecteur a validé la **mesure**
+(`matrices_information`, `statistiques`, à 3,05 × 10⁻¹⁶). **Personne n'a jamais
+vérifié la dynamique**, qui est la moitié qui produit les codes.
+
+**La cible est inatteignable pour 95 % des runs, par construction.** Les 1296 codes
+compositionnels sont **tous** des bijections (vérifié : 1296, tous bijectifs). Un run
+qui finit avec des collisions ne peut donc pas être compositionnel, quelle que soit
+sa concentration.
+
+| bras | n | bijectifs | part | compositionnels | borne sup 95 % |
+|---|---|---|---|---|---|
+| tabulaire | 1200 | 60 | **5,0 %** | 0 | 6,0 % |
+| factorisé | 1200 | 1 | **0,1 %** | 0 | 97,5 % |
+| structuré | 40 | 1 | 2,5 % | 0 | 97,5 % |
+
+Et la borne publiée porte sur les 1200. Sur la population où la question est
+posable : z = +0,0507 ± 0,1585 contre +0,0147 ± 0,0294, soit **5,4 fois plus lâche**.
+La forme directe de la question du plan — parmi les runs ayant atteint l'ensemble
+lié, combien sont compositionnels — n'a jamais été calculée : **0 sur 60, borne
+supérieure 6,0 %**, contre un nul de 1,19 × 10⁻²⁵. Vingt-quatre ordres de grandeur de
+jeu. Ce test n'a aucune puissance, et c'est celui que le cadrage décrit.
+
+**Puis le test de la dynamique elle-même.** D'abord, le plateau à 0,93 est une vraie
+convergence : 3000 pas donnent 0,92896, 12 000 donnent 0,92901, 30 000 donnent
+0,92901. Dix fois le budget déplace la cinquième décimale, et un pas plus grand fait
+pire. Ensuite :
+
+| état | J | E[R] | collisions |
+|---|---|---|---|
+| convergé depuis l'aléatoire | **0,96395** | 0,96290 | 1 |
+| ajusté sur un compositionnel | 0,99980 | 0,99973 | 0 |
+| ajusté puis 3000 pas de montée | **1,00000** | 1,00000 | 0 |
+
+**La montée depuis l'aléatoire converge vers un point strictement pire de son propre
+objectif**, de +0,03605. Ce n'est pas le terme d'entropie qui refuserait de récompenser
+le déterminisme : J atteint exactement 1,00000 à la bijection déterministe et l'y
+tient. **Le paysage a des optima locaux, et la montée depuis l'aléatoire tombe dedans
+environ 95 % du temps.**
+
+**Ce que ça change.** La prémisse dit : les 27! bijections sont à égalité à récompense
+1, donc la récompense ne peut pas trancher entre elles, donc un résultat compositionnel
+viendrait d'ailleurs. **La dynamique ne tranche pas entre elles : elle n'arrive
+jamais.** Elle converge dans un bassin sous-optimal à ~1,8 référents non décodables,
+et les codes compositionnels sont à l'optimum global qu'elle n'atteint pas.
+
+Donc « la compositionnalité n'a jamais été sélectionnée » est aujourd'hui étayé sous
+la forme : **Adam depuis l'aléatoire ne sort jamais d'un optimum local situé 0,036
+sous le global, et les codes compositionnels sont au global.** C'est vrai, et c'est
+beaucoup plus petit. Ça ne dit rien de ce que la récompense trancherait parmi les
+optima liés, puisque ceux-ci sont visités dans 5 % des runs et jamais dans le bras
+factorisé.
+
+**Ce qui survit intact :** le no-go d'équivariance de §6.7, propriété de l'objectif
+et valable pour tout optimiseur ; et l'uniformité intra-classe de fibres, bien mesurée
+sur la population qu'elle décrit.
+
+**Et c'est la troisième fois que ce projet mesure Adam en rapportant l'objectif.**
+§1.12 est morte le 11/08 pour exactement ça — un beta critique à 0,0381 à travers une
+boucle d'optimisation, 0,037037037 par le hessien. La leçon a été écrite ce jour-là.
+Puis §6.1 à §6.7 ont mesuré où la dynamique atterrit, à travers Adam, et dix-huit
+tours ont affiné la statistique sans que l'un ou l'autre demande si la dynamique
+atteignait l'ensemble dont parlait le plan.
 
 Réponse dans `docs/REPONSE_ORDRE19.md`.
 
