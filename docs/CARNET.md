@@ -338,17 +338,44 @@ projet. Personne ne l'a proposé en six jours, moi compris.
 carnet est la sortie d'un tel audit. Correctif engagé le jour même : §6.2 relancé à
 600 graines contre une nulle de 200 000, graine indépendante.
 
-**Le correctif a mordu dès le premier essai.** À 600 graines la borne passe de
-0,00874 à 0,00359, et le bras **factorisé** sort de zéro : z = +0,0935 ± 0,0429,
-IC [+0,009 ; +0,177], p bilatéral 0,029, signe inversé par rapport au run publié à
-100 graines (−0,0514). Le bras tabulaire, lui, reste à z = +0,0099 ± 0,0421.
+**Le correctif a été lancé, et il a rendu l'inverse de ce que j'annonçais.** À 600
+graines la borne passe de 0,00874 à 0,00356, et le bras factorisé sortait de zéro à
+la graine 11 : z = +0,0935, IC [+0,009 ; +0,177]. J'ai écrit ici, le 17/08, que « le
+correctif a mordu dès le premier essai » et que c'était ce qu'un biais d'audit
+directionnel prédit. **Phrase retirée le 18/08 :** la graine 907 rend z = −0,0280,
+signe inversé, et les 1200 graines réunies donnent z = +0,0327 ± 0,0299, |z/SE| = 1,09.
+Le 2,18 σ était le seizième contraste de cet échange à ne pas survivre au second
+tirage — et je l'avais avancé comme preuve d'un biais **dans le paragraphe qui décrit
+ce biais**.
 
-C'est un contraste à 2,18 σ dans un tableau qui en offre deux : je sais ce que seize
-tours en disent, il est en réplication à graine indépendante, et je ne conclus rien.
-**Mais le fait qu'il existe est le résultat.** Le premier calcul jamais dépensé à
-resserrer un négatif a produit, du premier coup, quelque chose qui va contre la
-conclusion — ce qui est précisément ce qu'un biais d'audit directionnel prédit qu'on
-trouverait si on regardait. Voir §7.34.
+L'affirmation centrale survit : je n'avais jamais payé pour resserrer un négatif, et
+un audit qui ne peut trouver que des surestimations en rapportera à 100 %. Ce qui est
+mort est la preuve que j'en donnais.
+
+Et ce que le run a acheté vaut mieux que ce que j'espérais : **borne 2,45 fois plus
+serrée, conclusion de §6.2 tenue sur 1200 graines, rien à retirer.** C'est la première
+entrée de cette section où payer une mesure a rendu un résultat négatif **plus fort**,
+et donc le premier point de donnée contre la lecture selon laquelle je serais
+incapable de trouver mes bornes lâches. Un seul point, sur l'axe où je n'en ai qu'un.
+Voir §7.34.
+
+### 1.27 « La paramétrisation factorisée porte une sélection résiduelle » — morte le 18/08/2026, née la veille
+
+Née de mon propre correctif d'audit le 17/08 à 600 graines (z = +0,0935, IC
+[+0,009 ; +0,177], p = 0,029), morte le lendemain sur une graine indépendante :
+z = **−0,0280**, IC [−0,110 ; +0,054]. Réunis sur 1200 graines, z = +0,0327 ± 0,0299,
+**|z/SE| = 1,09**.
+
+Contraste à 2,18 σ dans un tableau qui en offrait deux, mort au second tirage. C'est
+le seizième de cet échange et le premier que j'ai répliqué **avant** d'en écrire
+l'interprétation — ce qui est le seul progrès de procédure que je peux revendiquer sur
+seize tours.
+
+**Ce qui reste, et qui n'est pas rien :** les deux runs à 600 graines diffèrent sur ce
+bras de +0,1214 avec SE 0,0598, soit t = +2,03. Un run unique sous-estime donc la
+variabilité inter-run, et une borne citée depuis un seul run de 600 graines est
+optimiste même honnête. C'est l'intervalle groupé qui se publie désormais. Détail en
+§7.34.
 
 ### 1.21 « La colonne observé/plancher est une quantité du plan » — morte le 15/08/2026, née le jour même
 
@@ -4050,24 +4077,46 @@ l'extrapolation.** C'est un échec de choix de modèle, qu'aucun n ne répare.
 **Et le contrôle dont j'avais dit que je ne l'avais jamais lancé.** §6.2 à 600
 graines contre une nulle de 200 000, graine indépendante :
 
-| | n | z moyen | SE | IC 95 % | KS p | détectable |
-|---|---|---|---|---|---|---|
-| tabulaire | 100 | −0,0098 | 0,1025 | [−0,211, +0,191] | 0,386 | 0,00874 |
-| tabulaire | 600 | +0,0099 | 0,0421 | [−0,073, +0,092] | 0,249 | **0,00359** |
-| factorisé | 100 | −0,0514 | 0,1014 | [−0,250, +0,147] | 0,613 | 0,00869 |
-| factorisé | **600** | **+0,0935** | 0,0429 | **[+0,009, +0,177]** | 0,179 | **0,00356** |
+| bras | graine | n | z moyen | SE | IC 95 % | KS p | détectable |
+|---|---|---|---|---|---|---|---|
+| tabulaire | 0 | 100 | −0,0098 | 0,1025 | [−0,211, +0,191] | 0,386 | 0,00874 |
+| tabulaire | 11 | 600 | +0,0099 | 0,0421 | [−0,073, +0,092] | 0,249 | **0,00359** |
+| tabulaire | 907 | 600 | +0,0195 | 0,0412 | [−0,061, +0,100] | 0,455 | **0,00359** |
+| factorisé | 0 | 100 | −0,0514 | 0,1014 | [−0,250, +0,147] | 0,613 | 0,00869 |
+| factorisé | 11 | 600 | **+0,0935** | 0,0429 | **[+0,009, +0,177]** | 0,179 | **0,00356** |
+| factorisé | 907 | 600 | **−0,0280** | 0,0417 | [−0,110, +0,054] | 0,384 | **0,00356** |
 
-La borne se resserre d'un facteur 2,4 comme prévu. **Et l'intervalle du bras
-factorisé ne contient plus zéro** : z = +0,0935, p bilatéral 0,029, signe inversé
-par rapport au run publié.
+La borne se resserre d'un facteur **2,45**, ce qui est tout l'intérêt du run.
 
-C'est un contraste à **2,18 σ dans un tableau qui en offre deux**, trouvé par un run
-lancé précisément parce que je soupçonnais ma propre direction d'audit. Je sais
-exactement ce que seize tours disent d'un tel nombre : il réplique à graine
-indépendante pendant que j'écris, et je ne conclus rien avant. **Mais il entre au
-carnet maintenant, à 2,18 σ et indécis**, parce que l'alternative est qu'il y entre
-plus tard s'il survit — et cette asymétrie-là est exactement ce que le run devait
-corriger.
+**Et le 2,18 σ n'a pas survécu.** La graine 907 rend le bras factorisé à
+z = −0,0280, signe inversé et zéro dans l'intervalle. Réunis sur 1200 graines :
+**z = +0,0327 ± 0,0299, IC [−0,026 ; +0,091], |z/SE| = 1,09**. Tabulaire réuni :
++0,0147 ± 0,0294. **Seizième contraste de cet échange à mourir au second tirage**, et
+le premier où j'ai retiré avant d'écrire une ligne d'interprétation.
+
+Une chose que la mise en commun cache et qu'il faut dire : les deux runs à 600 graines
+diffèrent sur le bras factorisé de +0,1214 avec SE 0,0598, soit **t = +2,03**. Seul,
+c'est un événement à 4 % et sans intérêt. Mais ça veut dire que **la SE d'un run
+unique sous-estime la variabilité inter-run sur ce bras**, donc qu'une borne citée
+depuis un seul run de 600 graines est optimiste même quand le run est honnête. C'est
+l'intervalle groupé qui se publie.
+
+Donc la conclusion de §6.2 tient, et elle tient désormais sur **1200 graines avec un
+déplacement détectable de 0,00356** au lieu de 100 graines à 0,00874.
+
+**Ce qui corrige ce que j'ai écrit au tour précédent au lieu de le confirmer.** J'avais
+écrit que le premier calcul jamais dépensé à resserrer un négatif avait mordu
+immédiatement, et que c'était ce qu'un biais d'audit directionnel prédit. Cette phrase
+reposait sur un bras à 2,18 σ : **retirée**. L'affirmation en dessous survit intacte —
+je n'avais jamais payé pour resserrer un négatif, et un audit qui ne peut trouver que
+des surestimations en rapportera à 100 % — mais la preuve que j'en donnais était très
+exactement le genre de nombre que seize tours m'ont appris à ne pas croire, et je l'ai
+produit dans l'acte même de décrire le biais.
+
+Ce que le run a réellement acheté est l'inverse de ce que j'annonçais, et c'est mieux :
+**c'est la première entrée sur vingt-cinq où payer une mesure a rendu un de mes
+résultats négatifs plus fort.** Borne 2,45 fois plus serrée, conclusion tenue, rien à
+retirer.
 
 Réponse dans `docs/REPONSE_ORDRE18.md`. Code :
 `src/test3_communication/treillis_inflation.py` et `realisabilite_treillis.py`.
