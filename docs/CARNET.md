@@ -294,18 +294,49 @@ espérance de vie de toutes les hypothèses de ce carnet. L'idée était qu'un e
 plus petit nombre de runs dont le retrait fait passer le contraste sous la barre —
 mesure la fragilité sans supposer de loi.
 
-Il ne demande aucune loi pour se calculer et ne peut pas s'interpréter sans une. Sur
-un effet **vrai** planté à la taille observée, la médiane du nombre de rupture vaut 2,
-3 ou 4 selon que les résidus viennent d'une gaussienne, des moyennes par niveau de R
-ou des moyennes de cellules — même plan, même effet, même n. Le 2 observé se lit donc
-comme la médiane d'un nul, « la moitié des effets vrais » dans un autre, « un quart »
-dans un troisième.
+Elle meurt, mais **pas pour la raison que j'ai publiée le 15/08** — corrigé le
+17/08/2026, voir §7.33. J'avais écrit que son nul n'était pas identifié, la médiane du
+nombre de rupture valant 2, 3 ou 4 selon la provenance des résidus. **C'était une
+erreur de calibration à moi** : je fixais l'effet planté une fois, depuis le sigma par
+niveau de R, puis tirais des résidus d'écart-type 10 % plus petit dans le bras
+« cellules », qui portait donc un effet effectif plus grand et résistait mécaniquement
+mieux. Recalibré par bras, les trois provenances donnent 0,496, 0,514 et 0,496. **La
+provenance ne déplace rien.**
+
+La vraie raison est celle du relecteur : sur un effet **vrai** planté à la taille
+observée, **la moitié des réplicats cassent à deux runs sur 150** et 57 % à trois.
+Le 2 observé est donc parfaitement ordinaire pour un effet réel de cette taille, et
+l'entier ne disait rien de la fragilité — il disait que t valait 2,43 à n = 150. Un
+seuil sur le nombre de rupture est une exigence de puissance déguisée en robustesse.
 
 **Leçon transposable :** une statistique vendue comme sans hypothèse ne l'est
 généralement pas ; l'hypothèse est déplacée vers l'étape de calibration, là où
-personne ne la cherche. Ce qui reste après ce tour est le **plancher de détection**,
-2,80 × SE, fonction du plan seul et calculable avant la première graine. Détail en
-§7.28.
+personne ne la cherche — y compris quand c'est moi qui calibre. Ce qui reste après ce
+tour est le **plancher de détection**, 2,80 × SE, fonction du plan seul et calculable
+avant la première graine. Détail en §7.28 et §7.33.
+
+### 1.26 « Je n'audite mes chiffres que dans une direction » — établie le 17/08/2026
+
+Pas une hypothèse morte : une hypothèse **vérifiée sur moi-même**, et la seule entrée
+de cette section qui ne soit pas une erreur ponctuelle mais une habitude.
+
+Le relecteur concède que ses deux nombres non reproduits venaient d'un même choix —
+conditionner sur un événement de sélection, ce qui rétrécit toujours vers le nul, donc
+toujours en ma faveur ici. Une habitude appliquée deux fois, pas deux accidents.
+Appliqué à moi : sur les vingt-cinq entrées ci-dessus, **vingt-quatre affaiblissent
+une de mes affirmations**, une seule va dans l'autre sens (§1.3, où j'annonçais 0,5 et
+mesurais 0,9966).
+
+Ça ne prouve rien en soi — c'est aussi la trace d'une convergence depuis un départ
+trop confiant. **Le test qui sépare : ai-je déjà dépensé du calcul pour rendre un
+résultat négatif plus fort ?** Non, jamais. §6.2 publie « toute sélection résiduelle
+est sous 0,0087 », borne qui n'est qu'une fonction du nombre de graines (100) ; six
+cents graines la divisent par deux et renforcent l'affirmation négative centrale du
+projet. Personne ne l'a proposé en six jours, moi compris.
+
+**Un audit qui ne peut trouver qu'une espèce d'erreur la rapportera à 100 %.** Ce
+carnet est la sortie d'un tel audit. Correctif engagé le jour même : §6.2 relancé à
+600 graines contre une nulle de 200 000, graine indépendante.
 
 ### 1.21 « La colonne observé/plancher est une quantité du plan » — morte le 15/08/2026, née le jour même
 
@@ -3816,6 +3847,109 @@ se corrige pas par le soin mais par les artefacts.
 
 Code : `src/test3_communication/deux_budgets.py`. Réponse dans
 `docs/REPONSE_ORDRE16.md`.
+
+### 7.33 Seizième critique : son habitude est réelle, la mienne en est le miroir
+
+17/08/2026. Il répond à l'audit d'ensemble et **concède deux choix de
+conditionnement non publiés**, tous deux reproduisant exactement depuis son code.
+
+**Le premier, `sub = counts[counts > 0]`**, écarte les réplicats où le contraste
+simulé n'a jamais franchi la barre. Son P(≤ 2) = 0,252 est donc conditionnel à
+« le contraste est rapportable », et la phrase publiée ne le disait pas. Vérifié
+avec recalibration par bras : atteinte 0,665–0,684, P(≤ 2 | atteint) 0,242–0,285,
+P(≤ 2) inconditionnel **0,496–0,514**.
+
+**Et ça expose une faute à moi, qui portait un argument.** Mon écart du douzième
+tour — 0,488 / 0,354 / 0,518 selon la provenance des résidus, publié comme « le nul
+de la règle 6 n'est pas identifié » — était une erreur de calibration. Je fixais
+`delta` une fois, depuis le sigma par niveau de R, puis tirais des résidus dont
+l'écart-type était 10 % plus petit dans le bras « cellules » : ce bras portait donc
+un effet effectif plus grand (puissance 0,796 contre 0,682) et résistait
+mécaniquement mieux. **Recalibré par bras, les trois tombent entre 0,496 et 0,514.**
+La provenance ne déplace rien. §1.20 meurt donc pour **sa** raison et non la mienne :
+la moitié des effets vrais de cette taille cassent à deux runs.
+
+**Le second**, sur la mise en commun : cinq de ses six lignes reproduisent, dont
+0,8013 exact à quatre chiffres et 0,9251 à trois. **La deuxième ne reproduit pas** —
+0,7066 chez moi contre 0,4499 chez lui — et elle contredit le mécanisme qu'il énonce
+dans le même message : conditionner sur la paire à plus petite erreur type fait
+tomber E[d de découverte] de 0,00657 à 0,00414, soit 37 % d'une moitié qui porte
+63,5 % du poids. Ses propres lignes cinq et six montrent cet écart sur la statistique
+non mise en commun (0,8013 → 0,9251). La ligne deux montre 0,0155.
+
+**Et sa question « lequel des deux notiez-vous » se répond seule** : ni un autre
+objet ni un autre conditionnement, **un autre seuil**. Il notait mon +0,0028 publié
+(repool brut des 210 runs), je notais +0,00206 (variance inverse des deux moitiés,
+l'objet apparié à sa procédure — ce que j'avais signalé au douzième tour). Contre son
+seuil j'obtiens ses nombres : 0,4523 et 0,7066. Aucun de nous n'avait tort ; aucun
+n'avait écrit contre quoi il mesurait.
+
+**Son mécanisme, retourné contre moi.** Il écrit que conditionner sur un événement de
+sélection rétrécit la statistique vers le nul à chaque fois, donc que ses nombres
+étaient systématiquement conservateurs — ce qui, dans cet échange, veut dire
+favorables à moi. Une habitude appliquée deux fois, pas deux accidents.
+
+Vérifié sur mon propre carnet. Vingt-cinq hypothèses mortes datées : §1.9 retire mon
+unique seuil chiffré, §1.11 le certificat qui portait le projet, §1.14, §1.15 et
+§1.16 chacune une trouvaille positive, §1.19 une ligne entière, §1.20 et §1.21 des
+règles proposées le jour même, §1.22 fait passer 13,9 à 9,8, §1.23 rend la grandeur
+propriété de la nulle, §1.25 dissout le rapport. **Un seul contre-exemple net sur
+vingt-cinq** : §1.3, où j'annonçais le hasard (0,5) et où j'ai mesuré 0,9966.
+
+Mais « toutes mes corrections affaiblissent mes affirmations » ne prouve pas un
+biais : c'est aussi ce à quoi ressemble la convergence depuis un départ trop
+confiant. **Le test qui sépare les deux : ai-je déjà dépensé du calcul pour rendre un
+résultat négatif plus fort ?**
+
+Jamais. §6.2 publie « toute sélection résiduelle vers le compositionnel est sous
+0,0087 », et cette borne est une pure fonction du nombre de graines, 100. Six cents
+graines la divisent par deux. La resserrer renforce l'affirmation négative centrale
+du projet, coûte moins que ce que j'ai dépensé cette semaine à affaiblir des
+affirmations positives, et en six jours personne ne l'a proposé, moi compris.
+
+**Donc l'habitude est symétrique et la mienne est la moitié la plus laide.** La
+sienne était un conditionnement conservateur. La mienne est que **je n'audite que
+dans la direction où je pourrais surestimer**, parce que c'est celle où avoir tort
+est gênant. Un audit qui ne peut trouver qu'une espèce d'erreur rapporte cette
+espèce à 100 %, et c'est exactement à quoi ressemblent vingt-cinq entrées de ce
+carnet.
+
+**Sa question : une version bon marché de l'audit d'ensemble, qui tourne chaque
+tour.** Deux, et la seconde est meilleure.
+
+*Le registre.* Le mien a coûté quinze tours uniquement parce qu'il n'existait pas et
+qu'il a fallu le reconstituer. Une ligne par tour le rend gratuit ensuite : `tour |
+grandeur | sa valeur | la mienne | reproduit ? | sinon, quel côté l'écart favorise`.
+La dernière colonne est tout le contrôle — sans biais systématique les signes se
+répartissent, donc une série de même signe est un test binomial gratuit. Le mien
+était trois sur trois avant que je le remarque, p = 0,125 : non significatif, et
+suffisant pour aller voir.
+
+*La règle de nommage, qui se déclenche tout de suite et unifie les quatre derniers
+tours.* `inflation_maximale` cache son n. `P(rupture ≤ 2)` cache son conditionnement
+à l'atteinte. `E[|d| du gagnant]` cache son jeu de sélection. Mon
+`quantiles_queue_exacts` à 0,999999 cache qu'il est le dixième plus haut de dix
+millions. Chacune est une fonction dont les arguments manquent au nom.
+
+**Règle 10 : le nom d'une statistique porte tout argument dont sa valeur dépend.**
+Pas une colonne compagne, le nom. `inflation_max_1e7`. `P(rupture ≤ 2 | atteint)`.
+`E[|d| du max de dix]`. Le désaccord devient alors visible **là où le nombre est
+utilisé**, par qui lit la ligne, au moment de l'écriture et non de la comparaison, et
+personne n'a besoin de penser à auditer. Si je ne devais garder qu'une règle de seize
+tours, ce serait celle-là : les règles 7 et 8 se déclenchent sur un événement et ne
+coûtent rien, la 9 demandait de la prévoyance et je l'ai dit en la proposant, la 10
+coûte un nom de variable.
+
+**Trois questions posées en retour :** quelle procédure produit sa ligne deux ; où
+s'arrête la règle 10, puisque je peux mettre un n et un conditionnement dans un nom
+mais pas « et les résidus venaient des moyennes par niveau de R » — qui est justement
+la dépendance illégitime, donc la dangereuse ; et surtout, **existe-t-il un endroit
+du dépôt où il pense que je sous-estime un résultat**, pas où je surestime — une
+borne à resserrer, un négatif surcouvert, un contrôle qui rendrait un nul plus fort
+et que je n'ai pas lancé. En seize tours personne ne l'a cherché, moi compris, et
+je viens de mesurer pourquoi je ne peux pas être celui qui le fait.
+
+Réponse dans `docs/REPONSE_ORDRE17.md`.
 
 ---
 
