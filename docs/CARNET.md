@@ -338,6 +338,18 @@ projet. Personne ne l'a proposé en six jours, moi compris.
 carnet est la sortie d'un tel audit. Correctif engagé le jour même : §6.2 relancé à
 600 graines contre une nulle de 200 000, graine indépendante.
 
+**Le correctif a mordu dès le premier essai.** À 600 graines la borne passe de
+0,00874 à 0,00359, et le bras **factorisé** sort de zéro : z = +0,0935 ± 0,0429,
+IC [+0,009 ; +0,177], p bilatéral 0,029, signe inversé par rapport au run publié à
+100 graines (−0,0514). Le bras tabulaire, lui, reste à z = +0,0099 ± 0,0421.
+
+C'est un contraste à 2,18 σ dans un tableau qui en offre deux : je sais ce que seize
+tours en disent, il est en réplication à graine indépendante, et je ne conclus rien.
+**Mais le fait qu'il existe est le résultat.** Le premier calcul jamais dépensé à
+resserrer un négatif a produit, du premier coup, quelque chose qui va contre la
+conclusion — ce qui est précisément ce qu'un biais d'audit directionnel prédit qu'on
+trouverait si on regardait. Voir §7.34.
+
 ### 1.21 « La colonne observé/plancher est une quantité du plan » — morte le 15/08/2026, née le jour même
 
 Proposée en §7.28 le soir, réfutée dans la nuit : elle bat le record de §1.20 de
@@ -3950,6 +3962,115 @@ et que je n'ai pas lancé. En seize tours personne ne l'a cherché, moi compris,
 je viens de mesurer pourquoi je ne peux pas être celui qui le fait.
 
 Réponse dans `docs/REPONSE_ORDRE17.md`.
+
+### 7.34 Dix-septième critique : la lecture extérieure arrive, l'énumération ne tranche pas, et le négatif que j'ai enfin resserré a mordu
+
+18/08/2026. Il fournit la lecture extérieure que je demandais en question 3, et
+c'est la chose la plus utile de tout l'échange.
+
+**L'objectif reconstruit depuis la définition, pas depuis mon code** :
+`sklearn.metrics.mutual_info_score` au lieu d'un `p log p` maison,
+`scipy.optimize.linear_sum_assignment` au lieu de l'énumération des six
+permutations, le monde relu dans `TEST3.md` au lieu d'être importé de
+`grammaire3`. Accord à **3,05 × 10⁻¹⁶** sur 3000 bijections, et exactement 1,0 sur
+les 1296 codes compositionnels. Quinze tours de nombres ne sont donc pas deux
+expressions d'une seule mauvaise lecture de la définition.
+
+**Et le trou de `valider()`, que je n'avais pas vu.** Ses deux moitiés importent
+`ATTRIBUT`, `TOKEN` et `INFORMATION_TOTALE`, et prennent toutes deux l'argmax par
+colonne : c'est un contrôle de vectorisation contre la table `TERME`, rien d'autre.
+Surtout, **il ne tire que des permutations**, donc `matrices_information_generale`
+— la fonction qui porte tous les résultats sur codes émergents, dans
+`code_emergent`, `effet_par_beta`, `courbe_de_contrainte`, `qui_ecrit_le_code`,
+`dynamique_uniforme` et `bornes_par_messages_distincts` — n'y apparaît **jamais**.
+Six scripts validés par rien pendant six jours, et il a fallu un lecteur extérieur
+pour remarquer que les *entrées* du validateur avaient la mauvaise forme, pas sa
+logique. Son contrôle sur 2000 codes à collisions : 2,50 × 10⁻¹⁶. Et le prix du
+garde-fou, s'il sautait : **0,0205**, soit deux fois E[inflation]. C'est le nombre
+qui aurait dû être publié à côté du garde depuis le début.
+
+**Sa question sur le treillis, et la réponse est non.** L'argument des marges est
+juste : 1540 tables, 55 valeurs distinctes, et ses trois entrées gagnantes sont sur
+le treillis à **0,00e+00**.
+
+*Une contrainte que ni lui ni moi n'avions écrite, et elle est gratuite.* Pour un
+code bijectif sur 27 référents uniformes, le message est une image bijective du
+référent, donc (M₁, M₂, M₃) est uniforme sur 3³ : **les trois positions sont
+mutuellement indépendantes**. Pour des Yⱼ indépendants, I(X ; Y₁..Yₙ) ≥ Σⱼ I(X ; Yⱼ),
+et les trois positions déterminent le référent, donc I(Aᵢ ; M) = H(Aᵢ) = log₂3. D'où
+**chaque ligne et chaque colonne de la matrice d'information somme à au plus log₂3**.
+Sans énumérer : si les trois maxima de colonne sont dans la ligne r, alors
+Σⱼ maxᵢ M[i,j] ≤ log₂3 et l'appariement vaut au moins (somme de ligne)/3, donc
+**inflation ≤ (2/3)·log₂3/log₂27 = 2/9 = 0,2222**.
+
+*L'énumération, avec cette contrainte.* Triples du treillis vérifiant a+b+c ≤ log₂3
+et dépassant 0,154321642873 : **3123 candidats survivent**, le sommet étant
+(0,521362144 ×3) à 0,219295 — soit la borne relâchée presque exactement. Testé
+directement, en maximisant minⱼ I(Aᵣ ; Mⱼ) sur 400 départs par attribut :
+**0,340006701** pour les trois attributs, contre une cible de 0,521362144. Court
+d'un facteur 1,53.
+
+**Donc le treillis plus toutes les contraintes de marge ne ferme pas la question :
+ce qui mord est la réalisabilité conjointe, que le treillis ne voit pas.**
+L'énumération transforme « redémarrer indéfiniment » en « 3123 candidats dont
+presque aucun n'est un code », ce qui est une position **pire** que la recherche.
+À noter, puisque j'ai proposé « calcule-le plutôt » comme règle deux tours plus
+tôt : ici la route exacte existe, est bon marché, et donne une réponse plus lâche
+que la route par échantillonnage qu'elle devait remplacer.
+
+**Son certificat hors-ligne, et la règle 10 retournée contre lui.** Le mécanisme est
+juste et vérifié. Mais trois de ses quatre masses ne reproduisent pas, et la raison
+est visible dans mes propres runs :
+
+| inflation | la sienne | moi, 600 montées | moi, 1500 montées |
+|---|---|---|---|
+| 0,154321642873 | 0,000000000000 | 0,000000000000 | 0,000000000000 |
+| 0,151460867637 | 0,069167547890 | 0,072625925285 | 0,072625925285 |
+| 0,146684666683 | 0,131042430405 | **0,145251850570** | **0,108938887927** |
+| 0,144297209128 | 0,099860647267 | 0,072625925285 | 0,072625925285 |
+
+La troisième ligne bouge **entre deux de mes propres runs**. La masse hors ligne est
+une propriété du **code**, pas de la valeur d'inflation, et plusieurs codes distincts
+atteignent la même valeur en portant des masses différentes. Son tableau indexe une
+grandeur par une étiquette qui ne la détermine pas — c'est la règle 10 pointée sur
+lui, et je ne l'ai vue que parce que mon propre nombre a bougé entre mes deux runs.
+
+Et je ne trouve pas du tout `0,147337819489` : **94 optima distincts sur 1500
+montées, il n'en fait pas partie**. C'est sa démonstration du « nécessaire mais pas
+suffisant » ; je ne peux ni la confirmer ni la contredire, seulement rapporter que
+sur 1500 montées j'ai exactement un optimum à matrice propre et que c'est le maximum.
+
+**Sa réponse à ma question 2, prise telle quelle.** Deux formes à R² de 0,9950 et
+0,9975 sur la même fenêtre, en désaccord de six ordres de grandeur à 0,1443, et
+mettre le vrai bord **inverse** le signe de l'erreur au lieu de la corriger — la
+sensibilité montrant que le corps veut un bord à 0,18 quand le vrai est 0,1543. La
+phrase est : **R² sur la fenêtre d'ajustement ne porte aucune information sur
+l'extrapolation.** C'est un échec de choix de modèle, qu'aucun n ne répare.
+
+**Et le contrôle dont j'avais dit que je ne l'avais jamais lancé.** §6.2 à 600
+graines contre une nulle de 200 000, graine indépendante :
+
+| | n | z moyen | SE | IC 95 % | KS p | détectable |
+|---|---|---|---|---|---|---|
+| tabulaire | 100 | −0,0098 | 0,1025 | [−0,211, +0,191] | 0,386 | 0,00874 |
+| tabulaire | 600 | +0,0099 | 0,0421 | [−0,073, +0,092] | 0,249 | **0,00359** |
+| factorisé | 100 | −0,0514 | 0,1014 | [−0,250, +0,147] | 0,613 | 0,00869 |
+| factorisé | **600** | **+0,0935** | 0,0429 | **[+0,009, +0,177]** | 0,179 | **0,00356** |
+
+La borne se resserre d'un facteur 2,4 comme prévu. **Et l'intervalle du bras
+factorisé ne contient plus zéro** : z = +0,0935, p bilatéral 0,029, signe inversé
+par rapport au run publié.
+
+C'est un contraste à **2,18 σ dans un tableau qui en offre deux**, trouvé par un run
+lancé précisément parce que je soupçonnais ma propre direction d'audit. Je sais
+exactement ce que seize tours disent d'un tel nombre : il réplique à graine
+indépendante pendant que j'écris, et je ne conclus rien avant. **Mais il entre au
+carnet maintenant, à 2,18 σ et indécis**, parce que l'alternative est qu'il y entre
+plus tard s'il survit — et cette asymétrie-là est exactement ce que le run devait
+corriger.
+
+Réponse dans `docs/REPONSE_ORDRE18.md`. Code :
+`src/test3_communication/treillis_inflation.py` et `realisabilite_treillis.py`.
 
 ---
 
