@@ -193,9 +193,17 @@ bijections témoins : **z = −0,08 ± 0,24**. Rigoureusement rien.
 Le mécanisme, une fois cherché : près de l'uniforme, la contrainte de la
 paramétrisation **ne mord pas**, puisque toute loi est représentable à faible
 confiance. Elle n'apparaît qu'à mesure que la loi se concentre. La courbe le
-montre — z passe de −1,18 au pas 0 à **+4,36 au pas 30**, et n'en bouge plus. La
-préférence est **construite par la trajectoire en quelques dizaines de pas**, pas
-présente au départ. Détail en §7.21.
+montre — z passe de −1,18 au pas 0 à **+4,36 au pas 30**. La préférence est donc
+**amorcée par la trajectoire en quelques dizaines de pas**, pas présente au départ.
+Détail en §7.21.
+
+*(Corrigé le 18/08/2026, §7.35. Cette phrase disait « et n'en bouge plus ». Faux :
+la courbe complète, dans le même dictionnaire de `6_4_gradient_premier_pas`, vaut
++4,36 au pas 30, +4,25 à 100, **+3,91 à 300**, **+5,81 à 1000**, **+5,85 à 3000** —
+une hausse de 34 % au-delà du point où j'annonçais l'arrêt, et elle monte encore au
+dernier pas mesuré. L'amorce est juste, l'achèvement est faux : la préférence
+continue d'être construite pendant trois mille pas. J'avais cité une clé du fichier
+et décrit ses voisines sans les lire.)*
 
 ### 1.15 « Le bruit de canal favorise les codes compositionnels » — morte le 11/08/2026
 
@@ -4120,6 +4128,142 @@ retirer.
 
 Réponse dans `docs/REPONSE_ORDRE18.md`. Code :
 `src/test3_communication/treillis_inflation.py` et `realisabilite_treillis.py`.
+
+### 7.35 Dix-huitième critique : une forme fermée pour son U, et une phrase de moi qui contredit sa propre source
+
+18/08/2026. Il fournit explicitement le code témoin que je disais introuvable.
+Vérifié par mon propre `matrices_information` : matrice à une seule ligne non nulle
+(0,340006701169 ; 0,360568055315 ; 0,360568055315), masse hors ligne **exactement
+nulle**, inflation **0,147337819489**. Sa démonstration « nécessaire mais pas
+suffisant » tient donc, et je retire mon « je ne peux ni confirmer ni contredire ».
+
+*Une nuance qui change ce qu'était le quasi-manque.* Ma ligne pour l'attribut 0 porte
+ces trois valeurs, mais ma matrice n'est pas la sienne — mon script imprimait
+`inflation de ce code = 0,060758294` juste à côté, parce que la recherche maximisait
+minⱼ I(A₀ ; Mⱼ) sans jamais exiger que les trois maxima de colonne soient dans cette
+ligne. **La ligne était dans mon message, la matrice non.** Ce n'est pas « j'avais le
+témoin et je l'ai raté », c'est « j'avais un nombre qui aurait été le témoin sous une
+contrainte que je n'avais pas posée ». Et son arithmétique de rareté est juste : 0 sur
+1500 à un taux de 1/600 vaut p = 0,082, donc ma recherche vide n'était pas une preuve
+contre lui.
+
+**Sa concession sur les masses, et une forme fermée qu'il n'avait pas.** Il reconnaît
+avoir publié des **moyennes par valeur** et non des masses par code : 600 montées, 600
+codes, 568 matrices, 57 optima, et la masse est une fonction déterministe du code. Mes
+deux nombres sont ses deux modes (21 et 23 montées sur 69), et son 0,131042430405 est
+une moyenne que **aucun** des 69 codes ne porte.
+
+Il relève que sur les sept plus hauts optima, toutes les masses sont des multiples
+entiers de U = 0,018156481321, sans forme fermée. **Elle existe.** La table donnant 2U
+est [[2,3,4],[3,3,3],[4,3,2]], marges toutes à 9, d'information mutuelle
+(4/27)log₂(2/3) + (8/27)log₂(4/3). En divisant par deux :
+
+> **U = (2/27)·log₂(32/27) = (2/27)(5 − 3·log₂3) = 0,018156481321225**
+
+contre son 0,018156481321, à 2,25 × 10⁻¹³. Et 32/27 = 2⁵/3³ n'est pas arbitraire :
+log₂(32/27) = 5 − log₂27 est exactement le jeu entre cinq bits et la largeur du monde.
+**L'unité dans laquelle ses masses sont quantifiées est la quantité par laquelle ce
+monde rate cinq bits de large**, étalée sur 27 référents et doublée. Son ensemble de k
+— {0, 2, 4, 5, 6, 7, 8, 9, 10}, trous en 1 et 3 — reste sans forme.
+
+*Et une phrase fausse de moi.* J'avais écrit « même valeur d'inflation, même code,
+montée différente ». Impossible, pour la raison qu'il donne : la masse étant fonction
+du code, quand mon nombre a bougé entre mes deux runs, c'est le code qui a bougé. Le
+paragraphe suivant du même message disait la bonne chose ; c'est cette phrase-là qui
+était fausse. Corrigée.
+
+**Sa question — mon pipeline garde-t-il les atomes ? Non, et voici le compte.** Audit
+des 26 artefacts de `results_test3/` : **neuf sur vingt-six publient des moyennes sans
+garder ce sur quoi elles portent.** Le plus grave :
+
+```
+6_4_gradient_premier_pas_b0.02_20graines_g0.json
+  premier_pas.structure.z_moyen        -0.07508
+  premier_pas.structure.z_erreur_type   0.23527
+```
+
+Vingt graines contre 300 bijections témoins, soit **6000 cosinus réduits à deux
+flottants** — et c'est la mesure qui a tué §1.14. Inauditable par quiconque, moi
+compris. Même chose pour `6_3_qui_ecrit_le_code`, `6_6_courbe_de_contrainte` et
+`certificat_deux_agents`.
+
+**Et ce qui est tombé de cet audit, que personne n'avait vu.** J'ai ouvert `6_4` pour
+vérifier s'il gardait ses atomes. Il ne les garde pas. Mais trois clés plus bas :
+
+| pas | 0 | 10 | 30 | 100 | 300 | 1000 | 3000 |
+|---|---|---|---|---|---|---|---|
+| z, structure | −1,18 | −0,29 | **+4,36** | +4,25 | **+3,91** | **+5,81** | **+5,85** |
+
+Or §1.14, publiée le 11/08, dit : « z passe de −1,18 au pas 0 à +4,36 au pas 30, **et
+n'en bouge plus** ». **Elle bouge** : elle creuse à +3,91 au pas 300 puis monte à
++5,85, soit **+34 % au-delà du point où j'annonçais l'arrêt**, et elle monte encore au
+dernier pas mesuré. Le nombre qui contredit ma phrase est dans le même dictionnaire
+que celui qu'elle cite, depuis le jour où je l'ai écrite.
+
+La conséquence n'est pas cosmétique. Mon mécanisme disait : la contrainte ne mord pas
+près de l'uniforme, se met à mordre quand la loi se concentre, donc la préférence est
+**construite par la trajectoire en quelques dizaines de pas**. L'amorce est juste,
+l'achèvement est faux — elle continue d'être construite pendant trois mille pas, et je
+n'ai aucune mesure au-delà ni aucune raison de croire que c'est là qu'elle s'arrête.
+§1.14 corrigée.
+
+**Comment ça a été trouvé est le point.** Sa question était « gardez-vous les
+atomes ». La réponse était non, et en l'établissant j'ai trouvé une erreur d'une autre
+espèce, dans un fichier que j'avais déjà exploité pour un résultat publié. **L'audit
+n'a pas trouvé ce pour quoi il était conçu.**
+
+**Et le carnet se contredit lui-même.** §7.21 imprime la courbe complète et juste —
++4,36 / +4,25 / +3,91 / +5,81 / +5,85 — dans le même document où §1.14 la résume par
+« n'en bouge plus ». La bonne donnée était en §7.21 depuis le 11/08. Ce n'est donc pas
+« je n'ai pas lu l'artefact » : je l'ai lu, publié correctement, puis résumé faux
+douze lignes plus haut dans le même fichier.
+
+### 7.35bis Quatre pistes vérifiées, quatre déjà publiées, et une qui ne l'est pas
+
+Cherché, sur demande de Théo, ce qui serait sous notre nez depuis le début. Cinq
+candidats, vérifiés contre le dépôt avant toute affirmation. **Quatre étaient déjà
+documentés**, et le dire est la moitié utile du résultat :
+
+- le coût en récompense de la paramétrisation structurée (0,930 tabulaire contre
+  0,861 structurée) — déjà en §7.19 et dans `TEST3.md`, « elle la paie » ;
+- la statistique de concentration suit-elle la compositionnalité — déjà mesuré,
+  Spearman 0,814, concordance 0,863 ;
+- le résultat « l'issue est écrite dans l'initialisation », z = +6,80 au centile
+  1,000 — déjà en §7.21 et `TEST3.md` §6.4 ;
+- la conception à gradient exact serait cachée — non, `TEST3.md` l'écrit deux fois.
+
+**Le cinquième ne l'est pas.** `reinforce()` est défini une fois dans tout le test 3
+et appelé **depuis un seul site** : ligne 362 de `representable_atteignable_stable.py`,
+dans la branche *stable*, à partir d'un état où la montée exacte l'avait déjà mis,
+pour demander s'il y reste. Tout le reste — §6.1 à §6.7, les distributions de
+concentration, les comparaisons à la nulle, et les dix-huit tours de cet échange —
+est `torch.optim.Adam` sur le `E[R]` en forme close. Aucun échantillonnage, aucune
+variance de récompense, aucune assignation de crédit.
+
+C'est un choix de conception assumé, et l'exactitude est la raison d'être du banc.
+Mais la conclusion publiée est « sur ce banc, la compositionnalité n'a jamais été
+sélectionnée », et la question du projet est de savoir si **l'apprentissage par
+renforcement** la sélectionne. Ce qui a été mesuré est ce qu'Adam atteint sur un
+objectif analytique. **REINFORCE n'a jamais été lancé depuis une initialisation
+aléatoire.**
+
+Et il y a une raison précise de l'avoir signalé plutôt que supposé inoffensif :
+**§1.12, morte le 11/08** — j'avais mesuré un beta critique à 0,0381, accusé la
+taille de la perturbation, et la réponse était **Adam**, le hessien donnant
+1/27 = 0,037037037 à 2,4 × 10⁻¹¹. La leçon écrite ce jour-là est qu'une propriété de
+l'objectif mesurée à travers une boucle d'optimisation mesure l'optimiseur. Puis
+§6.1 à §6.7 ont mesuré où la dynamique atterrit, **à travers Adam**, et dix-huit
+tours ont affiné la statistique de cette mesure sans que l'un ou l'autre demande
+laquelle des deux on regardait.
+
+Je n'affirme pas que la conclusion est fausse. L'équivariance est une propriété de
+l'objectif et survit à tout optimiseur ; le no-go de §6.7 s'en moque. J'affirme que
+« jamais sélectionnée » n'est aujourd'hui étayé que **pour un optimiseur**, que le
+projet s'est déjà fait prendre une fois par exactement cette confusion, et que le run
+qui trancherait — REINFORCE depuis l'aléatoire, mêmes graines, même mesure — n'a
+jamais été lancé et coûte une nuit.
+
+Réponse dans `docs/REPONSE_ORDRE19.md`.
 
 ---
 
