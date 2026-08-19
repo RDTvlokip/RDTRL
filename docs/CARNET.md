@@ -4410,6 +4410,59 @@ C'est la première fois de cet échange que je rapporte une hypothèse violée d
 conséquence est négligeable. Ça vaut d'être nommé comme catégorie : le contrôle qui
 passe et le contrôle qui échoue coûtent le même prix, et seul le second se raconte.
 
+### 7.35quinquies Un nombre qui ne peut pas exister, imprimé dans mon propre artefact
+
+18/08/2026. Sa trouvaille sur les percentiles — un p10 publié sans convention, que
+seule la méthode `nearest` de numpy reproduit — **ne transfère pas** à mon dépôt :
+les treize méthodes rendent le même chiffre chez moi, la statistique de concentration
+étant assez discrète pour qu'elles coïncident. Vérifié, pas supposé.
+
+Mais la chercher m'a envoyé dans §6.3, où il y a autre chose.
+
+`qui_ecrit_le_code.py` publie **`plafond_beta = 0,9999230227241369`** — la récompense
+maximale atteignable à β = 0,02, mesurée en gelant un agent sur une bijection et en
+laissant l'autre apprendre, médiane 139 pas. **Cette constante est le dénominateur de
+tous les `ratio_au_plafond` de la section.**
+
+C'est une mesure de boucle. En la laissant tourner :
+
+| pas de montée | E[R] | ‖grad J‖ |
+|---|---|---|
+| 0 | 0,9997270898 | 2,86e−05 |
+| 139 | 0,9999945548 | 5,12e−07 |
+| 1000 | 0,9999999604 | 3,18e−09 |
+| 20 000 | **0,9999999990** | **7,17e−11** |
+
+**Le vrai plafond vaut 1,0 à neuf décimales.** Le publié est court de **7,70 × 10⁻⁵**
+en relatif, parce que la boucle s'est arrêtée sur son critère de convergence et que le
+critère n'était pas serré.
+
+Et la conséquence était imprimée :
+
+```
+les deux libres, S tabulaire :
+  E[R] 0,911055   plafond 0,911041   ratio_au_plafond 1,000016
+```
+
+**Un ratio à un plafond ne peut pas dépasser 1.** Le nombre est dans l'artefact, et
+§7.20 le rend par `1,0000` — c'est là que l'impossibilité a disparu. Avec le plafond
+corrigé il vaut 0,999939, donc la conclusion tient à la cinquième décimale : la paire
+libre exécute bien son code presque parfaitement. Ce qui ne tient pas, c'est qu'un
+nombre qui se réfute lui-même soit resté sept jours à l'écran.
+
+**Quatrième fois que ce projet mesure une propriété de l'objectif à travers une
+boucle d'optimisation et rapporte la boucle.** §1.12 en est morte le 11/08. §7.35ter
+ce matin, c'était moi qui recommençais et qui l'ai rattrapé par le gradient. Et
+`plafond_beta` le fait depuis le premier jour, au dénominateur de la statistique de
+tête d'une section.
+
+**Règle 11 : toute grandeur dont le nom implique une borne arithmétique est
+contrôlée contre cette borne là où elle est calculée.** `ratio_au_plafond <= 1`. Une
+probabilité dans [0, 1]. Une corrélation dans [−1, 1]. Une entropie sous log n. C'est
+un `assert`, pas une habitude, ça coûte une ligne et ça échoue fermé. Sa règle
+attrape un nombre qui n'a rien derrière lui ; celle-ci attrape un nombre qui
+contredit sa propre définition. Ce sont les deux moitiés.
+
 Réponse dans `docs/REPONSE_ORDRE19.md`.
 
 ---
