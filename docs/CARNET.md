@@ -305,16 +305,18 @@ objectif** : J = 0,96395 depuis l'aléatoire contre **J = 1,00000** à l'état
 compositionnel ajusté puis remonté. Écart +0,03605. Le paysage a des optima locaux et
 Adam tombe dedans 95 % du temps.
 
-**Et ce n'est pas Adam.** Le gradient de J tombe à 3,65 × 10⁻⁷ (relatif 1,1 × 10⁻⁹)
-au plateau, et 20 000 pas de SGD n'en sortent pas : c'est un vrai point critique de
-l'objectif. **Les attracteurs sous-optimaux sont une propriété du paysage**, pas de
-l'optimiseur, donc aucune méthode locale n'y échappe.
+**Le point critique est réel.** Le gradient de J tombe à 3,65 × 10⁻⁷ (relatif
+1,1 × 10⁻⁹) au plateau, et 20 000 pas de SGD n'en sortent pas.
 
-**Conséquence sur l'énoncé publié.** « La compositionnalité n'a jamais été
-sélectionnée » devient : *l'objectif a des optima locaux en k/27 qui piègent la
-dynamique 95 % du temps, et les codes compositionnels sont à l'optimum global que le
-flot n'atteint pas depuis un départ aléatoire.* Vrai, beaucoup plus petit, et non
-réparable en changeant d'optimiseur. La question du plan — que trancherait la récompense parmi des
+*(Mais j'en avais conclu « aucune méthode locale n'y échappe », **faux, réfuté le
+19/08 en §7.36** : REINFORCE en sort 11 fois sur 12. Le 5 % est une propriété de la
+montée exacte, pas du banc.)*
+
+**Conséquence sur l'énoncé publié**, dans sa forme corrigée : *sous montée exacte,
+l'objectif a des points critiques en k/27 qui piègent le flot 95 % du temps, donc
+tout ce que §6.1 à §6.7 mesure porte sur des codes hors de l'ensemble lié.* La
+question du plan reste posable — elle l'est même dans 92 % des runs sous REINFORCE —
+et elle n'a jamais été posée. La question du plan — que trancherait la récompense parmi des
 optima liés — n'a été posée que sur 60 runs, avec 0 compositionnel et une borne
 supérieure de 6,0 % contre un nul de 1,19 × 10⁻²⁵ : vingt-quatre ordres de grandeur de
 jeu, donc aucune puissance.
@@ -322,6 +324,39 @@ jeu, donc aucune puissance.
 Survivent intacts : le no-go d'équivariance de §6.7, propriété de l'objectif ; et
 l'uniformité intra-classe de fibres, bien mesurée sur sa population. Détail en
 §7.35ter.
+
+*(Correction du 19/08, §7.36 : le « 95 % » est une propriété de la **montée exacte**.
+Sous REINFORCE lot 64 à 20 000 pas, 92 % des runs atteignent une bijection —
+11/12 contre 0/12 pour la montée exacte à budget, graines et lr identiques,
+p = 9,6 × 10⁻⁶. La prémisse reste non testée, mais elle est **testable**, et le
+premier item de la suite est de relancer §6.2 sous REINFORCE.)*
+
+### 1.29 « Les points critiques sous-optimaux ne sont pas franchissables » — morte le 19/08/2026, née la veille
+
+Écrite en §7.35ter le 18/08, sous la forme « les attracteurs sous-optimaux sont une
+propriété du paysage, **aucune méthode locale n'en sort**, ce n'est pas réparable en
+changeant d'optimiseur ». C'était la phrase la plus forte de la journée, et je l'avais
+gagnée en corrigeant une erreur — j'accusais Adam, j'ai regardé le gradient, il tombe
+à 7 × 10⁻¹¹, donc le point critique est réel. La déduction était fausse.
+
+Un point critique est réel **et** franchissable par une méthode bruitée. Cellule
+appariée, 20 000 pas, mêmes graines, même lr, une seule différence — gradient calculé
+ou échantillonné :
+
+| méthode | bijections |
+|---|---|
+| montée exacte, lr 0,05 | **0/12** |
+| montée exacte, lr 0,01 | **0/12** |
+| REINFORCE lot 64, lr 0,01 | **11/12** |
+| REINFORCE lot 64, lr 0,05 | **9/12** |
+
+Fisher exact p = 9,6 × 10⁻⁶.
+
+**Ce qui rend cette mort instructive :** la mesure qui l'a tuée avait d'abord donné le
+résultat inverse (0/25 sous REINFORCE), et je l'avais annoncée comme confirmant mon
+interlocuteur. Ce n'était qu'un budget de pas — 4000 au lieu de 20 000. Le seul
+réflexe qui a évité la publication est le caveat posé avant : *les bras ne sont pas
+appariés*. Détail en §7.36.
 
 *(Correction du 15/08/2026 au soir, §7.28 : la flèche est à l'envers. `R` est la
 taille d'alphabet du code argmax, et R symboles n'admettent au plus que R référents
@@ -4363,15 +4398,16 @@ la leçon de §1.12 au lieu de la citer, et regardé le gradient plutôt que la 
 déplacent E[R] de 7 × 10⁻⁵. C'est un **vrai point critique de J**, pas Adam qui cale —
 et 0,888889 vaut exactement 24/27, la récompense d'un code à 24 messages distincts.
 
-Donc la critique n'est pas celle que j'avais saisie, et la vraie est pire pour le
-plan : **les attracteurs sous-optimaux sont une propriété du paysage de l'objectif**,
-pas un artefact de l'optimiseur. Aucune méthode locale n'en sort. « La
-compositionnalité n'a jamais été sélectionnée » s'étaye donc sous la forme :
-**l'objectif a des optima locaux en k/27 qui piègent la dynamique 95 % du temps, et
-les codes compositionnels sont à l'optimum global que le flot n'atteint pas depuis un
-départ aléatoire.** Ce n'est pas réparable en changeant d'optimiseur, et ça ne dit
-rien de ce que la récompense trancherait parmi les optima liés, visités dans 5 % des
-runs et jamais dans le bras factorisé.
+Donc la critique n'est pas celle que j'avais saisie : **les points critiques
+sous-optimaux sont une propriété du paysage de l'objectif**, pas un artefact d'Adam.
+
+*(Et j'ai poursuivi cette phrase, le 18/08, par « aucune méthode locale n'en sort » et
+« ce n'est pas réparable en changeant d'optimiseur ». **Les deux sont faux, réfutés le
+19/08 en §7.36.** Le gradient tombe bien à 7 × 10⁻¹¹, donc le point critique est réel
+— mais un point critique n'est pas un attracteur fort pour une méthode bruitée :
+REINFORCE en sort et atteint une bijection **11 fois sur 12** là où la montée exacte
+fait 0 sur 12, à budget, graines et lr identiques, p = 9,6 × 10⁻⁶. C'était la phrase
+la plus forte que j'avais écrite ce jour-là.)*
 
 **Ce qui survit intact :** le no-go d'équivariance de §6.7, propriété de l'objectif
 et valable pour tout optimiseur ; et l'uniformité intra-classe de fibres, bien mesurée
@@ -4462,6 +4498,71 @@ probabilité dans [0, 1]. Une corrélation dans [−1, 1]. Une entropie sous log
 un `assert`, pas une habitude, ça coûte une ligne et ça échoue fermé. Sa règle
 attrape un nombre qui n'a rien derrière lui ; celle-ci attrape un nombre qui
 contredit sa propre définition. Ce sont les deux moitiés.
+
+### 7.36 Dix-neuvième critique : le 5 % est une propriété de mon optimiseur, pas du banc
+
+19/08/2026. Il me demande si REINFORCE depuis l'aléatoire est un contrôle de fidélité
+ou un mécanisme d'échappée, et argumente qu'un estimateur à plus grande variance du
+même gradient atteindrait l'ensemble lié **moins** souvent. Plutôt que d'en discuter,
+je l'ai lancé. Deux fois, et le second run renverse le premier.
+
+**Premier run, 25 graines, budgets par défaut :** montée exacte 0,93920 avec 1/25
+bijections, REINFORCE lot 64 0,89240 avec 0/25, lot 8 0,37436 avec 0/25 et 6,76
+collisions. Monotone dans le sens qu'il prédisait. **J'ai failli le lui envoyer comme
+« vous avez raison ».** Ce qui m'a arrêté est que les bras n'étaient pas appariés —
+`monter` est Adam à lr = 0,05 sur 3000 pas, `reinforce` est lr = 0,01 sur 4000 — et
+que publier cet écart comme de la variance aurait été `plafond_beta` une fois de plus.
+
+**Second run, balayage, 12 graines par cellule :**
+
+| lot | pas | lr | E[R] | bijections | collisions |
+|---|---|---|---|---|---|
+| 64 | 4000 | 0,01 | 0,89542 | 0/12 | 1,92 |
+| 64 | **20 000** | 0,01 | **0,99178** | **11/12** | **0,08** |
+| 64 | 4000 | 0,05 | 0,97458 | 5/12 | 0,58 |
+| 64 | 20 000 | 0,05 | 0,98902 | 9/12 | 0,25 |
+| 8 | 4000 | 0,01 | 0,38557 | 0/12 | 6,75 |
+| 8 | 20 000 | 0,01 | 0,92874 | 3/12 | 1,08 |
+
+Le 0,374 était du **sous-entraînement**, pas de la variance. Tout le premier tableau
+était un artefact de budget.
+
+**Et la cellule appariée**, 20 000 pas, mêmes graines, mêmes lr, une seule différence :
+
+| méthode | lr | E[R] | bijections | collisions |
+|---|---|---|---|---|
+| montée exacte | 0,05 | 0,94753 | **0/12** | 1,42 |
+| montée exacte | 0,01 | 0,92593 | **0/12** | 1,83 |
+| REINFORCE lot 64 | 0,01 | **0,99178** | **11/12** | 0,08 |
+| REINFORCE lot 64 | 0,05 | 0,98902 | **9/12** | 0,25 |
+
+Fisher exact à lr égal : 11/12 contre 0/12, **p = 9,6 × 10⁻⁶** ; 9/12 contre 0/12,
+p = 3,4 × 10⁻⁴.
+
+**Il a tort, et moi plus que lui.** Le sien : l'estimateur échantillonné atteint
+l'ensemble lié bien plus souvent, aux deux taux d'apprentissage. Le mien, écrit la
+veille : « les attracteurs sous-optimaux sont une propriété du paysage, aucune méthode
+locale n'en sort, ce n'est pas réparable en changeant d'optimiseur ». Le gradient
+tombe bien à 7 × 10⁻¹¹, donc le point critique est réel — **mais un point critique
+n'est pas un attracteur fort pour une méthode bruitée.** Les pièges existent et ne
+mordent pas sur un gradient échantillonné.
+
+**Ce que ça rouvre.** Le 5 % de §7.35ter est une propriété de la **montée exacte**,
+pas du banc. La question dont parle la prémisse — 27! codes à égalité, 1296
+compositionnels — est atteignable dans 92 % des runs sous REINFORCE, et elle n'a
+jamais été posée, puisque `reinforce()` n'est appelé que depuis un état que la montée
+exacte a déjà trouvé (§7.35bis). **Ce n'était ni un contrôle de fidélité ni une nuit
+perdue : c'est l'expérience, et elle était cachée derrière un nombre de pas.**
+
+Ce qui reste à faire, et c'est maintenant la première ligne de la suite : relancer
+§6.2 sous REINFORCE lot 64 à 20 000 pas, où 92 % des runs entrent dans l'ensemble
+lié, et mesurer la concentration **sur la population dont parle le plan**.
+
+**Et la leçon de procédure.** Le seul réflexe qui a servi aujourd'hui est le caveat
+posé avant publication : *les bras ne sont pas appariés*. Sans lui j'envoyais un
+artefact de budget comme confirmation, à quelqu'un qui l'aurait cru parce qu'il allait
+dans son sens. Un résultat qui confirme l'interlocuteur ne se vérifie pas moins qu'un
+résultat qui le contredit — il se vérifie plus, parce que personne ne le contestera.
 
 Réponse dans `docs/REPONSE_ORDRE19.md`.
 
