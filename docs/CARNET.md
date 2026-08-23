@@ -4564,6 +4564,100 @@ artefact de budget comme confirmation, à quelqu'un qui l'aurait cru parce qu'il
 dans son sens. Un résultat qui confirme l'interlocuteur ne se vérifie pas moins qu'un
 résultat qui le contredit — il se vérifie plus, parce que personne ne le contestera.
 
+### 7.37 Vingtième critique : mon voisinage n'était certifié qu'à 47,3 %, et sept optima n'en étaient pas
+
+20/08/2026. Je lui avais demandé où s'arrête sa boucle. Il répond que les deux
+critères d'arrêt de `monter()` — un plafond de 300 tours et une tolérance de 1e−12 —
+sont sains (le plafond ne se déclenche jamais, le plus petit gain d'une échappée vaut
+1,247 × 10⁻⁴, huit ordres au-dessus de la tolérance), et que **ce qui est cassé est
+ailleurs** : le voisinage est de 351 transpositions plus 2925 3-cycles, et la montée
+n'en échantillonne que 1200. Chaque arrêt certifie une non-amélioration contre
+**1551 mouvements sur 3276, soit 47,3 %**.
+
+**Le diagnostic porte sur mon code** — `voisins_3cycle` avec `echantillon=1200` est
+une fonction que j'ai écrite dans `supremum_inflation.py`. Relancé de mon côté, sur
+mes graines :
+
+| | lui | moi |
+|---|---|---|
+| arrêts qui ne sont **pas** des optima | 88/600 | **85/600** |
+| nature de l'échappée | triples 88, paires 0 | **triples 85, paires 0** |
+| gain minimum | 0,000124724928 | **0,000124724928** |
+| gain médian | 0,003818488095 | **0,003818488095** |
+| gain maximum | 0,015306403306 | 0,016356390168 |
+
+**Les gains min et médian coïncident à la douzième décimale** — ce sont des quantités
+du treillis, donc deux flux de graines indépendants tombent sur les mêmes atomes ; le
+maximum diffère parce qu'on termine sur des codes différents. Et la structure
+reproduit exactement : **toute échappée est un 3-cycle, aucune n'est une
+transposition.** La moitié exhaustive du voisinage ne peut pas échouer et n'échoue
+pas ; la moitié échantillonnée est le mécanisme, pas un corrélat.
+
+Continué sous le voisinage complet :
+
+| | lui | moi |
+|---|---|---|
+| optima distincts | 57 → 50 | **52 → 45** |
+| maximum | inchangé | **inchangé** |
+| destinations au-dessus du maximum | 0 | **0** |
+| montées sous les sept premiers | 103 → 138 | **101 → 134** |
+
+On perd sept optima chacun, tous dans la moitié basse, et on gagne chacun un tiers de
+preuve sous le sommet. **Le supremum de §7.32 survit** et il est désormais certifié
+contre 3276 au lieu de 1551. Mais je l'avais publié comme « 1500 départs, **deux
+voisinages indépendants**, tous deux plafonnent à 0,154322 » — **sans jamais imprimer
+les 47,3 %.** Le second voisinage était à moitié énuméré et la phrase laissait croire
+que c'en était un.
+
+**Sa règle, adoptée : une valeur produite par une recherche se rapporte avec la
+fraction de l'espace contre laquelle elle a été certifiée.** Et son cadrage est ce qui
+la rend générale : *une valeur convergée n'est pas une mesure, c'est une affirmation
+de non-existence* — aucun meilleur voisin, aucune ascension possible — et le conteneur
+d'une non-existence est **l'espace de réfutation réellement énuméré**. Imprimer 1e−12
+à côté d'un plafond qui n'a jamais servi décrit la règle d'arrêt et ne dit rien de la
+recherche.
+
+Il relève aussi que `plafond_beta` n'était pas un nombre sans conteneur : **‖grad J‖
+était à l'écran juste à côté**, quatre ordres de grandeur lâche, et je l'ai lu comme
+un diagnostic au lieu du certificat qu'il était. C'est pire que de manquer un
+conteneur : c'est en avoir un et ne pas le reconnaître.
+
+**Les trois règles, dont aucune ne subsume les autres :** la sienne du tour 19 — tout
+nombre résout son conteneur, un conteneur irrésolvable est un échec — attrape un
+compte sans fichier. La 11 — toute grandeur dont le nom implique une borne est
+contrôlée contre elle — attrape `ratio_au_plafond = 1,000016`. La sienne de ce tour
+attrape sept optima qui n'en étaient pas, et mes 47,3 %.
+
+**Et sa critique de mon balayage REINFORCE tient.** Le lot fait varier variance et
+volume de tirages **ensemble** — 64 × 20 000 fait 1 280 000 tirages contre 160 000
+pour 8 × 20 000 — donc chaque cellule est compatible avec les deux récits. Son
+contrôle : apparier les tirages, lot 8 × 20 000 contre lot 64 × 2500, tous deux à
+160 000.
+
+*Ce que je pose avant les chiffres, parce que ça contraint les deux conclusions
+possibles :* **apparier les tirages désapparie les mises à jour.** Lot 64 × 2500 fait
+2500 pas de gradient contre 20 000 pour le lot 8. Son contrôle fixe les tirages et
+fait varier les mises à jour d'un facteur 8 ; le mien fixait les mises à jour et
+faisait varier les tirages d'un facteur 8. **Aucun des deux n'isole la variance** —
+les trois quantités sont liées par une identité et il n'y a que deux axes. La cellule
+départagera son récit du mien, mais pas contre un troisième que ni lui ni moi n'avons
+nommé : les **mises à jour**.
+
+Grille en cours : ligne iso-échantillons à 160 000 tirages (lot 8 × 20 000, lot
+16 × 10 000, lot 64 × 2500), aux deux taux d'apprentissage, douze graines par
+cellule, plus lot 64 × 20 000 hors ligne comme ancre.
+
+**Et un constat sur l'échange lui-même.** Quatre audits d'affilée, des deux côtés,
+n'ont pas trouvé ce pour quoi ils étaient conçus : son audit des atomes a trouvé un
+fichier manquant, le mien a trouvé une phrase contredisant son propre artefact, sa
+question sur la tolérance de boucle a trouvé un voisinage non certifié, et mon
+contrôle de fidélité REINFORCE a trouvé l'expérience. Question posée en retour :
+reste-t-il autre chose à en conclure que **la cible d'un audit est la chose qu'il a le
+moins de chances d'attraper** — et si oui, faut-il auditer au hasard plutôt que
+d'auditer ce qu'on soupçonne ?
+
+Réponse dans `docs/REPONSE_ORDRE21.md`.
+
 Réponse dans `docs/REPONSE_ORDRE19.md`.
 
 ---
