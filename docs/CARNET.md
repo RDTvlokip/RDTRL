@@ -4658,7 +4658,133 @@ d'auditer ce qu'on soupçonne ?
 
 Réponse dans `docs/REPONSE_ORDRE21.md`.
 
-Réponse dans `docs/REPONSE_ORDRE19.md`.
+### 7.38 Vingt-et-unième critique : sa règle appliquée au fichier que je lui avais écrit, et une ligne de référence qui fait l'inverse de ce qu'elle promet
+
+24/08/2026. Il refuse ma conclusion des quatre audits d'affilée et la sépare en deux
+lectures qui donnent des conseils opposés. *Lecture une :* un audit rate sa cible
+parce que la cible avait déjà reçu de l'attention — alors seule la nouveauté de la
+région compte et auditer au hasard suffit. *Lecture deux :* un audit trouve dans sa
+**traversée**, et la cible n'est qu'un point dedans ; la probabilité que l'unique
+défaut soit sur le point nommé vaut environ un sur la taille de ce qu'il a fallu
+toucher. Il tranche pour la deux, sur les quatre vérifications de la semaine classées
+par largeur, et en tire : *choisir la revendication dont la vérification force à
+ré-énumérer le plus.*
+
+**Il a raison de refuser ma conclusion, et sa lecture deux ne survit pas non plus.**
+J'ai vingt-neuf points au lieu de quatre — les vingt-neuf entrées de §1 — chacune
+nommant la mesure qui l'a tuée. Codage intégral dans
+`src/test3_communication/anatomie_des_audits.py`, une justification par ligne, pour
+qu'il puisse recoder.
+
+| | n | visé | instrument | preuve déjà sur le disque |
+|---|---|---|---|---|
+| tout le carnet | 29 | 18 (62 %) | 11 (38 %) | 9 (31 %) |
+| avant le 14/08 | 17 | 13 (76 %) | 1 (**6 %**) | 2 (12 %) |
+| à partir du 14/08 | 12 | 5 (42 %) | 10 (**83 %**) | 7 (58 %) |
+| sa semaine (ses 4 + mes 2) | 6 | 0 (0 %) | 6 (100 %) | 5 (83 %) |
+
+**La visée ne rompt pas : Fisher p = 0,119.** Sur tout le carnet, 62 % des morts sont
+dues à une vérification qui les visait. « La cible est ce qu'un audit a le moins de
+chances d'attraper » n'est même pas une propriété de ce projet.
+
+**Ce qui rompt, c'est l'objet : 6 % à 83 %, Fisher p = 3,3 × 10⁻⁵.** Et « la preuve
+dormait déjà sur le disque » passe de 12 % à 58 %, p = 0,014. Croisé : parmi les morts
+de MONDE la preuve dormait 3 fois sur 18, parmi les morts d'INSTRUMENT 6 fois sur 11.
+
+**D'où une troisième lecture, qui n'est ni la sienne ni la mienne.** Tôt, les
+propositions fausses portent sur le monde, et une vérification visée les tue — on peut
+viser ce dont on a une hypothèse. Tard, les propositions qui restent ont déjà survécu
+aux vérifications visées, et ce qui meurt est **l'instrument** : un plafond de
+réservoir, un `n_restarts=24`, une colonne qui n'est pas un facteur, un voisinage
+échantillonné. Personne n'a d'hypothèse sur un argument par défaut, donc personne ne
+peut le viser. **La visée marche sur le monde et ne peut pas s'appliquer à
+l'instrument** — non parce qu'elle échoue, parce qu'elle n'a pas de prise.
+
+Et pour l'instrument, la largeur ne fait rien : sept des douze dernières morts sont
+venues de rouvrir un fichier, lire un site d'appel, imprimer un min et un max.
+**Traversée nulle, rendement maximal.**
+
+**Son tableau ne porte pas le gradient qu'il lui prête.** Les rendements de ses quatre
+lignes valent 1, 1, 3, 1 pour des largeurs étroite, étroite, large, large. Moyenne
+1,0 contre 2,0, et tout repose sur une ligne qui rend 3 au lieu de 1 — sous un nul de
+Poisson de moyenne 1,5, la probabilité qu'au moins une des quatre rende ≥ 3 vaut 0,57.
+Pire : **la granularité de la colonne rendement a été choisie après avoir vu les
+résultats.** Il compte « 7 non-optima, les 47,3 %, le déplacement du top-sept » pour
+trois, et « la conception du balayage » pour un — alors que le même contrôle REINFORCE
+a produit l'artefact de budget, le renversement de §1.29, le 11/12, et le fait que la
+question du plan n'avait jamais été posée. Recompté à granularité égale, le gradient
+disparaît.
+
+**Et son cinquième point n'est pas un point.** Il dit que ma reprise de
+`voisins_3cycle` a touché sa cible en plein centre, donc que la lecture une tombe. Ce
+n'était pas une recherche : c'était une **réplication de son propre résultat**. La
+région avait été choisie parce qu'un défaut venait d'y être démontré. Conditionner sur
+la réponse puis compter le taux de réussite est exactement le défaut de sélection que
+cet échange passe vingt tours à nommer.
+
+**Sa règle, appliquée là où ni lui ni moi n'avions regardé — et c'est mon fichier.**
+`realisabilite_treillis.py`, que j'ai écrit **pour lui au tour vingt, dans le message
+où j'adoptais sa règle**, fait monter ses deux campagnes par **transpositions seules :
+351 mouvements sur 3276, soit 10,7 %**. Or §7.37 a établi que sur 85 faux optima, 85
+s'échappent par 3-cycle et **zéro** par transposition. Le fichier n'utilise que la
+moitié du voisinage qui ne trouve jamais rien.
+
+Re-certifié contre les 3276, puis poursuivi jusqu'à l'optimum sous le voisinage
+complet (`recertifier_les_bornes.py`) :
+
+| campagne | départs | arrêts qui ne sont pas des optima | échappée | optima distincts | maximum |
+|---|---|---|---|---|---|
+| A. attribut 0 | 400 | **121 (30,2 %)** | 3-cycle 121, transposition 0 | 11 → 8 | 0,340006701169 inchangé |
+| A. attribut 1 | 400 | **134 (33,5 %)** | 3-cycle 134, transposition 0 | 9 → 8 | 0,340006701169 inchangé |
+| A. attribut 2 | 400 | **143 (35,8 %)** | 3-cycle 143, transposition 0 | 11 → 8 | 0,340006701169 inchangé |
+| B. inflation | 600 | **247 (41,2 %)** | 3-cycle 247, transposition 0 | 72 → 51 | 0,154321642873 inchangé |
+
+**Les quatre maxima survivent, et zéro arrêt sur 1800 était une troncature de budget.**
+Ce qui ne survit pas est la fraction de certification, jamais imprimée. Et le gain
+médian d'échappement de la campagne A2 vaut **0,018156481321** — c'est exactement
+`U = (2/27) log₂(32/27)`, la forme fermée que j'avais dérivée pour SON quantum au tour
+dix-huit. Son quantum réapparaît comme atome modal du treillis des gains d'échappement,
+par un chemin qu'aucun de nous n'avait emprunté.
+
+**Sa colonne LOO fait le contraire de ce qu'elle promet, et ça se mesure sans
+optimiseur.** Il propose une ligne de référence leave-one-out dans le lot, à tirages
+et mises à jour fixes, pour ne bouger que la variance. Mesurer une réduction de
+variance à travers une boucle d'optimisation serait la **cinquième** fois de ce projet
+(§1.12, `plafond_beta`, mon 5 %, ma phrase sur les méthodes locales). La variance est
+une propriété du point et de l'estimateur : elle se mesure à θ fixe, sur des lots
+répliqués, sans une seule mise à jour. `variance_du_gradient.py`, 20 000 lots par
+cellule, trois points de la dynamique.
+
+D'abord deux contrôles que personne n'avait faits. **Le gradient analytique contre
+autograd : 2,5 × 10⁻²⁰, 1,7 × 10⁻¹⁷, 8,5 × 10⁻¹⁸** aux trois points. **Et l'estimateur
+échantillonné est non biaisé pour le gradient exact** — l'écart vaut 0,27 à 1,52 erreur
+type de Monte-Carlo sur les trente-six cellules, donc REINFORCE monte bien le même
+objectif. Le récit « ce n'est pas le même objectif » est mort avant d'être écrit.
+
+Puis la mesure. Variance totale, lot 8 :
+
+| point | aucune ligne | EMA (canonique) | LOO | constante optimale |
+|---|---|---|---|---|
+| θ init | 8,78 × 10⁻³ | 8,47 × 10⁻³ | **1,02 × 10⁻²** | 8,64 × 10⁻³ |
+| θ milieu | 4,59 × 10⁻³ | 6,21 × 10⁻³ | **6,45 × 10⁻³** | **2,86 × 10⁻³** |
+| θ piège | 9,23 × 10⁻³ | 9,21 × 10⁻³ | **9,41 × 10⁻³** | **5,12 × 10⁻³** |
+
+**LOO monte la variance de 2 à 20 % selon le point**, jamais ne la baisse, quand mon
+axe du lot la divise par 7,9 à 8,1. La raison est arithmétique : l'avantage LOO vaut
+(n·r_i − S)/(n−1), de variance p(1−p)·n/(n−1), soit 8/7 fois celle de l'avantage
+centré, à n = 8. Et il **annule entièrement 39 à 73 % des lots** — tous ceux où les
+huit récompenses sont égales — donc il coupe aussi les mises à jour effectives.
+
+**Ce qui marche, et qui n'est pas ce que le manuel dit :** la constante **optimisant la
+variance** divise par 2,26 en milieu de montée et 1,84 au piège. LOO estime E[R] ;
+b* = E[R‖score‖²]/E[‖score‖²] en diffère parce que la magnitude du score est corrélée à
+la récompense. **La ligne de référence à la moyenne n'est pas la ligne de référence à
+variance minimale ici, et LOO estime la mauvaise.**
+
+Conséquence de plan, posée avant les chiffres de sa cellule : sa colonne ne peut pas
+conclure d'un résultat nul, parce qu'elle déplace la variance de +2 % là où l'axe du
+lot la déplace de −87 %. C'est le **plancher de détection** de §1.21, appliqué à un
+contrôle avant de le lire.
 
 ---
 
