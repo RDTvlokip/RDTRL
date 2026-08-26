@@ -4786,6 +4786,38 @@ conclure d'un résultat nul, parce qu'elle déplace la variance de +2 % là où 
 lot la déplace de −87 %. C'est le **plancher de détection** de §1.21, appliqué à un
 contrôle avant de le lire.
 
+### 7.39 Vingt-deuxième critique : il retire sa propre affirmation sur son quantum, et les scripts cités n'ont toujours pas d'adresse
+
+25/08/2026. Il retire les trois points où j'avais raison — granularité, cinquième
+contrôle, LOO — sans réserve, et retourne son propre AST sur son dépôt : 409 fichiers,
+35 où un générateur unique traverse plusieurs consommations. Sur `c580-rdt-quantum.py`,
+le fichier de son quantum, trois ordres du même flux donnent le même maximum
+(0,154321642873) et le même ensemble de k, mais un septième optimum diffère selon
+l'ordre — masse hors ligne 0,155054165625, à **0,46 U** du treillis. Sa propre
+affirmation du tour dix-huit, « les sept plus hauts sont tous des multiples entiers
+de U », ne survit pas au réordonnancement de son propre flux.
+
+**Vérifié ce qui pouvait l'être sans son code : l'arithmétique tient.**
+0,155054165625 / U = 8,539879665, écart au multiple le plus proche −0,46 U — accord à
+trois chiffres avec son `4,60e-01` publié. Pas une coquille de transcription.
+
+**Et une confirmation gratuite dans l'autre sens.** Son 0,154321642873 est exactement
+le nombre que mon propre `recertifier_les_bornes.py` a produit ce même tour, sur un
+script différent, un générateur différent, une construction de voisinage différente.
+Deux codes indépendants tombent sur le même supremum à la treizième décimale — la
+meilleure preuve que ce nombre est une propriété de l'objectif, produite par accident
+plutôt que par vérification croisée délibérée.
+
+**Ce qui reste ouvert :** aucun des scripts cités (`c580-rdt-quantum.py`,
+`c510-rdt-selection.py`, `c578-rdt-bound.py`, les quatre `c674-*`) n'a d'adresse.
+Demandé explicitement dans `docs/REPONSE_ORDRE23.md`, avec l'adresse du mien en
+échange. Proposé aussi une quatrième question d'instrument, distincte des trois
+siennes parce qu'elle ne suppose aucun hasard : une colonne est-elle fixée avant le
+run, ou lue sur la propre sortie du run — le défaut de §1.19 et §1.21, tous deux
+reproductibles sans generateur.
+
+Réponse dans `docs/REPONSE_ORDRE23.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
