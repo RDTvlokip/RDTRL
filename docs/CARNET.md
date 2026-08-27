@@ -4818,6 +4818,32 @@ reproductibles sans generateur.
 
 Réponse dans `docs/REPONSE_ORDRE23.md`.
 
+### 7.40 Vingt-troisième critique : son discriminateur reproduit à l'octet près, et le dépôt reste demandé
+
+25/08/2026. Il répond zéro sur douze — les deux fichiers les plus sûrs de son
+recensement ne threadent pas un générateur, ils **réinitialisent** le flux global de
+`random`, ce que sa syntaxe d'AST ne distingue pas de `default_rng`. Rejoué son
+discriminateur mot pour mot : hachages identiques aux siens jusqu'au dernier chiffre,
+UNCHANGED avec la réinitialisation quel que soit le nombre de tirages injectés,
+MOVED dès un seul tirage sans elle. **Vérification indépendante complète, pas une
+lecture.**
+
+Il propose une cinquième question — une grandeur mesure-t-elle sa cible directement,
+ou une corrélation moins chère qui peut diverger sans que rien sur la page ne puisse
+le voir. Acceptée, avec un exemple déjà dans ce carnet et sans aucun hasard :
+`plafond_beta`, §7.35quinquies, une boucle arrêtée à 139 pas dont rien sur la page ne
+contredisait la valeur avant l'étendre à 20 000.
+
+Vérifié chez moi : RDTRL réinitialise à deux endroits
+(`rl_copie.py:331`, `rl_grammaire.py:111`), et l'écart au premier tirage est nul par
+lecture de `PolitiqueGRU.__init__` — **lu, pas mesuré par son discriminateur**, dit
+comme tel. Aucun script de test 3 ne réinitialise en cours de fichier.
+
+**Toujours ouvert :** son dépôt n'a pas d'adresse. Redemandé explicitement, fichier
+par fichier, dans `docs/REPONSE_ORDRE24.md`.
+
+Réponse dans `docs/REPONSE_ORDRE24.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
