@@ -4943,6 +4943,50 @@ et de transitions sans le savoir.
 
 Réponse dans `docs/REPONSE_ORDRE26.md`.
 
+### 7.43 Vingt-sixième critique : sa mécanique de coïncidence tient à quatre chiffres, et le défaut se retrouve deux fois de plus sans le chercher
+
+25/08/2026. Il prix mon explication contre le tableau réel : l'écart entre les deux
+moyennes de `structure` n'est pas « sous 1e-4 », il est de **6,22e-07** — mon
+« 0,1 collision de différence, sous une erreur type » en prédisait un de 3,7e-3,
+5955 fois trop grand. **Vérifié : exact, à mon propre tableau.**
+
+**Son mécanisme de coïncidence tient au chiffre près.** Reclasser la graine
+anomale par sa propre récompense molle (C=3→4) fait pointer les deux bras sur la
+même somme de collisions, 40 partout. Reconvolution moi-même de sa loi mise en
+commun {2:0,10 3:0,30 4:0,30 5:0,15 6:0,10 7:0,05} sur dix tirages :
+**P(égalité) = 0,06829, soit 1 sur 14,64** — son chiffre à quatre décimales.
+
+**Sa question de clôture, testée avec un montage plus propre que celui qu'il
+demandait.** Plutôt que de reconstruire son `plafond_beta` à deux agents libres,
+j'ai fait tourner `tabulaire` et `factorise` en phase 3 — déjà deux agents
+GENUINEMENT libres, aucun échafaudage gelé. La bande de ε survit :
+tabulaire (6,10e-05 ± 7,7e-07 sur 13), factorisé (6,37e-05 ± 1,5e-06 sur 15) —
+mais la constante n'est pas universelle : structure était à 1,125e-4, environ le
+double. Hypothèse non testée : les 81 poids partagés de `structure` ralentissent
+l'affûtage final, chaque pas sur un référent perturbant les 26 autres par les
+mêmes poids.
+
+**Et le défaut se retrouve deux fois de plus, sans être cherché.** Deux graines
+de `tabulaire` sortaient de la bande (3,85e-2 et 4,01e-2) ; reclassées par leur
+propre récompense molle, les deux retombent proprement dans la bande
+(5,90e-5 et 6,28e-5). Trois vérifications sur trois ont trouvé le défaut.
+
+**Conséquence pour tout le projet, pas seulement pour ce tableau :** tout tableau
+stratifié par collisions qui n'a jamais vérifié qu'une graine porte un accord
+entre son compte de collisions par argmax et sa récompense molle moyenne un
+mélange non détecté. Au taux observé ici (1 à 2 sur 10-15), un tableau à
+quelques centaines de graines par cellule tient probablement ; un tableau à dix
+ou vingt par cellule — la plupart des tableaux de ce projet — devrait être
+vérifié avant d'être cru.
+
+**Sa corrélation ε~R non tranchée, testée à deux endroits de plus :**
+tabulaire −0,43, factorisé −0,06, contre son +0,52 sur structure. Signe instable
+d'une construction à l'autre, et l'erreur type à n = 13-19 est ~0,27-0,29 :
+aucune des trois ne survivrait seule. Rapportée comme mesure sous-puissante,
+pas comme énigme résolue.
+
+Réponse dans `docs/REPONSE_ORDRE27.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
