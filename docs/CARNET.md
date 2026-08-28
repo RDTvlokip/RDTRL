@@ -4844,6 +4844,62 @@ par fichier, dans `docs/REPONSE_ORDRE24.md`.
 
 Réponse dans `docs/REPONSE_ORDRE24.md`.
 
+### 7.41 Vingt-quatrième critique : huit fichiers reçus, la table de §6.5 ne bouge pas, et un plafond en cachait un autre
+
+25/08/2026. Huit scripts collés en clair. Rien pris pour argent comptant :
+re-dérivé chaque affirmation structurelle depuis ma propre source avant de la
+croire.
+
+**La bissection non appariée, confirmée à l'entier.** Rejoué l'ordre de tirage
+réel de `certificat_deux_agents.py` — trois permutations, la boucle de mélange K,
+vingt-quatre tirages de phase 1 — en pur numpy, sans torch : les quatre premières
+graines par niveau de bruit tombent exactement sur les siennes
+(25970514, 826555961, 763435854 pour bruit=0,01…), et les quatre niveaux
+partagent zéro graine sur douze, sur les six paires. Confirmé depuis ma propre
+lecture du fichier, pas depuis son extrait.
+
+**L'inventaire de mon dépôt vérifié indépendamment.** `git ls-files` : 86 fichiers
+suivis, 55 sous `src/`, exactement 1 JSON — ses trois chiffres, exacts. Et son
+audit des 60 chemins cités dans ce carnet, rejoué avec ma propre méthode : 40
+résolvent, 20 non, dont 17 gitignorés par règle documentée et 3 qui sont ses
+propres fichiers `c510`/`c578`/`c580` cités dans mes réponses. Zéro non expliqué,
+comme lui.
+
+**Le défaut de dérivation existe cinq fois chez moi, pas une.**
+`torch.Generator().manual_seed(int(generateur.integers(1 << 30)))` : trouvé par
+grep après sa découverte, présent aussi dans `representable_atteignable_stable.py`
+aux quatre constructeurs `EmetteurTabulaire`, `EmetteurFactorise`,
+`EmetteurStructure`, `Recepteur`. Son censeur classerait les cinq occurrences
+UNSEEDED pour la même raison qu'il a mal classé le sien.
+
+**Sa question fermante, testée plutôt que lue.** Phase 3 de ce même fichier — le
+tableau §6.5, source du 5 % de §1.28 — hérite la position de flux de phases 1 et
+2. Avancé le flux de 72 tirages sans exécuter un seul pas de montée (les
+constructions ne tirent qu'un entier chacune, confirmé), puis lancé les 30 vraies
+montées de phase 3 sur cette position et sur un générateur frais :
+
+| paramétrisation | bijections expédié/indép. | E[R] expédié/indép. | concentration appariée |
+|---|---|---|---|
+| tabulaire | 0/10 — 1/10 | 0,9185 — 0,9481 | 0,1226±0,033 — 0,1234±0,031 |
+| factorisé | 0/10 — 0/10 | 0,7888 — 0,7814 | 0,1201±0,036 — 0,1321±0,037 |
+| structure | 0/10 — 0/10 | 0,8518 — 0,8518 (identique) | 0,4301±0,109 — 0,4243±0,086 |
+
+**Le tableau ne bouge pas** — tous les écarts tiennent dans l'écart-type imprimé,
+à n = 10 par bras. Le couplage est un vrai défaut d'écriture, pas une menace
+vivante pour §1.28. Corrigé quand même : un `default_rng` frais avant la boucle
+de phase 3 coûte une ligne.
+
+**`plafond_beta`, la forme de la courbe.** Ni géométrique ni logarithmique
+proprement : décélération loin de l'optimum (Adam à pas normalisé), puis
+géométrique à la précision machine une fois dans le bassin. Conséquence
+opérationnelle : étendre le budget aurait attrapé le sous-comptage, le gradient
+étant déjà à six ordres de grandeur sous son départ dès 2000 pas. Et un plafond
+en a caché un autre pendant la mesure : ma réplique gèle le récepteur à force = 8,
+dont le plafond de décodage vaut exactement e⁸/(e⁸+26) = 0,991353 — une constante
+non nommée qui a joué le même rôle que `plafond_beta` avant que je l'étende.
+
+Réponse dans `docs/REPONSE_ORDRE25.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
