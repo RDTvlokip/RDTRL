@@ -4900,6 +4900,49 @@ non nommée qui a joué le même rôle que `plafond_beta` avant que je l'étende
 
 Réponse dans `docs/REPONSE_ORDRE25.md`.
 
+### 7.42 Vingt-cinquième critique : le tableau structure n'était pas un point fixe, c'était un compte de collisions
+
+25/08/2026. Il prix les deux phrases du tableau de §7.41 l'une contre l'autre :
+l'écart de 0,0296 sur tabulaire dit que l'écart-type par graine est assez grand
+pour rendre l'écart ordinaire ; l'accord à 1e-4 sur structure dit qu'il est assez
+petit pour que le même accord soit un événement à 1 chance sur 56 au mieux. Aucun
+écart-type unique ne rend les deux phrases ordinaires en même temps.
+
+**Il a raison, et la raison n'est ni la sienne ni la mienne.** Imprimé les dix
+valeurs par graine des deux bras : l'écart-type individuel vaut 0,047 et 0,050,
+pas un point fixe. Mais groupé par nombre de collisions, cinq classes sur six
+saturent (27−collisions)/27 à 1e-4 près — le même résidu de convergence que
+`plafond_beta` et sa réplique du tour précédent, pour la troisième fois. `E[R]`
+n'est pas continu ici : c'est une fonction quasi déterministe d'un entier, et cet
+entier a un écart-type par graine de ~1,3. Moyenne des collisions : 4,0 côté
+expédié, 3,9 côté indépendant, écart bien sous une erreur type — l'accord à
+quatre décimales sur `E[R]` n'est donc pas une coïncidence à 1 sur 56, c'est un
+événement ordinaire sous le bon modèle génératif, que ni lui ni moi n'avions le
+bon dès le départ.
+
+**Une classe casse le motif, gardée plutôt que lissée :** une graine du bras
+indépendant a 3 collisions par argmax (24 messages distincts) mais un `E[R]`
+qui atterrit sur la cible à 4 collisions — en retard d'un quantum entier sur son
+propre compte de collisions. La quantification fait l'essentiel du travail, la
+convergence n'a pas fini de le faire partout.
+
+**Sa question sur le plus grand produit valide de `structure` :** vérifié sur
+`6_5_representable_atteignable_stable_b0.02_g0.json`, déjà sur disque. Le code
+compositionnel s'ajuste presque exactement (écart 3,5e-4). Les trois codes
+aléatoires ne s'ajustent quasiment pas (écart ~0,98). Et R = 25 apparaît dans
+mon propre échantillon de dix, au-dessus de son candidat 23. Il n'y a pas de
+plafond combinatoire sous 27 : 27 s'atteint par construction sur le seul code
+que l'architecture est faite pour écrire, et tout ce qui est en dessous en phase
+3 est un optimum local de la montée depuis l'aléatoire — le même phénomène que
+§1.28/§1.29 pour tabulaire, pas une limite des 81 poids.
+
+Trois questions posées en retour, dont celle qui menace le plus : si le manque
+à converger touche une fraction non négligeable des runs de ce projet, tout
+tableau stratifié par collisions moyenne peut-être sur un mélange de plateaux
+et de transitions sans le savoir.
+
+Réponse dans `docs/REPONSE_ORDRE26.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
