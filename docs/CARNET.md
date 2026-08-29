@@ -5129,6 +5129,40 @@ runs à collisions multiples de ce projet, y compris ceux d'avant cet échange.
 
 Réponse dans `docs/REPONSE_ORDRE29.md`.
 
+### 7.46 Vingt-neuvième critique : deux régimes sous une seule étiquette « perdant »
+
+30/08/2026. Il concède la mise en commun (« il n'y avait jamais plus
+d'information indépendante que la première mesure n'en portait »), reconstruit
+`objectif()` en numpy indépendamment (E[R] = 0,9259259257 contre mon
+0,9259259243 publié), et montre que le gradient de récompense sur un référent
+perdant **n'est pas nul** — il varie avec β, et la masse 0,5/0,5 du récepteur
+sur une collision est un vrai partage de récompense, pas un zéro.
+
+**Rejoué sur mon propre état entraîné avant de le croire.** Vérifié : deux
+des quatre référents perdants (10, 24) ont un gradient de récompense
+indiscernable des gagnants ; les deux autres (0, 4) sont 30 000 à 60 000 fois
+plus petits. **Ce qui les sépare n'est pas gagnant/perdant, c'est la
+concentration de la ligne.** Les référents 10 et 24 ont chacun convergé à
+probabilité 1 sur le **même** message — une vraie égalité entre deux lignes
+engagées, avec pression réelle pour la rompre (son mécanisme). Les référents
+0 et 4 sont encore à l'entropie maximale (ln 27 exactement) après 40 000 pas —
+aucune ligne engagée nulle part, donc aucun gradient nulle part (le mien).
+**Deux régimes sous une seule étiquette, pas une contradiction entre nos deux
+comptes.**
+
+Balayage β lancé (0, 0,005, 0,02 ; montée exacte contre REINFORCE ; dix
+graines) pour trancher sa question 2 : le fossé 92 %/5 % se referme-t-il à
+β = 0 ? Résultat à suivre.
+
+Trois questions posées, dont une nouvelle direction : le bruit de REINFORCE
+agit-il différemment sur les deux régimes ; une égalité à deux lignes
+engagées est-elle un vrai point stable ou une selle qui finit par se
+résoudre seule ; le régime d'un référent est-il prévisible tôt (entropie de
+ligne à 500 pas) pour scinder chaque tableau à collisions du projet en deux
+sous-populations plutôt qu'un taux indifférencié.
+
+Réponse dans `docs/REPONSE_ORDRE30.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
