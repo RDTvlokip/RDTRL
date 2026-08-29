@@ -5030,6 +5030,31 @@ dépendant de la graine. Une seule construction partagée dans le projet ; pas
 de deuxième point pour savoir si c'est générique au partage ou propre à ces
 81 paramètres.
 
+**Contrôle tenté pour isoler partage contre simple nombre de degrés de
+liberté, et raté honnêtement.** `EmetteurMasque` : le même tenseur 27×27 que
+tabulaire, mais un hook de gradient n'autorise que 3 colonnes libres par
+ligne, tirées au hasard — 3 paramètres libres par référent comme `structure`,
+mais **sans aucun partage** entre lignes. Si le CV restait serré, le partage
+serait isolé comme cause plutôt que le compte brut de paramètres. Quinze
+graines, mêmes 2200 pas :
+
+```
+R bloqué a 21-24 (13/15 a R=23, jamais 25 ni 26)
+eps entre 0,038 et 0,161 — deux a trois ordres au-dessus de la bande 1e-4
+```
+
+**Pas un résultat, un contrôle cassé.** Geler 24 logits sur 27 près de zéro ne
+réduit pas seulement les degrés de liberté, ça gèle un plancher de
+représentabilité : les 3 colonnes libres doivent dominer 24 logits presque
+uniformes avant qu'une ligne s'affine, et la plupart n'y arrivent pas en
+2200 pas. `structure` n'a pas ce plancher — sa construction additive par
+position laisse le gradient des autres référents pousser sur les mêmes poids,
+donc rien n'y reste gelé près de zéro. Le contrôle a changé la
+représentabilité, pas seulement le compte de paramètres, ce qui écrase la
+comparaison visée de deux à trois ordres de grandeur. Un contrôle valide
+demanderait une construction partagée capable d'atteindre R=26 comme les
+trois autres, en ne faisant varier que le partage — pas encore construite.
+
 Réponse dans `docs/REPONSE_ORDRE28.md`.
 
 ---
