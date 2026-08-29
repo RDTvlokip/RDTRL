@@ -5175,9 +5175,24 @@ collision ne se résout pas quand le référent 0 bouge ; elle ne peut se
 résoudre que si le référent 24 bouge le premier, pour une raison qui n'a
 rien à voir avec le référent 0.
 
-Balayage β lancé (0, 0,005, 0,02 ; montée exacte contre REINFORCE ; dix
-graines) pour trancher sa question 2 : le fossé 92 %/5 % se referme-t-il à
-β = 0 ? Résultat à suivre.
+**Balayage β, arrivé, et décisif contre son hypothèse.** Montée exacte contre
+REINFORCE, taux de bijection à β ∈ {0 ; 0,005 ; 0,02}, dix graines par
+cellule, 20 000 pas :
+
+```
+   beta   bij. exacte   colls exacte   bij. REINFORCE   colls REINFORCE
+  0,000      0/10           1,80            10/10              0,00
+  0,005      0/10           1,90            10/10              0,00
+  0,020      0/10           1,50             9/10              0,10
+```
+
+**Le fossé ne bouge pas.** 0/10 en montée exacte aux trois β, 9-10/10 en
+REINFORCE aux trois β. Il avait posé le test comme une fourche lui-même : si
+le fossé se referme à β=0, l'entropie laissait la place ; s'il tient, le
+bruit fait le travail et son compte est faux. **Il tient — son propre test
+décisif réfute sa propre hypothèse.** Cohérent avec le mécanisme corrigé
+ci-dessus : le gradient du référent 24 est l'affûtage générique, indépendant
+de β, donc couper β ne change rien à pourquoi il reste.
 
 Trois questions posées, révisées après la correction : un référent engagé
 abandonne-t-il jamais volontairement, ou la collision ne se résout-elle que
