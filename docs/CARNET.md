@@ -5055,6 +5055,18 @@ comparaison visée de deux à trois ordres de grandeur. Un contrôle valide
 demanderait une construction partagée capable d'atteindre R=26 comme les
 trois autres, en ne faisant varier que le partage — pas encore construite.
 
+**Dernière vérification, sur une hypothèse jamais posée pendant tout ce
+tour :** `monter()` optimise `J = E[R] + β(H_S+H_R)`, pas `E[R]` seul.
+Est-ce que le terme d'entropie fixe lui-même un équilibre à ε non nul, plutôt
+que le manque de pas ? Calculé pour une ligne proche de la saturation :
+`p* = e^(c/β)/(26+e^(c/β))`, c ≈ 1 au voisinage du point. À β = 0,02,
+c/β = 50, résidu analytique `26·e⁻⁵⁰ ≈ 5,0e-21` — vérifié aussi numériquement
+sur une optimisation jouet à 200 000 pas, qui atterrit à `1-p* = 2,69e-12` et
+descend encore. **Seize ordres de grandeur sous tout ε mesuré ce tour
+(6,1e-05 à 1,1e-04).** La prémisse de tout le tour tient : ε est un retard
+d'entraînement, pas un point fixe caché de l'objectif régularisé — vérifié
+plutôt que supposé.
+
 Réponse dans `docs/REPONSE_ORDRE28.md`.
 
 ---
