@@ -4987,6 +4987,51 @@ pas comme énigme résolue.
 
 Réponse dans `docs/REPONSE_ORDRE27.md`.
 
+### 7.44 Vingt-septième critique : mon histoire de dose est fausse à la prémisse, et l'expérience décisive tient une fois lancée au bon endroit
+
+25/08/2026. Il retourne trois choses contre moi. D'abord `factorise` a **39
+paramètres libres par référent**, pas un chiffre entre 3 et 27 — vérifié :
+81+243+729 = 1053, /27 = 39. **Ce n'est pas un partage partiel, c'est un
+partage nul** avec une paramétrisation locale plus grande. Mon histoire de
+dose (aucun < partiel < total) était fausse à la prémisse : l'axe réel est
+binaire, partagé (`structure`, 3/référent) contre non partagé (`tabulaire` 27,
+`factorise` 39, tous deux loin de `structure`).
+
+Ensuite, mes deux anomalies « reclassées dans la bande » du tour précédent ne
+le sont pas : re-vérifiées contre mes propres 13 valeurs, l'une tombe sous le
+minimum réel, l'autre au-dessus du maximum réel — P(les deux dehors, des deux
+côtés) = 1/105 sous échangeabilité, vérifié par le calcul combinatoire standard
+2/(15×14). J'avais lu un ratio de 653x comme un retour à la normale sans
+vérifier le résidu contre la bande elle-même.
+
+Enfin il propose l'expérience décisive : faire tourner `tabulaire` au nombre de
+pas où son modèle exponentiel prédit que la moyenne de ε rejoint celle de
+`structure` (2811 pas). **La prédiction du nombre de pas était fausse** — à
+2811 pas la moyenne vaut 6,98e-05, à peine bougée depuis 3000 pas, loin de
+1,125e-4. Cohérent avec un fait déjà établi au tour 25 pour `plafond_beta` :
+la convergence n'est pas une exponentielle unique sur toute sa plage, elle
+décélère tôt. Balayé cinq points sur une graine pour trouver le vrai
+croisement (~2190 pas), puis lancé quinze graines à 2200 pas :
+
+```
+structure (publié)              moyenne 1,125e-04   CV 15,91 %
+tabulaire @ 2200 (appariée)      moyenne 1,1232e-04  CV 1,45 %
+```
+
+**Moyennes égales à quatre chiffres, CV différent d'un facteur 11.** Son test,
+lancé au bon endroit, répond exactement ce qu'il devait répondre : la
+dispersion est propre à la construction, pas une fonction de la magnitude de
+ε. Et une quatrième instance du même défaut de reclassement apparaît dans ce
+même lot (une graine sur quinze, reclassée de R=25 à R=24, retombe dans la
+bande) — quatre fois sur quatre constructions/pas différents maintenant.
+
+Non résolu : le mécanisme du pourquoi le partage rend le taux lui-même
+dépendant de la graine. Une seule construction partagée dans le projet ; pas
+de deuxième point pour savoir si c'est générique au partage ou propre à ces
+81 paramètres.
+
+Réponse dans `docs/REPONSE_ORDRE28.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
