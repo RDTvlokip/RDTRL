@@ -5091,15 +5091,41 @@ même signe, sur un n défendable. Le désaccord de signe avec son +0,52 n'est
 pas résolu par le pooling — il n'y avait jamais plus d'information
 indépendante que la première mesure n'en portait.
 
-**Les deux graines exclues, observées plutôt qu'inférées.** La graine idx5 :
-R=25 à 2200 pas (en bande), **bascule à R=26 entre 2200 et 2811 pas** (c'est
-l'anomalie), puis **reste sur un plateau** de 2811 à 10 000 pas — ε bouge de
-moins de 0,2 % relatif sur 7000 pas — avant de **rebasculer à R=25** à
-20 000 pas, où ε s'effondre à 2,0e-08. Pas une transition lisse : une
-signature de point critique sous-optimal, exactement celle de §1.28/§1.29,
-mais à l'échelle d'un seul référent plutôt que des vingt-sept. Le défaut de
-reclassement traqué depuis quatre constructions et trois budgets est la
-version miniature du même piège.
+**Les deux graines exclues, observées plutôt qu'inférées — et une correction
+apportée à ce que je viens d'écrire ci-dessus.** J'avais appelé le
+comportement de la graine idx5 un « plateau », signature de point critique
+sous-optimal comme §1.28/§1.29. **Faux, trouvé en vérifiant contre le bon
+dénominateur.** Contre R=25 fixe plutôt que le R lu par argmax, ε décroît de
+façon lisse et monotone sur toute la trajectoire (2200 à 40 000 pas), sans
+aucune discontinuité aux deux points où l'argmax bascule (2500-2600 et
+17000-19000 pas). Le « plateau » était un artefact de dénominateur : je
+divisais par 26 au lieu de 25 pendant la fenêtre où l'argmax rapportait
+26 par erreur.
+
+**Ce qui reste vraiment non résolu à 300 000 pas, et c'est une meilleure
+question.** Les deux référents perdants (0 et 4, en compétition pour les
+messages 8 et 10) n'ont jamais fixé leur second choix : le candidat
+préféré du référent 0 change presque à chaque relevé — messages 0, 11, 7, 3,
+16, 8 à 10k/20k/40k/80k/150k/300k pas — avec des marges qui oscillent entre
+microscopiques (5e-6, 7e-6) et simplement petites (4-9e-4), jamais stable.
+**Un référent qui a déjà perdu sa compétition de message ne reçoit aucun
+gradient de récompense sur son second choix** : parmi les 26 messages
+perdants, aucun ne rapporte rien, donc rien ne fixe lequel il pointe. Le
+flottement R=25↔26 observé plus tôt est exactement ça : quand le candidat
+errant du référent 0 atterrit par hasard sur un message libre, sa collision
+locale disparaît et le compte global lit 26 ; quand il redérive sur un
+message déjà pris, il relit 25. **Le compte de collisions n'est pas instable
+parce que le système n'a pas convergé — E[R] est convergé à neuf décimales
+dès 20 000 pas. Il est instable parce que les référents perdants ont une
+direction plate dans l'objectif, que la montée exacte n'a aucune force pour
+fixer.**
+
+Trois questions posées, aucune déjà envisagée par l'un de nous trois : le
+compte de collisions par argmax est-il seulement défini pour un référent qui
+a déjà perdu ; est-ce la vraie raison du 92 % de REINFORCE contre 5 % de la
+montée exacte (§7.36) — dériver dans une direction plate plutôt qu'échapper
+un bassin profond ; et cette direction plate est-elle présente dans tous les
+runs à collisions multiples de ce projet, y compris ceux d'avant cet échange.
 
 Réponse dans `docs/REPONSE_ORDRE29.md`.
 
