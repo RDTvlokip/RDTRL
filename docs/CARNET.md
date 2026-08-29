@@ -5141,25 +5141,52 @@ sur une collision est un vrai partage de récompense, pas un zéro.
 **Rejoué sur mon propre état entraîné avant de le croire.** Vérifié : deux
 des quatre référents perdants (10, 24) ont un gradient de récompense
 indiscernable des gagnants ; les deux autres (0, 4) sont 30 000 à 60 000 fois
-plus petits. **Ce qui les sépare n'est pas gagnant/perdant, c'est la
-concentration de la ligne.** Les référents 10 et 24 ont chacun convergé à
-probabilité 1 sur le **même** message — une vraie égalité entre deux lignes
-engagées, avec pression réelle pour la rompre (son mécanisme). Les référents
-0 et 4 sont encore à l'entropie maximale (ln 27 exactement) après 40 000 pas —
-aucune ligne engagée nulle part, donc aucun gradient nulle part (le mien).
-**Deux régimes sous une seule étiquette, pas une contradiction entre nos deux
-comptes.**
+plus petits.
+
+**Première lecture, fausse — corrigée en vérifiant qui collisionne avec qui.**
+J'avais apparié 10 avec 24 comme s'ils étaient à égalité l'un contre l'autre.
+**Ils ne collisionnent pas ensemble.** Les vraies paires : référent 0
+(uniforme) partage le message 7 avec le référent 24 (engagé) ; référent 4
+(uniforme) partage le message 16 avec le référent 10 (engagé). Et le
+récepteur a déjà tranché entièrement les deux :
+
+```
+message  7 :  R[7,0]  = 1,27e-11    R[7,24]  = 1,00000000
+message 16 :  R[16,4] = 1,39e-11    R[16,10] = 1,00000000
+```
+
+**Ce n'est pas un duopole 0,5/0,5. C'est un référent confiant qui capte toute
+l'attention du récepteur et un référent hésitant qui n'en capte aucune.** Le
+gradient « pleine puissance » du référent 24 n'est pas une pression pour
+abandonner le message 7 — c'est le terme générique d'affûtage
+entropie-contre-récompense que porte toute ligne pleinement engagée, gagnante
+ou non. Le référent 0 n'a pas un gradient minuscule parce qu'il est à égalité
+avec 24 : il l'a parce que, pour chacune de ses 27 options, le message est
+soit libre (aucun signal de récompense, seulement l'entropie) soit déjà
+capté en totalité par un autre référent confiant. **Le référent 0 n'est pas
+en train de perdre un match nul qu'un peu de bruit ferait pencher — il a été
+exclu de la fonction de récompense sur toute la ligne, avant même d'avoir
+choisi quoi que ce soit.**
+
+La vraie question n'est donc pas si une égalité symétrique se rompt. C'est
+**si le référent 24 abandonne un jour le message 7** — et rien dans le
+gradient déterministe ne l'y pousse, puisqu'il a déjà tout gagné là. La
+collision ne se résout pas quand le référent 0 bouge ; elle ne peut se
+résoudre que si le référent 24 bouge le premier, pour une raison qui n'a
+rien à voir avec le référent 0.
 
 Balayage β lancé (0, 0,005, 0,02 ; montée exacte contre REINFORCE ; dix
 graines) pour trancher sa question 2 : le fossé 92 %/5 % se referme-t-il à
 β = 0 ? Résultat à suivre.
 
-Trois questions posées, dont une nouvelle direction : le bruit de REINFORCE
-agit-il différemment sur les deux régimes ; une égalité à deux lignes
-engagées est-elle un vrai point stable ou une selle qui finit par se
-résoudre seule ; le régime d'un référent est-il prévisible tôt (entropie de
-ligne à 500 pas) pour scinder chaque tableau à collisions du projet en deux
-sous-populations plutôt qu'un taux indifférencié.
+Trois questions posées, révisées après la correction : un référent engagé
+abandonne-t-il jamais volontairement, ou la collision ne se résout-elle que
+si SA propre ligne est perturbée par autre chose que le référent qu'il
+bloque ; l'exclusion quasi totale du référent hésitant est-elle permanente
+une fois qu'un autre s'engage le premier, ou un pur effet de timing ; et le
+« compte de collisions » a-t-il toujours mesuré deux choses empilées — le
+nombre de référents qui ont perdu la course à l'engagement, et séparément,
+lesquels des gagnants n'ont pas encore été délogés.
 
 Réponse dans `docs/REPONSE_ORDRE30.md`.
 
