@@ -5069,6 +5069,40 @@ plutôt que supposé.
 
 Réponse dans `docs/REPONSE_ORDRE28.md`.
 
+### 7.45 Vingt-huitième critique : les quarante points sont quinze points mesurés trois fois
+
+25/08/2026. Il demande la corrélation poolée centrée par groupe de pas avant
+d'écrire une phrase de plus sur le signe. Faite : **r = −0,3007, df = 36,
+p = 0,067** — pas significatif à 5 %, mais du signe de mon −0,43, à 0,02 du
+seuil qu'il calcule (0,3202, identique au mien).
+
+**Avant de le croire, vérifié ce que sont réellement les trois groupes.**
+Les quinze valeurs de R sont **identiques** entre 3000 et 2811 pas, graine par
+graine — les trois expériences partagent le même `default_rng(999)`, seul
+`pas` change. Ce ne sont pas quarante points indépendants, ce sont quinze
+graines mesurées trois fois. Le df = 36 surcompte l'information indépendante
+d'un facteur ~3 ; le vrai n est ~13-15, pas 40, et la puissance à 78 %
+annoncée ne tient pas.
+
+**Le test correctement indépendant :** une ligne par graine, R (constant
+confirmé) contre ε moyenné sur les trois budgets, treize graines qui ne
+sortent jamais de bande : **r = −0,3908**. Proche de mon −0,43 d'origine,
+même signe, sur un n défendable. Le désaccord de signe avec son +0,52 n'est
+pas résolu par le pooling — il n'y avait jamais plus d'information
+indépendante que la première mesure n'en portait.
+
+**Les deux graines exclues, observées plutôt qu'inférées.** La graine idx5 :
+R=25 à 2200 pas (en bande), **bascule à R=26 entre 2200 et 2811 pas** (c'est
+l'anomalie), puis **reste sur un plateau** de 2811 à 10 000 pas — ε bouge de
+moins de 0,2 % relatif sur 7000 pas — avant de **rebasculer à R=25** à
+20 000 pas, où ε s'effondre à 2,0e-08. Pas une transition lisse : une
+signature de point critique sous-optimal, exactement celle de §1.28/§1.29,
+mais à l'échelle d'un seul référent plutôt que des vingt-sept. Le défaut de
+reclassement traqué depuis quatre constructions et trois budgets est la
+version miniature du même piège.
+
+Réponse dans `docs/REPONSE_ORDRE29.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
