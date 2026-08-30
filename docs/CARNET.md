@@ -5244,6 +5244,45 @@ symétrique, cohérente avec un vrai point fixe protégé par l'équivariance de
 
 Réponse dans `docs/REPONSE_ORDRE31.md`.
 
+### 7.48 Trente-et-unième critique : le mur n'est pas une collision, et la place « libre » a un vrai tirage, juste noyé dans un réseau
+
+30/08/2026. Il perturbe une égalité (au lieu de la regarder) : `R += eps` sur
+un membre, `-= eps` sur l'autre, puis 20 000 pas de plus. Jusqu'à eps=8 (masse
+receveur 1,000000, capture totale), le partage revient exactement à 0,5/0,5.
+Seul eps=12 tient. **Reproduit à cinq décimales sur ma propre égalité**,
+même seuil eps=8/eps=12.
+
+**Et le croisement décisif :** confiance de l'émetteur (S) contre étiquette
+du récepteur, 30 graines, 52 collisions. **Séparation parfaite, zéro
+exception :** les 41 égalités ont S=1,000000 des deux côtés ; les 11 murs ont
+leur membre bas à l'entropie maximale (0,037066-0,037163, contre son
+0,03709-0,03717). **Un mur n'est pas une collision.** C'est un référent qui
+n'a jamais rien engagé, classé sous le message que le bruit flottant lui
+assigne. Les vraies collisions sont **100 % des égalités**, pas 84 %, pas
+79 %. Ma rétractation du tour précédent n'était pas fausse, elle n'allait pas
+assez loin.
+
+**Le message « libre » ne l'est pas non plus, vérifié sur ma propre graine.**
+Les messages 0 et 14 (jamais argmax-és par personne) portent chacun 0,4995 et
+0,5000 de masse d'un TROISIÈME référent (18 et 25), chacun engagé dans sa
+propre égalité ailleurs, invisible à tout recensement fondé sur l'argmax.
+
+**Sa question de clôture, testée plutôt que débattue.** Calculé le gradient
+complet à 27 directions de la ligne uniforme du référent 0 : les deux
+messages libres portent les deux plus GRANDES valeurs positives de toute la
+ligne (+5,41e-13, +5,29e-13), loin devant les 25 messages pris (négatifs ou
+quasi nuls). **Ni un vrai second attracteur, ni une absence totale de
+traction** — un vrai gradient, correctement dirigé, cinq ordres de grandeur
+sous celui d'une ligne engagée. Et cette traction est elle-même prise dans
+un réseau : la place libre que le référent 0 tire faiblement est déjà à
+moitié revendiquée par un troisième référent, engagé dans SA propre égalité.
+
+Non reproduit : son recensement de timing (14/30 graines résolvent une
+collision dure, la seule bijection se règle au pas 271 sur 20 000). Dit
+comme tel plutôt que supposé.
+
+Réponse dans `docs/REPONSE_ORDRE32.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
