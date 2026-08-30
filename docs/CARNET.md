@@ -5262,20 +5262,65 @@ assigne. Les vraies collisions sont **100 % des égalités**, pas 84 %, pas
 79 %. Ma rétractation du tour précédent n'était pas fausse, elle n'allait pas
 assez loin.
 
-**Le message « libre » ne l'est pas non plus, vérifié sur ma propre graine.**
-Les messages 0 et 14 (jamais argmax-és par personne) portent chacun 0,4995 et
-0,5000 de masse d'un TROISIÈME référent (18 et 25), chacun engagé dans sa
-propre égalité ailleurs, invisible à tout recensement fondé sur l'argmax.
+**Le message « libre » ne l'est pas non plus — mais je m'étais trompé sur
+pourquoi, et je me corrige ici plutôt que de laisser passer.** J'avais décrit
+les référents 18 et 25 comme « engagés ailleurs avec confiance ». Faux,
+trouvé en posant la question que j'aurais dû poser avant d'écrire ça : à quoi
+ressemble VRAIMENT l'argmax du référent 18 ? `S[18,0]=0,499479` et
+`S[18,8]=0,500521` — il n'est engagé nulle part, il est scindé quasi
+50/50 entre les deux, et l'est **depuis le pas 5000 au moins** (vérifié
+jusqu'à 40 000). Même chose pour le référent 25 entre les messages 1 et 14.
+**Aucun des deux ne « revendique à moitié » le message d'un autre — chacun
+est une ligne scindée entre DEUX DE SES PROPRES options, sans adversaire
+réel sur aucune des deux.**
+
+**Vérifié si ça coûte quelque chose : non.** `R[0,18]=1,000000` ET
+`R[8,18]=1,000000` — le récepteur décode le référent 18 avec pleine
+confiance, quel que soit celui des deux messages qu'il envoie, puisqu'il en
+est le seul expéditeur significatif. Sa récompense espérée
+(0,4995×1 + 0,5005×1 = 1,000000) est identique à un engagement plein. La
+scission coûte **zéro récompense** et achète `ln 2 = 0,693` nats d'entropie
+de ligne — exactement ce que β est censé récompenser. **Ce n'est pas une
+égalité bloquée : c'est vraisemblablement le véritable optimum de
+l'objectif** pour un référent à deux options gratuites et non contestées.
+Preuve mince (une ligne, une graine) — signalé comme tel. Si ça généralise,
+« collision » recouvre trois choses, pas deux : les vraies égalités
+(coûteuses, protégées par la symétrie), les murs (récompense nulle), et
+maintenant ceci — une scission optimale et gratuite, qui ne bloque rien du
+tout.
+
+**Doute soulevé sur le bassin lui-même, avant de le croire.** Sa perturbation
+et la mienne touchaient toutes deux le RÉCEPTEUR seul, laissant les deux
+émetteurs parfaitement symétriques — la « récupération » pourrait n'être que
+le récepteur qui rattrape mécaniquement deux émetteurs jamais touchés.
+Testé en perturbant l'ÉMETTEUR à la place (référent 25, message 13) :
+jusqu'à eps=12 (qui cassait définitivement côté récepteur), tout revient à
+S=1,000000 après 20 000 pas de plus ; il faut eps=20 pour casser, et le
+référent cassé **s'évacue vers le mur** (S≈1/27), pas vers un troisième
+message. Le bassin est réel, plus large côté émetteur que côté récepteur (un
+logit émetteur affronte 26 concurrents, un logit récepteur dans une égalité
+n'en affronte qu'1) — une asymétrie que je n'aurais pas trouvée sans tester
+la version la plus faible de ma propre affirmation en premier.
+
+**Recherche de contre-exemple, revenue bredouille, rapportée quand même.**
+Mon classificateur ignore silencieusement toute collision à 3 référents ou
+plus (`len(refs) != 2: continue`). Vérifié sur les 30 graines : zéro
+collision à 3, zéro à plus. Le trou existait, la population qu'il aurait pu
+manquer n'était pas là.
 
 **Sa question de clôture, testée plutôt que débattue.** Calculé le gradient
-complet à 27 directions de la ligne uniforme du référent 0 : les deux
-messages libres portent les deux plus GRANDES valeurs positives de toute la
-ligne (+5,41e-13, +5,29e-13), loin devant les 25 messages pris (négatifs ou
-quasi nuls). **Ni un vrai second attracteur, ni une absence totale de
+complet à 27 directions de la ligne uniforme du référent 0, vérifié contre la
+forme fermée (accord à 2e-28, quinze ordres sous le signal — pas du bruit
+numérique) : les deux messages libres portent les deux plus GRANDES valeurs
+positives de toute la ligne (+5,41e-13, +5,29e-13), loin devant les 25
+messages pris. **Ni un vrai second attracteur, ni une absence totale de
 traction** — un vrai gradient, correctement dirigé, cinq ordres de grandeur
-sous celui d'une ligne engagée. Et cette traction est elle-même prise dans
-un réseau : la place libre que le référent 0 tire faiblement est déjà à
-moitié revendiquée par un troisième référent, engagé dans SA propre égalité.
+sous celui d'une ligne engagée. Et compte tenu de ce qui précède, « pris dans
+un réseau » était aussi la mauvaise description : le référent 0 ne fait pas
+face à une égalité concurrente sur le message 0, il fait face à une scission
+gratuite qui ne lui dispute rien. Le mur n'est peut-être bloqué par rien
+d'autre que son propre gradient, trop petit pour bouger à n'importe quel
+budget testé jusqu'ici.
 
 Non reproduit : son recensement de timing (14/30 graines résolvent une
 collision dure, la seule bijection se règle au pas 271 sur 20 000). Dit
