@@ -5205,6 +5205,45 @@ lesquels des gagnants n'ont pas encore été délogés.
 
 Réponse dans `docs/REPONSE_ORDRE30.md`.
 
+### 7.47 Trentième critique : les égalités sont la majorité, mon échantillon ne pouvait voir que des murs
+
+30/08/2026. Il reproduit mon fossé 92 %/5 % sur SA propre réimplémentation
+numpy (E[R] identique, générateur différent) — pas un artefact de graine.
+Puis il isole un facteur que ma table n'avait pas : la montée exacte tourne à
+lr 0,05, REINFORCE à lr 0,01. À lr 0,01, la montée exacte fait **5/30**, pas
+0/30. Et il recense 50 collisions sur 30 graines : **42 égalités (0,1-0,9 des
+deux côtés) contre seulement 8 murs.** La graine idx5 (mes deux collisions,
+deux murs) n'est pas représentative.
+
+**Tout reproduit indépendamment, mon code, mes graines.**
+
+- **Contrôle lr :** 2/10, 1/10, 0/10 aux trois β — 3/30 contre son 5/30, même
+  ordre, même sens.
+- **Recensement égalité/mur :** 52 collisions, **41 égalités (79 %) contre
+  11 murs (21 %)** — accord étroit avec ses 84 %/16 %.
+- **Motif « engagement puis évacuation » :** le référent 0 (mon mur) culmine à
+  **93 % au pas 100**, puis s'effondre à l'uniforme au pas 1000 — je n'avais
+  jamais regardé entre le pas 0 et 2200 à grain fin. Confirmé sur ses huit
+  graines aussi.
+
+**Pourquoi mon seul échantillon donnait 2 murs sur 2.** Vérifié : les deux
+membres d'une égalité sont CHACUN engagés individuellement à S≈0,9999999661
+— stables, aucun scintillement d'argmax. Le membre perdant d'un mur, lui,
+reste à l'entropie uniforme et son argmax lit le bruit flottant parmi
+27 options à égalité. **J'avais trouvé idx5 en cherchant une instabilité de
+l'étiquette R — et seuls les murs produisent cette instabilité.** Le
+détecteur ne pouvait voir que la classe minoritaire.
+
+**Et l'égalité ne ressemble pas à une convergence lente.** Suivi un cas
+(référents 23/25, message 13) de 20 000 à 300 000 pas : écart à 0,5 exact de
++2,27e-4, −8,81e-6, +6,16e-7, +3,49e-8, **+3,09e-5** — non monotone, quatre
+ordres de grandeur de resserrement puis remontée de trois ordres, signe
+alterné. Pas une asymétrie qui se résorbe : une oscillation autour du point
+symétrique, cohérente avec un vrai point fixe protégé par l'équivariance de
+§6.7, pas une course lente vers un gagnant.
+
+Réponse dans `docs/REPONSE_ORDRE31.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
