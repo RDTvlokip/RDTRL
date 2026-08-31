@@ -5370,6 +5370,34 @@ les quatre valeurs de mur (inévitable, max de 27 termes sommant à 1) ; et le
 déficit d'entropie de la scission, 5,43e-7 nats sous ln 2, confirmé au
 chiffre près.
 
+**Poursuivi sans qu'on me le demande, parce que le tour semblait fini et que
+je m'en méfie maintenant.** Deux vérifications de plus.
+
+Le seuil eps=23/24 tient-il vraiment, ou n'est-ce qu'un instantané à
+40 000 pas ? Étendu à 270 000 pas cumulés des deux côtés : **stable
+intégralement**, bascule comme retour.
+
+Un occupant scindé (référent 18) est-il aussi difficile à évincer qu'un
+vrai gagnant solo ? Jamais comparé. Poussé le référent 0 sur le message du
+référent 1 (propriétaire exclusif, pleine récompense en jeu) : **à eps=100,
+quatre fois le seuil qui évince le référent 18, le référent 1 ne bouge pas
+du tout**, et le récepteur ne donne jamais le moindre crédit au référent 0
+là (`R[11,0]=0` à tous les eps testés). Un gagnant solo qui gagne une vraie
+récompense est catégoriquement plus dur à déloger qu'un occupant scindé qui
+ne gagne rien de plus en restant scindé.
+
+**Et un engagement gaspillé (S=1,0 sur un message qui rapporte zéro) reste
+stable 270 000 pas de plus — ce que je n'attendais pas et ne crois pas
+encore entièrement.** Par l'argument d'entropie du même tour, ça devrait
+être strictement dominé : revenir à l'uniforme ne coûte rien en récompense
+(déjà nulle) et gagne `ln 27` d'entropie. Ça ne revient pas. Hypothèse
+énoncée comme hypothèse : la perturbation (eps jusqu'à 100) a probablement
+saturé la ligne au-delà de la précision représentable en float64 près de 1,
+et le gradient renvoyé par autograd y sous-dépasse peut-être exactement à
+zéro plutôt que d'être seulement petit — auquel cas ce n'est pas un second
+vrai piège de l'objectif, c'est un artefact numérique de ma propre poussée,
+à revérifier avec une perturbation beaucoup plus modeste avant d'y croire.
+
 Réponse dans `docs/REPONSE_ORDRE33.md`.
 
 ---
