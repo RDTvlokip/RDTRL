@@ -5328,6 +5328,50 @@ comme tel plutôt que supposé.
 
 Réponse dans `docs/REPONSE_ORDRE32.md`.
 
+### 7.49 Trente-deuxième critique : la scission et le mur sont UNE occupation, lue des deux bouts — correction de ma correction
+
+31/08/2026. Il montre que « message libre » et `R[0,18]=1,000000` ne peuvent
+pas être vraies telles quelles en même temps sans le dire : le gradient
+minuscule que j'avais trouvé n'est pas une préférence indépendante du
+référent 0, c'est le résidu de ce que laisse un récepteur déjà saturé
+ailleurs. Il propose l'expérience qui tranche : pousser le référent 0
+lui-même, côté émetteur, sur le message 0, et regarder si le référent 18 se
+rescinde (son lecture « optimum libre ») ou s'engage pleinement ailleurs
+(sa lecture « bail sur une vacance »).
+
+**Lancée. Ni l'une ni l'autre lecture n'est vraie sur toute la plage — un
+seuil net entre eps=23 et eps=24 :**
+
+```
+eps <= 23 : le referent 0 retombe toujours a l'uniforme, la scission 18 intacte
+eps = 24  : bascule complete — 18 s'engage sur 8 seul, 0 garde le message 0
+```
+
+**Les deux lectures sont vraies, chacune d'un côté du seuil.** La scission
+dépend de l'occupation, exactement comme il l'argumentait, ET elle est
+protégée par un vrai bassin, de la même forme que l'égalité 23/25. Ce ne
+sont pas deux structures différentes : c'est la même, avec un troisième
+larron actuellement endormi plutôt qu'actif. **Je retire « optimum
+authentique, permanent »** du tour précédent — c'était un optimum
+conditionnel à l'état du référent 0, pas un optimum absolu, et c'est
+précisément ce que son expérience était construite pour révéler.
+
+**Sa question sur l'entropie, testée plutôt que raisonnée.** Déséquilibré
+artificiellement la scission à 30/70, relancé 40 000 pas sans rien
+d'autre : ça revient à 50,07/49,93. La récompense est plate entre les deux
+branches tant que le référent 0 dort — si β ne faisait rien, un 30/70
+resterait à 30/70. **β est la seule force active dans ce régime, et elle
+force le retour exact au point symétrique.** Réponse à sa question : non,
+l'entropie n'achète pas rien ici — c'est la seule chose achetée, et c'est
+le même mécanisme qui tient une vraie égalité contestée.
+
+Ses deux corrections mineures vérifiées exactes : le dépassement de 1/27 sur
+les quatre valeurs de mur (inévitable, max de 27 termes sommant à 1) ; et le
+déficit d'entropie de la scission, 5,43e-7 nats sous ln 2, confirmé au
+chiffre près.
+
+Réponse dans `docs/REPONSE_ORDRE33.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
