@@ -5434,6 +5434,41 @@ le plancher par défaut de l'optimiseur. La vraie frontière se situe vers
 
 Réponse dans `docs/REPONSE_ORDRE34.md`.
 
+### 7.51 Trente-quatrième critique : aucun des trois candidats simples ne correspond au point de transition — rapporté tel quel
+
+01/09/2026. Il retire sa propre erreur de calcul (calcul du gel en isolation
+sur une seule ligne, alors que la frontière appartient à quelle que soit des
+trois lignes qui se dégèle en premier) et propose le test qui trancherait :
+extraire `sqrt(v)` de l'état interne d'Adam pour la ligne du référent 0 à la
+configuration frontière, et vérifier qu'il passe sous `adam_eps` exactement
+là où le seuil bascule.
+
+**Testé sur les trois candidats que sa reformulation nomme. Aucun ne colle
+proprement.**
+
+- **Référent 0 (sa prédiction nommée) :** `sqrt(v)` reste TOUJOURS au-dessus
+  d'`adam_eps`, y compris quand ça revient. Pire pour une histoire propre :
+  `sqrt(v)` lui-même chute de quatre ordres entre les réglages qui reviennent
+  et ceux qui basculent — ce n'est pas une quantité fixe comparée à un seuil
+  mobile, c'est une quantité qui dépend elle-même du réglage qu'on teste.
+- **Référent 18 :** `sqrt(v)` est déjà 5 ordres AU-DESSUS d'`adam_eps` à
+  1e-8 et 1e-10 — donc pas gelé du tout à ces réglages — et pourtant le
+  système revient quand même. Exclu comme goulot unique.
+- **Récepteur (R[0,18]) :** le plus proche. `sqrt(v)` reste stable
+  (2 à 5×10⁻¹³) pendant qu'`adam_eps` balaie autour ; le croisement a bien
+  lieu, mais entre 1e-12 et 1e-14 — un cran après le vrai basculement
+  comportemental, situé entre 1e-10 et 1e-12.
+
+**Rapporté tel quel plutôt que forcé.** Sa reformulation (un min sur
+plusieurs lignes) est la bonne direction, mais aucun des trois candidats
+évidents n'explique proprement le point de transition observé. Plus probable
+: une transition couplée entre les trois lignes partageant le même
+`adam_eps`, pas une course entre seuils indépendants — non démontré, dit
+comme non résolu. Ce qui tient toujours : la convergence du seuil vers
+18-20 elle-même, indépendamment de quel paramètre en porte l'explication.
+
+Réponse dans `docs/REPONSE_ORDRE35.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
