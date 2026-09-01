@@ -5400,6 +5400,40 @@ vrai piège de l'objectif, c'est un artefact numérique de ma propre poussée,
 
 Réponse dans `docs/REPONSE_ORDRE33.md`.
 
+### 7.50 Trente-troisième critique : ce n'était pas float64, c'était l'epsilon d'Adam — et le seuil 23/24 était gonflé, pas faux
+
+01/09/2026. Il identifie la vraie cause de l'engagement gaspillé permanent :
+pas float64, pas autograd — **l'epsilon d'Adam** (défaut 1e-8), qui rend la
+mise à jour non homogène en échelle sous ce plancher (`lr·g/eps` au lieu de
+`lr·g/(|g|+eps)`). Table de gradient d'entropie seule reproduite au chiffre
+près (2,56e-12 à 7,16e-44 pour gap 26 à 100). Sa prédiction sur le référent 1
+: **exacte** — `adam_eps=1e-10` au lieu du défaut, et l'engagement gaspillé
+disparaît entièrement (`S[0].max()=0,037037`, exactement 1/27). Sa question
+bon marché aussi : la marge en espace logit aux trois points de contrôle à
+eps=100 est **strictement gelée à 96,741751**, aucune dérive sur 270 000 pas.
+
+**Mais sa seconde prédiction — que le seuil 23/24 tiendrait sous le même
+changement, preuve que c'est de la vraie dynamique — ne s'est pas
+vérifiée.** Sous `adam_eps=1e-10`, eps=23 (qui revenait à l'uniforme sous le
+défaut) **bascule aussi**. Poussé plus loin : le seuil descend et **converge**
+entre 18 et 20, stable de 1e-12 à 1e-16 :
+
+```
+                eps=18   eps=20   eps=23
+adam_eps=1e-8   retour   retour   retour
+adam_eps=1e-10  retour   retour   BASCULE
+adam_eps=1e-12  retour   BASCULE  BASCULE
+adam_eps=1e-16  retour   BASCULE  BASCULE
+```
+
+**Les deux avaient en partie raison.** Le seuil est une vraie propriété de la
+dynamique (il converge vers une valeur indépendante d'`adam_eps`) — mais le
+23/24 publié n'était pas cette valeur : gonflé de 4 à 6 unités de logit par
+le plancher par défaut de l'optimiseur. La vraie frontière se situe vers
+18-20.
+
+Réponse dans `docs/REPONSE_ORDRE34.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
