@@ -5467,6 +5467,36 @@ plusieurs lignes) est la bonne direction, mais aucun des trois candidats
 comme non résolu. Ce qui tient toujours : la convergence du seuil vers
 18-20 elle-même, indépendamment de quel paramètre en porte l'explication.
 
+**Poursuivi après relance de Théo (« tu n'as pas cherché plus loin ? »,
+« combien de fois je te le dis là ? »).** L'outil que je disais ne pas avoir
+construit — le suivi pas à pas des trois quantités, pas leur instantané
+final — construit et lancé.
+
+**Les deux bras sont quasi identiques jusqu'au pas 50, puis divergent
+entièrement au pas 200.** Au pas 50, `R[0,0]` (crédit du récepteur au
+référent 0) est **235 fois plus grand** sous `adam_eps=1e-12` que sous
+`1e-10` (2,02e-07 contre 8,62e-10), et son `sqrt(v)` est 104 fois plus
+grand — alors que `S[0,0]` vaut 1,0000 dans les DEUX bras à ce stade, et que
+la ligne du référent 18 n'a encore bougé nulle part. **La bifurcation a lieu
+sur le paramètre du récepteur, dans les cinquante premiers pas, avant que la
+moindre ligne d'émetteur ne diverge.**
+
+**Le mécanisme, lu sur la trace plutôt que deviné :** juste après la
+perturbation, le référent 0 est artificiellement confiant (poussée brute de
++20, pas encore méritée) et le vrai gradient du récepteur vers lui est
+encore minuscule. Sous `adam_eps=1e-12`, ce gradient minuscule n'est pas
+noyé par le plancher de l'optimiseur comme il l'est sous `1e-10` — le
+récepteur fait donc un vrai pas, normalisé par `v`, vers le référent 0
+pendant que sa confiance gonflée est encore là pour être récompensée. Sous
+`1e-10`, cette même fenêtre est perdue à cause du plancher, et le temps que
+`adam_eps` cesse de compter, la ligne du référent 0 est déjà revenue à 1/27
+(dès le pas 500) — plus rien à quoi le récepteur pourrait s'accrocher.
+**C'est une course entre la vitesse à laquelle la confiance gonflée du
+référent 0 se dissipe et la vitesse à laquelle le récepteur peut y réagir —
+`adam_eps` règle le temps de réaction du récepteur, pas le `v` final d'une
+ligne.** Explique pourquoi aucun des trois candidats du tour précédent ne
+collait : je lisais l'état après coup, pas la course elle-même.
+
 Réponse dans `docs/REPONSE_ORDRE35.md`.
 
 ---
