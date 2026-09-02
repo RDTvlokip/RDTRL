@@ -5499,6 +5499,43 @@ collait : je lisais l'état après coup, pas la course elle-même.
 
 Réponse dans `docs/REPONSE_ORDRE35.md`.
 
+### 7.52 Trente-cinquième critique : loquet, pas course — confirmé par un calendrier, un bras ne revient jamais même à K=1000
+
+02/09/2026. Il precise ma lecture « course » : au pas 1, `sqrt(v)` du
+récepteur est identique dans les deux bras à trois chiffres près (l'état
+initial ne peut pas encore avoir vu `adam_eps`), donc ce n'est pas le
+récepteur qui « part en retard » — c'est un **loquet** : sous `adam_eps`
+trop grand, le pas reste sous son propre `eps` à chaque pas enregistré (max
+0,25× à `1e-10`), jamais assez pour s'échapper ; sous `1e-12`, il franchit
+son propre `eps` dès le pas 10 et n'a plus jamais besoin de lui. Propose le
+test qui tranche : un `adam_eps` en deux temps, bras A (`1e-12` puis
+`1e-10` après K pas) et bras B (l'inverse) — course et loquet prédisent la
+même chose en gros mais avec un seul point de bascule K commun (course) ou
+deux horloges très différentes (loquet).
+
+**Testé. Loquet, sans ambiguïté :**
+
+```
+A (1e-12 -> 1e-10 apres K)      B (1e-10 -> 1e-12 apres K)
+K=30   retour                   K=200   retour
+K=50   BASCULE                  K=500   retour
+K=200  BASCULE                  K=1000  retour  <- ne bascule JAMAIS
+```
+
+Le bras A bascule pile dans la fenêtre 10-50 qu'il prédisait. Le bras B ne
+bascule **à aucun K testé, jusqu'à K=1000** — vingt fois au-delà de sa
+propre fenêtre prédite. Pas une ligne d'arrivée commune : une porte qui se
+ferme une fois, dans les cinquante premiers pas, et que rien ne rouvre
+ensuite.
+
+**Conséquence pour 18-20 :** ce n'est plus une constante « corrigée de
+l'artefact ». C'est la frontière sous un optimiseur capable de réagir dans
+les cinquante premiers pas — fonction conjointe d'`adam_eps`, `lr` et
+`beta2`, pas de l'objectif seul. Vérification d'un second levier (lr) en
+cours pour voir s'il déplace la frontière dans le même sens.
+
+Réponse dans `docs/REPONSE_ORDRE36.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
