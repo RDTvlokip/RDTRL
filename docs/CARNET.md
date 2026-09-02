@@ -5530,9 +5530,27 @@ ensuite.
 
 **Conséquence pour 18-20 :** ce n'est plus une constante « corrigée de
 l'artefact ». C'est la frontière sous un optimiseur capable de réagir dans
-les cinquante premiers pas — fonction conjointe d'`adam_eps`, `lr` et
-`beta2`, pas de l'objectif seul. Vérification d'un second levier (lr) en
-cours pour voir s'il déplace la frontière dans le même sens.
+les cinquante premiers pas.
+
+**Vérifié trois autres leviers censés donner le même genre de gain précoce
+au récepteur — aucun ne se comporte comme `adam_eps`.** `lr` de 0,05 à 0,15 :
+douze cellules, aucune ne bascule. `beta2` de 0,999 à 0,5 (v suit le
+gradient 500 fois plus vite) : douze cellules, aucune ne bascule — alors que
+c'est le mécanisme même que sa trace pas-à-pas identifiait. `lr` poussé à
+des valeurs absurdes (jusqu'à 40× la base) : bascule seulement à `lr=2,0`,
+et de façon non monotone (eps=18 et 20 basculent, eps=23 revient). **Si
+« tout ce qui donne un gain précoce déplace la frontière » était la bonne
+généralisation, `beta2` aurait dû être le levier le plus net de tous. Il
+n'a rien fait.** Le mécanisme est donc plus spécifique à `adam_eps` — un
+plancher additif au dénominateur — qu'une histoire générique de réactivité
+précoce ne le prédirait.
+
+Ce qui reste : une vraie frontière de bassin en espace logit, entre la fin
+d'adolescence et le début de la vingtaine pour cette graine sous réglages
+ordinaires, décidée dans une fenêtre si précoce et si spécifiquement liée à
+une seule constante additive qu'aucun nombre unique n'en rend compte
+honnêtement. Le balayage est le résultat, et il ne bouge que sur un seul
+axe, pas les trois attendus.
 
 Réponse dans `docs/REPONSE_ORDRE36.md`.
 
