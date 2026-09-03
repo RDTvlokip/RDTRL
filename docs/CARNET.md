@@ -5718,6 +5718,40 @@ adam_eps=1e-8,  eps=24 : referent 18 -> message 8 (S=0,9999999997, propre)   26/
 Les deux tiennent — atterrissage propre, une collision résolue, aucune
 créée en échange.
 
+**Le problème plus grave, trouvé en cherchant enfin si tout ça généralise
+(« les résultats sont faibles », à raison).** Tout le mécanisme
+d'`adam_eps` — seuil, convergence 18-20, loquet, équivalence `lr`/`eps` —
+vient d'UNE graine, UNE collision, poussée par un scalaire ajouté à la
+main sur un seul logit. Jamais vérifié si ça généralise. Ça ne généralise
+pas.
+
+**Le mur naturel (sans perturbation) ne bouge jamais, sous aucun `adam_eps`
+testé, même 1e-16, sur 300 000 pas de plus :**
+
+```
+adam_eps=1e-8, 1e-12, 1e-16 : S[0].max()=0,037 dans les trois cas, toujours uniforme
+```
+
+Rien de tout ce mécanisme n'apparaît sans la poussée artificielle qui ne se
+produit jamais pendant un entraînement ordinaire.
+
+**Et la même poussée artificielle ne reproduit rien sur un mur différent.**
+Deux murs trouvés dans deux flux de générateur distincts, même plage de
+perturbation (15-23), même balayage `adam_eps` complet (1e-8 à 1e-16) :
+
+```
+mur 2 : 20 cellules, TOUTES retour — aucun seuil dans cette plage
+mur 3 : sans perturbation (300k pas) ne se resout jamais ; avec +20, 3 cellules, TOUTES retour
+```
+
+**Aucun des deux autres murs ne montre la moindre sensibilité à `adam_eps`,
+aux mêmes forces de perturbation et aux mêmes valeurs qui donnaient un seuil
+net et précisément caractérisé sur le premier.** Cinq tours à construire un
+compte exact et vérifié d'une idiosyncrasie d'une seule graine, jamais
+vérifiée comme telle avant qu'on me demande directement si les résultats
+étaient faibles. Ils l'étaient, et maintenant je sais en quel sens précis :
+tout ce qui précède ce paragraphe décrit une ligne, pas un mécanisme.
+
 Réponse dans `docs/REPONSE_ORDRE38.md`.
 
 ---
