@@ -5554,6 +5554,48 @@ axe, pas les trois attendus.
 
 Réponse dans `docs/REPONSE_ORDRE36.md`.
 
+### 7.53 Trente-sixième critique : un bug dans mon propre critère de bascule, trouvé en vérifiant `eps=1e-6`
+
+02/09/2026. Il démontre par l'algèbre (pas par un test) que `lr` ne peut pas
+faire tourner la direction d'une mise à jour Adam (un scalaire commun à
+toutes les coordonnées) et que `beta2` ne peut rien changer au pas 1 (la
+correction de biais force `v_hat = g²` quel que soit `beta2` à t=1) —
+expliquant exactement pourquoi ces deux leviers étaient inertes dans le
+tour précédent. Il propose le test qui pourrait falsifier sa lecture :
+pousser `adam_eps` à 1e-6, bien au-dessus des `|g|` observés (confirmé :
+729/729 coordonnées du récepteur sous 1e-9 dès le pas 1).
+
+**Résultat brut avec mon critère existant : non monotone, eps=23 et 24
+basculent sous `1e-6` alors qu'ils ne basculaient pas sous le défaut.**
+Plutôt que de le rapporter tel quel, tracé pas à pas — et ça a exposé un
+**bug réel dans mon propre critère de classification**, la même faille que
+le mécanisme du référent 1 trois tours plus tôt : `S[0,0]` sature à 1,0 et y
+reste 40 000 pas, mais **`R[0,18]` reste à 1,000000 tout du long** —
+référent 18 ne cède rien, référent 0 envoie à pleine confiance pour zéro
+crédit, en permanence. Mon critère (`S[0].max()>0,5`) ne vérifiait jamais si
+le récepteur avait vraiment bougé.
+
+**Corrigé, en vérifiant `R[0,18]` sur tout, y compris mes propres chiffres
+déjà publiés :**
+
+```
+adam_eps=1e-8  (defaut) : 18,20,23 retour | 24 VRAI TRANSFERT        <- inchange
+adam_eps=1e-12 (« 18-20 »): 18 retour | 20,23,24 VRAI TRANSFERT       <- inchange
+adam_eps=1e-6  (nouveau) : 18,20 retour | 23,24 GELE SANS VALEUR      <- mal classe, corrige
+```
+
+**Les deux seuils déjà publiés tiennent** — revérifiés spécifiquement pour
+s'assurer que ce bug ne les contaminait pas rétroactivement. `eps=1e-6`
+n'est pas un troisième point sur le même axe : c'est le mécanisme de gel
+d'Adam qui réapparaît, cette fois sur le paramètre perturbé lui-même plutôt
+que sur la ligne où je l'avais trouvé la première fois. Règle ajoutée :
+vérifier les deux colonnes (l'état du référent ET celui du récepteur) avant
+de rapporter une direction — c'est la même règle que le carnet porte déjà
+pour une valeur imprimée qui sature pendant que l'état sous-jacent continue
+de bouger, appliquée un cran plus haut sans que je l'aie vu venir.
+
+Réponse dans `docs/REPONSE_ORDRE37.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
