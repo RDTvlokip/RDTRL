@@ -5615,6 +5615,45 @@ sur-interpréter ». `lr` et `beta2` sont maintenant tous deux totalement
 inertes, proprement, et la conclusion « spécifique à `adam_eps` » tient
 plus nettement qu'avant la correction.
 
+*(Nuancé le tour suivant, §7.54 : « inerte » ne valait que sur la plage
+0,05-2,0 testée. En dehors, `lr` fait tout ce qu'`adam_eps` fait.)*
+
+### 7.54 Trente-septième critique : `eps=1e-6` était une ligne `lr` déguisée — les deux prédictions confirmées
+
+03/09/2026. Il démontre que sur les 729 coordonnées du récepteur, aucune ne
+dépasse `1e-9` — donc `adam_eps` n'y est pas un curseur à cinq réglages,
+c'est un **interrupteur entre deux optimiseurs** : à 1e-8 et 1e-6, le
+récepteur tourne en SGD à moment, au taux effectif `lr/eps` ; à 1e-14,
+Adam à signe sur toute coordonnée. Et puisque `(g+1e-6)/(g+1e-8)` est
+uniforme à 0,15 % près sur tout le récepteur (aucune rotation possible,
+juste une remise à l'échelle), `eps=1e-6` du tour précédent **était en
+réalité une ligne `lr` déguisée** — `lr/100`, pas un cinquième point sur
+l'axe `adam_eps`.
+
+**Prédiction testée dans les deux sens, confirmée exactement :**
+
+```
+adam_eps=1e-8 (defaut), lr=5e-4 (÷100) :
+  eps=18 retour | eps=20,23,24 GELE SANS VALEUR   (20 gele aussi — plus fort que predit)
+
+adam_eps=1e-6, lr=5,0 (×100, reciproque) :
+  eps=18,20,23 -> TRANSFERT REEL, partout
+```
+
+Baisser `lr` de 100× au défaut gèle le système **sans aucun `adam_eps` dans
+l'histoire**. Monter `lr` de 100× à `eps=1e-6` rend le transfert
+**partout**. Confirme aussi son arithmétique (`sqrt(v)` du référent 18,
+gain 0,9814 à `1e-8` contre 0,3460 à `1e-6`) — la bande localisée existe,
+mais l'effet dominant reste porté par la remise à l'échelle uniforme du
+récepteur, pas par cette seule ligne.
+
+**Bord gauche du plateau, testé plutôt que laissé en suspens :**
+`adam_eps=1e-13` donne déjà le même motif que 1e-12 et 1e-16 (18 retour,
+20/23 transfert) — le plateau commence avant 1e-13, cohérent avec son
+estimation `~3e-14`, non isolé plus finement.
+
+Réponse dans `docs/REPONSE_ORDRE38.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
