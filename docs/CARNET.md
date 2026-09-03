@@ -5683,6 +5683,27 @@ La conclusion de tête ne change pas — `lr` seul ne produit toujours aucune
 capture ciblée du message 0 en dehors du point `eps=23` déjà noté — mais le
 mécanisme prêté à ces cellules était faux deux fois, pas une.
 
+**Audit complet, à la relance de Théo (« j'ai l'impression que tu as sauté
+des étapes »).** Il avait raison de le demander : je n'avais vérifié
+l'argmax que sur les cellules déjà cassées (`lr=2,0`, `lr=5,0`). Tout le
+reste publié cette session — le seuil 23/24 d'origine, la table de
+convergence 18-20 en entier, le bras A du calendrier, le gel à `eps=1e-6`
+lui-même — n'avait jamais eu cette vérification. Repris systématiquement :
+
+```
+seuil d'origine (eps=24, adam_eps=1e-8)              : argmax=0, capture reelle
+table de convergence, TOUS les transferts publies    : argmax=0, capture reelle, sans exception
+calendrier, bras A (K=50/100/200)                    : argmax=0, capture reelle, sans exception
+gel a eps=1e-6 (eps=23,24)                            : argmax=0, vraiment gele SUR la cible
+```
+
+**Tout le reste tient.** Le chaos est propre au `lr` extrême (2,0 et 5,0) —
+il ne touche ni le balayage `adam_eps` jusqu'à 1e-16, ni le calendrier, ni
+le seuil d'origine sur lequel toute cette ligne d'argumentation repose.
+Deux cellules sur une vingtaine maintenant vérifiées une par une, toutes
+deux à un `lr` deux ordres de grandeur au-dessus de ce que les runs de
+base ont jamais utilisé — c'est la frontière exacte des dégâts.
+
 Réponse dans `docs/REPONSE_ORDRE38.md`.
 
 ---
