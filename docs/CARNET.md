@@ -5596,6 +5596,25 @@ de bouger, appliquée un cran plus haut sans que je l'aie vu venir.
 
 Réponse dans `docs/REPONSE_ORDRE37.md`.
 
+**Complément, à la relance de Théo (« tu n'as pas cherché plus loin ? »).**
+Je n'avais vérifié le bug que sur les deux nombres sur le point d'être
+publiés — pas sur les `BASCULE` déjà publiés des trois tours précédents.
+Réaudité systématiquement :
+
+- table de convergence (1e-8 à 1e-16) : tous les `BASCULE` déjà publiés
+  confirmés **vrais transferts**, inchangés.
+- bras A du calendrier (K=50, 100, 200) : confirmés **vrais transferts**,
+  inchangés.
+- balayage `lr` (0,05 à 2,0) : **`lr=2,0` était aussi mal classé** —
+  `R[0,18]` reste à 1,000000, le même artefact gelé.
+
+**Une deuxième victime, qui renforce plutôt qu'affaiblit.** Corrigé,
+`lr` produit **zéro vrai transfert sur toute sa plage testée** — plus
+d'exception non monotone à excuser comme « une graine, à ne pas
+sur-interpréter ». `lr` et `beta2` sont maintenant tous deux totalement
+inertes, proprement, et la conclusion « spécifique à `adam_eps` » tient
+plus nettement qu'avant la correction.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
