@@ -5618,7 +5618,7 @@ plus nettement qu'avant la correction.
 *(Nuancé le tour suivant, §7.54 : « inerte » ne valait que sur la plage
 0,05-2,0 testée. En dehors, `lr` fait tout ce qu'`adam_eps` fait.)*
 
-### 7.54 Trente-septième critique : `eps=1e-6` était une ligne `lr` déguisée — les deux prédictions confirmées
+### 7.54 Trente-septième critique : `eps=1e-6` était une ligne `lr` déguisée — une prédiction confirmée, l'autre corrigée après relance
 
 03/09/2026. Il démontre que sur les 729 coordonnées du récepteur, aucune ne
 dépasse `1e-9` — donc `adam_eps` n'y est pas un curseur à cinq réglages,
@@ -5630,22 +5630,30 @@ juste une remise à l'échelle), `eps=1e-6` du tour précédent **était en
 réalité une ligne `lr` déguisée** — `lr/100`, pas un cinquième point sur
 l'axe `adam_eps`.
 
-**Prédiction testée dans les deux sens, confirmée exactement :**
+**Prédiction 1 (gel à `lr=5e-4`) confirmée sans réserve**, et plus fort que
+prédit (eps=20 gèle aussi).
+
+**Prédiction 2 (réciproque à `lr=5,0`), rapportée trop vite comme confirmée
+« aux trois eps », puis corrigée après une relance de Théo (« cherche plus
+loin »).** Vérifié où pointe réellement l'argmax du référent 0, pas
+seulement `S[0].max()` et `R[0,18]` :
 
 ```
-adam_eps=1e-8 (defaut), lr=5e-4 (÷100) :
-  eps=18 retour | eps=20,23,24 GELE SANS VALEUR   (20 gele aussi — plus fort que predit)
-
-adam_eps=1e-6, lr=5,0 (×100, reciproque) :
-  eps=18,20,23 -> TRANSFERT REEL, partout
+eps=18 : argmax = message 9   (pas 0 — chaos, pas capture)
+eps=20 : argmax = message 22  (pas 0 — chaos, nouvelle collision ailleurs)
+eps=23 : argmax = message 0   (capture reelle — la seule des trois)
 ```
 
-Baisser `lr` de 100× au défaut gèle le système **sans aucun `adam_eps` dans
-l'histoire**. Monter `lr` de 100× à `eps=1e-6` rend le transfert
-**partout**. Confirme aussi son arithmétique (`sqrt(v)` du référent 18,
-gain 0,9814 à `1e-8` contre 0,3460 à `1e-6`) — la bande localisée existe,
-mais l'effet dominant reste porté par la remise à l'échelle uniforme du
-récepteur, pas par cette seule ligne.
+**Deux transferts sur trois étaient le système jeté dans une configuration
+sans rapport par un `lr=5,0` absurde, pas le mécanisme prédit.** Le logit du
+référent 0 ne revient pas doucement vers l'uniforme sous ce `lr` — il
+s'effondre de +22 à −53 en quelques pas, traverse zéro et atterrit ailleurs.
+Même faille que le bug d'il y a deux tours, un cran plus loin : vérifier
+`S[0].max()` et `R[0,18]` ne dit jamais QUEL message. Deux multiplicateurs
+plus doux testés (×2, ×10) pour obtenir une confirmation propre — aucun n'y
+arrive : ×2 reproduit juste le comportement par défaut (pas de preuve
+supplémentaire), ×10 ne transfère nulle part. La preuve du sens « transfert »
+tient sur un seul point propre, pas trois.
 
 **Bord gauche du plateau, testé plutôt que laissé en suspens :**
 `adam_eps=1e-13` donne déjà le même motif que 1e-12 et 1e-16 (18 retour,
