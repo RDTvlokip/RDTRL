@@ -5704,6 +5704,20 @@ Deux cellules sur une vingtaine maintenant vérifiées une par une, toutes
 deux à un `lr` deux ordres de grandeur au-dessus de ce que les runs de
 base ont jamais utilisé — c'est la frontière exacte des dégâts.
 
+**Encore un cran plus loin, sur ma propre insistance à rester méfiant.**
+Je ne vérifiais que où atterrit le référent 0. Restait à voir si le
+référent 18 (celui censé céder) atterrit vraiment proprement sur son autre
+message, et si le compte de collisions total s'améliore vraiment sans
+créer un nouveau problème ailleurs :
+
+```
+adam_eps=1e-12, eps=23 : referent 18 -> message 8 (S=1,0000000000, propre)   26/27, 1 collision restante ailleurs
+adam_eps=1e-8,  eps=24 : referent 18 -> message 8 (S=0,9999999997, propre)   26/27, 1 collision restante ailleurs
+```
+
+Les deux tiennent — atterrissage propre, une collision résolue, aucune
+créée en échange.
+
 Réponse dans `docs/REPONSE_ORDRE38.md`.
 
 ---
