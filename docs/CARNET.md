@@ -5660,6 +5660,29 @@ tient sur un seul point propre, pas trois.
 20/23 transfert) — le plateau commence avant 1e-13, cohérent avec son
 estimation `~3e-14`, non isolé plus finement.
 
+**Poursuivi encore une fois (« continue encore »).** Hypothèse formée
+explicitement : si `lr=5,0` jette le référent 0 hors cible plutôt que de le
+geler, peut-être que le `lr=2,0` du tour précédent — que j'avais déjà
+requalifié une fois de « BASCULE » à « GELÉ SANS VALEUR » — porte la même
+faille, puisque cette requalification ne vérifiait pas non plus l'argmax.
+**Hypothèse testée, confirmée :**
+
+```
+lr=2,0, eps=18 : argmax = message 6   (pas 0 — pas gele, chaos)
+lr=2,0, eps=20 : argmax = message 20  (pas 0 — pas gele, chaos)
+```
+
+**Pas gelé non plus — même chaos que `lr=5,0`, ailleurs.** Sur les cinq
+cellules à grand `lr` désormais vérifiées par argmax, quatre sont du chaos
+et aucune n'est un vrai gel sur la cible perturbée. Le vocabulaire de
+classification lui-même avait un trou : « gelé sans valeur » recouvrait en
+fait deux choses différentes — une ligne qui reste sur place sans gagner de
+récompense (jamais observée en pratique à grand `lr`), et une ligne
+projetée ailleurs par un pas trop grand (ce qui arrive systématiquement).
+La conclusion de tête ne change pas — `lr` seul ne produit toujours aucune
+capture ciblée du message 0 en dehors du point `eps=23` déjà noté — mais le
+mécanisme prêté à ces cellules était faux deux fois, pas une.
+
 Réponse dans `docs/REPONSE_ORDRE38.md`.
 
 ---
