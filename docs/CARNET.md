@@ -5811,6 +5811,28 @@ agent — c'est le référent 0 qui reçoit une poussée surdimensionnée sous
 toujours sur le recensement du récepteur et sur le sens gel ; le sens
 transfert n'a jamais eu de rapport avec le récepteur du tout.
 
+**Dernière question posée à moi-même : le récepteur a-t-il seulement
+besoin d'APPRENDRE, ou n'est-il qu'un lecteur passif ?** Récepteur
+totalement gelé (jamais mis à jour), émetteur seul aux réglages
+d'origine :
+
+```
+eps=18 a 24 : retour
+eps=26      : S[0].max()=1,0000, argmax=0 — ressemblait a un transfert
+```
+
+**Vérifié `R[0,0]` avant de le croire — `R[0,0] = 4,4e-10`.** Pas un
+transfert : le même engagement gelé et gaspillé que le test du référent 1,
+six tours plus tôt. Le référent 0 s'engage pleinement sur le message 0 par
+pur emballement auto-renforcé sous Adam, mais le récepteur gelé continue
+d'attribuer tout le crédit au référent 18 comme toujours — récompense
+nulle. Failli me tromper une troisième fois de la même façon, rattrapé
+avant publication. Réponse à ma propre question, à l'inverse de ce que le
+premier passage suggérait : l'apprentissage du récepteur n'est pas
+accessoire à un vrai transfert, il en est la condition — chaque capture
+réelle trouvée dans toute cette enquête impliquait le récepteur lui-même
+déplaçant son crédit.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
