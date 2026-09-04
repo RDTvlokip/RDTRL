@@ -5833,6 +5833,49 @@ accessoire à un vrai transfert, il en est la condition — chaque capture
 réelle trouvée dans toute cette enquête impliquait le récepteur lui-même
 déplaçant son crédit.
 
+### 7.56 Trente-neuvième critique : le « trois sur trois » retombe à un sur un — et sa prédiction sur l'emprise du titulaire tient
+
+04/09/2026. Il pose la question qui aurait dû être la première : les murs 2
+et 3 étaient-ils vraiment scorés sur `R[message, perdant]`, ou seulement sur
+`S.max()` et l'argmax — le même bug corrigé deux fois ce tour-ci ?
+
+**Vérifié : scorés sur S/argmax. Et faux.**
+
+```
+mur 2, R[10,4]  a eps=25,26,30,35,40,50 : fige a ~6,7e-12, ne franchit jamais 0,5
+mur 3, R[10,20] a eps=25,26,30,35,40,50 : fige a ~1,5e-11, meme motif
+```
+
+**Chaque « capture » rapportée pour les murs 2 et 3 était le même
+engagement gelé et gaspillé que le test du récepteur figé — jamais vérifié
+ici.** Le « trois sur trois » retombe à un sur un : seul le mur 1 a une
+vraie capture confirmée dans tout cet échange.
+
+**Sa prédiction sur l'emprise du titulaire — confirmée, et elle explique
+exactement ce qui vient d'arriver.** Avant toute perturbation :
+
+```
+mur 1, message 0  : titulaire R=0,9999999961 (8,41 decades)
+mur 2, message 10 : titulaire R=0,9999999995 (9,31 decades)
+mur 3, message 10 : titulaire R=0,9999999995 (9,33 decades)
+```
+
+Les titulaires du message 10 tiennent ~1 décade de plus que celui du
+message 0 — exactement ce qui prédit que les murs 2 et 3 aient besoin de
+bien plus que la poussée qui suffit au mur 1. Testé le même levier qui
+avait débloqué le mur 1 (`adam_eps` plus petit à eps=26) : **ça empire**,
+`R[10,4]` et `R[10,20]` décroissent de façon monotone (1,34e-13 → 3,26e-15
+→ 1,77e-16). Sa prédiction est la première de tout cet échange à
+**anticiper** un résultat avant le lancement plutôt que d'en expliquer un
+après coup.
+
+**Les deux cellules qui portent vraiment la conclusion du gel, confirmées
+sur la vraie récompense :** eps=24 et eps=26, non gelé = vraie capture
+(`R[0,0]=1,0000`), gelé = engagement gaspillé. Le seuil (23,24] confirmé
+aussi par eps=25 : vraie capture.
+
+Réponse dans `docs/REPONSE_ORDRE40.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
