@@ -5792,6 +5792,25 @@ générique d'indécision maximale, pas un signe distinctif. Retiré.
 
 Réponse dans `docs/REPONSE_ORDRE39.md`.
 
+**Question posée à moi-même et tranchée : le transfert réciproque venait-il
+du récepteur ou de l'émetteur ?** Deux optimiseurs Adam séparés au lieu
+d'un seul, pour donner les réglages réciproques (`eps=1e-6, lr=5,0`) à un
+seul agent à la fois, l'autre restant aux réglages d'origine.
+
+```
+recepteur seul aux reglages reciproques : eps=18,20,23 -> retour, TOUJOURS
+emetteur seul aux reglages reciproques  : eps=18,20 chaos, eps=23 -> TRANSFERT
+```
+
+**Tranché : c'est l'émetteur, pas le récepteur.** Le récepteur seul ne
+produit jamais le transfert, à aucune des trois perturbations. L'émetteur
+seul le produit, exactement au même seuil que le test combiné. La
+« confirmation réciproque » de deux tours plus tôt créditait le mauvais
+agent — c'est le référent 0 qui reçoit une poussée surdimensionnée sous
+`lr=5,0`, pas une propriété du récepteur. L'équivalence `lr`/`eps` tient
+toujours sur le recensement du récepteur et sur le sens gel ; le sens
+transfert n'a jamais eu de rapport avec le récepteur du tout.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
