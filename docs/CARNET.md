@@ -5754,6 +5754,44 @@ tout ce qui précède ce paragraphe décrit une ligne, pas un mécanisme.
 
 Réponse dans `docs/REPONSE_ORDRE38.md`.
 
+### 7.55 Trente-huitième critique : la « non-généralisation » était fausse — je testais la mauvaise fenêtre
+
+04/09/2026. Il démonte la démolition du tour précédent avec précision : mon
+mur 2 ne testait `eps_perturb` que de 15 à 23, jamais 24 — le seul point où
+le mur 1 transfère au réglage par défaut. Mon mur 3 ne testait que
+`eps_perturb=20`, un point où le mur 1 lui-même n'a jamais transféré à
+aucun `adam_eps`. **Un négatif dont la fenêtre exclut le seul point positif
+connu n'est pas un négatif.**
+
+**Vérifié, et il avait raison sur toute la ligne.**
+
+- Mur 1 sur la grille exacte du mur 2 (`eps_perturb` 15-23) : revient
+  presque partout aussi, sauf sous `adam_eps` ≤ 1e-10 — même motif que les
+  murs 2 et 3.
+- `eps_perturb=24-26` sur les murs 2 et 3, jamais testé avant : **les deux
+  transfèrent**, à `eps=26` au lieu de 24. Trois murs sur trois ont
+  maintenant un vrai seuil de capture — la variation seuil-à-seuil (23-24
+  contre 25-26) est une variation de graine ordinaire, pas une absence de
+  mécanisme.
+
+**Je retire la conclusion d'idiosyncrasie du tour précédent.**
+
+**Sa seconde critique, tout aussi grave, tient aussi.** Un seul optimiseur
+couvre émetteur ET récepteur (`parametres(e,r)` concatène les deux) — donc
+le récepteur ET la ligne du référent 18 voient le même `adam_eps`. Sa table
+de ratios recalculée de mon côté, exacte au chiffre près : 1,00000 au
+minimum du récepteur, **35,25× à `sqrt(v)=5,29e-7`** (la ligne du référent
+18). Le bras B (`eps=1e-6, lr=5,0`) n'est fidèle QUE sur le bloc récepteur
+— déjà garanti par le recensement — et jusqu'à 100× plus chaud ailleurs.
+**Ma « confirmation réciproque » d'il y a deux tours pourrait donc venir de
+l'émetteur suramplifié, pas de l'équivalence du récepteur.** Rouvert,
+non tranché : recensement côté émetteur pas encore fait.
+
+**Sur l'idiosyncrasie :** `0,037037 = 1/27` exactement — c'est l'état
+générique d'indécision maximale, pas un signe distinctif. Retiré.
+
+Réponse dans `docs/REPONSE_ORDRE39.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
