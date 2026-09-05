@@ -5876,6 +5876,44 @@ aussi par eps=25 : vraie capture.
 
 Réponse dans `docs/REPONSE_ORDRE40.md`.
 
+### 7.57 Quarantième critique : la calibration propre prédit 26-27, l'indépendant dit zéro — le grip compte mais ne suffit pas
+
+05/09/2026. Il propose l'expérience qui règle la pente : au lieu de pousser
+les murs 2/3 vers un seuil peut-être inexistant, faire varier le grip sur
+UN SEUL défenseur (référent 18, message 0) en le lisant à différents
+checkpoints d'entraînement, avant convergence complète.
+
+**Fait. Quatre points, un seul défenseur, aucune confusion de mur :**
+
+```
+checkpoint  grip   seuil
+ 10 000     5,70   (14,17]
+ 20 000     7,43   (20,22]
+ 30 000     8,18   (22,24]
+ 40 000     8,41   (23,24]  (deja etabli)
+```
+
+Les deux formes (additive, multiplicative) s'ajustent aussi bien l'une que
+l'autre sur cette plage, et **convergent vers la même extrapolation** pour
+le grip des murs 2/3 (9,31-9,33) : **26,4 et 27,5 respectivement.**
+
+**Et cette prédiction, vérifiée contre les données déjà en main, échoue.**
+Les murs 2 et 3 ne capturent JAMAIS jusqu'à eps=50 (§7.56). Le grip compte
+clairement — l'ajustement à un seul défenseur est propre, les résidus
+petits — mais il ne suffit pas seul en changeant de défenseur. Quelque
+chose distingue le référent 18 des référents 3/14 que le grip seul ne
+capture pas. La masse du dauphin, déjà écartée par lui, ne revient pas
+(les murs 2/3 diffèrent de 2,3× dessus et se comportent identiquement).
+
+**Sa dernière question, tranchée dans l'autre sens que ce qu'il
+soupçonnait :** grip du récepteur GELÉ du mur 1 à eps=26, précision
+complète : **8,4107 — exactement la valeur non gelée de base, pas
+augmentée.** Geler fixe le grip à sa valeur de checkpoint, il ne l'élève
+pas. Le résultat de gel et la loi de grip sont deux découvertes
+indépendantes, pas la même mesurée par deux leviers.
+
+Réponse dans `docs/REPONSE_ORDRE41.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
