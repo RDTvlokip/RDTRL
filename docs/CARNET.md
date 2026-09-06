@@ -5914,6 +5914,51 @@ indépendantes, pas la même mesurée par deux leviers.
 
 Réponse dans `docs/REPONSE_ORDRE41.md`.
 
+### 7.58 Quarante-et-unième critique : le grip ne se superpose pas entre défenseurs — la loi meurt proprement
+
+06/09/2026. Il refait le calcul de faisabilité sur les vrais intervalles
+(pas les milieux) et montre qu'aucune courbe cohérente avec mes quatre
+points ne prédit un seuil au-delà de 50 pour les murs 2/3 — mon extrapolation
+tenait. Mais il montre aussi que grip et log(pas d'entraînement) sont
+indiscernables à ma résolution (RSS 0,10 contre 1,79, sous mes propres
+demi-largeurs de crénaux) : la calibration à un seul défenseur ne prouve
+pas encore que l'axe est le grip plutôt que l'horloge. Propose le test qui
+tranche : la même échelle sur un second défenseur, en comparant le
+recouvrement grip-contre-seuil et horloge-contre-seuil.
+
+**Deux points de plus sur le référent 18 d'abord (80k, 160k pas) :**
+grip=8,7481 puis 8,9763. Réajusté avec les 9 points : les deux formes
+convergent maintenant vers une **asymptote sous 9,31** (9,204 et 8,839) —
+le référent 18 ne peut jamais atteindre le grip des murs 2/3, quelle que
+soit la durée.
+
+**L'échelle complète sur le référent 3 (mur 2), même protocole :**
+
+```
+checkpoint  grip     seuil
+ 10 000     6,1115   > 26 (ne capture jamais)
+ 20 000     8,0450   > 26
+ 30 000     8,9951   > 26
+ 40 000     9,3088   > 26
+```
+
+**Les courbes ne se superposent pas, et pas d'un peu.** À grip=6,11 —
+proche du plus bas point du référent 18 (5,70, seuil 14-17) — le référent 3
+ne capture à AUCUN eps jusqu'à 26, dix unités au-delà d'un point de grip
+comparable chez le référent 18. **Le grip décrivait la trajectoire propre
+du référent 18, pas un mécanisme portable entre défenseurs.**
+
+**Hypothèse testée immédiatement plutôt que laissée en suggestion : l'écart
+de LOGIT brut (pas la probabilité) entre titulaire et dauphin.** Fausse
+aussi, et plus nettement que le grip : les écarts de logit sont proches
+entre les deux défenseurs aux mêmes checkpoints (13,7 contre 14,6 à 10k ;
+21,0 contre 22,9 à 40k) alors que les seuils divergent totalement. Ni la
+probabilité ni le logit brut du titulaire seul n'expliquent l'écart —
+peut-être le logit de départ du challenger, ou une interaction entre les
+deux lignes, non testé.
+
+Réponse dans `docs/REPONSE_ORDRE42.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
