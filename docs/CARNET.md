@@ -5959,6 +5959,43 @@ deux lignes, non testé.
 
 Réponse dans `docs/REPONSE_ORDRE42.md`.
 
+### 7.59 Quarante-deuxième critique : l'écart de logit n'était jamais un second candidat — c'est le grip fois 2,45
+
+07/09/2026. Il montre que gap/grip reste dans 2,39-2,49 sur les deux
+défenseurs et les quatre checkpoints — le logit n'était pas une variable
+différente, c'est le grip multiplié par une constante quasi fixe le long
+d'une trajectoire d'entraînement. Rejeter l'un rejette l'autre par
+construction. **Vérifié, confirmé.**
+
+Il refait aussi le calcul de faisabilité sans milieu : `thr = k·grip` seul
+(sans terme additif) satisfait les quatre crénaux du référent 18,
+`k ∈ (2,7348 ; 2,8537]`. Mais le référent 3 n'a encore aucun `k` ajusté —
+ses quatre lignes sont censurées au même plafond (26), ce qui équivaut à
+une seule observation répétée, pas quatre. Demande de pousser le référent
+3 à 10k (son seuil le plus bas) au-delà de 26 jusqu'à capture réelle.
+
+**Fait. Le récepteur s'y gèle aussi (même valeur de 30 à 60 sous
+`adam_eps` par défaut) — réduit `adam_eps`, comme pour le mur 1 :**
+
+```
+eps=30, adam_eps=1e-10/1e-12 : R[10,4]=0,500 — exactement au seuil
+```
+
+**k_3 = 30 / 6,1115 = 4,907.** Contre k_18 ≈ 2,79. **Pas proche, et pas
+explicable par la variation de gap/grip** — même en comptant les 6 % de
+spread trouvés (voir ci-dessous), c'est un ordre de grandeur trop petit
+pour expliquer un écart de k de 2,79 à 4,91.
+
+**Sa dernière question — un défenseur sort-il de 2,39-2,49 ?** Vérifié sur
+deux de plus : référent 14 (mur 3) = 2,5367, référent 1 (gagnant solo du
+tour 33) = 2,5119. **Les deux sortent de la fourchette** — grip et écart de
+logit ne sont pas parfaitement la même variable, il y a un vrai spread
+(2,39-2,54, ~6 %). Mais ce spread reste bien trop petit pour porter la
+différence k_18/k_3. Le troisième facteur doit venir d'ailleurs — du côté
+du challenger, comme il le pointait déjà avant ce tour.
+
+Réponse dans `docs/REPONSE_ORDRE43.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
