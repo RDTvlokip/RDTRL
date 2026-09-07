@@ -5996,6 +5996,75 @@ du challenger, comme il le pointait déjà avant ce tour.
 
 Réponse dans `docs/REPONSE_ORDRE43.md`.
 
+### 7.60 Quarante-troisième critique : le plateau à 0,5 n'était pas une capture — c'était une vraie égalité, k_3 est invalide
+
+07/09/2026. Deux vérifications demandées, plus une trouvée en creusant
+plus loin sans qu'on me le redemande (consigne du `CLAUDE.md`).
+
+**Le référent 18 ne gèle jamais, nulle part.** Poussé à checkpoint 40k,
+`adam_eps` par défaut, jusqu'à eps=100 :
+
+```
+eps = 24, 26, 30, 40, 60, 100 : S[0].max()=1,0000, R[0,0]=1,0000 — capture
+propre à chaque fois, aucun plateau gelé.
+```
+
+**Le levier de référent 3 (`adam_eps` réduit) ne bouge pas k_18.** Testé
+sur le même levier que référent 3 (`adam_eps=1e-10`) :
+
+```
+checkpoint 40k : eps=18,20 retour, eps=23 capture — même créneau qu'au
+  adam_eps par défaut.
+checkpoint 10k : eps=10,13,14 retour, eps=15 capture — k=15/5,697=2,633,
+  cohérent avec la fourchette 2,79.
+```
+
+**Le levier ne fait que dégeler des cellules gelées** ; il ne redéfinit
+pas globalement le seuil. Référent 18 n'a jamais été gelé, donc son seuil
+ne bouge pas quand on baisse `adam_eps`.
+
+**Et voilà où ça devient grave : le "k_3 = 4,907" du tour précédent ne
+mesurait pas une capture du tout.** En imprimant `R[10,4]` et `R[10,3]` en
+pleine précision plutôt qu'avec le seuil `>0,5` :
+
+```
+eps=24 : R[10,4]=0,500000583504767   R[10,3]=0,499999416424236
+eps=26 : R[10,4]=0,499999999984430   R[10,3]=0,499999999944572
+eps=28 : R[10,4]=0,499999055744959   R[10,3]=0,500000944184045
+eps=29 : R[10,4]=0,500000003840574   R[10,3]=0,499999996088429
+
+et les deux émetteurs : S[4].max()≈0,9999999996  S[3,10]≈0,9999999997
+```
+
+**Les référents 3 et 4 sont TOUS LES DEUX pleinement engagés sur le
+message 10 en même temps**, et le récepteur partage le crédit presque
+exactement moitié-moitié. Ce n'est pas l'engagement gaspillé du mur (un
+seul côté gèle, l'autre garde tout) — c'est la vraie égalité déjà
+caractérisée bien plus tôt (§7.47-48, paire 23/25), atteinte cette fois
+par une route complètement différente. Mon critère `R>0,5` classait ça
+« capture » parce que la valeur tombait de quelques millionièmes au-dessus
+de 0,5 à deux `eps` sur quatre, et en dessous aux deux autres — ce qui
+explique aussi pourquoi ça semblait non monotone : ça ne l'a jamais été
+au sens où je vérifiais, ça oscille autour d'une égalité exacte, sans
+rapport avec un franchissement de seuil.
+
+**Conséquence : il n'y a pas de k_3 à comparer à k_18.** Ce que 26/09
+appelait « k_3 = 4,907 » mesurait le début d'une égalité, pas une capture
+propre — un événement d'une autre nature, que mon classeur notait pareil.
+Aucun re-calibrage ne le rend comparable à 2,79.
+
+**Ce que ça répond à la vraie question sous-jacente du fil.** Le
+« troisième facteur » cherché depuis plusieurs tours n'est peut-être pas
+un scalaire de plus du côté du titulaire ou du challenger — c'est une
+branche qualitative : la collision se résout-elle en vainqueur/perdant,
+ou en égalité ? Les collisions du référent 18, testées partout, ne se
+résolvent jamais qu'en vainqueur/perdant. Celle du référent 3, poussée
+de cette façon, se résout en égalité. Reste ouvert : qu'est-ce qui décide
+de la branche pour une paire donnée — pas encore de réponse sur un seul
+exemple.
+
+Réponse dans `docs/REPONSE_ORDRE44.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
