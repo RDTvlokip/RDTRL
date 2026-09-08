@@ -6123,6 +6123,44 @@ non vérifié.
 
 Réponse dans `docs/REPONSE_ORDRE45.md`.
 
+### 7.60ter Quarante-cinquième critique : ma comparaison fuite/résidu testait le même nombre contre lui-même
+
+08/09/2026. Il repère que `1-R[0,0]=2,841160e-07` et `1-r[0,0]=2,841160e-07`
+concordent à sept chiffres significatifs dans mon tableau précédent —
+parce qu'à eps=100 le référent 0 est déjà saturé, donc `R` et `r` ne
+peuvent plus se distinguer. Ma phrase « quatre ordres au-dessus du
+résidu » ne comparait rien d'indépendant. Il prédit ce que devraient
+donner `1-r[0,0]` à eps=24 et 26 si `r` est un objet réel : 2,847969e-07
+et 2,841825e-07 respectivement, contre autre chose sinon.
+
+**Vérifié, ses valeurs prédites tombent exactement :**
+
+```
+eps=24 : 1-R=2,847969e-07  1-r=2,841324e-07  1-s=6,644512e-10
+eps=26 : 1-R=2,841825e-07  1-r=2,840549e-07  1-s=1,275220e-10
+eps=30 : 1-R=2,841186e-07  1-r=2,841161e-07  1-s=2,431388e-12
+eps≥40 : identiques, 1-s=0 (saturation complete)
+```
+
+**`r` est un objet distinct, et la mécanique est triviale : `R=s·r`
+donc `1-R≈(1-r)+(1-s)` au premier ordre.** Vérifié : `2,841324e-07 +
+6,644512e-10 = 2,847969e-07`, exact à eps=24. `R` et `r` ne coïncident
+qu'une fois que la fuite du référent 0 (`1-s`) sous-passe la précision
+qui les sépare — pas parce que ce sont le même tenseur, mais parce que
+l'algèbre force leur accord dès que le sous-cause s'annule. Sur les
+lignes où `s` a encore une fuite mesurable (eps=24, 26), la comparaison
+« résidu bien plus petit que la fuite du récepteur » tient toujours,
+juste sur la bonne ligne cette fois.
+
+**Reste ouvert : une égalité et une capture complète sont les deux bouts
+où ce test est le moins parlant** — une égalité n'a pas d'émetteur saturé
+qui force `R` et `r` ensemble, une capture complète les y force
+mécaniquement au bout d'un moment. Un transfert partiel, où l'émetteur a
+encore une fuite mesurable, est le régime qui trancherait vraiment. Pas
+encore de paire de ce type sous la main.
+
+Réponse dans `docs/REPONSE_ORDRE46.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
