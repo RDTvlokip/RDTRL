@@ -30,3 +30,26 @@ elle était consultée, puis contournée en pratique.
 
 Détail complet et exemples concrets dans la mémoire
 `interroger-ses-propres-hypotheses` (chargée automatiquement par session).
+
+# Avant de déclarer une reconstruction perdue : chercher dans la conversation elle-même
+
+Le 08/09/2026, la recette exacte de « idx5 » (graine `default_rng(999)`,
+5 paires sautées) a été déclarée irrécupérable après plusieurs tentatives
+ratées avec de mauvaises graines (5, 31415) — alors qu'elle existait,
+mot pour mot, dans le transcript JSONL de la session en cours
+(`C:\Users\Théo CHARLET\.claude\projects\<nom-projet>\<session-id>.jsonl`).
+Un `grep` dessus (sur le nom de variable, l'indice de référent, ou tout
+motif de code cité verbatim dans un tool call passé) l'a retrouvée en
+une commande.
+
+**Avant de conclure « ce calcul/cette recette est perdu(e), il faut
+recommencer à l'aveugle » : grep le transcript JSONL de la session
+courante et, si besoin, ceux des sessions précédentes du même projet
+dans ce dossier.** Un script jetable lancé une fois en ligne de commande
+n'est pas vraiment jetable tant que son transcript existe — seul un
+fichier jamais commité et une recherche qu'on n'a pas pensé à faire
+le rendaient introuvable.
+
+Et une fois retrouvée : la sauvegarder en fichier permanent dans le
+dépôt (comme `replay_idx5.py`), pour ne plus jamais revivre cette
+chasse.

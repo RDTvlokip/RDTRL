@@ -6065,6 +6065,64 @@ exemple.
 
 Réponse dans `docs/REPONSE_ORDRE44.md`.
 
+### 7.60bis Quarante-quatrième critique : le résidu du récepteur reste figé sous une capture propre aussi — la « branche qualitative » ne survit pas
+
+08/09/2026. Il repère que dans mon tableau d'égalité, la masse qui fuit
+vers tout ce qui n'est ni le référent 3 ni le référent 4 est immobile à
+2e-15 près (7,0997e-11 partout) alors que le partage entre les deux
+bouge de 1,9e-6 — cinq ordres de grandeur d'écart sur les quatre mêmes
+runs. **eps ne perturbe pas la ligne, il fait tourner la masse À
+L'INTÉRIEUR de la paire et conserve tout le reste exactement.** Il
+propose le test décisif : imprimer le résidu du référent 18 en pleine
+précision, sous une capture propre. Si ça bouge, le résidu figé est une
+signature d'égalité. Si c'est figé aussi, sa théorie du scalaire meurt.
+
+**Perdu la reconstruction avant de pouvoir répondre — épisode à
+raconter tel quel.** Les étiquettes « référent 18 », « message 0 »
+n'étaient jamais les indices bruts du tenseur — de simples labels de
+présentation d'un run jamais sauvegardé en fichier. Deux mauvaises
+graines testées (`default_rng(5)`, puis `default_rng(31415)`, la
+graine du seul script sauvegardé sur disque) donnent de vrais murs qui
+capturent réellement — mais aucun ne correspond aux chiffres déjà
+publiés (`S[18,0]=0,499479`), et l'un des deux perdants reste gelé à
+zéro jusqu'à eps=100, très loin du seuil 23-24 annoncé. **Retrouvée en
+grepant le transcript JSONL de la session elle-même** (idée de Théo)
+sur `e.p[0][18` : la commande exacte y était mot pour mot, graine
+maîtresse `default_rng(999)`, cinq paires sautées. Vérifiée contre le
+carnet : `S[18,0]=0,499479`, `S[18,8]=0,500521`, référent 0 au plancher
+d'entropie — identique au dixième de pourcent près. Sauvegardée
+définitivement dans `replay_idx5.py`.
+
+**Le résultat, sur la vraie paire :**
+
+```
+eps= 24 : R[0,0]=0,999999715203  residu=4,648726e-12
+eps= 26 : R[0,0]=0,999999715818  residu=4,636735e-12
+eps= 30 : R[0,0]=0,999999715881  residu=4,640843e-12
+eps= 40 à 100 : identique, residu=4,635403e-12
+```
+
+**Figé aussi.** Spread d'environ 0,3 % relatif, contre une capture qui
+elle-même ne bouge presque plus sur la même plage. Aucune égalité ici —
+un vainqueur net, un perdant net — et le résidu se fige quand même.
+
+**Sa deuxième branche l'emporte : le résidu est structurel, pas une
+signature d'égalité.** Ma lecture « branche qualitative » du tour
+précédent (§7.60) ne tient pas — je lisais le résidu figé comme un
+marqueur distinctif de l'égalité, et il ne l'est manifestement pas
+puisqu'il se fige pareil sans égalité en vue.
+
+**Sa comparaison fuite-émetteur/résidu ne se transpose pas telle
+quelle.** Sous cette capture, `1 - S[0].max() = 0` (saturation complète,
+rien à mesurer) alors que `1 - r[0,0] = 2,84e-7`, quatre ordres
+au-dessus du résidu lui-même. Ce qui fige le résidu ici n'est donc pas
+simplement « la fuite des émetteurs déguisée en quantité du récepteur »
+comme sur sa paire à égalité — sauf si le mécanisme diffère entre un
+seul vainqueur plein et deux co-titulaires à égalité, plausible mais
+non vérifié.
+
+Réponse dans `docs/REPONSE_ORDRE45.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
