@@ -6161,6 +6161,48 @@ encore de paire de ce type sous la main.
 
 Réponse dans `docs/REPONSE_ORDRE46.md`.
 
+### 7.60quater Cherché plus loin sans qu'on me le redemande : le transitoire du transfert, pas seulement sa convergence
+
+08/09/2026, sur ma propre insistance (consigne `CLAUDE.md`). Le régime à
+transfert partiel que je disais « pas sous la main » à la fin du tour
+précédent était accessible directement : il suffisait d'échantillonner
+le nombre de pas post-perturbation au lieu de toujours attendre la
+convergence à 20 000.
+
+**Balayage à eps=24, pas de 6000 à 10000 :**
+
+```
+pas=6000-7500 : R[0,0]=0        residu≈0,499999...   1-r=1,0        1-s≈2-3e-9
+pas=8000      : R[0,0]=0,682857 residu=1,443847e-03  1-r=0,317      1-s=3,3e-9
+pas=8500      : R[0,0]=0,999922 residu=5,157076e-10  1-r=7,80e-05
+pas=9000-10000: convergence progressive vers residu~1,5e-10
+```
+
+**Le résidu n'est PAS figé pendant le transfert réel — il bouge sur
+neuf ordres de grandeur**, de 0,5 jusqu'à 1,5e-10. Le résidu figé à
+4,6e-12 rapporté au tour précédent n'était que la queue d'un effondrement
+déjà terminé, pas un signal sur le mécanisme.
+
+**Et le plus intéressant : de 6000 à 7500 pas, l'émetteur (référent 0)
+est déjà saturé (`1-s`≈2e-9) mais le récepteur ne l'a pas encore
+rattrapé — la masse du message se scinde presque exactement 50/50 entre
+référent 0 et référent 18, quatre points de suite.** Signature identique
+à l'égalité référents 3/4 du tour 7.60. Sauf qu'ici ce n'est qu'une
+étape transitoire : à 8000 pas c'est déjà rompu (68 % pour le référent
+0), à 8500 c'est fini.
+
+**Ça reformule toute la question du résidu.** Un instantané d'égalité et
+un instantané de mur capturé peuvent être LA MÊME trajectoire à deux
+instants différents, pas forcément deux types de point fixe distincts.
+Certaines scissions 50/50 sont des étapes transitoires (comme ici),
+d'autres sont de vrais points fixes protégés (référents 3/4, qui
+oscillent encore autour de 0,5 après de nombreux pas de plus, sans
+signe de résolution). Impossible de distinguer les deux sur un seul
+instantané — il a fallu échantillonner across pas pour voir la
+différence ici.
+
+Réponse dans `docs/REPONSE_ORDRE47.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
