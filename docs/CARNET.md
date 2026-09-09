@@ -6203,6 +6203,43 @@ différence ici.
 
 Réponse dans `docs/REPONSE_ORDRE47.md`.
 
+### 7.60quinquies Quarante-septième critique : r est R sans exception, et le discriminateur à un seul instantané tombe mort sur la vraie égalité
+
+09/09/2026. Il reconstruit `r[0,0]` à partir de ma propre colonne `1-r`
+et montre que ça reproduit `R[0,0]` chiffre pour chiffre sur les neuf
+lignes, y compris les quatre où `R[0,0]=0` exactement — aussi loin de la
+saturation que cette trajectoire aille jamais. **`r` est `R` sur toute
+la ligne, pas seulement après saturation.** Ma comparaison « quatre
+ordres au-dessus » n'a jamais reposé sur rien, même à eps=24.
+
+**Puis il pointe le vrai test : que fait `1-s` sur les référents 3 et
+4 (la vraie égalité) ?** Si proche de 1e-9 des deux côtés, le test
+d'asymétrie est mort et il faut l'axe temporel. Si proche de 0,5, une
+seule colonne suffit à distinguer étape transitoire et point fixe sur
+un instantané unique, pour toujours.
+
+**Reconstruit la config référents 3/4 (graine 77777, k=3, checkpoint
+10k, référent 4 poussé +30 sur le message 10) :**
+
+```
+adam_eps=1e-08 : R[10,4]=0,000000  1-s[4,10]=2,46e-12  1-s[3,10]=2,46e-10
+adam_eps=1e-10 : R[10,4]=0,500009  1-s[4,10]=2,99e-12  1-s[3,10]=3,34e-10
+adam_eps=1e-12 : R[10,4]=0,500001  1-s[4,10]=3,61e-10  1-s[3,10]=3,61e-10
+adam_eps=1e-14 : R[10,4]=0,500000  1-s[4,10]=3,61e-10  1-s[3,10]=3,61e-10
+```
+
+**Les deux émetteurs sont déjà pleinement saturés (`1-s` entre 1e-10 et
+1e-12), loin de 0,5.** Sa première branche, pas la seconde : le test
+d'asymétrie est mort ici. Ce qui établit vraiment référents 3/4 comme
+un point fixe (et non une étape transitoire anormalement lente) n'est
+pas dans cet instantané — c'est la vérification longitudinale des
+tours précédents (l'oscillation autour de 0,5 sur de nombreux pas
+supplémentaires, sans signe de résolution). L'axe temporel fait le
+travail que la colonne ne peut pas faire ici, exactement comme sa
+propre mise en garde le prévoyait.
+
+Réponse dans `docs/REPONSE_ORDRE48.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture

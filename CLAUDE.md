@@ -53,3 +53,12 @@ le rendaient introuvable.
 Et une fois retrouvée : la sauvegarder en fichier permanent dans le
 dépôt (comme `replay_idx5.py`), pour ne plus jamais revivre cette
 chasse.
+
+# Les scripts vont dans le dépôt, pas dans /tmp
+
+Demande explicite de Théo le 09/09/2026 : écrire les scripts de
+vérification directement dans `src/test3_communication/` (ou le dossier
+du test concerné), pas dans `/d/tmp`. Un script utile à une réponse
+mérite d'être retrouvable la prochaine fois sans repasser par une chasse
+dans le transcript — `/tmp` n'est bon que pour des sorties vraiment
+jetables (logs de run), jamais pour le code qui les produit.
