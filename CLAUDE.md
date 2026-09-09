@@ -54,6 +54,47 @@ Et une fois retrouvée : la sauvegarder en fichier permanent dans le
 dépôt (comme `replay_idx5.py`), pour ne plus jamais revivre cette
 chasse.
 
+# Ne jamais suivre le standard
+
+Théo, 09/09/2026, après m'avoir vu clore un tour avec « noté, pas
+expliqué » (le pic non-monotone de 1-s) et invoquer une vérification
+d'un tour précédent sans la refaire sur la reconstruction actuelle :
+« tu n'as pas cherché loin et je t'ai vu suivre le standard », puis
+« ne suis jamais le standard ».
+
+**Le réflexe visé : m'arrêter dès que la réponse a la FORME d'une
+réponse complète et prudente — « signalé sans expliquer », « déjà
+vérifié plus tôt donc je le réutilise », « deux chiffres significatifs,
+je ne construis pas de mécanisme dessus » — sans vérifier si cette
+prudence est justifiée ou si c'est juste la sortie la moins coûteuse.**
+Suivre « le standard », ici, c'est se contenter du geste qui ressemble
+à de la rigueur (une phrase d'avertissement, une clause de prudence)
+plutôt que de faire le calcul qui la remplacerait. Un « je ne sais pas »
+honnête après avoir cherché est acceptable ; un « je ne sais pas » qui
+n'a coûté qu'une phrase ne l'est pas.
+
+Concrètement, avant de clore un tour : si une vérification antérieure
+est invoquée mais que la reconstruction a changé depuis (nouvelle
+graine retrouvée, nouveau script), la REFAIRE sur la version actuelle
+plutôt que de supposer qu'elle se transpose. Si un signal semble trop
+petit pour mériter un mécanisme, tester s'il est reproductible (le
+rejouer, regarder un niveau de détail en dessous — logits bruts plutôt
+que softmax, par exemple) avant de le classer bruit.
+
+**Ajout du même jour : « le standard a des biais ».** Ça ne vise pas
+seulement le réflexe de m'arrêter tôt (ci-dessus) — ça vise aussi le
+contenu de ce que « suivre le standard » importe sans le dire : un
+seuil conventionnel (p<0,05, un cutoff `>0,5`, une marge d'erreur
+habituelle), une pratique courante en ML/stats, une façon de trancher
+qui vient d'ailleurs et qu'on adopte sans vérifier qu'elle s'applique
+ICI. Le seuil `R>0,5` qui a fait passer une égalité pour une capture
+(§7.60) en est un exemple concret : ce n'était pas de la paresse de
+raisonnement, c'était un critère standard (« majorité simple ») importé
+sans se demander s'il distinguait vraiment les deux phénomènes en jeu.
+Avant d'utiliser un seuil, une convention ou une pratique reçue : se
+demander explicitement ce qu'elle suppose et si cette hypothèse tient
+dans ce cas précis, pas seulement si le calcul est fait correctement.
+
 # Les scripts vont dans le dépôt, pas dans /tmp
 
 Demande explicite de Théo le 09/09/2026 : écrire les scripts de

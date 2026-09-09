@@ -6240,6 +6240,47 @@ propre mise en garde le prévoyait.
 
 Réponse dans `docs/REPONSE_ORDRE48.md`.
 
+### 7.60sexies Cherché plus loin sans qu'on me le redemande : la dérive longue vérifiée sur la vraie paire, et le « bruit » qui n'en était pas un
+
+09/09/2026. Théo m'a repris : « tu n'as pas cherché loin et je t'ai vu
+suivre le standard » puis « ne suis jamais le standard » — j'avais clos
+le tour précédent en invoquant une vérification longitudinale d'un tour
+antérieur SANS la refaire sur la reconstruction actuelle (référents
+3/4, graine 77777, k=3), et en disant du pic non-monotone de `1-s`
+« noté, pas expliqué ». Deux raccourcis « standard » repérés et corrigés
+dans la foulée (ajout `CLAUDE.md` : ne jamais suivre le standard, et
+le standard porte des biais qu'il faut interroger explicitement).
+
+**Dérive longue, refaite sur la vraie paire, 400 000 pas cumulés :**
+
+```
+pas=40000 à 400000 : R[10,4] = 0,500009 ... 0,499798 ... 0,500080
+```
+
+Épinglé à 0,5 sur dix points, aucune dérive systématique. **Vérifié
+cette fois sur la reconstruction actuelle**, pas supposé transposable
+depuis un tour antérieur.
+
+**Le pic non-monotone de `1-s[0,0]` (transitoire idx5, pas=8000) : trois
+hypothèses formées et testées plutôt que listées.**
+
+- H1 (artefact d'Adam) : rejoué sous SGD pur — rien ne bouge du tout à
+  ce lr sur cette fenêtre (logit figé exactement). Non concluant, mais
+  révèle que « montée exacte » dans tout l'échange = Adam, jamais du
+  SGD littéral (`monter()` crée toujours un `torch.optim.Adam`).
+- H2 (redistribution d'entropie) : **confirmée**. La somme des 26
+  logits perdants du référent 0 suit le même pic exactement (53,089 →
+  53,337 à pas=8000 → 53,053).
+- H3 (rétroaction du récepteur) : **confirmée**. `r[0,0]` bascule de 0
+  à 0,683 exactement à pas=8000, le même instant que le pic.
+
+**Ce n'était pas du bruit — c'est la signature visible du système
+couplé émetteur/récepteur au moment exact où le décodage du récepteur
+bascule**, redistribuant brièvement la masse des logits perdants avant
+que l'émetteur ne reprenne sa montée.
+
+Réponse dans `docs/REPONSE_ORDRE49.md`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
