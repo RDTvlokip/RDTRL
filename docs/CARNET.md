@@ -6272,6 +6272,27 @@ couplé émetteur/récepteur au moment exact où le décodage du récepteur
 bascule**, redistribuant brièvement la masse des logits perdants avant
 que l'émetteur ne reprenne sa montée.
 
+**Trois hypothèses de plus, formées et testées avant de clore.**
+
+- H4 (Adam est-il nécessaire au transfert, pas seulement au pic ?) :
+  rejoué la fenêtre idx5 sous SGD à lr=5,0 (100× celui d'Adam), jusqu'à
+  20 000 pas — `r[0,0]` reste exactement à 0 tout du long, `1-s[0,0]`
+  bouge à peine. **Adam n'est pas un raccourci de vitesse ici, c'est
+  structurellement nécessaire au transfert observé dans cette fenêtre.**
+- H6 (un rival précis ou une redistribution uniforme ?) : les cinq
+  meilleurs rivaux (messages 7, 5, 15, 18, 23) montent tous ensemble
+  d'environ +0,01 au pic (pas=8000) puis retombent ensemble.
+  **Redistribution uniforme, pas un concurrent qui gagne du terrain.**
+- H5 (pousser plus fort force-t-il une vraie capture sur référents
+  3/4 ?) : poussé à eps=60, 100, 200, 400 (contre 30 pour l'égalité),
+  40 000 pas chacun, `adam_eps=1e-10`. **Résultat identique bit pour
+  bit sur les quatre eps, à chaque point de contrôle** — l'émetteur
+  sature instantanément dès eps=60 (`1-s[4,10]=0`), et au-delà pousser
+  plus fort n'a plus rien à mordre. Le récepteur reste épinglé à 0,5
+  exactement. **Non : cette égalité résiste à la perturbation côté
+  émetteur sur plus d'un facteur six**, une affirmation plus forte et
+  plus précise que « stable sur 400 000 pas ».
+
 Réponse dans `docs/REPONSE_ORDRE48.md`.
 
 ---

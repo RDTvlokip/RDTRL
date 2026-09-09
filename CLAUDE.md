@@ -95,6 +95,28 @@ Avant d'utiliser un seuil, une convention ou une pratique reçue : se
 demander explicitement ce qu'elle suppose et si cette hypothèse tient
 dans ce cas précis, pas seulement si le calcul est fait correctement.
 
+# Une réponse = un tour, jusqu'à la prochaine critique de dipankarsarkar
+
+Théo, 09/09/2026, après que j'ai créé `REPONSE_ORDRE49.md` alors que je
+continuais simplement à creuser ma propre réponse au tour précédent, sans
+qu'aucune nouvelle critique ne soit arrivée entre les deux : « pourquoi
+tu as créer réponse 49 ? T'aurais y continuer dans réponse 48 !!!! »,
+puis « retiens le aussi, tant que pas de nouvelle critique de
+dipankarsarkar entre les deux c'est toujours le même tour ».
+
+**Un nouveau fichier `REPONSE_ORDREN.md` ne se crée QUE quand
+dipankarsarkar poste une nouvelle critique.** Tout ce que je découvre
+de moi-même en creusant plus loin (consigne du haut de ce fichier) —
+même si ça prend plusieurs heures, plusieurs scripts, plusieurs
+hypothèses testées — s'ajoute à la réponse du tour EN COURS, pas à un
+nouveau fichier. Pareil côté `CARNET.md` : une section `§7.NN` ne se
+scinde pas en `§7.NNbis`/`§7.NNter` supplémentaires pour ce que je
+trouve seul entre deux critiques ; ça s'ajoute dans la section du tour
+en cours, avant la ligne « Réponse dans ... ».
+
+Corrigé une fois après coup (fusion de 48/49, suppression du doublon) —
+à faire correctement du premier coup la prochaine fois.
+
 # Les scripts vont dans le dépôt, pas dans /tmp
 
 Demande explicite de Théo le 09/09/2026 : écrire les scripts de
