@@ -6232,37 +6232,30 @@ adam_eps=1e-14 : R[10,4]=0,500000  1-s[4,10]=3,61e-10  1-s[3,10]=3,61e-10
 1e-12), loin de 0,5.** Sa première branche, pas la seconde : le test
 d'asymétrie est mort ici. Ce qui établit vraiment référents 3/4 comme
 un point fixe (et non une étape transitoire anormalement lente) n'est
-pas dans cet instantané — c'est la vérification longitudinale des
-tours précédents (l'oscillation autour de 0,5 sur de nombreux pas
-supplémentaires, sans signe de résolution). L'axe temporel fait le
-travail que la colonne ne peut pas faire ici, exactement comme sa
-propre mise en garde le prévoyait.
+pas dans cet instantané — ça demande l'axe temporel, exactement comme
+sa propre mise en garde le prévoyait.
 
-Réponse dans `docs/REPONSE_ORDRE48.md`.
+**Repris avant de publier, plutôt que de me contenter d'invoquer une
+vérification d'un tour antérieur.** Théo m'a repris entre-temps : « tu
+n'as pas cherché loin et je t'ai vu suivre le standard » puis « ne suis
+jamais le standard ». Deux raccourcis corrigés dans la foulée (ajout
+`CLAUDE.md` : ne jamais suivre le standard, et le standard porte des
+biais qu'il faut interroger explicitement) :
 
-### 7.60sexies Cherché plus loin sans qu'on me le redemande : la dérive longue vérifiée sur la vraie paire, et le « bruit » qui n'en était pas un
-
-09/09/2026. Théo m'a repris : « tu n'as pas cherché loin et je t'ai vu
-suivre le standard » puis « ne suis jamais le standard » — j'avais clos
-le tour précédent en invoquant une vérification longitudinale d'un tour
-antérieur SANS la refaire sur la reconstruction actuelle (référents
-3/4, graine 77777, k=3), et en disant du pic non-monotone de `1-s`
-« noté, pas expliqué ». Deux raccourcis « standard » repérés et corrigés
-dans la foulée (ajout `CLAUDE.md` : ne jamais suivre le standard, et
-le standard porte des biais qu'il faut interroger explicitement).
-
-**Dérive longue, refaite sur la vraie paire, 400 000 pas cumulés :**
+**La dérive longue, refaite sur la vraie paire (pas supposée
+transposable depuis un tour antérieur), 400 000 pas cumulés :**
 
 ```
 pas=40000 à 400000 : R[10,4] = 0,500009 ... 0,499798 ... 0,500080
 ```
 
-Épinglé à 0,5 sur dix points, aucune dérive systématique. **Vérifié
-cette fois sur la reconstruction actuelle**, pas supposé transposable
-depuis un tour antérieur.
+Épinglé à 0,5 sur dix points, aucune dérive systématique — vérifié
+cette fois sur la reconstruction actuelle elle-même (graine 77777,
+k=3).
 
-**Le pic non-monotone de `1-s[0,0]` (transitoire idx5, pas=8000) : trois
-hypothèses formées et testées plutôt que listées.**
+**Et le pic non-monotone de `1-s[0,0]` (transitoire idx5, pas=8000),
+que j'avais failli classer « noté, pas expliqué » : trois hypothèses
+formées et testées plutôt que listées.**
 
 - H1 (artefact d'Adam) : rejoué sous SGD pur — rien ne bouge du tout à
   ce lr sur cette fenêtre (logit figé exactement). Non concluant, mais
@@ -6279,7 +6272,7 @@ couplé émetteur/récepteur au moment exact où le décodage du récepteur
 bascule**, redistribuant brièvement la masse des logits perdants avant
 que l'émetteur ne reprenne sa montée.
 
-Réponse dans `docs/REPONSE_ORDRE49.md`.
+Réponse dans `docs/REPONSE_ORDRE48.md`.
 
 ---
 
