@@ -6297,6 +6297,88 @@ Réponse dans `docs/REPONSE_ORDRE48.md`.
 
 ---
 
+### 7.61 Quarante-huitième critique : le 0,5 est un posterior bayésien fragile, pas un point fixe — mais pas au ratio littéral qu'il prédisait
+
+14/09/2026. Il relit le tableau à eps ajusté (adam_eps=1e-10/1e-12/1e-14)
+publié au tour précédent et pointe un fait que j'avais imprimé sans le
+lire : `s[4,10]` et `s[3,10]` sont tous deux à 1 moins environ 1e-10 —
+**ce n'est pas deux émetteurs proches d'une égalité, c'est un seul
+message porté par deux référents.** Le posterior bayésien du récepteur
+sur un tel message collisionné est mécaniquement épinglé à
+`s4/(s4+s3) = 0,500000000083` — pas un point fixe que le système aurait
+trouvé, la réponse à une question qui n'a plus d'information dedans.
+
+**Vérifié chiffre par chiffre : ses trois lignes reproduisent exactement
+depuis mon propre script.** Un bémol que j'ajoute plutôt que de le
+laisser passer : à adam_eps=1e-12 et 1e-14, l'« écart bayésien » qu'il
+cite (2,2e-16, -3,3e-16) est en dessous du plancher de précision de
+float64 à cette échelle — les deux émetteurs impriment la même valeur
+parce qu'ils LE SONT à seize chiffres, pas parce que le modèle a résolu
+une asymétrie aussi fine. Seule la ligne à 1e-10 compare un vrai nombre
+à un vrai nombre, et là le résidu du récepteur (9,0e-6) est bien cinq
+ordres au-dessus de ce que l'asymétrie des émetteurs peut expliquer
+(8,3e-11) — confirmé, ratio 1,1e5.
+
+**Contrôle demandé et vérifié plus loin que demandé** : à eps=1e-8
+(récepteur gelé), l'état n'est pas une égalité gelée à 0,5, c'est un
+effondrement gelé sur le référent 3 (`r[10,3]=0,9999999997`, entropie
+7,3e-9). Entraîné (eps=1e-10), l'entropie de la ligne du récepteur au
+message 10 vaut **exactement ln(2) = 0,693147**, avec 100,0000000 % de
+la masse sur les seuls référents 3 et 4 — sa prédiction confirmée sur
+un chiffre qu'aucun de nous n'avait encore imprimé.
+
+**Le test décisif — casser le prior plutôt que le push — tourné, et il
+ne tombe sur AUCUNE des deux prédictions.** Référent 4 pondéré deux
+fois plus que le référent 3 dans l'objectif (25 autres référents et les
+deux termes d'entropie inchangés), 40 000 pas de plus sous
+adam_eps=1e-10 :
+
+```
+controle symetrique (repete)      : R[10,4]=0,500000  H=0,693147
+asymetrique (referent 4 pese 2x)  : R[10,4]=1,000000  H=0,000000
+```
+
+**Pas 0,5 (sa première prédiction, réfutée net — la moindre asymétrie
+brise complètement l'égalité). Pas non plus 2/3 (sa seconde prédiction,
+réfutée aussi — le système va jusqu'à la spécialisation totale).**
+
+**Cherché plus loin sans qu'on me le redemande** (Théo : « cherche loin,
+c'est important, ne t'arrête pas sur le premier résultat ») : dérivé la
+condition du premier ordre — `log(r4/r3) = 2·delta/beta` pour
+`w4=(1+delta)/N, w3=(1-delta)/N` — et balayé delta plutôt que de
+rapporter le seul point testé :
+
+```
+delta    R[10,4] observe   sigmoid(2*delta/beta) predit
+0,0000      0,500692            0,500000
+0,0010      0,524979            0,524979   <- exact au chiffre
+0,0020      0,549834            0,549834   <- exact au chiffre
+0,0100      0,731486            0,731059
+0,0200      1,000000            0,880797   <- la prediction casse ici
+0,1000      1,000000            0,999955
+```
+
+**La loi molle colle exactement jusqu'à delta=0,01 (quatre décimales
+ou mieux), puis un vrai bassin dynamique prend le relais entre 0,01 et
+0,02 et le système saute à la spécialisation totale au lieu de suivre
+la prédiction analytique (0,88 prédit contre 1,00 obtenu)** — la même
+signature que le loquet du tour 34/35 (une porte qui se ferme une fois
+un seuil franchi, pas une approche continue de l'optimum). Sa lecture
+qualitative gagne entièrement : 0,5 n'est pas un point fixe qui résiste
+au repondérage, c'est le point dégénéré d'une vraie loi bayésienne
+continue, vérifiée à quatre décimales sur deux ordres de grandeur de
+delta. Ce qui ne survit pas est le rapport quantitatif littéral
+« 2:1 entre → 2/3 sorti » : le terme d'entropie de cet objectif est
+bien trop faible face à un changement de poids d'une unité entière pour
+tenir une valeur intermédiaire — ça sature bien avant que « 2× » n'y
+arrive.
+
+Scripts : `verifier_prior_asymetrique.py`,
+`verifier_prior_asymetrique_balayage.py`. Réponse dans
+`docs/REPONSE_ORDRE49.md`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
