@@ -6,7 +6,7 @@
 
 ## 👤 What this is
 
-[Article 1](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) trained networks from a reward signal alone. [Article 2](https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments) was a reader running the code and four of my numbers not surviving. [Article 3](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough) was the same reader's fifth round: a closed-form no-go theorem, a phase diagram, a literature review that found the whole thing published in 2021.
+[Article 1](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) trained networks from a reward signal alone. [Article 2](https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments) was a reader running the code and four of my numbers not surviving. [Article 3](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything) was the same reader's fifth round: a closed-form no-go theorem, a phase diagram, a literature review that found the whole thing published in 2021.
 
 This is rounds six through forty-seven. Same reader, `dipankarsarkar` ([ORCID 0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)), same project, about three weeks. Two eras, almost nothing in common except who kept finding the mistakes.
 
