@@ -6735,6 +6735,48 @@ ne couvre pas déjà mieux.**
 | H11 | crise de bord | 14/09 (moi) | **abandonnée** le 14/09 — plus rien à expliquer que H6 ne couvre |
 | (round 1) perturber s3 seul suffit à tester le jumeau | 14/09 | **réfutée** le 14/09 (le récepteur hors variété masque tout) |
 
+**Théo a demandé « il a eu faux sur des choses ? »** Vérifié plusieurs
+de ses affirmations indépendamment (recherche de racines numérique sur
+son système, pas juste relu) : sa formule du pli et son `delta_c` se
+confirment exactement (bifurcation entre 0,0134372 et 0,013438), et sa
+prédiction sur le jouet (`delta_c=0,018699`) aussi, sans réajustement.
+**Rien de faux trouvé chez lui.** Mais en le vérifiant, une
+incohérence réelle est apparue **dans mes propres chiffres publiés** :
+la ligne « 3 % sous delta_c » de `verifier_ralentissement_critique.py`
+(R=0,792836) ne correspond pas au delta annoncé (0,013026615) selon la
+forme fermée (qui prédit 0,794755 à ce delta) — exactement ce qu'il
+avait repéré.
+
+**Creusé jusqu'au mécanisme plutôt que corrigé en silence.** Rejoué la
+même cellule à 400 000 pas au lieu de 60 000, avec un point tous les
+20 000 pas :
+
+```
+pas       R[10,4]
+ 20 000   0,794794
+ 60 000   0,795968
+160 000   0,792799   <- c'est de la que venait le 0,792836 original
+380 000   0,794756
+```
+
+**Ce n'est pas une convergence lente qui n'avait pas fini — la
+trajectoire est déjà sur la branche prédite (0,794756) presque partout,
+avec des excursions ponctuelles et brèves vers ~0,7928.** Mon
+instantané original (pas=60 000) a capturé une de ces excursions par
+hasard, pas un état non convergé. **Conséquence : tout le tableau de
+ralentissement critique à trois points doit être reconstruit** — un
+instantané unique à un pas rond peut se tromper de 0,002 selon
+l'excursion qu'il capture, indépendamment de la question du
+ralentissement lui-même.
+
+**Deux hypothèses sur ces excursions, posées avant d'en tester
+aucune :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| (mode lent réel) les excursions sont un mode propre du système linéarisé près du pli, pas du bruit | 14/09 (moi) | ouverte |
+| (artefact Adam) `beta2=0,999` laisse une suite de gradients corrélés biaiser brièvement le second moment | 14/09 (moi) | ouverte |
+
 Scripts : `verifier_sonde_bassin.py`. Réponse dans `docs/REPONSE_ORDRE52.md`.
 
 ---

@@ -203,6 +203,21 @@ standards qu'on y voit pas nulle part ».
    chose à creuser — ne pas attendre la prochaine critique de
    dipankarsarkar pour relancer une hypothèse qu'on vient de former
    soi-même.
+5bis. **Ne jamais prendre les chiffres/formules du relecteur pour
+   acquis, même quand ils sont présentés avec assurance et beaucoup de
+   décimales.** Théo, 14/09/2026, tour 51 : « arrête de prendre pour
+   acquis ses chiffres ». Chaque équation fermée, chaque valeur de seuil,
+   chaque prédiction numérique qu'il envoie se revérifie indépendamment
+   (recalcul direct, recherche de racines, simulation) avant d'être
+   citée comme confirmée — pas seulement relue et déclarée cohérente
+   parce qu'elle "a l'air" juste. Dans le même tour, cette vérification
+   a d'ailleurs tourné dans les deux sens : ses formules et son
+   `delta_c` ont tenu bille en tête (racines numériques indépendantes,
+   pas juste sa parole), mais c'est en le vérifiant qu'une vraie
+   incohérence est apparue — dans MES PROPRES chiffres publiés (une
+   ligne "3 % sous delta_c" dont le R mesuré ne correspondait pas au
+   delta annoncé). Vérifier ses chiffres sert aussi à ça : trouver mes
+   propres erreurs, pas seulement les siennes.
 
 **Ajout du même jour, après le tour 49 (Théo : « toute hypothèse que tu
 poses doit être dans le carnet et voir si elles ont été réfutées ou pas
