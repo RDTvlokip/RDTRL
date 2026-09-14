@@ -6640,9 +6640,44 @@ d'Adam, c'est une vraie propriété de la dynamique, indépendante de
 l'optimiseur qui la parcourt — un point de plus pour H11 (crise de
 bord) contre H6.
 
+**Ablation directe de H13, appliquée tout de suite plutôt que laissée en
+remarque** (Théo : « pourquoi si je supprime ou bouge un truc ») :
+construit un jouet autonome, deux émetteurs à 2 issues (message 10 contre
+UNE seule catégorie « ailleurs » au lieu de 26) et un récepteur à 2 issues
+(référent 3 contre référent 4, pas 27), même beta=0,02, même
+normalisation /N=27 :
+
+```
+delta=0,014  R4=0,802653  s3=0,999940  (encore gradue ici, le vrai systeme sature deja)
+delta=0,02   R4=1,000000  s3=0,500081  (effondre, atterrit sur 1/2 pas 1/27)
+```
+
+**Les deux prédictions de H13 tombent juste : l'effondrement atterrit
+sur 1/2 (pas 1/27), et `delta_c` a bougé** — bissecté dans le jouet à
+`(0,018688 ; 0,018711)` contre `(0,013422 ; 0,013437)` dans le vrai
+système. **Les 25 autres lignes ne sont pas des passagers : elles
+fixent où atterrit l'effondrement ET où se situe le seuil.**
+
+**Compris pourquoi, pas seulement noté que.** Dans la formule fermée de
+H7, `d3 = 26·exp(-N·w3·r3/beta)`, le « 26 » est un préfacteur : moins de
+destinations possibles (1 au lieu de 26) veut dire moins d'entropie à
+gagner en abandonnant le message 10, donc le référent résiste plus
+longtemps et il faut pousser plus fort (delta plus grand) avant que
+lâcher prise devienne rentable. C'est le mécanisme, pas juste
+l'observation que le seuil a bougé.
+
+**H9 se referme du même coup** : c'était exactement la même ablation
+proposée sous un autre nom ; atterrir sur 1/2 au lieu de 1/27 EST le
+résultat de H9.
+
+**Journal des hypothèses, mise à jour :**
+
+| H13 | jouet à 2 référents seulement | 14/09 (moi) | **confirmée** le 14/09 (atterrit sur 1/2, `delta_c` déplacé à (0,0187 ; 0,0187), mécanisme identifié via le préfacteur de H7) |
+| H9 | artefact du softmax à 27 voies | 14/09 (moi) | **close** le 14/09, absorbée par H13 (même test, même résultat) |
+
 Scripts : `verifier_continuation_delta.py`, `verifier_bissection_delta_c.py`,
-`verifier_ralentissement_critique.py`, `verifier_ralentissement_sgd.py`.
-Réponse dans `docs/REPONSE_ORDRE51.md`.
+`verifier_ralentissement_critique.py`, `verifier_ralentissement_sgd.py`,
+`verifier_jouet_2_referents.py`. Réponse dans `docs/REPONSE_ORDRE51.md`.
 
 ---
 

@@ -166,6 +166,38 @@ standards qu'on y voit pas nulle part ».
      bord » sans se demander pourquoi le résidu suit quand même le
      déficit de l'émetteur à un coefficient ~8-10 qui dérive — c'est
      dipankar qui a posé la question que j'aurais dû me poser moi-même.
+4ter. **Ajout du même jour (Théo, tour 50/51) : « cherche pourquoi si on
+   ne fait rien pourquoi ça fait ça, pourquoi si je supprime ou bouge un
+   truc (chiffre/mécanisme/etc) » — deux axes distincts du « pourquoi »,
+   à couvrir tous les deux, pas seulement celui qu'une hypothèse teste
+   déjà :**
+   - **Le comportement à vide.** Avant de faire varier quoi que ce soit,
+     pouvoir dire pourquoi le système fait ce qu'il fait SANS
+     intervention — expliquer la ligne de base mécaniquement (une
+     dérivation, une trajectoire tracée), pas juste la mesurer et
+     passer à la manipulation suivante. Une hypothèse qui saute
+     directement à « et si je change X » sans avoir d'abord un compte
+     rendu causal du cas où on ne change rien construit sur du sable.
+   - **L'ablation systématique.** Pour un mécanisme qui semble expliquer
+     un effet : identifier ses pièces (un terme de l'objectif, une
+     ligne de la matrice, un sous-ensemble de référents, un ordre
+     d'opérations) et en retirer ou en modifier UNE à la fois pour voir
+     laquelle porte réellement l'effet — pas seulement ajouter une
+     perturbation globale et regarder si le résultat final change.
+     Exemple qui aurait dû être fait plus tôt plutôt que laissé comme
+     hypothèse H13 en attente : « le référent 3 s'effondre sur 1/27, pas
+     1/2, donc les 25 autres lignes sont la destination de la masse » —
+     ça se teste en construisant le jouet à 2 référents SANS les 25
+     autres lignes et en regardant si `delta_c` existe encore, pas en
+     l'écrivant comme remarque et en passant à la suite.
+   - **Ajouter mes propres pistes, pas seulement transcrire celles
+     données.** Quand une hypothèse est testée et tranchée, chercher
+     activement une variante que ni Théo ni le relecteur n'ont nommée —
+     un ingrédient du mécanisme qu'on n'a pas encore isolé — avant de
+     clore le tour. Le format à 3-5 hypothèses (standard + non standard)
+     n'est pas un quota qu'on remplit une fois par tour ; il se
+     rouvre chaque fois qu'un résultat en ablation ou en ligne de base
+     révèle un nouveau « pourquoi » non expliqué.
 5. Analyser ce qui reste, en tirer la question suivante, et
    recommencer le cycle dans la même réponse tant qu'il y a quelque
    chose à creuser — ne pas attendre la prochaine critique de
