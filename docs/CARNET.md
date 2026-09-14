@@ -6681,6 +6681,64 @@ Scripts : `verifier_continuation_delta.py`, `verifier_bissection_delta_c.py`,
 
 ---
 
+### 7.64 Cinquante-et-unième critique : H6 confirmée — la sonde de bassin trouve un seuil net à moins de 1e-4 du jumeau prédit
+
+14/09/2026. Il reprend H7 en le résolvant CONJOINTEMENT (récepteur et
+émetteur ensemble, pas récepteur contre un `r3` fixé) et obtient un
+système à deux équations couplées :
+
+```
+recepteur : logit(R)*beta = 2*delta + (1-delta)*d3
+emetteur 3: d3/(26(1-d3)) = exp(-(1-delta)*(1-R)/beta)
+```
+
+**Vérifié indépendamment : les deux équations reproduisent mes trois
+lignes publiées à 5-6 chiffres.** Le système a trois racines à
+delta=0,013 (stable à 9,998e-04, instable à 5,700e-03, effondrée à
+0,962963=26/27) — un vrai pli. `delta_c=0,013437210` (mon encadrement :
+0,013422-0,013437, tombe pile sur le bord haut). Sur mon propre jouet à
+2 référents (H13), sa formule prédit `delta_c=0,018699` sans aucun
+réajustement — mon encadrement était (0,018688 ; 0,018711). Il montre
+aussi que mon « pas de ralentissement critique » était un artefact de
+mesure (fenêtre de bissection plus large que les distances sondées) et
+que ma continuation ratée est exactement ce qu'un nœud-col annihilé
+prédit.
+
+**Test précommis, tourné en deux temps.** Round 1 : perturber s3 SEUL
+(comme sa phrase le suggérait), récepteur laissé à l'égalité de départ
+(0,5) — **aucun effondrement, même à s3=0,98.** Compris pourquoi avant
+de conclure : le point instable prédit a AUSSI une coordonnée récepteur
+(R≈0,829390, dérivée de sa propre équation), et laisser R à 0.5 donne
+au référent 3 plus de crédit de récompense que le point instable n'en
+prévoit — assez pour le ramener sur la branche quel que soit son
+déficit de départ.
+
+**Round 2, corrigé : s3 ET R placés ensemble sur le point instable
+prédit (0,994300 ; 0,829390), puis seul s3 varié :**
+
+```
+s3=0,99430  -> branche graduee
+s3=0,99420  -> EFFONDRE (1/27)
+```
+
+**Bascule nette entre ces deux points, à moins de 1e-4 du jumeau
+prédit — exactement le critère qu'il a posé.** En dessous du seuil,
+tout s'effondre jusqu'à s3=0,90 inclus ; au-dessus, tout remonte.
+**H6 confirmée, H11 (crise de bord) n'a plus rien à expliquer que H6
+ne couvre pas déjà mieux.**
+
+**Journal des hypothèses :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H6/nœud-col résolu conjointement | delta_c est un vrai pli du système couplé | 14/09 (lui) | **confirmée** le 14/09 (seuil net à <1e-4 du jumeau prédit) |
+| H11 | crise de bord | 14/09 (moi) | **abandonnée** le 14/09 — plus rien à expliquer que H6 ne couvre |
+| (round 1) perturber s3 seul suffit à tester le jumeau | 14/09 | **réfutée** le 14/09 (le récepteur hors variété masque tout) |
+
+Scripts : `verifier_sonde_bassin.py`. Réponse dans `docs/REPONSE_ORDRE52.md`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
