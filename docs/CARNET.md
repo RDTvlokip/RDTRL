@@ -6591,13 +6591,58 @@ continuation qui échoue même depuis un point déjà sur la branche.
 | H6 (tour précédent) | vraie bifurcation nœud-col | 14/09 | **réfutée** le 14/09 (pas de courbure, pas de ralentissement critique — les deux tests que lui-même a proposés) |
 | (continuation) la borne a juste dépassé le point de départ fixe | 14/09 (lui) | **partiellement réfutée** le 14/09 (la continuation depuis la branche elle-même ne survit pas non plus) |
 | H11 | crise de bord (frontière de bassin étrangère qui balaie la branche) | 14/09 (moi) | ouverte, favorite |
-| H7 | condition du premier ordre côté émetteur, dérivée proprement | 14/09 | ouverte — déjà soutenue par le coefficient résidu/déficit (~8-10) |
+| H7 | condition du premier ordre côté émetteur, dérivée proprement | 14/09 | **confirmée** le 14/09 (formule fermée, écart <0,1% aux trois points, contre r3 mesuré) |
 | H12 | `exp_avg_sq` de la ligne du référent 3, pas `adam_eps`, comme vraie porte | 14/09 (moi) | ouverte |
 | H13 | jouet à 2 référents seulement (le référent 3 vide dans 25 lignes, pas 1) | 14/09 (moi) | ouverte |
 | H14 | `delta_c≈0,01343` est un artefact numérologique de N=27, pas dynamique | 14/09 (moi) | ouverte |
+| H15 | Adam masque le ralentissement critique (pas de vraie signature, pas H6 blanchie) | 14/09 (moi) | **réfutée** le 14/09 (même plat sous SGD pur, lr=50) |
+
+**Poussé plus loin sans qu'on me le redemande (Théo : « tu comprends
+pourquoi ? pourquoi ça bouge ? »), au lieu de laisser H7 en simple
+« coefficient qui dérive » :** réduit la ligne du référent 3 à un
+softmax à 2 issues (message 10 contre les 26 autres regroupées), résolu
+sa condition stationnaire contre `r3` MESURÉ (pas ajusté) à chaque
+delta :
+
+```
+d3 = 26 * exp(-N * poids[3] * r3 / beta)
+
+delta   r3        d3 predit    d3 mesure    ecart
+0,010   0,268514  4,3911e-05   4,3900e-05   +0,02 %
+0,012   0,228648  3,2324e-04   3,2310e-04   +0,04 %
+0,013   0,205978  1,0008e-03   9,9980e-04   +0,10 %
+```
+
+**Formule fermée, pas un ajustement — écart sous 0,1% aux trois points.**
+Le coefficient « 8-10 » de dipankar dérive parce que `d3` dépend de `r3`
+de façon EXPONENTIELLE, et `r3` baisse avec delta : une pente locale qui
+dérive est exactement ce que donne une exponentielle fixe regardée sur
+une fenêtre où son argument bouge. Et cette formule n'a elle-même aucune
+singularité près de `delta_c` — lisse partout, cohérent avec un
+mécanisme couplé `(s3,r3)` plutôt qu'un pôle dans cette approximation à
+une variable.
+
+**Puis formé et testé H15** (pourquoi le test de ralentissement critique
+n'a rien montré : l'hypothèse qu'Adam, en divisant son pas par la racine
+du second moment, efface la signature de ralentissement même si le
+mécanisme sous-jacent est un vrai noeud-col) : rejoué le même test à
+trois distances sous SGD pur (lr=50) :
+
+```
+3,000 % sous delta_c : converge au pas 400
+0,300 % sous delta_c : converge au pas 400
+0,030 % sous delta_c : converge au pas 400
+```
+
+**Plat aussi sous SGD.** H15 réfutée par le test même qui l'aurait
+confirmée : l'absence de ralentissement critique n'est pas un artefact
+d'Adam, c'est une vraie propriété de la dynamique, indépendante de
+l'optimiseur qui la parcourt — un point de plus pour H11 (crise de
+bord) contre H6.
 
 Scripts : `verifier_continuation_delta.py`, `verifier_bissection_delta_c.py`,
-`verifier_ralentissement_critique.py`. Réponse dans `docs/REPONSE_ORDRE51.md`.
+`verifier_ralentissement_critique.py`, `verifier_ralentissement_sgd.py`.
+Réponse dans `docs/REPONSE_ORDRE51.md`.
 
 ---
 

@@ -144,6 +144,28 @@ standards qu'on y voit pas nulle part ».
    dessus (cf. §7.61 : quatre hypothèses réfutées par quatre
    expériences distinctes avant de retenir la cinquième et de la
    creuser jusqu'au mécanisme concret).
+4bis. **Un verdict réfutée/confirmée n'est pas la fin du test — c'est le
+   début de la question suivante.** Théo, 14/09/2026, tour 50 : « tu les
+   testes les hypothèses ? Tu vérifies ? Analyses ? Comprends pourquoi ?
+   Pourquoi ça bouge ? Pourquoi négatif ou positif ? Pourquoi ça fait ça
+   quand je rajoute ça ou ça ? » Pour chaque hypothèse testée, avant de
+   passer à la suivante :
+   - Ne pas s'arrêter à « réfutée » ou « confirmée » — expliquer POURQUOI
+     le chiffre a bougé (ou pas) dans ce sens précis, pas seulement QUE.
+   - Si un résultat est positif, pourquoi positif et pas négatif ? Si un
+     coefficient vaut 8 plutôt que 2 ou 20, d'où vient CE nombre-là ?
+   - Quand on change une variable (un paramètre, un seuil, une
+     pondération) et que le résultat change : identifier LE mécanisme qui
+     relie le changement à l'effet, pas seulement noter la corrélation.
+     Dériver, tracer une trajectoire pas à pas, isoler la variable
+     suivante — ne pas laisser une hypothèse « confirmée » sans avoir
+     vérifié qu'elle explique la GRANDEUR de l'effet, pas seulement son
+     signe ou sa présence.
+   - Exemple qui a manqué cette étape et l'a payé (tour 50, §7.62) :
+     avoir réfuté « le régularisateur mal mis à l'échelle explique le
+     bord » sans se demander pourquoi le résidu suit quand même le
+     déficit de l'émetteur à un coefficient ~8-10 qui dérive — c'est
+     dipankar qui a posé la question que j'aurais dû me poser moi-même.
 5. Analyser ce qui reste, en tirer la question suivante, et
    recommencer le cycle dans la même réponse tant qu'il y a quelque
    chose à creuser — ne pas attendre la prochaine critique de
