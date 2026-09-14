@@ -6528,6 +6528,79 @@ Scripts : `verifier_invariance_budget.py`, `verifier_adam_eps_ladder_delta.py`
 
 ---
 
+### 7.63 Cinquantième critique : contre H6 (nœud-col) — pas de ralentissement critique, mais la continuation ne survit pas non plus
+
+14/09/2026. Il reprend mes trois points survivants et montre qu'un
+nœud-col doit COURBER la branche à l'approche de `delta_c` (le point
+stable voyage vers l'instable), alors que la mienne reste analytique
+puis s'arrête net. Chiffré : le résidu (mesuré moins prédit par la loi
+molle) suit le déficit de l'émetteur `(1-s[3,10])` à un coefficient
+~8-10 qui dérive doucement — la signature de H7 (terme du premier ordre
+côté émetteur jamais dérivé), pas d'une bifurcation. Extrapolé en
+log-linéaire depuis (0,012 ; 0,013) vers 0,014, sa branche prédit
+`s[3,10]=0,996906` ; mesuré : `0,037023` — 311 fois l'écart prédit, et
+ça atterrit pile sur 1/27 (neuf lignes post-effondrement à
+0,037019±3,4e-5). Pas de pôle proche non plus (ajustement en loi de
+puissance sur les trois résidus : pôle au-delà de 0,5). Et le test du
+tour précédent est une preuve CONTRE H6, pas neutre : un nœud-col
+impose un ralentissement critique en `(delta_c-delta)^(-1/2)`, or
+15 000 pas donnaient déjà la réponse à 200 000 pas à 10 % du bord.
+
+**Deux expériences proposées, les deux tournées avant d'écrire une
+interprétation.**
+
+**Continuation** (partir de l'état déjà convergé à delta=0,013, pas de
+l'égalité fixe de départ) :
+
+```
+etape 1, converge a 0,013 :        R[10,4]=0,794022  s[3,10]=0,999000
+etape 2, continue vers 0,014 :     R[10,4]=1,000000  s[3,10]=0,037049
+controle, depart neuf a 0,014 :    R[10,4]=1,000000  s[3,10]=0,037016
+```
+
+**Même en partant d'un point déjà sur la branche graduée, ça s'effondre
+quand même.** Ni tout à fait sa lecture « la borne s'est déplacée sur un
+point de départ fixe », ni un nœud-col classique.
+
+**Ralentissement critique**, `delta_c` bissecté d'abord à
+`(0,013422 ; 0,013437)` (fourchette resserrée d'un ordre de grandeur),
+puis temps de convergence à 3 distances de ce bord :
+
+```
+3,000 % sous delta_c : converge au pas 200
+0,300 % sous delta_c : converge au pas 800
+0,030 % sous delta_c : converge au pas 800
+```
+
+**Plat, pas de divergence.** Deux ordres de grandeur plus près du bord
+et rien ne bouge après le premier saut. **H6 meurt exactement comme il
+l'a annoncé, sur le test qu'il a lui-même proposé.**
+
+**Ce qui reste : ni H6 ni sa lecture initiale ne collent seules aux
+trois faits à la fois** (pas de courbure, pas de ralentissement, la
+continuation depuis la branche ne survit pas non plus). Piste retenue :
+une **crise de bord** (le bassin de la branche est balayé par une
+frontière étrangère plutôt que la branche elle-même perdant sa
+stabilité) — explique un saut net sans ralentissement local, et une
+continuation qui échoue même depuis un point déjà sur la branche.
+
+**Journal des hypothèses de ce tour :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H6 (tour précédent) | vraie bifurcation nœud-col | 14/09 | **réfutée** le 14/09 (pas de courbure, pas de ralentissement critique — les deux tests que lui-même a proposés) |
+| (continuation) la borne a juste dépassé le point de départ fixe | 14/09 (lui) | **partiellement réfutée** le 14/09 (la continuation depuis la branche elle-même ne survit pas non plus) |
+| H11 | crise de bord (frontière de bassin étrangère qui balaie la branche) | 14/09 (moi) | ouverte, favorite |
+| H7 | condition du premier ordre côté émetteur, dérivée proprement | 14/09 | ouverte — déjà soutenue par le coefficient résidu/déficit (~8-10) |
+| H12 | `exp_avg_sq` de la ligne du référent 3, pas `adam_eps`, comme vraie porte | 14/09 (moi) | ouverte |
+| H13 | jouet à 2 référents seulement (le référent 3 vide dans 25 lignes, pas 1) | 14/09 (moi) | ouverte |
+| H14 | `delta_c≈0,01343` est un artefact numérologique de N=27, pas dynamique | 14/09 (moi) | ouverte |
+
+Scripts : `verifier_continuation_delta.py`, `verifier_bissection_delta_c.py`,
+`verifier_ralentissement_critique.py`. Réponse dans `docs/REPONSE_ORDRE51.md`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
