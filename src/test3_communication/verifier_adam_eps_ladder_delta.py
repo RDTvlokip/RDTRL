@@ -20,7 +20,7 @@ from replay_mur23_referent3 import construire_mur23, BETA
 from representable_atteignable_stable import N
 from verifier_prior_asymetrique import continuer_sous_prior, etat
 
-DELTA = 0.015
+DELTA = 0.013
 PAS_SUITE_ADD = 40000
 
 if __name__ == "__main__":

@@ -6509,14 +6509,22 @@ bord où les deux termes se coupent en même temps).
 |---|---|---|---|
 | (budget) sous-entraînement, testé correctement cette fois | 14/09 (lui) | **réfutée** le 14/09 (invariant sur 15k/40k/200k pas dans la région graduée) |
 | (entropie) régularisateur mal mis à l'échelle explique le bord | 14/09 (lui) | **réfutée** le 14/09 (le correctif d'une ligne ne déplace pas `delta_c`) |
+| (adam_eps, bissection resserrée) même loquet que les murs, testé pile dans (0,012 ; 0,014) | 14/09 (moi) | **réfutée** le 14/09 (delta=0,013 : 0,794022 identique sur 1e-10/1e-12/1e-14) |
 | H6 | vraie bifurcation nœud-col dans le système couplé à 4 variables | 14/09 (moi) | ouverte, favorite |
 | H7 | condition du premier ordre côté émetteur (pas récepteur) fixe le seuil | 14/09 (moi) | ouverte |
 | H8 | résonance `beta2` d'Adam avec le gradient qui s'amenuise | 14/09 (moi) | ouverte |
 | H9 | artefact du softmax à 27 voies vs un jouet à 2 référents seulement | 14/09 (moi) | ouverte |
 | H10 | hystérésis : monter delta en continu plutôt que par sauts | 14/09 (moi) | ouverte |
 
-Scripts : `verifier_invariance_budget.py`, `verifier_adam_eps_ladder_delta.py`,
-`verifier_entropie_reponderee.py`. Réponse dans `docs/REPONSE_ORDRE50.md`.
+**Bissection resserrée refaite pile dans (0,012 ; 0,014)** (pas à 0,015,
+déjà au-delà du bord réel) : à delta=0,013, R[10,4]=0,794022 — dans la
+région graduée cette fois (proche de la prédiction molle 0,785835),
+**bit-identique sur adam_eps=1e-10/1e-12/1e-14.** Le bord de bassin n'est
+définitivement pas le même mécanisme que le loquet des murs.
+
+Scripts : `verifier_invariance_budget.py`, `verifier_adam_eps_ladder_delta.py`
+(maintenant à delta=0,013), `verifier_entropie_reponderee.py`. Réponse dans
+`docs/REPONSE_ORDRE50.md`.
 
 ---
 
