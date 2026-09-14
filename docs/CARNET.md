@@ -6373,9 +6373,64 @@ bien trop faible face à un changement de poids d'une unité entière pour
 tenir une valeur intermédiaire — ça sature bien avant que « 2× » n'y
 arrive.
 
+**Cherché plus loin sans qu'on me le redemande, une deuxième fois**
+(Théo : « cherche encore, pose-toi des hypothèses toi-même... 3-5
+hypothèses puis des questions ») : pourquoi la loi molle casse-t-elle
+net entre delta=0,01 et 0,02 plutôt que de dévier progressivement ?
+Cinq hypothèses formées puis testées avant d'écrire une explication :
+
+```
+H1 sous-entrainement        H2 plancher adam_eps (meme loquet que les murs)
+H3 lr trop grand            H4 vraie bifurcation dynamique
+H5 dependance au chemin (imposer l'asymetrie avant la convergence a 0,5)
+```
+
+**H1, H2, H3 et H5 toutes réfutées** : 200 000 pas de plus, adam_eps=1e-14,
+lr=0,005, ou imposer le déséquilibre dès le checkpoint 10k — même résultat
+bit-identique dans les quatre cas (R[10,4]=1,000000 exactement). Ce qui
+reste (H4) a été creusé jusqu'à un mécanisme concret plutôt que laissé
+comme un « c'est donc ça par élimination » : ma réduction analytique
+supposait les deux émetteurs figés près de 1 ; ils ne le sont pas.
+
+```
+avant repondération : s[3,10]=0,999999999666   s[4,10]=0,999999999997
+apres 40 000 pas    : s[3,10]=0,037064167       s[4,10]=0,999999999998
+```
+
+**Le référent 3 (celui dont le poids est réduit) voit sa propre
+confiance s'effondrer à 1/27, uniforme — exactement la signature
+d'évacuation des murs des tours 20 à 38.** Mon calcul fermé traitait
+un problème à deux variables côté récepteur seul ; ce n'en est un que
+dans la limite delta→0. Passé un certain déséquilibre, le référent 3
+cesse de gagner assez de crédit pour justifier son engagement, son
+propre terme d'entropie l'emporte, et l'effondrement du récepteur sur
+le référent 4 est en aval de cette évacuation — pas une optimisation
+séparée sur la seule ligne du récepteur. Même mécanisme que chaque mur
+de ce projet, retrouvé par une porte d'entrée complètement différente.
+
 Scripts : `verifier_prior_asymetrique.py`,
-`verifier_prior_asymetrique_balayage.py`. Réponse dans
-`docs/REPONSE_ORDRE49.md`.
+`verifier_prior_asymetrique_balayage.py`, `verifier_bassin_delta002.py`.
+
+**Trouvé au passage, en recroisant d'anciens scripts contre leurs propres
+chiffres publiés (pas une nouvelle critique, une vérification de plus)** :
+`correction_de_selection.py` (tour 9, §7.26) a un vrai bug d'étiquetage.
+Sa fonction `route_1_vectorisee`, sous l'étiquette « sigma connue »/« le
+sien » vs « le mien », ré-estimait en réalité TOUJOURS sigma depuis
+l'échantillon tiré — ce qui rend les deux lignes mathématiquement
+incapables de différer (un contraste normalisé par un sigma ré-estimé
+sur le même tirage est invariant à l'échelle des données générées).
+Rejoué, le script donnait 1,630/2,456/0,1138, ni la ligne « sigma
+connue » publiée (1,619-1,620/2,427/0,1066) ni exactement la ligne
+« sigma ré-estimée à 145 ddl » (1,628/2,452/0,1130) — entre les deux.
+Corrigé (paramètre `sigma_connue` explicite, les deux variantes
+distinctes) : la vraie version à sigma fixe donne maintenant
+1,621/2,432/0,1078, et l'écart RELATIF entre connue et ré-estimée
+(q90 +0,024, P +0,0060) reproduit quasi exactement ce que la lettre
+d'origine affirmait déjà (« q90 by 0.025 and P by 0.006 »). **La
+conclusion scientifique publiée tient** — c'était le script de
+vérification permanent qui avait un bug, pas le résultat lui-même.
+
+Réponse dans `docs/REPONSE_ORDRE49.md`.
 
 ---
 

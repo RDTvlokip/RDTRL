@@ -101,8 +101,31 @@ def route_1_parametrique(effectifs, ecart_type, tirages, generateur):
     return max_t, d_gagnant, gagnant_est_25_24
 
 
-def route_1_vectorisee(effectifs, ecart_type, tirages, generateur, bloc=20000):
-    """Meme chose, en blocs, pour tenir 400 000 tirages en un temps utile."""
+def route_1_vectorisee(effectifs, ecart_type, tirages, generateur, bloc=20000,
+                        sigma_connue=False):
+    """Meme chose, en blocs, pour tenir 400 000 tirages en un temps utile.
+
+    BUG trouve le 14/09/2026, en recroisant ce script contre ses propres
+    chiffres publies (tour 9, REPONSE_ORDRE10.md / CARNET §7.26) : cette
+    fonction re-estimait TOUJOURS sigma depuis l'echantillon tire
+    (`sigma = sqrt(somme_carres/(total-k))`), quel que soit l'argument
+    `ecart_type` recu -- qui ne servait alors qu'a generer les donnees,
+    jamais a normaliser le contraste. Consequence : la ligne "le sien"
+    et la ligne "le mien" ne pouvaient physiquement jamais differer (un
+    contraste normalise par un sigma re-estime sur le meme echantillon
+    est invariant a l'echelle des donnees generees), et le resultat
+    (1,630 / 2,456 / 0,1138) ne reproduisait ni la ligne "sigma connue"
+    publiee (1,619-1,620 / 2,427 / 0,1066) ni exactement la ligne "sigma
+    re-estimee a 145 ddl" (1,628 / 2,452 / 0,1130) -- il se trouvait
+    entre les deux, plus proche de la seconde.
+
+    Corrige : `sigma_connue=True` normalise par `ecart_type` tel quel
+    (le sigma est traite comme connu, pas re-estime) ; `sigma_connue=False`
+    (par defaut, comportement d'origine conserve pour ne rien casser en
+    aval) re-estime sigma depuis l'echantillon, ce qui est la vraie
+    ligne "re-estimee a 145 ddl", pas une ligne "sigma connue" comme le
+    laissait croire l'etiquette d'origine.
+    """
     effectifs = np.asarray(effectifs)
     total = effectifs.sum()
     k = len(effectifs)
@@ -120,10 +143,13 @@ def route_1_vectorisee(effectifs, ecart_type, tirages, generateur, bloc=20000):
         echantillon = generateur.normal(0.0, ecart_type, (n, total))
         morceaux = np.split(echantillon, frontieres, axis=1)
         moyennes = np.stack([m.mean(axis=1) for m in morceaux], axis=1)
-        somme_carres = sum(
-            ((m - m.mean(axis=1, keepdims=True)) ** 2).sum(axis=1) for m in morceaux
-        )
-        sigma = np.sqrt(somme_carres / (total - k))
+        if sigma_connue:
+            sigma = np.full(n, ecart_type)
+        else:
+            somme_carres = sum(
+                ((m - m.mean(axis=1, keepdims=True)) ** 2).sum(axis=1) for m in morceaux
+            )
+            sigma = np.sqrt(somme_carres / (total - k))
 
         differences = np.stack(
             [moyennes[:, i] - moyennes[:, j] for i, j in paires], axis=1
@@ -296,17 +322,25 @@ def main():
     print("=" * 72)
     print("1. ROUTE PARAMETRIQUE — SA SIMULATION, 400 000 TIRAGES")
     print("=" * 72)
-    for etiquette, sd in [("le sien  0.012942", 0.012942), (f"le mien  {sd_runs:.6f}", sd_runs)]:
-        gen = np.random.default_rng(1234)
-        max_t, d_gagnant, cible = route_1_vectorisee(effectifs, sd, 400_000, gen)
-        print(f"\n  ecart-type = {etiquette}")
-        print(f"    E[max |t|]                    {max_t.mean():.3f}")
-        print(f"    q90                           {np.quantile(max_t, 0.90):.3f}")
-        print(f"    P(max |t| >= 2.40)            {(max_t >= 2.40).mean():.4f}")
-        print(f"    P(max |t| >= 2.53)            {(max_t >= 2.53).mean():.4f}")
-        print(f"    E[|d| du gagnant]             {d_gagnant.mean():.5f}")
-        print(f"    P(gagnant = paire 25/24)      {cible.mean():.4f}")
-        print(f"    E[|d| | gagnant = 25/24]      {d_gagnant[cible].mean():.5f}")
+    print("  (corrige le 14/09/2026 : la version d'origine re-estimait toujours")
+    print("   sigma depuis l'echantillon, meme sous l'etiquette 'sigma connue' --")
+    print("   voir la docstring de route_1_vectorisee. Les deux variantes sont")
+    print("   maintenant explicitement distinctes.)")
+    for sigma_connue in (True, False):
+        titre = "SIGMA CONNUE (fixe)" if sigma_connue else "SIGMA RE-ESTIMEE (145 ddl)"
+        print(f"\n  --- {titre} ---")
+        for etiquette, sd in [("le sien  0.012942", 0.012942), (f"le mien  {sd_runs:.6f}", sd_runs)]:
+            gen = np.random.default_rng(1234)
+            max_t, d_gagnant, cible = route_1_vectorisee(
+                effectifs, sd, 400_000, gen, sigma_connue=sigma_connue)
+            print(f"\n  ecart-type = {etiquette}")
+            print(f"    E[max |t|]                    {max_t.mean():.3f}")
+            print(f"    q90                           {np.quantile(max_t, 0.90):.3f}")
+            print(f"    P(max |t| >= 2.40)            {(max_t >= 2.40).mean():.4f}")
+            print(f"    P(max |t| >= 2.53)            {(max_t >= 2.53).mean():.4f}")
+            print(f"    E[|d| du gagnant]             {d_gagnant.mean():.5f}")
+            print(f"    P(gagnant = paire 25/24)      {cible.mean():.4f}")
+            print(f"    E[|d| | gagnant = 25/24]      {d_gagnant[cible].mean():.5f}")
 
     print()
     print("=" * 72)
