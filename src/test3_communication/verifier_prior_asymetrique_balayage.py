@@ -36,7 +36,7 @@ if __name__ == "__main__":
         poids[3] = (1.0 - delta) / N
         e, r = construire_mur23(adam_eps=ADAM_EPS)
         continuer_sous_prior(e, r, BETA, PAS_SUITE_ADD, 0.05, ADAM_EPS, poids)
-        R, H, m, Hb = etat(e, r)
+        R, H, m, Hb, S = etat(e, r)
         prediction = 1.0 / (1.0 + math.exp(-2 * delta / BETA)) if delta > 0 else 0.5
         print(f"  delta={delta:<8}  R[10,4]={R[4]:.6f}  R[10,3]={R[3]:.6f}  "
               f"H(27)={H:.6f}  prediction_analytique={prediction:.6f}")

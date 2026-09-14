@@ -117,6 +117,62 @@ en cours, avant la ligne « Réponse dans ... ».
 Corrigé une fois après coup (fusion de 48/49, suppression du doublon) —
 à faire correctement du premier coup la prochaine fois.
 
+# Le cycle de chaque réponse : répondre, expérimenter, hypothèses, analyser, recommencer
+
+Théo, 14/09/2026, après le tour 48/49 (le test de prior asymétrique sur
+l'égalité référents 3/4) : « maintenant se que tu vas faire, à chaque
+nouvelle réponse, tu vas répondres aux questions, expérimenter puis
+tester, donner une hypothèse, analyser, puis expérimenter, etc... »,
+et « tu vas faire 3-5 hypothèses standards académiques et d'autres non
+standards qu'on y voit pas nulle part ».
+
+**Le format attendu pour chaque `REPONSE_ORDRE*.md`, pas seulement
+« répondre à la critique » :**
+1. Répondre directement aux questions/prédictions posées.
+2. Faire tourner l'expérience qui les teste, pas se contenter de
+   recalculer sur les chiffres déjà publiés.
+3. Quand un résultat surprend ou ne colle pas à une prédiction : ne pas
+   s'arrêter à « c'est réfuté » — formuler 3 à 5 hypothèses sur le
+   mécanisme réel, un mélange explicite de :
+   - hypothèses **standard/académiques** (sous-entraînement, taux
+     d'apprentissage, plancher numérique, biais de l'estimateur — les
+     suspects habituels qu'un reviewer poserait) ;
+   - hypothèses **non standard**, qui ne viennent pas d'une check-list
+     connue — un mécanisme propre à CE système, une lecture qu'on ne
+     trouve nulle part ailleurs dans la littérature ou le projet.
+4. Tester chaque hypothèse individuellement plutôt que d'argumenter
+   dessus (cf. §7.61 : quatre hypothèses réfutées par quatre
+   expériences distinctes avant de retenir la cinquième et de la
+   creuser jusqu'au mécanisme concret).
+5. Analyser ce qui reste, en tirer la question suivante, et
+   recommencer le cycle dans la même réponse tant qu'il y a quelque
+   chose à creuser — ne pas attendre la prochaine critique de
+   dipankarsarkar pour relancer une hypothèse qu'on vient de former
+   soi-même.
+
+**Ajout du même jour, après le tour 49 (Théo : « toute hypothèse que tu
+poses doit être dans le carnet et voir si elles ont été réfutées ou pas
+avec la date ») : chaque hypothèse formée (étape 3) se journalise dans
+`CARNET.md`, pas seulement dans la lettre anglaise.** Une ligne par
+hypothèse minimum : son énoncé, la date, et son statut dès qu'il est
+tranché (réfutée / confirmée / toujours ouverte), y compris pour les
+hypothèses posées par dipankarsarkar lui-même. Ne pas attendre la fin
+du tour pour les lister toutes d'un coup après coup — les noter au
+moment où elles sont formées, avant de savoir si elles tiennent, pour
+que le carnet montre le raisonnement et pas seulement sa conclusion.
+Rétroactif : les hypothèses des tours 49 et 50 sont à journaliser dans
+`CARNET.md` avec leur date même si formées avant cette règle ; toutes
+les suivantes dès leur formulation.
+
+Exemple qui a validé la méthode avant qu'elle soit formulée comme
+règle : le saut de R[10,4] à 1,000000 (ni 0,5 ni 2/3 prédits) a donné
+cinq hypothèses (sous-entraînement, plancher `adam_eps`, `lr` trop
+grand, bifurcation réelle, dépendance au chemin), quatre testées et
+réfutées par expérience, la cinquième creusée jusqu'à montrer
+l'effondrement du référent 3 à 1/27 — le même mécanisme d'évacuation
+que les murs des tours 20-38, retrouvé par une porte d'entrée
+complètement différente.
+
 # Les scripts vont dans le dépôt, pas dans /tmp
 
 Demande explicite de Théo le 09/09/2026 : écrire les scripts de

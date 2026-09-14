@@ -6430,7 +6430,93 @@ d'origine affirmait déjà (« q90 by 0.025 and P by 0.006 »). **La
 conclusion scientifique publiée tient** — c'était le script de
 vérification permanent qui avait un bug, pas le résultat lui-même.
 
+**Journal des hypothèses de ce tour** (règle ajoutée le 14/09/2026,
+appliquée ici rétroactivement) :
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H1 | sous-entraînement (40 000 pas insuffisants à delta=0,02) | 14/09 | **réfutée** le 14/09 (200 000 pas de plus : toujours 1,000000) |
+| H2 | plancher `adam_eps` (même loquet que les murs) | 14/09 | **réfutée** le 14/09 (adam_eps=1e-14 : toujours 1,000000) |
+| H3 | `lr` trop grand, dépassement de l'optimum | 14/09 | **réfutée** le 14/09 (lr=0,005 : toujours 1,000000) |
+| H4 | vraie bifurcation dynamique (le point intérieur cesse d'être atteignable) | 14/09 | **retenue** le 14/09, creusée jusqu'au mécanisme (effondrement du référent 3 à 1/27) |
+| H5 | dépendance au chemin (imposer l'asymétrie avant la convergence à 0,5) | 14/09 | **réfutée** le 14/09 (même résultat en partant du checkpoint 10k) |
+
 Réponse dans `docs/REPONSE_ORDRE49.md`.
+
+---
+
+### 7.62 Quarante-neuvième critique : les quatre bras étaient tous sur la même frontière saturée — et son correctif d'entropie ne sauve pas la loi molle non plus
+
+14/09/2026. Il relit mes quatre « réfutations » (H1, H2, H3, H5) et pointe
+qu'elles sont **toutes mesurées à delta=0,02, déjà saturé** (R=1,0, H=0,0
+partout) — cinq bras assis sur la même frontière ne peuvent rien séparer,
+le résultat bit-identique n'est pas une preuve de robustesse, c'est ce
+qu'une observable saturée rend quoi qu'on varie. Son test : balayer delta
+dans la région graduée (où le nombre bouge encore) à plusieurs budgets, et
+localiser `delta_c` plutôt que le brancher.
+
+Deuxième point, plus gros selon lui : `entropie_s` est une moyenne NON
+pondérée alors que la récompense l'est. Le référent 3 perd du signal de
+récompense mais rien ne réduit la pression d'entropie qui le retient
+engagé — un ratio récompense/entropie déséquilibré plutôt qu'un vrai
+mécanisme d'éviction. Chiffré : sous la famille du balayage à
+delta=0,02, le référent 3 ne perd que 2 % de son poids (de 1/N à
+0,98/N), et pourtant `s[3,10]` s'effondre de 0,999999999666 à
+0,037064167 ≈ 1/27 — rien dans cette fourchette n'évacue une ligne
+saturée à neuf neuf ; un régularisateur mal mis à l'échelle, si.
+Correctif d'une ligne proposé : pondérer `entropie_s` par `(N*poids[i])`
+pour que chaque référent factorise `poids[i]*(récompense_i + beta*H_i)`.
+
+**Ajouté comme demandé : `etat()` retourne maintenant aussi
+`s[3,msg]`/`s[4,msg]`.**
+
+**Test 1 — `delta_c` à trois budgets (15 000, 40 000, 200 000 pas), grille
+resserrée 0,010-0,020 :**
+
+```
+delta=0,010  R[10,4] identique aux trois budgets : 0,731485-0,731486
+delta=0,012  identique aux trois : 0,771352
+delta=0,014  sature aux trois : R=1,000000, s[3,10]≈0,037
+```
+
+**`delta_c` se situe entre 0,012 et 0,014, invariant sur un facteur 13
+en durée d'entraînement.** H1 meurt pour de vrai cette fois, testé là où
+un déplacement aurait pu apparaître, pas là où tout est déjà saturé — et
+ça resserre la fourchette elle-même, de (0,01 ; 0,02) à (0,012 ; 0,014).
+
+**Test 2 — échelle `adam_eps` à delta=0,015 (fixé avant d'avoir la
+fourchette resserrée, donc déjà au-delà du bord réel) :** invariant sur
+quatre ordres de grandeur (1e-10 à 1e-14, tous à R=1,000000,
+s[3,10]≈0,037) — H2 ne ressuscite pas ici non plus, même si le test
+mériterait d'être refait pile dans (0,012 ; 0,014).
+
+**Test 3 — son correctif d'entropie, rejoué jusqu'au point 2:1 littéral
+(delta=1,0) :** la loi molle ne survit PAS au-delà de la même fourchette
+qu'avant correction — `delta=0,01` donne 0,731188 (quasi identique à la
+version non pondérée), et l'effondrement à `s[3,10]≈0,037` est déjà
+complet à `delta=0,02`. **Le correctif ne déplace pas le bord.** Un piège
+signalé plutôt que laissé passer pour une confirmation : à `delta=1,0`
+exactement, `poids[3]=0`, donc sous son correctif le terme d'entropie de
+la ligne 3 est AUSSI multiplié par zéro — récompense et entropie
+s'annulent ensemble, le gradient du référent 3 est nul partout, et il
+reste simplement figé où il était avant cette étape (`s[3,10]=1,0`
+lu comme si c'était une confirmation, c'est en réalité un artefact de
+bord où les deux termes se coupent en même temps).
+
+**Journal des hypothèses de ce tour :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| (budget) sous-entraînement, testé correctement cette fois | 14/09 (lui) | **réfutée** le 14/09 (invariant sur 15k/40k/200k pas dans la région graduée) |
+| (entropie) régularisateur mal mis à l'échelle explique le bord | 14/09 (lui) | **réfutée** le 14/09 (le correctif d'une ligne ne déplace pas `delta_c`) |
+| H6 | vraie bifurcation nœud-col dans le système couplé à 4 variables | 14/09 (moi) | ouverte, favorite |
+| H7 | condition du premier ordre côté émetteur (pas récepteur) fixe le seuil | 14/09 (moi) | ouverte |
+| H8 | résonance `beta2` d'Adam avec le gradient qui s'amenuise | 14/09 (moi) | ouverte |
+| H9 | artefact du softmax à 27 voies vs un jouet à 2 référents seulement | 14/09 (moi) | ouverte |
+| H10 | hystérésis : monter delta en continu plutôt que par sauts | 14/09 (moi) | ouverte |
+
+Scripts : `verifier_invariance_budget.py`, `verifier_adam_eps_ladder_delta.py`,
+`verifier_entropie_reponderee.py`. Réponse dans `docs/REPONSE_ORDRE50.md`.
 
 ---
 
