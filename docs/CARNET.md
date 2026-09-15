@@ -6781,6 +6781,92 @@ Scripts : `verifier_sonde_bassin.py`. Réponse dans `docs/REPONSE_ORDRE52.md`.
 
 ---
 
+### 7.65 Cinquante-deuxième critique : sa forme fermée ne dessine pas la séparatrice, elle a besoin de k — et k n'est pas constant
+
+15/09/2026. Il pointe que tous mes chiffres jusqu'ici (points fixes,
+`delta_c`, jumeau, valeur de branche) sont des intersections de
+courbes isoclines — ils ne dépendent pas de la VITESSE relative des
+deux joueurs. La séparatrice, elle, en dépend. Fournit l'ODE à deux
+échelles de temps :
+
+```
+dx/dt = x_br(R) - x
+dR/dt = k * (R_br(x) - R)
+```
+
+et une table de points de bascule à R_init=0,60 pour k=0,5 à 2,0, plus
+`k*=0,428762` (en dessous, la séparatrice ne touche plus jamais R=0 —
+c'est round 1 rendu littéral).
+
+**Vérifié indépendamment (pas pris pour acquis — règle 5bis) : intégration
+numérique de sa propre ODE, sans lire son tableau.** Table de k
+reproduite à 5-6 chiffres, `k*=0,428762` retrouvé exactement en
+cherchant où R_min franchit zéro. Rien de faux trouvé chez lui, une
+deuxième fois.
+
+**Sa question directe — « does your SGD arm show the excursions at
+all? » — testée immédiatement.** Rejoué 400 000 pas sous SGD pur
+(lr=50) à la même cellule qui montrait des excursions sous Adam :
+
+```
+pas=20 000 a 380 000 : R[10,4] = 0,7862825715, plat a la dixieme decimale
+```
+
+**Zéro excursion.** Confirme sa lecture (artefact du second moment
+d'Adam) contre la mienne (mode propre du système linéarisé). Nouveau
+mystère trouvé au passage : SGD converge à 0,786283, pas 0,794756
+(valeur de branche prédite par la forme fermée) — un écart stable de
+0,0085, pas du bruit. Pas encore expliqué.
+
+**Protocole « épingler avec un essai, falsifier avec deux » exécuté
+tel quel.** Point de bascule à R_init=0,60 : s3=0,979619 (bissection à
+1e-5). k interpolé ≈1,586. Prédictions pour R_init=0,75 et 0,50 :
+
+```
+predit  flip@0,75 = 0,987148    mesure = 0,989740    ecart +0,0026
+predit  flip@0,50 = 0,975765    mesure = 0,972652    ecart -0,0031
+```
+
+**Les deux prédictions manquent, dans des sens opposés.** k réajusté à
+chaque point plutôt que d'ignorer l'écart :
+
+```
+R_init=0,75 -> k=2,449
+R_init=0,60 -> k=1,586
+R_init=0,50 -> k=1,418
+```
+
+**k n'est pas une constante — il chute d'environ 42 % entre R_init=0,75
+et 0,50.** Le protocole a fait exactement son travail : pas seulement
+mesurer k, mais montrer que l'hypothèse centrale du modèle (un seul
+rapport de vitesses) ne tient pas sur cette plage — trouvé avec trois
+essais, pas une grille. Cohérent avec l'hypothèse d'excursion d'Adam :
+si le second moment s'adapte différemment pour l'émetteur et le
+récepteur selon leur propre historique de gradient, le k effectif
+qu'une trajectoire Adam traverse n'est pas une constante du système,
+c'est une quantité dépendante de l'état.
+
+**Grille QUAND/COMMENT/POURQUOI/OÙ/COMBIEN/JUSQU'OÙ/DEPUIS QUAND/SUR
+COMBIEN appliquée explicitement** (pas seulement POURQUOI) — résumée
+dans la lettre anglaise plutôt que redupliquée ici.
+
+**Journal des hypothèses :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| (excursions = mode propre) | 14/09 (moi) | **réfutée** le 15/09 (zéro excursion sous SGD pur) |
+| (excursions = artefact second moment Adam) | 14/09 (lui) | **soutenue** le 15/09 (SGD plat, Adam ne l'est pas) |
+| (k constant) | implicite au tour 51 | **réfutée** le 15/09 (k=1,42 à 2,45 selon R_init) |
+| (SGD converge à la vraie valeur de branche) | 15/09 (implicite) | **réfutée** le 15/09 (0,786283 contre 0,794756 prédit — pas encore expliqué) |
+| k(R) standard, fonction lisse de l'état seul | 15/09 (moi) | ouverte |
+| k dépend du chemin (budget d'entraînement), pas de l'état | 15/09 (moi) | ouverte |
+| k dérive à cause de `beta1` (momentum), pas de `beta2` seul | 15/09 (moi) | ouverte |
+
+Scripts : `verifier_pin_k.py`, `verifier_ode_separatrice.py`,
+`verifier_excursions_sgd.py`. Réponse dans `docs/REPONSE_ORDRE53.md`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
