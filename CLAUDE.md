@@ -262,6 +262,66 @@ standards qu'on y voit pas nulle part ».
    posée et pas seulement esquivée par la forme d'une réponse déjà
    complète (cf. « ne jamais suivre le standard », plus haut).
 
+   **Rajouté de moi-même (Théo a demandé d'en ajouter d'autres), parce
+   que trois axes ne couvraient pas tout ce qui a déjà fait trébucher
+   ce projet :**
+   - **OÙ.** Quel composant précis porte l'effet — quelle ligne, quel
+     référent, quel terme de l'objectif — pas juste « le système ».
+     Distinct de COMMENT : COMMENT donne le mécanisme, OÙ donne son
+     adresse. Manqué au tour 49 avant que H13 le force : « le référent 3
+     s'effondre » ne disait pas encore que les 25 AUTRES lignes étaient
+     la destination, pas un détail.
+   - **COMBIEN.** La grandeur exacte, séparée du signe/de la présence
+     que POURQUOI explique — un effet confirmé sans son ordre de
+     grandeur chiffré n'est qu'à moitié confirmé (cf. rule 10 du
+     notebook lui-même : « le nom d'une statistique porte tous les
+     arguments dont sa valeur dépend » — COMBIEN est cet argument-là).
+   - **JUSQU'OÙ.** La frontière de validité d'un résultat — à quel
+     endroit exact il cesse de s'appliquer, pas seulement qu'il
+     s'applique « ici ». Distinct de *quand du pourquoi* : JUSQU'OÙ
+     cherche la limite AVANT de savoir qu'elle existe, plutôt que de la
+     découvrir après coup en heurtant un cas qui casse tout (le
+     référent 4 qui reste bloqué alors que le référent 3 tenu comme
+     acquis).
+   - **DEPUIS QUAND / EN AMONT.** Avant le premier point mesuré,
+     est-ce que l'effet existait déjà, plus faible, invisible au
+     grain choisi ? Regarder en arrière, pas seulement en avant à
+     partir du premier signal repéré — la constante `plafond_beta`
+     de l'article 4 existait dès le premier jour, sous son propre nom
+     honnête, treize tours avant d'être reconnue.
+   - **SUR COMBIEN / REPRODUCTIBLE COMMENT.** Un mécanisme confirmé
+     sur une graine, un delta, une configuration est une observation,
+     pas un mécanisme, tant qu'il n'a pas été rejoué sur au moins une
+     autre — combien de fois ça a été vérifié est une question à part
+     entière, pas une case qu'on coche une fois.
+   Même règle de croisement que pour QUAND/COMMENT/POURQUOI : ces axes
+   se combinent aussi (« depuis quand jusqu'où », « où et combien »,
+   etc.) — ne pas les traiter comme une liste fermée à cocher une fois
+   chacune, mais comme des angles qu'on choisit selon ce que le
+   résultat en cours laisse encore dans l'ombre.
+
+   **MÉFIANCE, pas confiance — Théo, 15/09/2026 : « pas de choses
+   confiance, mais avec beaucoup de méfiance ».** Ce n'est pas un
+   septième axe à côté des autres, c'est la tonalité dans laquelle les
+   poser tous : une réponse trouvée à QUAND/COMMENT/POURQUOI/OÙ/COMBIEN
+   n'est pas une case cochée, c'est une nouvelle affirmation à
+   soupçonner. Concrètement :
+   - Un résultat qui vient de confirmer une hypothèse se traite avec
+     PLUS de suspicion, pas moins, dans l'instant même où il arrive —
+     pas seulement en théorie plus tard (cf. mémoire
+     `ce-qui-confirme-se-verifie-plus`, déjà en place, mais qui n'avait
+     jusqu'ici jamais été relié explicitement à ce cycle QUAND/COMMENT/
+     POURQUOI).
+   - Face à un « confirmée » : chercher activement ce qui la
+     confirmerait pour une MAUVAISE raison — un artefact qui produirait
+     le même chiffre, une coïncidence de deux effets qui s'annulent
+     (cf. §7.64 : l'excursion à pas=160 000 avait exactement l'air
+     d'une non-convergence, et ce n'en était pas une).
+   - Ne jamais écrire « confirmée » ou « le mécanisme est trouvé »
+     comme point final — écrire plutôt « confirmée, et voici ce qui la
+     ferait basculer si c'était faux » : nommer la prochaine chose qui,
+     si elle sortait autrement, retirerait la confirmation.
+
 **Ajout du même jour, après le tour 49 (Théo : « toute hypothèse que tu
 poses doit être dans le carnet et voir si elles ont été réfutées ou pas
 avec la date ») : chaque hypothèse formée (étape 3) se journalise dans
