@@ -218,6 +218,49 @@ standards qu'on y voit pas nulle part ».
    ligne "3 % sous delta_c" dont le R mesuré ne correspondait pas au
    delta annoncé). Vérifier ses chiffres sert aussi à ça : trouver mes
    propres erreurs, pas seulement les siennes.
+5ter. **Trois questions, pas une, et leurs combinaisons.** Théo,
+   15/09/2026 : « rajoute le quand, le quand du pourquoi, le pourquoi du
+   comment, le quand du comment, le quand du comment du pourquoi, etc.
+   Toutes les phrases possibles. » Le « pourquoi » (4bis) et
+   l'ablation/comportement à vide (4ter) ne couvrent pas tout : trois
+   axes distincts à interroger pour chaque mécanisme, séparément puis
+   croisés :
+   - **QUAND.** À quel pas, quel delta, quel seuil précis l'effet
+     commence-t-il, change-t-il, s'arrête-t-il ? Pas « ça arrive »,
+     mais l'instant ou la valeur exacte où ça bascule (cf. §7.64 :
+     l'excursion à pas=160 000 n'a pas de sens tant qu'on ne sait pas
+     QUAND elle commence et QUAND elle finit, pas seulement qu'elle
+     existe).
+   - **COMMENT.** Le mécanisme pas à pas qui produit l'effet — la
+     dérivation, la trajectoire, l'équation — pas seulement le nom
+     qu'on lui donne (« bifurcation », « éviction ») sans pouvoir
+     rejouer la suite d'étapes qui y mène.
+   - **POURQUOI.** Pourquoi CE mécanisme et pas un autre produit CET
+     effet, à cette grandeur précise — la question de 4bis.
+   - **Les croiser, pas les traiter en silo :**
+     - *quand du pourquoi* : à partir de quel moment la raison invoquée
+       cesse-t-elle de s'appliquer (une explication valide à delta=0,01
+       peut ne plus l'être à delta=0,013 — vérifier la frontière, pas
+       supposer qu'elle est la même partout) ;
+     - *comment du pourquoi* : une fois la raison identifiée, par quel
+       mécanisme concret agit-elle (H7 n'était pas fini tant que le
+       « pourquoi le résidu dérive » n'avait pas de forme fermée) ;
+     - *quand du comment* : le mécanisme lui-même change-t-il de nature
+       à un moment donné (round 1 vs round 2 de la sonde de bassin :
+       le mécanisme « perturber s3 » ne fait pas la même chose selon
+       que R est ou non sur la variété — QUAND cette différence
+       apparaît-elle) ;
+     - *quand du comment du pourquoi* (et toute combinaison plus
+       longue) : ne pas s'interdire d'empiler les questions tant qu'une
+       réponse en ouvre une autre — le critère d'arrêt n'est pas un
+       nombre de questions posées, c'est qu'aucune des trois ne
+       retombe plus sur une quatrième.
+   Concrètement, avant de clore un tour : pour le mécanisme central du
+   tour, écrire explicitement au moins une réponse à QUAND, une à
+   COMMENT, une à POURQUOI, et au moins une question croisée — même si
+   la réponse est « je ne sais pas encore », tant que la question a été
+   posée et pas seulement esquivée par la forme d'une réponse déjà
+   complète (cf. « ne jamais suivre le standard », plus haut).
 
 **Ajout du même jour, après le tour 49 (Théo : « toute hypothèse que tu
 poses doit être dans le carnet et voir si elles ont été réfutées ou pas
