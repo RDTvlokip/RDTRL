@@ -6858,12 +6858,27 @@ dans la lettre anglaise plutôt que redupliquée ici.
 | (excursions = artefact second moment Adam) | 14/09 (lui) | **soutenue** le 15/09 (SGD plat, Adam ne l'est pas) |
 | (k constant) | implicite au tour 51 | **réfutée** le 15/09 (k=1,42 à 2,45 selon R_init) |
 | (SGD converge à la vraie valeur de branche) | 15/09 (implicite) | **réfutée** le 15/09 (0,786283 contre 0,794756 prédit — pas encore expliqué) |
-| k(R) standard, fonction lisse de l'état seul | 15/09 (moi) | ouverte |
-| k dépend du chemin (budget d'entraînement), pas de l'état | 15/09 (moi) | ouverte |
-| k dérive à cause de `beta1` (momentum), pas de `beta2` seul | 15/09 (moi) | ouverte |
+| k(R) standard, fonction lisse de l'état seul | 15/09 (moi) | **soutenue** le 15/09 (survit aux deux réfutations ci-dessous) |
+| k dépend du chemin (budget d'entraînement), pas de l'état | 15/09 (moi) | **réfutée** le 15/09 (identique à 40k et 200k pas : k=1,4180 pile) |
+| k dérive à cause de `beta1` (momentum), pas de `beta2` seul | 15/09 (moi) | **réfutée** le 15/09 (l'écart s'agrandit sans momentum, 1,326 contre 1,031 — mauvais sens) |
+
+**Testées, pas seulement posées** (Théo : « tu n'as pas les hypothèses
+j'ai vu »). Rejoué le point R_init=0,50 à 200 000 pas au lieu de 40 000 :
+k identique à quatre décimales — pas un artefact de convergence. Rejoué
+les trois points de bascule avec `beta1=0` (Adam sans momentum) : les
+trois k montent (3,406/2,316/2,080 contre 2,449/1,586/1,418), mais
+l'ÉCART entre R=0,75 et R=0,50 grandit (1,326 contre 1,031) au lieu de
+se resserrer — le test qui aurait validé l'hypothèse la tue à la place.
+**Ce qui reste : `k(R)` est une vraie fonction de l'état, invariante au
+budget et indépendante du momentum** — probablement dans le second
+moment (`beta2`, non testé directement) ou dans le fait que le modèle
+réduit à 2 variables est une projection incomplète du vrai système à
+27 référents (les 25 autres lignes, déjà porteuses pour `delta_c` et la
+cible d'effondrement au tour 49, pourraient l'être ici aussi).
 
 Scripts : `verifier_pin_k.py`, `verifier_ode_separatrice.py`,
-`verifier_excursions_sgd.py`. Réponse dans `docs/REPONSE_ORDRE53.md`.
+`verifier_excursions_sgd.py`, `verifier_derive_k.py`. Réponse dans
+`docs/REPONSE_ORDRE53.md`.
 
 ---
 
