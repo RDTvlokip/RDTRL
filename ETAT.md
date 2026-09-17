@@ -98,11 +98,17 @@ Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026).
    (FAIT le 17/09).** `verifier_k_beta2.py` : k(R_init=0,60) varie de
    1,5676 à 1,5883 sur beta2=0,99→0,9999, un effet minuscule (0,02)
    comparé à la dérive totale avec R_init (~1,03). Ni beta1 ni beta2
-   n'expliquent la dérive. **Reste la seule piste non testée : les 25
-   autres lignes du système complet à 27 référents** (le modèle réduit
-   à 2 équations est peut-être juste une projection incomplète). Pas
-   encore attaquée — demanderait de refaire tout le protocole
-   pin-and-falsify sur le système complet (27x27), pas le modèle réduit.
+   n'expliquent la dérive. **Tentative sur le jouet à 2 référents FAITE
+   mais non concluante** (`verifier_k_jouet.py`) : R_init=0,75 semble
+   hors de la région graduée du jouet à son propre `delta_c` — le
+   jouet a sa propre géométrie, comparer directement les mêmes R_init
+   n'est pas valide sans d'abord localiser la coordonnée R de SON
+   point selle. **Reste la seule piste vraiment non testée : les 25
+   autres lignes du système complet, correctement isolées** — referaire
+   le protocole pin-and-falsify sur le système complet en gardant N=27
+   dans les formules mais en variant seulement le NOMBRE de référents
+   qui participent réellement à la collision (au lieu du jouet à 2
+   catégories qui change aussi N).
 3. **RÉSOLU le 17/09/2026 — résultat fort.** Deuxième égalité retrouvée
    (`replay_23_25.py`, référents 23/25, message 13, `default_rng(50000)`)
    et le mécanisme prior-asymétrique reproduit dessus

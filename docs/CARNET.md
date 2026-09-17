@@ -7161,6 +7161,30 @@ Script : `verifier_prior_23_25.py`.
 
 ---
 
+### Tentative (inconclusive) : tester la dérive de k sur le jouet à 2 référents
+
+Dernière piste de l'étape 2 : si les 25 autres lignes du système
+complet expliquent la dérive de k(R), le jouet à 2 référents
+(`verifier_jouet_2_referents.py`, sans ces 25 lignes) devrait donner un
+k CONSTANT. Tenté à `delta=0,0187` (le `delta_c` du jouet) : **à
+R_init=0,75, tous les points testés (s3_init de 0,999 à 0,1) collent
+au même état effondré (R4=1,0, s3_final=0,5)** — R_init=0,75 est
+probablement déjà hors de la région graduée du jouet à ce delta
+précis, ce qui rend la comparaison directe avec le système à 27
+référents invalide telle quelle (le jouet a sa propre géométrie, pas
+forcément les mêmes R_init pertinents).
+
+**Non concluant, rapporté honnêtement plutôt que forcé.** Refaire
+correctement demanderait de localiser d'abord la coordonnée R du point
+selle du JOUET (comme fait pour le vrai système) avant de choisir des
+R_init pertinents — pas fait faute de temps dans cette session. Laissé
+comme piste ouverte, pas comme échec du raisonnement.
+
+Script : `verifier_k_jouet.py` (contient un bug de choix de bornes,
+noté dans le code — a corriger avant réutilisation).
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
