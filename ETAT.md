@@ -99,9 +99,50 @@ tout re-raconter.*
      **n'est pas totalement immunisé non plus** (bande de
      classification irréductible `~1/T²` près du pli, argument
      théorique accepté) — à construire en rapportant un INTERVALLE
-     pour `delta_c`, pas un point, avec budget adaptatif. Vrai travail
-     de modélisation pour la prochaine session. La piste émetteur (le
-     `26` de H7) reste une hypothèse complémentaire, jamais testée.
+     pour `delta_c`, pas un point, avec budget adaptatif. La piste
+     émetteur (le `26` de H7) reste une hypothèse complémentaire,
+     jamais testée.
+
+   **PIVOT décidé le 18/09/2026 (Théo : « on n'arrête pas ») — noté
+   explicitement pour la reprise, trois pistes distinctes :**
+
+   **3a. Construire l'ODE + protocole pin-and-falsify POUR LE JOUET**
+   (dériver ses fonctions de branche, l'ODE à deux échelles de temps,
+   bissecter des points de bascule sur le jouet réduit). **Vrai travail
+   de modélisation neuf, plusieurs heures probables, même risque de
+   retomber sur d'autres subtilités** (comme celles déjà traversées ce
+   tour — excursions, fantôme du pli, cible mobile). Pas commencé,
+   mis de côté au profit de 3c (ci-dessous), qui teste directement
+   l'hypothèse sur le VRAI système plutôt que de la reconstruire dans
+   un modèle réduit. À reprendre seulement si 3c ne tranche pas.
+
+   **3b. La géométrie locale du pli.** Pourquoi M change-t-il la
+   courbure (ou une direction propre lente) du pli, pas seulement sa
+   position `delta_c` ? Question plus petite, plus ciblée, trouvée en
+   vérifiant autre chose — pas explorée du tout. Candidat naturel pour
+   une session courte et focalisée : calculer `F_xx(M)` (la dérivée
+   seconde du système couplé au pli, généralisé en M comme dans
+   `verifier_d_structurel.py`) et voir si elle varie avec M de façon à
+   expliquer l'écart de 6,5 décades.
+
+   **3c. EN COURS au moment de cette note — test direct sur le VRAI
+   système à 27 référents, pas le jouet.** Plutôt que de construire une
+   ODE pour un modèle réduit (dont `k` lui-même n'a jamais été
+   dérivable analytiquement, même au tour 52 — seulement mesuré
+   empiriquement), applique le protocole pin-and-falsify du tour 52
+   DIRECTEMENT sur le système complet : perturbe la masse initiale de
+   10 « autres » référents (6 à 15) sur le message 10 à 25% de masse
+   totale (analogue au jouet M=25), bissecte le point de bascule à
+   `R_init=0,60`, `delta=0,013`, avec et sans cette perturbation, lit
+   `k` sur la table de dipankar (tour 52) dans les deux cas et compare.
+   **Script `verifier_masse_fond_systeme_reel.py`, lancé, ~29 minutes
+   estimées (72s par appel d'entraînement × ~24 appels), résultat pas
+   encore connu au moment de cette note — lire sa sortie en premier à
+   la reprise.** Réponse positive (k se déplace, cohérent en sens et en
+   ordre de grandeur avec `k∈[1,42;2,45]`) OU négative (k ne bouge
+   pas) : LES DEUX comptent comme résultat (Théo, 18/09/2026 : « il
+   nous faut des réponses même négatives ou positives ») — ne pas
+   laisser ce test à moitié fait si le résultat semble décevant.
 2bis. **Piste 2 : soumise à un agent-dipankar après coup (oubli initial,
    repéré par Théo, corrigé).** Deux corrections mineures confirmées
    (`0,0016%` pas `0,0015%` ; `delta_c(3/4)` tombe à 71% du bracket, pas
