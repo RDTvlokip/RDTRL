@@ -7455,7 +7455,41 @@ pas les points fixes.** À `delta=0,013` (loin du pli), `lr=0,05` donne
 accélère la convergence sans changer où le système converge —
 exactement l'intervention voulue (dynamique, pas algèbre).
 
-Script : `verifier_jouet_n_variable.py` (corrigé, balayage en cours).
+**Balayage terminé (17/09/2026) — résultat suspect, pas accepté tel
+quel.**
+
+```
+delta_c(M)      : M=0 -> 0,018672   M=8 -> 0,018672   M=25 -> 0,018672
+ecart flip(M)   : M=0 -> 0,023047   M=8 -> 0,023047   M=25 -> 0,023047
+```
+
+**Identique bit-à-bit sur les 6 décimales affichées, pour les trois M
+— pas juste proche, IDENTIQUE.** Ce n'est pas le résultat attendu (une
+convergence progressive vers le système complet, ou même une absence
+d'effet mesurable mais avec un peu de bruit numérique) — une
+identité parfaite sur un système entraîné par Adam (bruit de calcul en
+principe présent) est elle-même suspecte. Hypothèse la plus probable,
+posée le 17/09 mais PAS ENCORE TESTÉE (pause demandée par Théo, quota
+sur le point de se reset — reprise prévue après) : **les M logits de
+fond (`r_autres`, init à `1e-6`, sans récompense directe) restent
+gelés près de leur valeur initiale pendant tout l'entraînement** — même
+mécanisme que le référent 3 gelé sous SGD (§7.65, plus haut) ou le
+plateau d'entropie déjà trouvé sur ce même jouet (ci-dessus) : un
+gradient d'entropie seul, à `beta/N≈7,4e-4`, pourrait être trop faible
+pour bouger `M` logits dans le budget donné, même à `lr=0,2` sur SI
+leur composante du gradient est individuellement minuscule (contrairement
+à `p3`/`p4` qui ont un gradient de récompense direct, bien plus fort).
+**À tester en premier au retour : imprimer `masse_autres` et les logits
+`q_autres` individuels avant/après entraînement pour voir s'ils ont
+réellement bougé, avant de conclure quoi que ce soit sur M.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `delta_c(M)` et l'écart flip(M) sont réellement indépendants de M (les 25 autres lignes n'expliquent pas la dérive de k) | 17/09 (moi) | **ouverte, pas fiable en l'état** — l'identité bit-à-bit suggère un artefact de mesure (catégories de fond gelées), pas encore distingué d'un vrai résultat |
+| les logits `q_autres` (M catégories de fond) restent gelés près de leur init faute de gradient suffisant | 17/09 (moi) | **ouverte, à tester en priorité à la reprise** |
+
+Script : `verifier_jouet_n_variable.py` (corrigé, balayage terminé,
+résultat en attente de diagnostic).
 
 ---
 
