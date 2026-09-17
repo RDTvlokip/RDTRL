@@ -6958,8 +6958,41 @@ l'émetteur qui porte les excursions. Pas encore construit.
 | SGD à deux taux (norme totale du tenseur) fait bouger le référent 3 | 17/09 (moi) | **réfutée** le 17/09 (déplacement ~1e-11, calibration invalide) |
 | SGD à deux taux (gradient précis [3,10]) est faisable sans risque | 17/09 (moi) | **réfutée** le 17/09 (lr requis ~1,4e11, trop dangereux à tester tel quel) |
 
-Voir `ETAT.md` à la racine du dépôt pour la reprise de ce fil dans une
-nouvelle session.
+**Optimiseur hybride construit et tourné** (`verifier_optimiseur_hybride.py`) :
+Adam sur l'émetteur seul, SGD pur sur le récepteur seul. Le référent 3
+s'entraîne vraiment cette fois (`s3` se stabilise à 0,998963, conforme à
+la prédiction fermée de H7 — pas gelé à la valeur de départ) et `R`
+converge exactement vers la vraie valeur de branche 0,794756 (pas
+l'artefact du référent gelé, 0,786283).
+
+```
+pas=60 000    R[10,4]=0,7947553911  s3=0,9989578477   <- excursion
+pas=300 000   R[10,4]=0,7947549760  s3=0,9989496174   <- excursion, plus grande
+```
+
+**Les excursions sont TOUJOURS LÀ**, plus petites que sous Adam complet
+(~1e-5 contre ~2e-3) mais réelles, et au même genre d'endroit (pas=60000
+apparaît dans les deux traces). **Ça localise le mécanisme : les
+excursions survivent avec un récepteur non-adaptatif (SGD pur), donc
+elles ne viennent PAS du récepteur — elles sont portées par le second
+moment de l'ÉMETTEUR seul.**
+
+**H15 (artefact du second moment d'Adam) confirmée pour de bon, et plus
+précisément qu'avant** — pas "Adam cause des excursions" en général,
+mais spécifiquement "la normalisation adaptative de l'ÉMETTEUR près de
+sa propre saturation le fait". L'hypothèse concurrente (mode propre du
+système linéarisé complet) devient difficile à soutenir : un vrai mode
+dynamique du système couplé devrait apparaître quel que soit le joueur
+adaptatif, et ce n'est pas le cas ici.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| (excursions = mode propre du système couplé) | 14/09 (moi) | **réfutée** le 17/09 (persistent avec récepteur SGD pur — ne dépend pas du couplage complet) |
+| (excursions = artefact second moment Adam, côté émetteur) | 17/09 (moi, affiné de l'hypothèse initiale de lui) | **confirmée** le 17/09 (survit à un récepteur non-adaptatif, localisée côté émetteur) |
+
+Script : `verifier_optimiseur_hybride.py`. Voir `ETAT.md` à la racine du
+dépôt pour la reprise de ce fil dans une nouvelle session — mis à jour
+en conséquence, ce fil est maintenant clos (H15 tranchée).
 
 ---
 
