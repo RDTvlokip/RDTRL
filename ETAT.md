@@ -40,27 +40,31 @@ tout re-raconter.*
    pas de la paire de référents ni de la graine** — troisième
    confirmation indépendante du mécanisme sur 23/25. Script :
    `verifier_delta_c_23_25.py`.
-3. **DIAGNOSTIQUÉ le 17/09/2026 — ni confirmée ni réfutée, mais la
-   raison est comprise, pas juste un résultat suspect abandonné.** Jouet
-   à M catégories de fond variables construit
-   (`verifier_jouet_n_variable.py`) pour isoler la piste "25 autres
-   lignes". Un vrai bug de convergence trouvé et corrigé en route
-   (`lr=0,05` trop lent près de l'attracteur effondré de ce jouet,
-   `s3=0,5` — corrigé avec `lr=0,2`, vérifié que ça ne déplace pas les
-   points fixes). Le balayage final (M=0/8/25) donnait un résultat
-   suspect : `delta_c(M)` et l'écart des points de bascule IDENTIQUES
-   BIT-À-BIT pour les trois M. **Diagnostiqué : PAS un gel de gradient**
-   (vérifié directement, `q_autres` bouge bien de `-13,8` à `-27,6` sur
-   40000 pas) **— le vrai problème est le choix `r_autres_init=1e-6`**,
-   fait pour ne pas perturber les points fixes de `r3/r4`, qui rend les
-   M catégories non-compétitives dans le softmax récepteur DÈS
-   l'initialisation (`exp(-13,8)≈1e-6` contre `exp(q3)+exp(q4)≈0,1-1`,
-   6 ordres de grandeur d'écart) — elles bougent mais n'influencent
-   jamais `Z`, quel que soit M. **Prochaine étape concrète pour vraiment
-   trancher : réinitialiser `r_autres` à une masse NON négligeable**
-   (comparable à `r3`/`r4`), accepter que ça déplace un peu les points
-   fixes de référence, et mesurer/soustraire ce déplacement plutôt que
-   l'éviter par construction. Détail complet et hypothèses datées :
+3. **RÉSULTAT NÉGATIF ROBUSTE le 17/09/2026 — ce modèle précis de "25
+   autres lignes" est écarté, pas juste inconclu.** Jouet à M catégories
+   de fond variables construit (`verifier_jouet_n_variable.py`). Un bug
+   de convergence trouvé et corrigé en route (`lr=0,05` trop lent près
+   de l'attracteur effondré du jouet — corrigé avec `lr=0,2`, vérifié
+   que ça ne déplace pas les points fixes). Le balayage M=0/8/25 donnait
+   `delta_c` et l'écart de bascule IDENTIQUES bit-à-bit — d'abord
+   soupçonné comme un artefact de l'initialisation `r_autres_init=1e-6`
+   (trop petite), **mais retesté avec `r_autres_init=0,01` (10 000× plus
+   grand, 25 % de la masse totale pour M=25) : même résultat nul,
+   `masse_autres` retombe quand même à `~4e-11` et R4/s3/r3/r4
+   identiques à 5-6 chiffres près.** Diagnostic final : la pression
+   d'entropie (`beta/N≈7,4e-4`) est structurellement trop faible pour
+   maintenir une masse non-négligeable sur des catégories sans
+   récompense propre, quel que soit leur point de départ — pas un bug
+   d'init, une propriété de l'objectif à cet endroit. **Conclusion :
+   les catégories de fond côté RÉCEPTEUR ne sont probablement pas le
+   bon mécanisme pour "les 25 autres lignes".** Hypothèse affinée pour
+   une reprise future : le `26` de l'équation H7 (`d3/(26(1-d3))`) est
+   une renormalisation sur les 26 AUTRES MESSAGES de l'ÉMETTEUR, pas sur
+   des référents concurrents côté récepteur — ce jouet n'a jamais
+   modélisé cet axe (`s3`/`s4` restent des sigmoïdes indépendantes,
+   jamais un softmax à 27 messages). La bonne ablation serait un
+   émetteur à espace de messages variable, pas un récepteur à
+   catégories de fond variables. Détail complet et hypothèses datées :
    `CARNET.md`, fin de §7.65.
 4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
    morceau d'écriture, à faire si ce fil se stabilise assez.
