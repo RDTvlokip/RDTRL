@@ -66,51 +66,42 @@ tout re-raconter.*
    bascule qualitative entre deux branches du système, pas un décalage
    continu du même point fixe — pas encore démontré directement.
 
-   **(b)/(c) PAS RÉSOLU — un chiffre précis (`×2,2`) a été mesuré PUIS
-   s'est effondré en creusant plus loin, dans la même session. Lire
-   `CARNET.md` en entier avant de citer un chiffre de ce fil.**
-   Chronologie : (1) mesuré un ralentissement récepteur brut `×8` —
-   FAUX, contaminé par un bug d'indexage (`t=0` enregistré après un
-   pas d'Adam complet) et par la non-monotonie de `r3` (dépassement de
-   62%) ; (2) corrigé et décomposé en `~×3,3` (délai d'évacuation de la
-   masse de fond, demi-vie ~2 pas) `×~×2,2` (taux post-évacuation),
-   avec ce `2,2` tombant dans `k∈[1,42;2,45]` du tour 52 — vérifié
-   deux fois indépendamment (agent + moi) ; (3) tranché le point ouvert
-   sur `r_tie` (R_init) seul — trouvé un "pic" non monotone à
-   `r_tie=0,75`, ratio `×2,6`, PUIS un agent a montré que `min(r3)` et
-   son pas d'apparition sont MONOTONES (le pic n'est visible que sur
-   la pente dérivée) — vérifié : en fenêtre tardive, le pic disparaît
-   complètement (taux quasi constant, ~6% de variation) — RÉFUTÉ ; (4)
-   par prudence, revérifié le `×2,2` de l'étape (2) en fenêtre tardive
-   aussi — s'effondre aussi (pente ne se stabilise pas) ; (5)
-   **18/09/2026, repris avec le point fixe algébrique du jouet résolu
-   (4 équations couplées, itération pure, aucun ralentissement de
-   gradient) comme référence FIXE** — révèle un écart de 6 ordres de
-   grandeur entre M=0 et M=25 à budget égal (2e-11 contre 7e-5 à 3000
-   pas), confirmant que le mécanisme est réel et massif ; mais même à
-   20000 pas et avec fenêtre adaptative, `M=25` ne donne jamais une
-   pente stable — **trouvé pourquoi : l'écart au point fixe REBONDIT
-   (`4,6e-4` à pas=15000 après être descendu à `2e-5`) — c'est le MÊME
-   phénomène d'excursions déjà caractérisé ce tour (H15, second moment
-   d'Adam), retrouvé indépendamment sur le jouet.** **Conclusion
-   méthodologique définitive : aucune mesure de pente sur trajectoire,
-   quelle que soit la fenêtre/référence/budget, ne peut donner un `k`
-   fiable près d'un pli sous Adam — c'est exactement pourquoi le tour
-   52 avait dû utiliser le protocole "épingler-falsifier" (ODE à deux
-   échelles de temps, bissection du point de bascule) plutôt qu'une
-   lecture directe de taux.** Le mécanisme récepteur est solidement
-   établi (via `delta_c`, un seuil discret non affecté par les
-   excursions) ; le chiffrer précisément contre `k∈[1,42;2,45]`
-   demande de construire l'ODE + protocole pin-and-falsify POUR CE
-   JOUET (les fonctions de branche et le point fixe algébrique sont
-   déjà dérivés — reste la mise en ODE et la bissection des points de
-   bascule) — vrai travail de modélisation pour la prochaine session,
-   pas un raccourci qui resterait à trouver. La piste émetteur (le
-   `26` de H7) reste une hypothèse complémentaire, jamais testée.
-   Scripts : `verifier_evacuation_fond.py`, `verifier_point_fixe_jouet_m.py`
-   (point fixe algébrique + fenêtre adaptative — la bonne référence,
-   mais la limite d'excursions demeure). Détail complet et hypothèses
-   datées : `CARNET.md`, fin de §7.65.
+   **(b)/(c) PAS RÉSOLU, mais désormais bien compris pourquoi c'est
+   dur — ne pas chercher de raccourci, l'historique complet (5 essais
+   de chiffrage tous tombés puis expliqués) est dans `CARNET.md`, fin
+   de §7.65. Résumé de l'état final (18/09/2026) :**
+   - Le mécanisme récepteur/masse de fond est **réel et solidement
+     établi** : seuil net sur `delta_c` (17,74%→17,75%), ET écart de
+     **6,5 ordres de grandeur** de vitesse de convergence entre M=0 et
+     M=25 à budget égal, mesuré contre le point fixe ALGÉBRIQUE du
+     jouet (4 équations couplées, résolu par itération pure — script
+     `verifier_point_fixe_jouet_m.py`).
+   - **Aucun chiffre de taux précis (`×2,2`, `×2,6`, `×8`, `×39`) n'a
+     résisté à la vérification** — chacun s'est effondré en creusant
+     plus loin, pour des raisons maintenant identifiées et distinctes :
+     bug d'indexage, non-monotonie, cible mobile (référence non
+     convergée), et surtout **deux phénomènes réels qui empêchent
+     toute pente de trajectoire d'être fiable près d'un pli** : (i) un
+     « fantôme » déterministe du pli (décroissance en `1/t`, pas
+     exponentielle, prédiction théorique standard des plis, confirmée
+     par un agent) — indépendant d'Adam ; (ii) les excursions H15
+     (second moment d'Adam) — **confirmées sur ce jouet aussi**, via
+     variation de `beta2` (`verifier_h15_jouet_beta2.py` :
+     `beta2=0,9` oscille en continu, `beta2=0,999` a de longues
+     périodes stables — signature nette, pas ambiguë).
+   - **Nouvelle question ouverte, non résolue, trouvée en vérifiant
+     autre chose** : M=0 et M=25 sont à la MÊME distance de leur pli
+     respectif (0,84% d'écart) mais convergent avec 6,5 décades
+     d'écart — `M` change donc la GÉOMÉTRIE LOCALE du pli, pas
+     seulement sa position. Pourquoi, pas encore exploré.
+   - Le protocole ODE+pin-and-falsify (déjà utilisé au tour 52) reste
+     la bonne voie pour chiffrer le lien à `k∈[1,42;2,45]`, mais
+     **n'est pas totalement immunisé non plus** (bande de
+     classification irréductible `~1/T²` près du pli, argument
+     théorique accepté) — à construire en rapportant un INTERVALLE
+     pour `delta_c`, pas un point, avec budget adaptatif. Vrai travail
+     de modélisation pour la prochaine session. La piste émetteur (le
+     `26` de H7) reste une hypothèse complémentaire, jamais testée.
 2bis. **Piste 2 : soumise à un agent-dipankar après coup (oubli initial,
    repéré par Théo, corrigé).** Deux corrections mineures confirmées
    (`0,0016%` pas `0,0015%` ; `delta_c(3/4)` tombe à 71% du bracket, pas
