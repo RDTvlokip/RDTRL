@@ -7377,6 +7377,48 @@ significatifs. Ferme la question laissée ouverte par l'agent-dipankar
 
 Script : `verifier_puiseux_ordre_suivant.py`.
 
+**Nouvelle hypothèse formée et testée en attendant d'autres calculs
+(17/09/2026) : `C0=0,2212603871` suit-il une loi de puissance simple
+en `beta` (`C0∝√beta` ou `C0∝beta`) ?** Balayage par CONTINUATION
+(chaque `beta` réutilise la solution du `beta` précédent comme point de
+départ — une première tentative sans continuation avait donné un
+`delta_c(beta)` non monotone et même négatif à grand `beta`, signe d'un
+saut de branche du solveur, pas un vrai phénomène) :
+
+```
+beta=0,0050  delta_c=0,00687739  C0=0,09309020  C0/√beta=1,316494
+beta=0,0100  delta_c=0,01034558  C0=0,14138871  C0/√beta=1,413887
+beta=0,0200  delta_c=0,01343721  C0=0,22126039  C0/√beta=1,564547
+beta=0,0300  delta_c=0,01322571  C0=0,29397543  C0/√beta=1,697268
+beta=0,0500  delta_c=0,00570824  C0=0,43561834  C0/√beta=1,948144
+beta=0,1000  delta_c=-0,04455475 C0=0,80423035  C0/√beta=2,543200
+```
+
+**Réfutée : `C0/√beta` varie continûment de 1,32 à 2,54 sur cette
+plage — ni `C0∝√beta` ni `C0∝beta` (qui donnerait un ratio constant)
+ne tient.** Pas de raccourci : `C0=0,2212604` est la valeur
+transcendante du système complet à `beta=0,02` précisément, sans loi
+de puissance simple qui la relierait à d'autres `beta` — la réponse à
+« pourquoi ce chiffre » reste « c'est la solution numérique du système
+complet à CES paramètres », pas une formule plus simple.
+
+**Trouvé au passage, en cherchant autre chose (règle « chercher plus
+loin ») : `delta_c(beta)` n'est PAS monotone.** Il monte de `beta=0,005`
+(`delta_c=0,00688`) jusqu'à un maximum vers `beta≈0,024`
+(`delta_c≈0,01369`), puis REDESCEND et devient NÉGATIF à partir de
+`beta≈0,06`. `delta_c<0` signifierait que le pli existe déjà du côté
+« mauvais » référent avant même que `delta` ne le favorise — une
+question de fond non explorée (à quoi correspond physiquement un
+`delta_c` négatif ? le référent 3 est-il structurellement défavorisé
+dès `delta=0` à grand `beta` ?), notée mais pas creusée cette session.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `C0` suit une loi de puissance simple en `beta` (`∝√beta` ou `∝beta`) | 17/09 (moi) | **réfutée** le 17/09 (`C0/√beta` varie de 1,32 à 2,54, pas constant) |
+| `delta_c(beta)` est monotone croissant | 17/09 (moi, implicite) | **réfutée** le 17/09 (maximum vers `beta≈0,024`, puis décroît et devient négatif) |
+
+Script : `verifier_c0_vs_beta.py`.
+
 **Clarification (pas une erreur, une précision) : il existe DEUX
 résidus distincts dans l'historique du projet, à ne pas confondre.**
 En cherchant si le tour 50 (§7.62, `REPONSE_ORDRE51.md`) avait déjà
