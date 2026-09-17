@@ -8034,14 +8034,42 @@ mais vides) donne le même résultat que M=0 — confirme absolument que
 c'est la MASSE, pas le nombre de catégories (cohérent avec la grille
 seuil/plafond déjà établie plus haut).
 
-**Point laissé ouvert par l'agent, pas encore tranché : la dérive de
-`k` avec `R_init` seul (round 52, sans masse de fond) est-elle « le
-même bouton » que la masse de fond, ou un mécanisme séparé ?** Un
-balayage `r_tie` (0,50→0,90, M=0) ne fait bouger `t90(r3)` que de 5 à
-9 (moins de ×2) sur toute la plage — beaucoup plus faible que l'effet
-de masse de fond (×7,2 brut). Mais cette comparaison n'a pas reçu la
-même décomposition évacuation/taux — non conclusif tel quel, à refaire
-avant de trancher.
+**Point laissé ouvert par l'agent, tranché maintenant (17/09/2026,
+suite du même tour) : la dérive de `k` avec `R_init` seul (round 52,
+sans masse de fond) est-elle « le même bouton » que la masse de fond ?**
+L'agent avait mesuré le balayage `r_tie` avec l'ancien `t90%` contaminé
+(moins de ×2 sur toute la plage) — refait avec la MÊME pente
+post-transitoire propre (`taux_post_evacuation`, fenêtre `[1,9)`,
+`M=0` donc pas d'évacuation à proprement parler mais la même mesure de
+pente reste valide) :
+
+```
+r_tie=0,50  pente[1,9)=-0,286460  min(r3)=0,0527 au pas 14
+r_tie=0,60  pente[1,9)=-0,453440  min(r3)=0,0449 au pas 17
+r_tie=0,70  pente[1,9)=-0,541894  min(r3)=0,0387 au pas 20
+r_tie=0,75  pente[1,9)=-0,610464  min(r3)=0,0357 au pas 21   <- extremum
+r_tie=0,80  pente[1,9)=-0,438835  min(r3)=0,0329 au pas 22
+r_tie=0,90  pente[1,9)=-0,234749  min(r3)=0,0269 au pas 26
+```
+
+**La pente elle-même varie fortement avec `r_tie` — NON monotone,
+maximum (relaxation la plus rapide) vers `r_tie≈0,75`, puis
+redescend.** Ratio entre les deux extrêmes mesurés (`0,75` contre
+`0,90`) : `0,610464/0,234749 = 2,60`. **Ce facteur `×2,6` est du MÊME
+ORDRE DE GRANDEUR que le `×2,2` trouvé pour la masse de fond, et que
+le `k∈[1,42 ; 2,45]` du tour 52 — sans AUCUNE masse de fond.**
+Conséquence : le mécanisme "R_init seul" et le mécanisme "masse de
+fond" produisent des variations de taux COMPARABLES en grandeur, ce
+qui appuie (sans le prouver formellement) l'idée qu'ils touchent au
+même phénomène sous-jacent (la façon dont la trajectoire doit
+traverser la même dynamique compétitive en S, que ce soit parce
+qu'elle démarre loin de son point fixe ou parce qu'elle doit d'abord
+évacuer une masse parasite). **Différence notable : la dépendance en
+`r_tie` est NON monotone (pic à 0,75), alors que la dépendance en masse
+de fond était un plafond monotone** — les deux mécanismes ne sont donc
+probablement pas IDENTIQUES (un seul et même paramètre sous-jacent),
+mais du même ordre de grandeur et de la même famille phénoménologique
+(vitesse relative de traversée d'une dynamique en S).
 
 **Suivi de l'agent (message séparé) : sa bissection indépendante de
 `delta_c` a fini après son rapport initial — `delta_c(M=0)=0,018711`,
@@ -8056,16 +8084,22 @@ seul point qu'il avait annoncé ne pas avoir vérifié.
 | le ralentissement du récepteur est un effet homogène de taux (`k` pur) | 17/09 (moi) | **réfutée** le 17/09 (agent) — se décompose en délai d'évacuation (`×3,3`) et taux post-évacuation (`×2,2`), deux mécanismes distincts |
 | le taux post-évacuation (`×2,2`) est comparable au `k∈[1,42;2,45]` du tour 52 | 17/09 (agent) | **confirmée** le 17/09, vérifiée indépendamment à 3 chiffres près (2,2066 contre ≈2,17 de l'agent) |
 | `delta_c(M=0)`/`delta_c(M=25)` se reproduisent indépendamment | 17/09 (agent, suivi) | **confirmée** le 17/09 (écart relatif -0,835% contre -0,84% publié) |
+| `R_init` (`r_tie`) seul, sans masse de fond, produit une variation de taux du même ordre de grandeur (`×2-2,6`) que la masse de fond | 17/09 (moi, tranchant le point laissé ouvert) | **confirmée** le 17/09 (pente de `-0,2865` à `-0,6105` selon `r_tie`, ratio extrême `×2,60`) |
+| le mécanisme "R_init" et le mécanisme "masse de fond" sont IDENTIQUES (un seul et même paramètre sous-jacent) | 17/09 (moi) | **réfutée** le 17/09 — la dépendance en `r_tie` est non monotone (pic à 0,75), celle en masse de fond est un plafond monotone ; même famille phénoménologique, pas le même mécanisme exact |
 
 **Bilan final piste 3 : mécanisme récepteur confirmé réel (seuil à
-17,75% de masse totale, plafond à -0,84% sur `delta_c`), ET relié à
+17,75% de masse totale, plafond à -0,84% sur `delta_c`), relié à
 `k(R)` par un chiffre précis et vérifié (`×2,2` post-évacuation, dans
-la fourchette du tour 52) — pas juste une analogie, un chiffre
-comparable, obtenu après correction d'un vrai bug d'indexage et d'une
-fausse hypothèse de monotonie. Le lien complet (ODE + table k propre
-au jouet) reste à construire pour une comparaison rigoureuse
-plutôt qu'une coïncidence numérique, mais la coïncidence elle-même est
-maintenant solide.**
+la fourchette du tour 52), ET généralisé : `R_init` seul (sans masse
+de fond du tout) produit une variation de taux de grandeur comparable
+(`×2,6`) — les deux mécanismes ne sont pas identiques (formes
+différentes : plafond monotone vs pic non monotone) mais appartiennent
+clairement à la même famille phénoménologique (vitesse de traversée
+d'une dynamique compétitive en S). Le lien complet et quantitatif
+(ODE + table k propre au jouet, calibrée sur les DEUX paramètres à la
+fois) reste à construire pour une comparaison entièrement rigoureuse,
+mais la correspondance de grandeur, vérifiée deux fois indépendamment,
+est maintenant solide sur les deux axes.**
 
 Scripts : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence), `verifier_evacuation_fond.py` (nouveau, corrige le bug
