@@ -103,15 +103,16 @@ Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026).
    à 2 équations est peut-être juste une projection incomplète). Pas
    encore attaquée — demanderait de refaire tout le protocole
    pin-and-falsify sur le système complet (27x27), pas le modèle réduit.
-3. **Deuxième égalité retrouvée et sauvée (FAIT le 17/09)** —
-   `replay_23_25.py` : référents 23/25, message 13, `default_rng(50000)`,
-   20000 pas — la recette perdue depuis le tour 30-31 (§7.47-48),
-   retrouvée par grep du transcript comme idx5. Contrairement au mur
-   3/4, cette égalité est NATURELLE (pas de poussée artificielle). **À
-   FAIRE ENSUITE** : reconstruire le mécanisme prior-asymétrique/k(R)
-   dessus (adapter `verifier_prior_asymetrique.py` à cette paire) pour
-   voir si `delta_c`, la loi molle, et la dérive de k se généralisent à
-   une deuxième collision indépendante — pas encore tenté.
+3. **RÉSOLU le 17/09/2026 — résultat fort.** Deuxième égalité retrouvée
+   (`replay_23_25.py`, référents 23/25, message 13, `default_rng(50000)`)
+   et le mécanisme prior-asymétrique reproduit dessus
+   (`verifier_prior_23_25.py`) : **R identique à 6 chiffres à delta=0,01
+   et delta=0,013** par rapport aux résultats sur référents 3/4, même
+   effondrement vers 1/27 à delta=0,02. **Le mécanisme n'est pas
+   spécifique à une paire — c'est une propriété de l'objectif lui-même
+   (N=27, beta=0,02), partagée par toute collision.** Attendu a
+   posteriori (la forme fermée de H7 ne mentionne jamais l'identité des
+   référents), mais fallait le vérifier plutôt que le supposer.
 4. **`docs/ARTICLE4.md` n'intègre pas les tours 48-52** — à faire si/quand
    ce fil se stabilise assez pour être résumé.
 5. Si dipankarsarkar répond entre-temps : sa critique (une vraie, pas

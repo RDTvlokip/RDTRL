@@ -7119,6 +7119,48 @@ Script : `replay_23_25.py`.
 
 ---
 
+### Le mécanisme se généralise — presque au chiffre près, sur une collision totalement indépendante
+
+Même protocole que `verifier_prior_asymetrique.py` (rependérer un
+référent contre l'autre), appliqué à 23/25 message 13 au lieu de 3/4
+message 10 :
+
+```
+depart : R[13,25]=0,499887  H(27)=0,693148 ~ ln2   (egalite naturelle confirmee)
+
+delta=0,000  R=0,500000
+delta=0,001  R=0,525061
+delta=0,005  R=0,622461
+delta=0,010  R=0,731486   <- identique a 6 chiffres au resultat sur 3/4 !
+delta=0,013  R=0,794022  s23=0,999000161   <- IDENTIQUE au resultat sur 3/4 !
+delta=0,020  R=1,000000  s23=0,037019523 ~ 1/27   <- effondrement, meme signature
+```
+
+**Les valeurs de R à delta=0,01 et delta=0,013 sont identiques au chiffre
+près à celles trouvées sur référents 3/4** (paire différente, graine
+différente — 50000 contre 77777+perturbation —, message différent — 13
+contre 10 —, égalité NATURELLE contre égalité perturbée artificiellement).
+**Ce n'est pas une coïncidence : c'est attendu, une fois qu'on regarde ce
+que contient réellement la forme fermée de H7** —
+`d3 = 26·exp(-N·poids[3]·r3/beta)` ne mentionne JAMAIS l'identité des
+référents, seulement `N=27` et `beta=0,02`, qui sont les mêmes partout
+dans ce banc d'essai. **Le mécanisme delta_c/k(R)/collapse-vers-1/27
+n'est pas une propriété d'UNE collision — c'est une propriété de
+l'objectif lui-même, partagée par toute paire de référents à égalité,
+peu importe comment elle y est arrivée.**
+
+**Étape 3 de `ETAT.md` (généralisation sur une deuxième graine)
+maintenant testée et confirmée avec un résultat fort.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le mécanisme delta_c/k(R) est spécifique à la paire 3/4 (perturbée artificiellement) | 17/09 (implicite) | **réfutée** le 17/09 (reproduction quasi-exacte sur 23/25, égalité naturelle) |
+| le mécanisme est une propriété générale de l'objectif (N=27, beta=0,02), pas d'une paire | 17/09 (moi) | **confirmée** le 17/09 |
+
+Script : `verifier_prior_23_25.py`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
