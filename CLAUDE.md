@@ -407,3 +407,18 @@ indépendamment (règle 5bis) avant de les accepter, journaliser dans
 qu'un résultat "a l'air" solide — c'est exactement le moment où la
 suspicion doit être la plus haute (cf. règle 5ter, méfiance plutôt que
 confiance).
+
+**Ajout du 17/09/2026 (Théo a demandé s'il fallait lancer DEUX agents
+par sécurité) : un seul agent par résultat, pas deux en parallèle par
+défaut.** Deux agents avec le même prompt/persona se recoupent surtout
+— le goulot d'étranglement n'est pas la génération de la critique mais
+MA vérification indépendante de chaque chiffre qu'elle avance (c'est
+cette vérification, pas l'agent lui-même, qui a pris l'essentiel du
+temps la fois où ça a marché : correction du coefficient 0,2212 via
+mpmath). Doubler les agents double ce coût de vérification sans
+doubler la valeur. **Le bon réflexe si la critique d'un premier agent
+laisse une question précise non résolue** (ex. tour du 17/09 : le
+coefficient `D≈8,0021` du terme correctif suivant, mesuré mais jamais
+dérivé analytiquement) **: lancer un DEUXIÈME agent CIBLÉ
+spécifiquement sur cette question-là**, pas un doublon générique du
+premier prompt.
