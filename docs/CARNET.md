@@ -7757,14 +7757,41 @@ qui croît indéfiniment avec la masse de fond.
 | l'effet croît indéfiniment avec la masse totale de fond | 17/09 (moi) | **réfutée** le 17/09 (50 % donne exactement le même `delta_c` que 25 % — plafond, pas croissance continue) |
 | il existe un seuil de masse totale entre 8 % et 25 % en dessous duquel l'effet est nul | 17/09 (moi) | **confirmée partiellement** le 17/09 (borné entre 8 % et 25 %, pas encore localisé précisément) |
 
-**Bilan piste 3, fin de session : le mécanisme récepteur EXISTE
-(confirmé, pas écarté), a un profil à seuil puis plafond en fonction de
-la masse totale de fond (pas de M), et son ampleur (-0,84 % sur
-`delta_c`) reste à comparer à la dérive de `k(R)` du tour 52 (facteur
-~1,7) — pas encore fait. Prochaines étapes précises pour la reprise :
-(a) localiser le seuil entre 8 % et 25 % par bissection, (b) vérifier
-si le plafond à -0,84 % est stable au-delà de 50 %, (c) relier cette
-grandeur à celle de `k(R)`.**
+**Bilan piste 3 : le mécanisme récepteur EXISTE (confirmé, pas écarté),
+a un profil à seuil puis plafond en fonction de la masse totale de
+fond (pas de M). Cartographie de la forme de la transition (8 %-25 %,
+8 points) lancée pour préciser (a).**
+
+**(c) « relier à `k(R)` » : précisé pourquoi ce n'est PAS une simple
+conversion numérique, pour ne pas laisser un item vague.** `delta_c`
+et son décalage (-0,84 %) sont des propriétés STATIQUES du système
+couplé (où se situe le pli algébrique) — `k`, lui, est une propriété
+DYNAMIQUE (le rapport de vitesse de relaxation récepteur/émetteur dans
+l'ODE à deux échelles de temps du tour 52). Un décalage du pli
+n'implique rien en soi sur la vitesse d'approche de ce pli. **Pour
+vraiment relier les deux, il faudrait mesurer `k` DANS ce jouet à masse
+de fond non négligeable** (même protocole pin-and-falsify que le tour
+52 : bissecter le point de bascule à plusieurs `R_init`, construire la
+table k↔bascule pour CE jouet, voir si `k` dérive avec la masse de
+fond comme il dérive avec `R_init` dans le système réel) — **pas fait
+cette session, c'est un vrai travail de modélisation (construire l'ODE
+et la table k du jouet), pas un script de plus.** Noté comme la tâche
+concrète et bien scopée pour la prochaine reprise, plutôt que laissé
+comme un vague "à comparer".
+
+**Prochaines étapes précises pour la reprise, dans l'ordre :**
+1. Lire le résultat de la cartographie du seuil (8 points, 8 %-25 %) —
+   lancée en fin de session, voir la sortie de
+   `verifier_jouet_n_variable.py` (invocation ad hoc, pas encore un
+   script permanent — à sauver si le résultat est utile).
+2. Construire l'ODE à deux échelles de temps ET la table k↔bascule
+   POUR CE JOUET (pas juste réutiliser celle du système réel), à masse
+   de fond nulle vs non-négligeable, pour tester si `k` y dérive aussi.
+3. Si `k` dérive dans le jouet de façon comparable (même sens, ordre de
+   grandeur cohérent) à sa dérive dans le système réel, ça confirmerait
+   le mécanisme récepteur comme (au moins une partie de) la cause de la
+   dérive de `k(R)` — sinon, ça la réfuterait proprement, contrairement
+   à aujourd'hui où ni l'un ni l'autre n'est tranché.
 
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence ; le résultat "nul" à `delta=0,013` était un artefact du
