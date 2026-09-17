@@ -4,6 +4,41 @@
 un pense-bête pour reprendre le travail dans une nouvelle conversation
 sans tout re-raconter.*
 
+## Pistes concrètes pour la prochaine conversation, par ordre de priorité probable
+
+1. **Refitter le coefficient de ralentissement (0,2212·√(delta_c-delta))
+   avec de vraies données sauvées, pas seulement les 3 points cités par
+   dipankar.** Maintenant qu'on a `verifier_ralentissement_hybride.py`
+   (le bon optimiseur), on peut mesurer le VRAI gap branche-selle en
+   `s3` à plusieurs `delta` avec un optimiseur qui entraîne réellement
+   le référent, refitter l'exposant (est-ce vraiment du `-1/2`, ou autre
+   chose vu que la hausse mesurée 760/880/940 est plus faible que
+   prédit ?), et sauver ça dans `verifier_coefficient_ralentissement.py`
+   au lieu des 3 points codés en dur.
+2. **Calculer `delta_c` pour la paire 23/25** (maintenant reconstruite
+   dans `replay_23_25.py`) et comparer à celui de 3/4 (`0,013437210`).
+   S'ils sont identiques (pas juste les valeurs de R à delta fixé, mais
+   le SEUIL lui-même), ça renforce encore plus l'universalité du
+   mécanisme. S'ils diffèrent, ça dit que `delta_c` dépend de quelque
+   chose de spécifique à la paire malgré tout.
+3. **Isoler proprement la piste "25 autres lignes"** pour k(R) — pas
+   avec le jouet à 2 catégories (qui change aussi N, donc pas une
+   ablation propre), mais avec un jouet à N variable (3, 5, 10, 27
+   référents) qui garde la MÊME formule (N, beta fixes dans les
+   équations) et ne fait varier que le nombre de lignes qui participent
+   réellement à la collision — pour voir si k(R) devient plus plat à
+   mesure que N_participant grandit.
+4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
+   morceau d'écriture, à faire si ce fil se stabilise assez.
+5. Si dipankarsarkar répond entre-temps, reprendre le flux normal (sa
+   critique → `REPONSE_ORDRE54.md`, tout ce qu'on a trouvé nous-mêmes
+   reste dans `REPONSE_ORDRE53.md`/§7.65 jusqu'à ce moment-là).
+
+**Pour lancer un agent qui joue le rôle de dipankarsarkar** (utile s'il
+ne répond toujours pas) : lire
+`C:\Users\Théo CHARLET\.claude\projects\d--Python-RDTRL\memory\dipankarsarkar-agent-prompt.md`
+et copier le prompt tel quel.
+
 ## Le projet, en une phrase
 
 RDTRL teste si le RL pur peut apprendre à écrire/communiquer. Le test 3
