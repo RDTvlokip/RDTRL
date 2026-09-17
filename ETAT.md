@@ -81,16 +81,19 @@ n'avait jamais été sauvé).
 
 ## Prochaines étapes concrètes
 
-Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026). Ce qui
-reste ouvert pour continuer, par ordre de priorité probable :
+Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026).
 
-1. **Refaire le test de ralentissement critique correctement**, maintenant
-   qu'on a un optimiseur qui entraîne vraiment le référent 3 (l'hybride
-   Adam-émetteur/SGD-récepteur, ou directement Adam des deux côtés avec
-   des points mieux espacés) — le test §7.63/§7.64 original utilisait le
-   même référent gelé par endroits, donc le résultat "pas de
-   ralentissement critique" qui avait fait pencher pour H6 (nœud-col)
-   mérite d'être revérifié avec le montage propre.
+1. **Ralentissement critique refait avec l'optimiseur hybride — FAIT le
+   17/09, résultat mitigé, pas totalement clos.** `verifier_ralentissement_hybride.py` :
+   800/1000/1000 pas pour converger aux trois distances (3%/0,3%/0,03%).
+   Légère hausse entre le premier et le deuxième point (25 %), mais plat
+   ensuite — ne colle pas à une vraie loi en racine carrée (qui
+   prédirait une accélération continue en s'approchant de `delta_c`).
+   **H6 (nœud-col, pas de fort ralentissement) tient globalement, mais la
+   granularité de mesure (pas de 200) est trop grossière pour trancher
+   finement entre "un peu de ralentissement" et "aucun".** À refaire avec
+   un `CHECK_TOUS` plus fin (10-20 pas) si on veut vraiment clore ce
+   point.
 2. **`k(R)` reste sans mécanisme fermé** — H_chemin et H_momentum
    réfutées, il reste "fonction de l'état, probablement liée à `beta2`
    ou aux 25 autres lignes du système complet à 27 référents" — aucune

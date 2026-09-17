@@ -6996,6 +6996,42 @@ en conséquence, ce fil est maintenant clos (H15 tranchée).
 
 ---
 
+### Ralentissement critique, refait avec l'optimiseur qui marche
+
+Même protocole que §7.63/§7.64 (trois distances à delta_c, temps de
+convergence à 99 %), mais avec l'hybride Adam-émetteur/SGD-récepteur au
+lieu du SGD pur qui gelait le référent 3 :
+
+```
+3,000 % sous delta_c : R_final=0,794756  converge au pas 800
+0,300 % sous delta_c : R_final=0,808282  converge au pas 1000
+0,030 % sous delta_c : R_final=0,811395  converge au pas 1000
+```
+
+**Les valeurs de R finales collent exactement à la forme fermée et aux
+valeurs déjà mesurées sous SGD gelé** (0,808282 contre 0,808275,
+0,811395 contre 0,811395 identique) — le récepteur seul atteignait déjà
+la bonne valeur même avec un émetteur gelé, la coïncidence des deux
+tests précédents n'était donc pas fausse sur CE point-là, seulement sur
+la question du gradient/ralentissement.
+
+**Petite hausse (800→1000, +25 %) entre le premier et le deuxième point,
+puis plat.** Pas la forme d'une vraie divergence en racine carrée (qui
+prédirait une accélération continue à l'approche de `delta_c`), mais pas
+non plus parfaitement plat comme le test cassé le laissait croire.
+**Verdict : H6 (pas de fort ralentissement critique) tient globalement,
+mais la granularité de mesure (pas de 200) est trop grossière pour
+trancher entre « un peu de ralentissement réel » et « rien du tout ».**
+Laissé ouvert plutôt que forcé à une conclusion nette.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H6 (pas de ralentissement critique fort) tient avec le bon optimiseur | 17/09 (moi) | **partiellement soutenue** le 17/09 — hausse de 25% notée mais pas concluante à cette résolution |
+
+Script : `verifier_ralentissement_hybride.py`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
