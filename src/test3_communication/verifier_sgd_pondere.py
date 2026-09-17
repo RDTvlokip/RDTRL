@@ -32,8 +32,11 @@ CHECK_TOUS = 500
 
 
 def gradient_initial(delta):
-    """Renvoie les normes de gradient separees emetteurs/recepteur au
-    tout premier pas, pour calibrer les deux taux d'apprentissage."""
+    """PREMIERE VERSION, GARDEE COMME TRACE DE L'ERREUR : la norme du
+    tenseur emetteur ENTIER (729 cases) est dominee par d'autres lignes
+    que la case [3,10] elle-meme -- calibrer la-dessus n'a presque rien
+    deplace (|deplacement s3|~1e-11 malgre lr_e=1.5e5). Corrige plus bas
+    par gradient_initial_precis()."""
     poids = torch.full((N,), 1.0 / N, dtype=torch.float64)
     poids[4] = (1.0 + delta) / N
     poids[3] = (1.0 - delta) / N
@@ -45,6 +48,23 @@ def gradient_initial(delta):
     g_e = (e.p[0].grad ** 2).sum().item() ** 0.5
     g_r = (r.p[0].grad ** 2).sum().item() ** 0.5
     return g_e, g_r
+
+
+def gradient_initial_precis(delta):
+    """Gradient de la case [3,10] SEULE (pas la norme du tenseur entier)
+    contre le gradient de la case [10,4] du recepteur seule -- les deux
+    coordonnees qui portent effectivement le mecanisme etudie."""
+    poids = torch.full((N,), 1.0 / N, dtype=torch.float64)
+    poids[4] = (1.0 + delta) / N
+    poids[3] = (1.0 - delta) / N
+    e, r = construire_mur23(adam_eps=1e-10)
+    activer(e, r)
+    j, _ = objectif_pondere(e, r, BETA, poids)
+    j = -j
+    j.backward()
+    g_e3 = abs(e.p[0].grad[3, 10].item())
+    g_r4 = abs(r.p[0].grad[10, 4].item())
+    return g_e3, g_r4
 
 
 def trace_sgd_pondere(delta, lr_e, lr_r, pas_max=PAS_MAX):

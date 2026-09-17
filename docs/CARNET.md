@@ -6925,6 +6925,42 @@ artefact d'un run particulier.
 
 Script : `verifier_point_fixe_sgd.py`.
 
+**Tentative de correction du test H15, échouée à moitié — rapportée
+honnêtement plutôt que cachée.** Objectif : SGD à deux taux
+d'apprentissage (émetteur compensé), pour que le référent 3 bouge
+vraiment et voir si le ralentissement critique apparaît alors.
+
+Premier essai : calibré sur la norme du tenseur émetteur ENTIER
+(729 cases, `e.p[0]`). `|grad_e|=1,146e-07`, `|grad_r|=3,405e-04`, ratio
+2970, `lr_e=1,485e5`. **Résultat : `|déplacement s3|≈1,15e-11` — quasiment
+rien.** La norme du tenseur entier est dominée par d'autres lignes que
+[3,10], pas une calibration valide pour LA case qui compte.
+
+Deuxième essai : gradient précis de la case `[3,10]` seule.
+`|grad e[3,10]|=8,65e-14`, `|grad r[10,4]|=2,41e-04`, ratio 2,78e9,
+`lr_e≈1,39e11`. **Pas tenté tel quel — trop dangereux** (un `lr` de cet
+ordre appliqué à tout le tenseur émetteur risquerait de faire exploser
+les autres cases, pas seulement de débloquer [3,10]).
+
+**Diagnostic, pas juste un échec technique** : le gradient réel de
+référent 3 est si minuscule (8,65e-14) que même un SGD "corrigé" par un
+facteur constant se heurte au même mur que le SGD nu — la solution n'est
+probablement pas un `lr` plus grand mais une normalisation ADAPTATIVE
+(comme Adam), spécifiquement pour cette ligne. **Piste retenue pour la
+suite** : optimiseur hybride, Adam sur l'émetteur seul + SGD pur sur le
+récepteur seul — teste si c'est l'adaptativité du récepteur ou celle de
+l'émetteur qui porte les excursions. Pas encore construit.
+
+**Journal :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| SGD à deux taux (norme totale du tenseur) fait bouger le référent 3 | 17/09 (moi) | **réfutée** le 17/09 (déplacement ~1e-11, calibration invalide) |
+| SGD à deux taux (gradient précis [3,10]) est faisable sans risque | 17/09 (moi) | **réfutée** le 17/09 (lr requis ~1,4e11, trop dangereux à tester tel quel) |
+
+Voir `ETAT.md` à la racine du dépôt pour la reprise de ce fil dans une
+nouvelle session.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture

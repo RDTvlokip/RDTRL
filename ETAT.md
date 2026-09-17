@@ -58,12 +58,22 @@ le test ne mesurait rien sur le ralentissement, seulement un récepteur
 seul convergeant contre un émetteur figé. **Vérifié indépendamment,
 confirmé.** Statut H15 remis à "rouverte" dans `CARNET.md` §7.65.
 
-**Correction en cours** (script `verifier_sgd_pondere.py`, tourne au
-moment de l'écriture de ce fichier) : SGD à deux taux d'apprentissage
-séparés (émetteur compensé pour son gradient minuscule), pour vraiment
-tester si le référent 3 bouge ET si le ralentissement critique apparaît
-une fois qu'il bouge. **Résultat pas encore connu — à vérifier en
-premier dans la prochaine session.**
+**Correction tentée et PARTIELLEMENT ÉCHOUÉE** (`verifier_sgd_pondere.py`) :
+SGD à deux taux, émetteur compensé pour son gradient minuscule. Premier
+essai (calibré sur la norme du tenseur émetteur ENTIER, 729 cases) :
+raté, dominé par d'autres lignes que [3,10], s3 n'a quasi pas bougé
+malgré lr_e=1,5e5. Deuxième essai (gradient précis de la case [3,10]
+seule) : le gradient réel est encore plus minuscule (8,65e-14), ce qui
+demanderait lr_e≈1,39e11 — beaucoup trop dangereux à appliquer sur tout
+le tenseur émetteur d'un coup (risque d'exploser les autres cases).
+
+**Piste retenue pour la suite, pas encore tentée** : optimiseur hybride
+— Adam sur l'émetteur SEUL (pour compenser proprement son gradient qui
+varie sur des ordres de grandeur pendant l'entraînement), SGD pur sur le
+récepteur seul. Teste une question plus précise que "SGD partout" :
+est-ce l'adaptativité du RÉCEPTEUR ou celle de l'ÉMETTEUR qui porte les
+excursions ? Script à écrire : `verifier_optimiseur_hybride.py` (nom
+prévu, pas encore créé).
 
 Un deuxième point a aussi été trouvé par le même agent : le coefficient
 « 0,2212 » cité dans `REPONSE_ORDRE53.md` n'existait dans aucun script du
