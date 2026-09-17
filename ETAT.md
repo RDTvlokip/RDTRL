@@ -40,13 +40,24 @@ tout re-raconter.*
    pas de la paire de référents ni de la graine** — troisième
    confirmation indépendante du mécanisme sur 23/25. Script :
    `verifier_delta_c_23_25.py`.
-3. **Isoler proprement la piste "25 autres lignes"** pour k(R) — pas
-   avec le jouet à 2 catégories (qui change aussi N, donc pas une
-   ablation propre), mais avec un jouet à N variable (3, 5, 10, 27
-   référents) qui garde la MÊME formule (N, beta fixes dans les
-   équations) et ne fait varier que le nombre de lignes qui participent
-   réellement à la collision — pour voir si k(R) devient plus plat à
-   mesure que N_participant grandit.
+3. **EN COURS, PAS RÉSOLUE — reprendre ici en premier.** Jouet à M
+   catégories de fond variables construit (`verifier_jouet_n_variable.py`)
+   pour isoler la piste "25 autres lignes". Un vrai bug de convergence
+   trouvé et corrigé en route (`lr=0,05` trop lent près de l'attracteur
+   effondré de ce jouet, `s3=0,5` — corrigé avec `lr=0,2`, vérifié que ça
+   ne déplace pas les points fixes). **Mais le balayage final (M=0/8/25)
+   donne un résultat suspect : `delta_c(M)` et l'écart des points de
+   bascule sont IDENTIQUES BIT-À-BIT pour les trois M** (0,018672 et
+   0,023047 partout) — pas juste proches, exactement identiques, ce qui
+   sent l'artefact (les M logits de fond probablement gelés près de leur
+   init, faute de gradient d'entropie suffisant, même mécanisme que le
+   référent 3 gelé sous SGD ailleurs dans ce projet) plutôt qu'un vrai
+   résultat. **Prochaine étape concrète, pas encore faite : imprimer
+   `masse_autres` et les logits `q_autres` individuels avant/après
+   entraînement pour voir s'ils bougent réellement.** Détail complet et
+   hypothèses datées : `CARNET.md`, fin de §7.65. Pause volontaire ici le
+   17/09/2026 (quota utilisateur sur le point de se reset) — pas
+   abandonnée, à reprendre directement sur ce diagnostic.
 4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
    morceau d'écriture, à faire si ce fil se stabilise assez.
 5. Si dipankarsarkar répond entre-temps, reprendre le flux normal (sa
