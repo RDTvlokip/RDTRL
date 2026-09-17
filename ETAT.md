@@ -143,6 +143,14 @@ tout re-raconter.*
    pas) : LES DEUX comptent comme résultat (Théo, 18/09/2026 : « il
    nous faut des réponses même négatives ou positives ») — ne pas
    laisser ce test à moitié fait si le résultat semble décevant.
+
+   **3d. Piste 4, rappelée ici explicitement (Théo, 18/09/2026 :
+   « rajoute la piste 4 ») — `docs/ARTICLE4.md` n'intègre toujours pas
+   les tours 48-52.** Complètement intouchée cette session. Gros
+   morceau de RÉDACTION (synthétiser ce qui est déjà dans `CARNET.md`
+   §7.60-§7.65 en prose d'article), pas d'expérimentation — un
+   registre différent de 3a/3b/3c. Détail : voir l'entrée « 4. » plus
+   bas dans ce même fichier pour la description complète.
 2bis. **Piste 2 : soumise à un agent-dipankar après coup (oubli initial,
    repéré par Théo, corrigé).** Deux corrections mineures confirmées
    (`0,0016%` pas `0,0015%` ; `delta_c(3/4)` tombe à 71% du bracket, pas
