@@ -40,31 +40,31 @@ tout re-raconter.*
    pas de la paire de référents ni de la graine** — troisième
    confirmation indépendante du mécanisme sur 23/25. Script :
    `verifier_delta_c_23_25.py`.
-3. **RÉSULTAT NÉGATIF ROBUSTE le 17/09/2026 — ce modèle précis de "25
-   autres lignes" est écarté, pas juste inconclu.** Jouet à M catégories
+3. **EN COURS, PAS RÉSOLUE — un vrai effet (petit) trouvé, sa taille
+   exacte reste à caractériser. Une fausse conclusion a été écrite PUIS
+   corrigée dans la même session — lire `CARNET.md` avant de faire
+   confiance à un résumé rapide de cette piste.** Jouet à M catégories
    de fond variables construit (`verifier_jouet_n_variable.py`). Un bug
    de convergence trouvé et corrigé en route (`lr=0,05` trop lent près
    de l'attracteur effondré du jouet — corrigé avec `lr=0,2`, vérifié
-   que ça ne déplace pas les points fixes). Le balayage M=0/8/25 donnait
-   `delta_c` et l'écart de bascule IDENTIQUES bit-à-bit — d'abord
-   soupçonné comme un artefact de l'initialisation `r_autres_init=1e-6`
-   (trop petite), **mais retesté avec `r_autres_init=0,01` (10 000× plus
-   grand, 25 % de la masse totale pour M=25) : même résultat nul,
-   `masse_autres` retombe quand même à `~4e-11` et R4/s3/r3/r4
-   identiques à 5-6 chiffres près.** Diagnostic final : la pression
-   d'entropie (`beta/N≈7,4e-4`) est structurellement trop faible pour
-   maintenir une masse non-négligeable sur des catégories sans
-   récompense propre, quel que soit leur point de départ — pas un bug
-   d'init, une propriété de l'objectif à cet endroit. **Conclusion :
-   les catégories de fond côté RÉCEPTEUR ne sont probablement pas le
-   bon mécanisme pour "les 25 autres lignes".** Hypothèse affinée pour
-   une reprise future : le `26` de l'équation H7 (`d3/(26(1-d3))`) est
-   une renormalisation sur les 26 AUTRES MESSAGES de l'ÉMETTEUR, pas sur
-   des référents concurrents côté récepteur — ce jouet n'a jamais
-   modélisé cet axe (`s3`/`s4` restent des sigmoïdes indépendantes,
-   jamais un softmax à 27 messages). La bonne ablation serait un
-   émetteur à espace de messages variable, pas un récepteur à
-   catégories de fond variables. Détail complet et hypothèses datées :
+   que ça ne déplace pas les points fixes). Le balayage M=0/8/25 à
+   `r_autres_init=1e-6` donnait `delta_c` et l'écart de bascule
+   IDENTIQUES bit-à-bit — **j'ai d'abord conclu (à tort, sur la base
+   d'un seul point à `delta=0,013`) que le mécanisme récepteur était
+   écarté.** Correction immédiate : `bissecter_delta_c(M=25,
+   r_autres_init=0,01)` = **0,018516**, contre **0,018672** pour M=0 —
+   un écart réel de **-0,84 %**, pas zéro. Le point unique à
+   `delta=0,013` (loin du pli) était juste insensible à cet effet, qui
+   se manifeste À la bifurcation. **Le mécanisme récepteur N'EST PAS
+   écarté — il a un effet réel mais petit, sensible à la masse initiale
+   des catégories de fond.** Reste à faire : mesurer `delta_c(M)` pour
+   plusieurs M ET plusieurs `r_autres_init` (pas un seul point de
+   chaque), et comparer la grandeur de cet effet (-0,84 % sur
+   `delta_c`) à celle de la dérive de `k(R)` mesurée au tour 52
+   (facteur ~1,7 sur `k` — deux échelles jamais encore reliées). La
+   piste émetteur (le `26` de H7, renormalisation sur les 26 autres
+   messages) reste une hypothèse complémentaire plausible, pas la seule
+   explication restante. Détail complet et hypothèses datées :
    `CARNET.md`, fin de §7.65.
 4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
    morceau d'écriture, à faire si ce fil se stabilise assez.
