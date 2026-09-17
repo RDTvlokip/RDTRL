@@ -7410,12 +7410,21 @@ loin ») : `delta_c(beta)` n'est PAS monotone.** Il monte de `beta=0,005`
 « mauvais » référent avant même que `delta` ne le favorise — une
 question de fond non explorée (à quoi correspond physiquement un
 `delta_c` négatif ? le référent 3 est-il structurellement défavorisé
-dès `delta=0` à grand `beta` ?), notée mais pas creusée cette session.
+dès `delta=0` à grand `beta` ?).
+
+**QUAND, précisément (bissection immédiate plutôt que laissé
+« non creusé ») : `delta_c` traverse zéro à `beta=0,058648433657...`**
+(`d3_c` à ce point : `0,014160575` — bien plus gros que le
+`0,0027` de `beta=0,02`, cohérent avec un système déjà loin dans sa
+zone de spécialisation à ce `beta`). Pas encore d'explication du POURQUOI
+physique de ce croisement — juste le QUAND localisé précisément,
+laissé ouvert pour la suite.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | `C0` suit une loi de puissance simple en `beta` (`∝√beta` ou `∝beta`) | 17/09 (moi) | **réfutée** le 17/09 (`C0/√beta` varie de 1,32 à 2,54, pas constant) |
 | `delta_c(beta)` est monotone croissant | 17/09 (moi, implicite) | **réfutée** le 17/09 (maximum vers `beta≈0,024`, puis décroît et devient négatif) |
+| `delta_c(beta)=0` a une valeur de `beta` précise et localisable | 17/09 (moi) | **confirmée** le 17/09 (`beta=0,058648433657`, encadré à 1e-11 près) |
 
 Script : `verifier_c0_vs_beta.py`.
 
