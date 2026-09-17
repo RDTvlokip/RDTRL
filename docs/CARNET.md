@@ -7789,6 +7789,31 @@ précisément.
 | la transition entre "nul" et "-0,84%" est graduelle (delta_c varie continûment avec la masse) | 17/09 (moi, implicite) | **réfutée** le 17/09 (saut net entre 15% et 18%, aucune valeur intermédiaire sur 8 points) |
 | le saut correspond à une bascule qualitative entre deux branches distinctes du système, pas un décalage continu du même point fixe | 17/09 (moi) | **ouverte** — cohérente avec le saut nul, pas encore testée directement |
 
+**Seuil localisé précisément par bissection (10 points supplémentaires,
+`verifier_jouet_n_variable.py`, invocation ad hoc) :**
+
+```
+masse=15,0000%    delta_c=0,018672
+masse=16,5000%    delta_c=0,018672
+masse=17,2500%    delta_c=0,018672
+masse=17,6250%    delta_c=0,018672
+masse=17,7188%    delta_c=0,018672
+masse=17,7422%    delta_c=0,018672
+masse=17,7539%    delta_c=0,018516   <- bascule ici
+masse=17,7656%    delta_c=0,018516
+masse=17,8125%    delta_c=0,018516
+masse=18,0000%    delta_c=0,018516
+```
+
+**Seuil encadré entre 17,7422 % et 17,7539 % — résolution à 0,012
+point de pourcentage près, un saut binaire net, pas un dégradé.** Étape
+(a) de ETAT.md terminée : le seuil existe, il est réel, il est
+maintenant localisé précisément. Cohérent avec l'hypothèse de bascule
+qualitative entre deux branches (pas encore directement démontrée,
+mais le caractère strictement binaire du résultat sur 18 points au
+total, jamais une valeur intermédiaire, la rend plus probable qu'un
+effet de calibration graduel).
+
 **(c) « relier à `k(R)` » : précisé pourquoi ce n'est PAS une simple
 conversion numérique, pour ne pas laisser un item vague.** `delta_c`
 et son décalage (-0,84 %) sont des propriétés STATIQUES du système
