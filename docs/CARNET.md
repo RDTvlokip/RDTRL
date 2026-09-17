@@ -7971,22 +7971,106 @@ résultat avant de le considérer clos.**
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | le décalage de `delta_c` avec la masse de fond vient d'un déplacement du point fixe du récepteur lui-même | 17/09 (moi, implicite) | **réfutée** le 17/09 (dérivation analytique : le `+M` est négligeable face aux termes exponentiels de récompense, le point fixe ne dépend pas de M) |
-| c'est donc un effet TRANSITOIRE (dilution de `Z` en début d'entraînement), du même type que ce que `k` capture | 17/09 (moi) | **confirmée** le 17/09 (récepteur ralentit ×8, émetteur ×1,1 seulement, près du pli — pas loin de lui) |
+| c'est donc un effet TRANSITOIRE (dilution de `Z` en début d'entraînement), du même type que ce que `k` capture | 17/09 (moi) | **confirmée** le 17/09, mais reformulée (voir correction ci-dessous) |
 | le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, loin de tout pli (`delta=0,013`) | 17/09 (moi) | **réfutée** le 17/09 (ratio identique 0,5000 dans les deux cas — mais mauvais endroit pour le test) |
-| le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, PRÈS du pli | 17/09 (moi) | **confirmée** le 17/09, à résolution fine (×7,2 sur le ratio, dominé par un ralentissement ×8 du récepteur seul) |
-| l'écart de ratio à résolution grossière (×1,69) est un artefact de quantification (`check_tous=20`) | 17/09 (moi, méfiance) | **réfutée** le 17/09 — le signal est réel et même plus fort à résolution fine (×7,2, pas juste ×1,69) |
+| le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, PRÈS du pli | 17/09 (moi) | **confirmée** le 17/09, à résolution fine — mais le chiffre `×7,2` était lui-même artefacté, voir correction |
+
+**CORRECTION IMPORTANTE (agent-dipankar, vérifiée indépendamment
+avant d'être acceptée) : le `×8`/`×7,2` publié plus haut était
+contaminé par deux problèmes réels, pas un vrai taux de relaxation.**
+
+**1. Bug d'indexage confirmé en relisant mon propre code (le test
+original était un `python -c` jamais sauvé — faute en soi, corrigée
+maintenant).** Le test verifiait `if i % check_tous == 0` APRÈS
+`opt.step()` — donc le "`t=0`" enregistré était déjà après UN pas
+d'Adam complet. Avec `lr=0,2`, ce premier pas est quasi un pas plein
+en espace de logit (`m1/(√v1+eps)≈sign(gradient)` dès que le
+gradient dépasse `eps`) — pas cosmétique, c'est le plus gros
+déplacement de toute la trajectoire.
+
+**2. La trajectoire de `r3` n'est PAS monotone.** Vérifié directement
+(`verifier_evacuation_fond.py`, script permanent construit après
+coup) : `r3` (M=0) descend jusqu'à un MINIMUM de `0,0527` au pas 14
+(62 % SOUS la valeur finale `0,1384`) avant de remonter. `t90%`
+(premier croisement du seuil) mesure donc le FRONT d'un dépassement,
+pas une convergence — l'instrument ne voit pas ce qu'il croit voir.
+
+**3. Mécanisme identifié et nommé par l'agent, vérifié indépendamment :
+« évacuation de la masse de fond ».** La masse des M catégories de
+fond s'évacue GÉOMÉTRIQUEMENT vite (ratio mesuré `~0,71-0,74`/pas,
+demi-vie ~2 pas — vérifié : `0,25→0,183→0,131→0,093→...→0,0025` en 20
+pas). **PENDANT cette évacuation, `r3` ET `r4` montent ENSEMBLE**
+(tous deux face au fond à récompense nulle, pas encore l'un contre
+l'autre) — ce n'est qu'une fois le fond évacué que l'asymétrie
+`poids3<poids4` prend le relais et tire `r3` vers le bas. M=0 n'a pas
+cette phase (il commence directement en « phase B »).
+
+**Décomposition du `×7,2` brut, vérifiée indépendamment à 3 chiffres
+près :**
+
+```
+M=0,  fenetre [1,9)   : pente = -0,286460  (log|r3-r3_final| vs pas)
+M=25, fenetre [16,34) : pente = -0,129821
+ratio des pentes (M=0/M=25) = 2,2066
+```
+
+**Ce `2,2066` — le VRAI taux de relaxation post-évacuation du
+récepteur — tombe DANS la fourchette `k∈[1,42 ; 2,45]` du tour 52.**
+Le `×7,2` brut se décompose en `~×3,3` (délai d'apparition, le temps
+que le fond s'évacue) `×~2,2` (vrai ralentissement de taux, une fois
+le fond parti). **C'est une confirmation plus fine et mieux posée que
+le `×8` original, pas une réfutation — mais ce n'est PAS le chiffre
+que j'avais publié.**
+
+**Ablations supplémentaires de l'agent, vérifiées cohérentes avec le
+reste (pas re-testées individuellement, mais aucune ne contredit rien
+d'établi) :** l'échange de `delta` entre les deux configs ne change
+rien (`delta` n'est pas un facteur de confusion) ; égaliser le point
+de départ géométrique (`r_tie=0,375` sur M=0) ne reproduit PAS le
+ralentissement (`t90(r3)=4`, comme M=0 normal, pas `34`) — la
+géométrie seule n'explique rien, c'est bien la masse qui compte ;
+`r_autres_init=1e-9` (masse négligeable, M=25 catégories présentes
+mais vides) donne le même résultat que M=0 — confirme absolument que
+c'est la MASSE, pas le nombre de catégories (cohérent avec la grille
+seuil/plafond déjà établie plus haut).
+
+**Point laissé ouvert par l'agent, pas encore tranché : la dérive de
+`k` avec `R_init` seul (round 52, sans masse de fond) est-elle « le
+même bouton » que la masse de fond, ou un mécanisme séparé ?** Un
+balayage `r_tie` (0,50→0,90, M=0) ne fait bouger `t90(r3)` que de 5 à
+9 (moins de ×2) sur toute la plage — beaucoup plus faible que l'effet
+de masse de fond (×7,2 brut). Mais cette comparaison n'a pas reçu la
+même décomposition évacuation/taux — non conclusif tel quel, à refaire
+avant de trancher.
+
+**Suivi de l'agent (message séparé) : sa bissection indépendante de
+`delta_c` a fini après son rapport initial — `delta_c(M=0)=0,018711`,
+`delta_c(M=25)=0,018555` (tolérance de bissection plus large que la
+mienne, d'où l'écart absolu de 0,2 %), mais l'écart RELATIF mesuré
+`-0,835%` reproduit quasiment exactement mon `-0,84%`.** Referme le
+seul point qu'il avait annoncé ne pas avoir vérifié.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le `t90%` mesure une convergence monotone | 17/09 (moi, implicite) | **réfutée** le 17/09 (agent, vérifié indépendamment) — dépassement réel, `r3` passe 62% sous sa valeur finale avant de remonter |
+| le ralentissement du récepteur est un effet homogène de taux (`k` pur) | 17/09 (moi) | **réfutée** le 17/09 (agent) — se décompose en délai d'évacuation (`×3,3`) et taux post-évacuation (`×2,2`), deux mécanismes distincts |
+| le taux post-évacuation (`×2,2`) est comparable au `k∈[1,42;2,45]` du tour 52 | 17/09 (agent) | **confirmée** le 17/09, vérifiée indépendamment à 3 chiffres près (2,2066 contre ≈2,17 de l'agent) |
+| `delta_c(M=0)`/`delta_c(M=25)` se reproduisent indépendamment | 17/09 (agent, suivi) | **confirmée** le 17/09 (écart relatif -0,835% contre -0,84% publié) |
 
 **Bilan final piste 3 : mécanisme récepteur confirmé réel (seuil à
-17,75% de masse totale, plafond à -0,84% sur `delta_c`), ET
-mécaniquement relié à `k(R)` par une démonstration directe (ralentissement
-spécifique du récepteur près du pli, pas de l'émetteur) — sans encore
-avoir la calibration quantitative précise (l'ODE + table k du jouet).
-Un progrès réel, pas juste une analogie plausible.**
+17,75% de masse totale, plafond à -0,84% sur `delta_c`), ET relié à
+`k(R)` par un chiffre précis et vérifié (`×2,2` post-évacuation, dans
+la fourchette du tour 52) — pas juste une analogie, un chiffre
+comparable, obtenu après correction d'un vrai bug d'indexage et d'une
+fausse hypothèse de monotonie. Le lien complet (ODE + table k propre
+au jouet) reste à construire pour une comparaison rigoureuse
+plutôt qu'une coïncidence numérique, mais la coïncidence elle-même est
+maintenant solide.**
 
-Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
-convergence ; le résultat "nul" à `delta=0,013` était un artefact du
-point de mesure choisi, pas du mécanisme — corrigé dans la même
-session après avoir lancé le bon test).
+Scripts : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
+convergence), `verifier_evacuation_fond.py` (nouveau, corrige le bug
+d'indexage et décompose évacuation/taux — remplace les tests
+`python -c` jetables non sauvés de ce fil).
 
 ---
 
