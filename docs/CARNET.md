@@ -7524,30 +7524,48 @@ une masse non négligeable sur des catégories sans récompense propre,
 QUEL QUE SOIT leur point de départ — pas un artefact d'init, une
 propriété de l'objectif à cet endroit.
 
-**Conséquence plus forte que prévu : ce modèle précis de "25 autres
-lignes" (catégories de fond côté RÉCEPTEUR, sans récompense propre)
-est incapable de produire un effet mesurable sur `delta_c`/l'écart de
-bascule, quel que soit M ou l'init — pas seulement "pas encore testé
-correctement".** Hypothèse affinée, à tester en priorité si cette piste
-est reprise : le mécanisme "25 autres lignes" invoqué depuis le tour 49
-(H13) concernait à l'origine l'ÉMETTEUR (le référent 3 s'effondre sur
-1/27, pas 1/2 — le `26` de l'équation H7 est un facteur de
-renormalisation sur les 26 AUTRES MESSAGES de l'émetteur, pas sur des
-référents concurrents côté récepteur). Ce jouet-ci n'a jamais modélisé
-CET axe-là (`s3`/`s4` restent des sigmoïdes indépendantes, jamais un
-softmax à 27 messages) — la bonne ablation pour tester la dérive de
-`k(R)` serait donc côté ÉMETTEUR (un softmax emetteur a message-space
-variable), pas côté récepteur comme tenté ici.
+**CORRECTION IMMÉDIATE (avant de clore, pas après coup) : la conclusion
+ci-dessus ("résultat nul robuste") était fausse — contredite par le test
+qui comptait vraiment, `delta_c` lui-même, pas juste un point à
+`delta=0,013`.** Lancé en parallèle du reste de cette section :
+`bissecter_delta_c(M=25, r_autres_init=0,01)` = **0,018515625**, contre
+`0,018672` pour M=0 — **un écart réel de -0,84 %, pas zéro.** Le point
+unique à `delta=0,013` (bien en dessous du pli, dans la zone graduée
+« plate ») ne suffisait pas à détecter un effet qui se manifeste
+précisément À la bifurcation, pas loin d'elle — exactement le genre
+d'erreur que la règle « chercher où l'effet se manifeste, pas
+seulement s'il existe » (axe OÙ/JUSQU'OÙ) est censée éviter, et que
+j'ai faite en concluant trop vite sur un seul point.
+
+**Lecture correcte : les catégories de fond CÔTÉ RÉCEPTEUR ont un effet
+réel mais PETIT sur `delta_c` (0,84 %) quand elles démarrent avec une
+masse non négligeable (0,01), alors qu'à `r_autres_init=1e-6` l'effet
+est indétectable (en dessous du bruit de bissection, `<0,01%`).** Cela
+NE réfute PAS le mécanisme récepteur — ça dit que son effet est faible
+à ce niveau de masse et sensible au point de départ, pas absent.
+L'hypothèse émetteur (le `26` de H7) reste une piste complémentaire
+plausible, pas la seule explication qui reste.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| l'init `r_autres_init=1e-6` (trop petite) explique le résultat nul | 17/09 (moi) | **réfutée** le 17/09 (`r_autres_init=0,01`, 10000× plus grand, donne le même résultat nul) |
-| les M catégories de fond côté RÉCEPTEUR (sans récompense propre) ne peuvent structurellement pas maintenir de masse à l'équilibre, quel que soit M ou l'init | 17/09 (moi) | **confirmée** le 17/09 |
-| le mécanisme "25 autres lignes" est côté ÉMETTEUR (renormalisation sur 26 messages, le `26` de H7), pas côté récepteur | 17/09 (moi, affinée) | **ouverte — piste correcte probable pour la suite, pas testée cette session** |
+| l'init `r_autres_init=1e-6` (trop petite) explique le résultat nul à `delta=0,013` | 17/09 (moi) | **confirmée partiellement** le 17/09 — le point unique était insensible, mais `delta_c` lui-même montre un vrai écart (-0,84 %) à `r_autres_init=0,01` |
+| les M catégories de fond côté RÉCEPTEUR ne peuvent structurellement maintenir aucune masse ni influence, quel que soit M ou l'init | 17/09 (moi) | **réfutée** le 17/09 par le test `delta_c` lui-même (voir ci-dessus) — je l'avais déclarée confirmée sur la base d'un seul point, erreur corrigée dans la même session |
+| le mécanisme "25 autres lignes" est côté ÉMETTEUR (renormalisation sur 26 messages, le `26` de H7), pas côté récepteur | 17/09 (moi, affinée) | **affaiblie** le 17/09 — le récepteur a bien un effet (petit, sensible à la masse initiale), donc ce n'est plus "l'un ou l'autre", possiblement les deux mécanismes contribuent |
+
+**Ce qui reste réellement ouvert, honnêtement, en fin de session :** un
+effet récepteur PETIT et POSITIF existe (-0,84 % sur `delta_c` à
+`r_autres_init=0,01`), mais sa GRANDEUR exacte en fonction de M et de
+l'init, et s'il suffit à expliquer la dérive de `k(R)` mesurée au tour
+52 (facteur ~1,7 sur `k`, pas 0,84 % sur `delta_c` — deux grandeurs
+différentes, jamais mises sur la même échelle) restent à faire. Ne pas
+répéter l'erreur de ce tour : mesurer `delta_c(M)` pour plusieurs M et
+plusieurs `r_autres_init`, pas un seul point de chaque, avant de
+conclure quoi que ce soit la prochaine fois.
 
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
-convergence ET testé avec deux inits différentes — le résultat nul est
-maintenant robuste, pas un artefact de calibration).
+convergence ; le résultat "nul" à `delta=0,013` était un artefact du
+point de mesure choisi, pas du mécanisme — corrigé dans la même
+session après avoir lancé le bon test).
 
 ---
 
