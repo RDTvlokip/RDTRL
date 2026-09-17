@@ -7831,19 +7831,62 @@ et la table k du jouet), pas un script de plus.** Noté comme la tâche
 concrète et bien scopée pour la prochaine reprise, plutôt que laissé
 comme un vague "à comparer".
 
-**Prochaines étapes précises pour la reprise, dans l'ordre :**
-1. Lire le résultat de la cartographie du seuil (8 points, 8 %-25 %) —
-   lancée en fin de session, voir la sortie de
-   `verifier_jouet_n_variable.py` (invocation ad hoc, pas encore un
-   script permanent — à sauver si le résultat est utile).
-2. Construire l'ODE à deux échelles de temps ET la table k↔bascule
-   POUR CE JOUET (pas juste réutiliser celle du système réel), à masse
-   de fond nulle vs non-négligeable, pour tester si `k` y dérive aussi.
-3. Si `k` dérive dans le jouet de façon comparable (même sens, ordre de
-   grandeur cohérent) à sa dérive dans le système réel, ça confirmerait
-   le mécanisme récepteur comme (au moins une partie de) la cause de la
-   dérive de `k(R)` — sinon, ça la réfuterait proprement, contrairement
-   à aujourd'hui où ni l'un ni l'autre n'est tranché.
+**Avancé sur (b)/(c) plutôt que laissé en l'état — dérivation
+analytique du point fixe du récepteur POUR ce jouet, qui recadre tout
+le problème.** En tenant `s3,s4` fixes, le récepteur (softmax sur
+2+M catégories) a son propre point de stationnarité fermé — maximiser
+`poids3·s3·r3 + poids4·s4·r4 + (beta/N)·entropie(r)` sur le simplexe
+donne un softmax standard :
+
+```
+r3_br(s3,s4) = exp(N·poids3·s3/beta) / [exp(N·poids3·s3/beta) + exp(N·poids4·s4/beta) + M]
+```
+
+**Le `+M` au dénominateur est linéaire, alors que les termes de
+récompense sont exponentiels** (`N·poids3·s3/beta ≈ 25` en régime
+gradué, donc `exp(25)≈7×10^10`) — `M` (au plus 25) est totalement
+négligeable à L'ÉQUILIBRE, quel que soit M. **Ça veut dire que le
+décalage de `delta_c` mesuré ne peut PAS venir d'un déplacement du
+point fixe lui-même — le point fixe du récepteur ne dépend pas de M
+(vérifié analytiquement, pas supposé).** La seule explication qui
+reste : c'est un effet TRANSITOIRE — la masse de fond initiale dilue
+`Z` en tout DÉBUT d'entraînement (avant que `exp(...)` domine), ce qui
+peut faire dévier la TRAJECTOIRE vers un bassin différent sans jamais
+déplacer les points fixes eux-mêmes. **C'est exactement le type de
+mécanisme qu'un `k` (vitesse relative récepteur/émetteur) est censé
+capturer** — pas besoin de supposer une connexion, il y a une raison
+structurelle de s'y attendre.
+
+**Testé directement (plus rapide que construire toute l'ODE) : le
+ratio des temps de convergence à 90 % entre `r3` et `s3`, avec et sans
+masse de fond.** Premier essai à `delta=0,013` (loin de tout pli) :
+**ratio IDENTIQUE (0,5000) dans les deux cas** — nul. Diagnostic
+immédiat avant de conclure à une réfutation : `delta=0,013` est loin de
+TOUT pli (celui de M=0 à 0,0187 et celui de M=25/25% à 0,0185) — un
+effet de bassin/séparatrice ne devrait se manifester que PRÈS du pli,
+pas dans la zone graduée confortable où les deux trajectoires
+convergent "normalement" quel que soit leur point de départ. Retesté
+au bon endroit (`delta=0,95×delta_c` de CHAQUE configuration) — en
+cours.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le décalage de `delta_c` avec la masse de fond vient d'un déplacement du point fixe du récepteur lui-même | 17/09 (moi, implicite) | **réfutée** le 17/09 (dérivation analytique : le `+M` est négligeable face aux termes exponentiels de récompense, le point fixe ne dépend pas de M) |
+| c'est donc un effet TRANSITOIRE (dilution de `Z` en début d'entraînement), du même type que ce que `k` capture | 17/09 (moi) | **ouverte, cohérente avec la dérivation, pas encore mesurée directement** |
+| le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, loin de tout pli (`delta=0,013`) | 17/09 (moi) | **réfutée** le 17/09 (ratio identique 0,5000 dans les deux cas — mais mauvais endroit pour le test, voir ci-dessus) |
+
+**Prochaines étapes précises pour la reprise :**
+1. Résultat du retest près du pli (`delta=0,95×delta_c` de chaque
+   config) — lancé en fin de session, à lire en premier.
+2. Si un écart de ratio apparaît près du pli mais pas loin de lui, ça
+   confirme le mécanisme transitoire et permet de construire le lien
+   quantitatif avec `k(R)` (toujours à faire : ODE + table k du jouet,
+   mais maintenant motivée par une preuve directe plutôt qu'une
+   analogie).
+3. Si le ratio reste identique même près du pli, le mécanisme
+   transitoire proposé ici serait lui aussi réfuté, et il faudrait
+   revenir à la piste émetteur (le `26` de H7) ou une troisième
+   hypothèse pas encore nommée.
 
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence ; le résultat "nul" à `delta=0,013` était un artefact du
