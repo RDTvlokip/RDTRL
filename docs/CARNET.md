@@ -6880,6 +6880,37 @@ Scripts : `verifier_pin_k.py`, `verifier_ode_separatrice.py`,
 `verifier_excursions_sgd.py`, `verifier_derive_k.py`. Réponse dans
 `docs/REPONSE_ORDRE53.md`.
 
+**Repris seul, en son absence** (Théo, 17/09/2026 : « depuis 2 jours il ne
+répond pas ... on va continuer à chercher nous-mêmes »). Le mystère laissé
+ouvert dans ce même tour — SGD converge à 0,786283, pas 0,794756 prédit —
+creusé jusqu'au bout plutôt que laissé en flag :
+
+```
+190 pas consecutifs logges un par un : R[10,4]=0,786282571470, inchange a 12 chiffres
+norme du gradient a ce point : 3,97e-12
+s3 = 0,999999999665   (baseline pre-perturbation : 0,999999999666)
+```
+
+**Vrai point fixe (gradient nul), pas une approche lente. Et s3 est resté
+COLLE a sa valeur de depart — sous SGD pur, le referent 3 n'a jamais bougé
+du tout.** Son gradient brut pres de la saturation est minuscule (meme
+mecanisme que toutes les formules de deficit de ce tour) et sans la mise a
+l'echelle par parametre d'Adam, lr=50 ne suffit pas a le deplacer en
+390 000 pas — alors que le recepteur, parti d'un R=0,5 encore "vivant",
+bouge librement. **0,786283 n'est pas un autre point de la vraie branche
+couplee : c'est ce que le recepteur seul atteint face a un emetteur que
+SGD n'a jamais reellement entraine** — la meme signature "gele, sans
+valeur" que ce projet trouve depuis le tour 33 sous les planchers
+`adam_eps`, reproduite ici par un mecanisme totalement different (pas de
+plancher adaptatif du tout — juste un gradient brut trop faible face a un
+pas fixe). **Consequence : le test "zero excursion sous SGD" tient toujours
+mais pèse moins que prevu** — un systeme ou un joueur est gele en
+permanence ne peut pas montrer d'excursions par construction ; un vrai
+test sous SGD demanderait un taux d'apprentissage calibre separement par
+parametre, ce qui va a l'encontre de l'idee de tester "SGD pur".
+
+Script : `verifier_point_fixe_sgd.py`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
