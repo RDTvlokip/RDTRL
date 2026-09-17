@@ -7348,6 +7348,35 @@ décades** (`D_empirique(eps) = (gap - C0·√eps)/eps^1,5`, de 8,49 à
 fermée pour ce second coefficient** (demanderait `F_xxxx` et un ordre de
 Lyapunov-Schmidt supplémentaire) — laissé ouvert.
 
+**Fermé plus tard dans la même session (17/09/2026, pendant l'attente
+d'un autre calcul en arrière-plan) : forme fermée de `D` dérivée à la
+main.** Poussé le développement à l'ordre `t^4` (`eps=t²`,
+`u=a1·t+a2·t²+a3·t³+...`) : l'équation à cet ordre fait intervenir
+`F_xxxx`, `F_xxeps` et `F_epseps`, calculées en mpmath (50 chiffres) au
+même point de pli que précédemment :
+
+```
+F_xxxx   = -1 008 766,8136959043...
+F_xxeps  =  8 004,9603511718...
+F_epseps =  -54,7104270218...
+
+a3 = 4,0010606040865862...
+D_analytique = 2*a3 = 8,0021212081731724...
+```
+
+**`D_analytique` correspond à `D_empirique` (8,0021, extrapolé
+numériquement à `eps->1,3e-8`) à 0,0003 % près.** Deux méthodes
+complètement indépendantes (dérivées locales fermées vs retraçage de
+racines extrapolé) tombent sur le même chiffre à 6 chiffres
+significatifs. Ferme la question laissée ouverte par l'agent-dipankar
+(« I have not derived D analytically »).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le coefficient `D` du terme `eps^(3/2)` a une forme fermée dérivable à l'ordre suivant du développement de Lyapunov-Schmidt | 17/09 (moi, reprenant la question laissée ouverte par l'agent) | **confirmée** le 17/09 (`D_analytique=8,0021212` contre `D_empirique=8,0021`, écart 0,0003 %) |
+
+Script : `verifier_puiseux_ordre_suivant.py`.
+
 **Clarification (pas une erreur, une précision) : il existe DEUX
 résidus distincts dans l'historique du projet, à ne pas confondre.**
 En cherchant si le tour 50 (§7.62, `REPONSE_ORDRE51.md`) avait déjà
