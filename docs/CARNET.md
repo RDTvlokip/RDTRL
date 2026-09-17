@@ -7731,7 +7731,40 @@ soit.
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | l'effet récepteur croît linéairement avec M (à `r_autres_init` fixe) | 17/09 (moi) | **réfutée** le 17/09 (M=8 donne le même `delta_c` que M=0, M=25 seul montre un écart — pas de progression linéaire visible sur ces 3 points) |
-| c'est la masse totale de fond (`M×r_autres_init`), pas M seul, qui gouverne l'effet | 17/09 (moi) | **ouverte** — cohérent avec les 3 points (8 % → nul, 25 % → réel) mais pas testé directement (nécessiterait de fixer la masse totale et varier M seul) |
+| c'est la masse totale de fond (`M×r_autres_init`), pas M seul, qui gouverne l'effet | 17/09 (moi) | **confirmée** le 17/09 — voir grille ci-dessous |
+
+**Grille ciblée (3 points, masse totale fixée en variant M) tranche la
+question proprement :**
+
+```
+M=25, masse totale=8 %   -> delta_c=0,018672   (= M=8 a 8 %, = M=0 : NUL)
+M=15, masse totale=25 %  -> delta_c=0,018516   (= M=25 a 25 % : REEL, -0,84 %)
+M=25, masse totale=50 %  -> delta_c=0,018516   (IDENTIQUE a 25 % — pas plus)
+```
+
+**Deux faits établis d'un coup :** (1) à masse totale FIXE, `M` seul
+(8, 15, ou 25) ne change RIEN — `delta_c` est identique tant que la
+masse totale est la même. **C'est bien la masse totale de fond qui
+gouverne l'effet, pas le nombre de catégories qui la portent.** (2)
+L'effet SATURE entre 25 % et 50 % de masse totale — passer de 25 % à
+50 % (le double) ne change plus `delta_c` du tout, alors que passer de
+8 % à 25 % le faisait passer de nul à -0,84 %. **Il y a un SEUIL quelque
+part entre 8 % et 25 %, puis un plafond après 25 %** — pas un effet
+qui croît indéfiniment avec la masse de fond.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'effet croît indéfiniment avec la masse totale de fond | 17/09 (moi) | **réfutée** le 17/09 (50 % donne exactement le même `delta_c` que 25 % — plafond, pas croissance continue) |
+| il existe un seuil de masse totale entre 8 % et 25 % en dessous duquel l'effet est nul | 17/09 (moi) | **confirmée partiellement** le 17/09 (borné entre 8 % et 25 %, pas encore localisé précisément) |
+
+**Bilan piste 3, fin de session : le mécanisme récepteur EXISTE
+(confirmé, pas écarté), a un profil à seuil puis plafond en fonction de
+la masse totale de fond (pas de M), et son ampleur (-0,84 % sur
+`delta_c`) reste à comparer à la dérive de `k(R)` du tour 52 (facteur
+~1,7) — pas encore fait. Prochaines étapes précises pour la reprise :
+(a) localiser le seuil entre 8 % et 25 % par bissection, (b) vérifier
+si le plafond à -0,84 % est stable au-delà de 50 %, (c) relier cette
+grandeur à celle de `k(R)`.**
 
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence ; le résultat "nul" à `delta=0,013` était un artefact du
