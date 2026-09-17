@@ -7511,8 +7511,43 @@ négligeable (comparable à celle de `r3`/`r4`, pas `1e-6`), quitte à ce
 que ça déplace un peu les points fixes de référence (ce serait alors à
 mesurer et soustraire, pas à éviter par construction comme tenté ici).
 
+**Refait tout de suite avec `r_autres_init` 10 000× plus grand (0,01 au
+lieu de 1e-6, soit 25 % de masse totale pour M=25) plutôt que laissé en
+suspens.** Résultat (M=25, delta=0,013) : `masse_autres` retombe à
+`4,12e-11` — ENCORE négligeable — et `R4/s3/r3/r4` sont IDENTIQUES à
+5-6 chiffres près à toutes les valeurs déjà mesurées à `r_autres_init
+=1e-6`. **Ce n'est plus un problème de calibration de l'init — même en
+partant à 25 % de masse totale, l'équilibre écrase les M catégories à
+zéro.** Diagnostic affiné : la pression d'entropie (`beta/N≈7,4e-4`)
+est structurellement trop faible face à la récompense pour maintenir
+une masse non négligeable sur des catégories sans récompense propre,
+QUEL QUE SOIT leur point de départ — pas un artefact d'init, une
+propriété de l'objectif à cet endroit.
+
+**Conséquence plus forte que prévu : ce modèle précis de "25 autres
+lignes" (catégories de fond côté RÉCEPTEUR, sans récompense propre)
+est incapable de produire un effet mesurable sur `delta_c`/l'écart de
+bascule, quel que soit M ou l'init — pas seulement "pas encore testé
+correctement".** Hypothèse affinée, à tester en priorité si cette piste
+est reprise : le mécanisme "25 autres lignes" invoqué depuis le tour 49
+(H13) concernait à l'origine l'ÉMETTEUR (le référent 3 s'effondre sur
+1/27, pas 1/2 — le `26` de l'équation H7 est un facteur de
+renormalisation sur les 26 AUTRES MESSAGES de l'émetteur, pas sur des
+référents concurrents côté récepteur). Ce jouet-ci n'a jamais modélisé
+CET axe-là (`s3`/`s4` restent des sigmoïdes indépendantes, jamais un
+softmax à 27 messages) — la bonne ablation pour tester la dérive de
+`k(R)` serait donc côté ÉMETTEUR (un softmax emetteur a message-space
+variable), pas côté récepteur comme tenté ici.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'init `r_autres_init=1e-6` (trop petite) explique le résultat nul | 17/09 (moi) | **réfutée** le 17/09 (`r_autres_init=0,01`, 10000× plus grand, donne le même résultat nul) |
+| les M catégories de fond côté RÉCEPTEUR (sans récompense propre) ne peuvent structurellement pas maintenir de masse à l'équilibre, quel que soit M ou l'init | 17/09 (moi) | **confirmée** le 17/09 |
+| le mécanisme "25 autres lignes" est côté ÉMETTEUR (renormalisation sur 26 messages, le `26` de H7), pas côté récepteur | 17/09 (moi, affinée) | **ouverte — piste correcte probable pour la suite, pas testée cette session** |
+
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
-convergence, mais l'init `r_autres_init` reste à refaire).
+convergence ET testé avec deux inits différentes — le résultat nul est
+maintenant robuste, pas un artefact de calibration).
 
 ---
 
