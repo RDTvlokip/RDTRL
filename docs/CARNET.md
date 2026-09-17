@@ -7556,7 +7556,7 @@ protocole que `verifier_bissection_delta_c.py` sur 3/4.
 ```
 delta_c(23/25) encadré entre 0,0134365 et 0,0134375, centre = 0,0134370
 delta_c(3/4)   = 0,0134372
-écart = -0,0000002  (0,0015 %)
+écart = -0,000000210  (0,0016 % — corrigé, voir plus bas : arrondi initialement à 0,0015%)
 ```
 
 **Écart au niveau de la résolution même de la bissection (10 itérations
@@ -7568,10 +7568,56 @@ l'objectif (N, beta), pas de la paire de référents ni de la graine.**
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| `delta_c` dépend de la paire de référents (identité, graine) | 17/09 (implicite, à réfuter) | **réfutée** le 17/09 (écart 0,0015 %, au niveau du bruit de bissection) |
+| `delta_c` dépend de la paire de référents (identité, graine) | 17/09 (implicite, à réfuter) | **réfutée** le 17/09 (écart 0,0016 %, au niveau du bruit de bissection) |
 | `delta_c` est une propriété de l'objectif seul (N=27, beta=0,02) | 17/09 (moi) | **confirmée** le 17/09 — troisième confirmation du mécanisme sur 23/25 après R(delta) et l'effondrement vers 1/27 |
 
 Script : `verifier_delta_c_23_25.py`.
+
+**Soumis à un agent-dipankar (règle CLAUDE.md — j'avais oublié cette
+étape pour piste 2, Théo l'a repérée, corrigé). Retour reçu, deux
+corrections mineures confirmées, un point plus substantiel vérifié et
+réfuté.**
+
+**Corrections mineures, confirmées par recalcul indépendant :**
+- `-0,0000002 (0,0015%)` était calculé en arrondissant d'abord le gap
+  à 1 chiffre significatif. Le gap précis est `-0,000000210`, donnant
+  `-0,001563%` — arrondi correct : **`0,0016%`, pas `0,0015%`.**
+- `delta_c(3/4)=0,013437210` ne tombe pas « au centre » de l'intervalle
+  de bissection `[0,0134365 ; 0,0134375]` — il tombe à **71,0%** de sa
+  largeur. Formulation plus honnête : « tombe dans un intervalle de
+  1e-6 de large », pas « coïncide au centre ».
+
+**Point plus substantiel de l'agent : une analyse de pente par
+différences finies sur les 8 points de la bissection montrait un saut
+de pente ×3,91 entre deux points consécutifs, contre ×1,47 prédit par
+une loi `√(delta_c-delta)` simple — un excès ×2,66 — d'où sa
+hypothèse : le budget fixe (`pas=40000`) près d'un pli avec
+ralentissement critique pourrait laisser des valeurs `R` NON
+CONVERGÉES (transitoires) plutôt que des points fixes véritables.**
+
+**Vérifié directement et RÉFUTÉ : au point le plus proche de `delta_c`
+testé dans la bissection (`delta=0,0134297`), `R[13,25]` reste
+IDENTIQUE à 6 décimales entre 40 000, 200 000 et 400 000 pas**
+(`0,811987` dans les trois cas — écart au 7e chiffre seulement, bruit
+numérique). **Ce point précis est pleinement convergé, pas un
+transitoire.** L'excès de pente (×2,66) que l'agent a trouvé
+s'explique plus probablement par la MÊME chose déjà découverte ce
+tour pour les coefficients `C0`/`D` du pli 3/4 : loin du pli exact
+(pas infinitésimalement proche), une loi `√(delta_c-delta)` pure de
+premier ordre n'est PAS censée tenir exactement — les corrections
+d'ordre supérieur (déjà mesurées : `C0` dérive de 0,221 à 0,278 selon
+la distance au pli) dominent précisément dans cette zone. Pas un
+artefact de non-convergence, un artefact d'avoir comparé à la mauvaise
+loi de référence (premier ordre seul).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le gap/pourcentage publié pour delta_c(23/25) vs 3/4 était mal arrondi | 17/09 (agent) | **confirmée** le 17/09 (vérifié indépendamment : 0,0016%, pas 0,0015%) |
+| les valeurs R proches de delta_c dans la bissection 23/25 sont des transitoires non convergés (budget `pas=40000` insuffisant) | 17/09 (agent) | **réfutée** le 17/09 — vérifié directement, `R` identique à 6 décimales de 40k à 400k pas |
+| l'excès de pente (×2,66 vs loi √ simple) vient d'une loi de référence de premier ordre inadaptée à cette distance du pli, pas d'une non-convergence | 17/09 (moi, en réponse) | **plausible, cohérente avec le comportement déjà mesuré de C0/D, pas vérifiée directement sur CE point** |
+
+Script : `verifier_delta_c_23_25.py` (résultat original inchangé, juste
+mieux caractérisé).
 
 ---
 
