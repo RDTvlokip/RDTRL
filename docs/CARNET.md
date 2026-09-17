@@ -7088,6 +7088,37 @@ Script : `verifier_k_beta2.py`.
 
 ---
 
+### Deuxième égalité retrouvée : référents 23/25, message 13 (recette perdue depuis le tour 30-31)
+
+Étape 3 de `ETAT.md` (reproduire sur une autre graine) demandait une
+deuxième égalité indépendante. Celle des tours 30-31 (§7.47-48,
+référents 23/25, message 13) n'avait jamais été sauvée en script
+permanent — testé d'abord sur la graine 31415 du script de recensement
+existant (`recensement_egalite_mur.py`) : absente. Recherche par force
+brute sur 15 graines candidates lancée puis arrêtée (trop coûteuse) au
+profit d'un grep direct du transcript JSONL de cette session pour
+"23/25" — même méthode que `replay_idx5.py` (règle CLAUDE.md : chercher
+dans la conversation avant de déclarer perdu).
+
+**Trouvé : `default_rng(50000)`, un seul couple émetteur/récepteur
+(pas de boucle à sauter), `monter(beta=0,02, 20000 pas, lr=0,05)`.**
+Reconstruit et vérifié :
+
+```
+message=13  refs=[23, 25]  masses=[0.5001132951215442, 0.4998866825562411]
+```
+
+**Identique au chiffre près à ce qui était publié dans
+`REPONSE_ORDRE31.md`.** Sauvegardée en `replay_23_25.py`, pour ne plus
+jamais revivre cette chasse — à la différence du mur référents 3/4,
+cette égalité est **naturelle** (atteinte par la dynamique seule, sans
+poussée artificielle), un bon candidat pour tester si le mécanisme
+k(R)/delta_c des tours 48-52 se généralise à une collision indépendante.
+
+Script : `replay_23_25.py`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
