@@ -8279,14 +8279,107 @@ raccourci toutes tombées sur la même limite fondamentale.
 | l'échec des mesures de pente vient des mêmes excursions (H15, second moment d'Adam) déjà trouvées sur le système complet | 18/09 (moi) | **confirmée** le 18/09 — signature identique (rebond imprévisible, pas de décroissance monotone) retrouvée indépendamment sur le jouet réduit |
 | la mesure directe de taux sur trajectoire ne peut pas donner de `k` fiable près d'un pli sous Adam, quelle que soit la méthode de fenêtrage | 18/09 (moi) | **confirmée** le 18/09 — cohérent avec le choix méthodologique du tour 52 (pin-and-falsify sur l'ODE, pas de lecture directe de pente) |
 
+**Soumis à un agent-dipankar (règle CLAUDE.md) pour challenger cette
+conclusion méthodologique. Retour très substantiel, vérifié pour
+l'essentiel avant d'être accepté.**
+
+**1. Vérification de cohérence qu'il propose (`r4*=0,75-r3*` si
+« masse totale=25% » persiste à l'équilibre) : REFAIT, et son
+hypothèse était fausse, la mienne confirmée.** `r3*+r4*` calculé =
+`1,0000000000` EXACTEMENT (pas `0,75`) — la masse de fond est bien
+nulle à l'équilibre (dérivé analytiquement plus haut ce même tour),
+« masse totale=25% » décrit la condition INITIALE d'entraînement, pas
+une part qui persiste. Son test a raté parce qu'il n'avait pas cette
+dérivation (accès repo refusé) — mais le test lui-même était le bon
+réflexe (méfiance), et il l'a signalé honnêtement comme non vérifiable
+de son côté plutôt que de trancher à l'aveugle.
+
+**2. Correction mineure confirmée : `6,97e-05/2,18e-11 = 3 197 248`,
+`log10=6,505`, pas `6`.** Écart de 6,5 ordres de grandeur, pas 6 —
+corrigé.
+
+**3. Trouvaille plus importante, pas encore explorée : M=0 et M=25
+sont à quasiment la MÊME distance absolue de leur pli respectif
+(`9,336e-4` contre `9,258e-4`, écart 0,84%), mais convergent avec un
+écart de 6,5 DÉCADES.** Si la distance au pli seule fixait l'échelle
+de temps, les deux devraient être comparablement lents. **Ça veut dire
+que `M` ne fait pas que déplacer `delta_c` — il change la GÉOMÉTRIE
+LOCALE du pli** (courbure, ou une direction propre lente propre à M,
+pas encore isolée). Un vrai « pourquoi CE nombre » non résolu, noté
+pour une reprise future.
+
+**4. Apport théorique décisif, vérifié en dérivant moi-même la forme
+normale d'un pli standard : à `mu=0` EXACTEMENT (pile sur le pli),
+`dx/dt=-x²` donne `x(t)=x0/(1+k·x0·t)` — une décroissance en PUISSANCE
+(1/t), PAS exponentielle, à AUCUNE fenêtre, purement déterministe
+(sans Adam, sans bruit).** Ça explique, indépendamment de H15, pourquoi
+une pente en fenêtre précoce ne peut jamais se stabiliser près d'un
+pli : il n'existe pas de taux exponentiel unique tant que `t` n'est
+pas très supérieur à `1/(2√mu)`. **Les deux mécanismes coexistent :
+un effet de "fantôme" déterministe du pli (proche de `mu=0`) ET les
+excursions d'Adam (H15) — pas l'un OU l'autre.**
+
+**5. Test précommis par l'agent pour distinguer les deux, exécuté
+directement : faire varier `beta2` et voir si la récurrence des
+rebonds suit sa mémoire.** Trajectoire complète (`pas=0` à `19000`,
+tous les 1000 pas) à `beta2=0.999` (mémoire 1000 pas) contre `beta2=0.9`
+(mémoire 10 pas) :
+
+```
+beta2=0,999 : descend a ~1e-6 vers pas=9000, PUIS rebonds ponctuels
+              (pas=10000: 3,1e-5 ; pas=15000-16000: jusqu'a 2,0e-3 ;
+              pas=18000: 4,2e-4) -- periodes de stabilite longues,
+              interrompues par des sauts occasionnels.
+beta2=0,9   : NE SE STABILISE JAMAIS -- oscille en continu entre
+              2,5e-4 et 2,1e-3 sur TOUTE la duree (19000 pas), aucune
+              periode de stabilite comparable a beta2=0,999.
+```
+
+**Signature qualitative nette : réduire la mémoire d'Adam (`beta2`
+plus petit) rend les oscillations PLUS fréquentes, pas plus rapides à
+disparaître — exactement ce que prédit H15 (le second moment d'Adam
+cause l'instabilité), et incompatible avec un pur artefact déterministe
+du pli (qui ne dépend pas de `beta2`, qui n'existe même pas dans une
+ODE pure).** **H15 confirmé comme un vrai contributeur, pas juste une
+hypothèse par défaut — vérifié par la MÊME méthode qui l'avait établi
+sur le système complet (variation de beta2), retrouvée indépendamment
+sur ce jouet réduit.**
+
+**6. Sur l'immunité du protocole ODE+pin-and-falsify (question posée
+à l'agent) : PAS totalement immunisé, argument accepté sans
+contre-test (dérivation théorique propre, pas de calcul à vérifier).**
+Bissecter à budget fini `T` près du pli hérite du même goulot
+(distinguer "converge" de "encore en train de relaxer" demande
+`t~O(1/√mu)`) — bande de classification irréductible de largeur
+`~C/T²` autour de `delta_c`, pas un point exact. Correction à
+appliquer la prochaine fois : rapporter un INTERVALLE pour `delta_c`,
+pas un chiffre unique, et doubler le budget adaptativement quand une
+étape de bissection tombe dans la bande d'incertitude courante.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le rebond vient de H15 (second moment d'Adam) | 18/09 (moi) | **confirmée** le 18/09 par test direct (beta2=0,9 oscille en continu, beta2=0,999 a de longues périodes stables — signature H15, pas un artefact déterministe indépendant de beta2) |
+| le rebond pourrait être un pur artefact déterministe du pli (fantôme/bottleneck), sans rapport avec Adam | 18/09 (agent) | **réfutée en tant qu'EXPLICATION UNIQUE** le 18/09 — le phénomène du fantôme existe bien (dérivation théorique confirmée) mais n'explique pas la dépendance en `beta2` observée ; les deux mécanismes coexistent |
+| M change seulement la POSITION du pli (`delta_c`), pas sa géométrie locale | 18/09 (moi, implicite) | **réfutée** le 18/09 (agent) — deux configs à distance-au-pli quasi identique convergent avec 6,5 décades d'écart, la géométrie locale doit différer |
+| le protocole ODE+pin-and-falsify est totalement immunisé contre le problème de fenêtre/budget près du pli | 18/09 (moi, implicite) | **réfutée** le 18/09 (agent, argument théorique accepté) — bande de classification irréductible `~1/T²`, correction : rapporter un intervalle, budget adaptatif |
+
 **Bilan définitif de ce fil (piste 3, lien k(R)) : le mécanisme
 récepteur/masse de fond est réel et son existence est solidement
 établie (via `delta_c`, un seuil discret non affecté par les
-excursions). Sa taille précise, comparée à `k∈[1,42;2,45]`, ne peut
-PAS se mesurer par lecture directe de trajectoire — seul le protocole
-ODE+pin-and-falsify (déjà utilisé au tour 52 pour la même raison)
-peut la chiffrer correctement. C'est la tâche pour la prochaine
-session, pas un raccourci qui reste à trouver.**
+excursions) — ET sa lenteur près du pli a maintenant DEUX explications
+identifiées et distinguées (fantôme déterministe du pli + excursions
+Adam H15, confirmées coexister par un test direct). Sa taille précise,
+comparée à `k∈[1,42;2,45]`, reste À CHIFFRER via le protocole
+ODE+pin-and-falsify — désormais avec la mise en garde qu'il faudra
+rapporter un intervalle et non un point, et avec une nouvelle question
+ouverte (pourquoi M change la géométrie locale du pli, pas juste sa
+position) à explorer en même temps. C'est la tâche pour la prochaine
+session, pas un raccourci qui reste à trouver — mais on comprend
+maintenant BEAUCOUP mieux pourquoi les raccourcis ont tous échoué.**
+
+Scripts : `verifier_point_fixe_jouet_m.py` (point fixe + fenêtre
+adaptative), tests `beta2` ad hoc (à sauver en script permanent si
+cette piste est reprise).
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
