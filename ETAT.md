@@ -66,30 +66,38 @@ tout re-raconter.*
    bascule qualitative entre deux branches du système, pas un décalage
    continu du même point fixe — pas encore démontré directement.
 
-   **(b)/(c) RÉSOLU, avec un chiffre précis, pas juste une analogie.**
-   Mesuré directement (pas via l'ODE complète, via une décomposition
-   du temps de convergence du récepteur) : près du pli, la masse de
-   fond crée un mécanisme en DEUX temps — (i) un délai (`~×3,3`)
-   pendant que la masse de fond s'évacue géométriquement (demi-vie
-   ~2 pas, `r3` et `r4` montent ENSEMBLE contre le fond avant de
-   s'opposer l'un à l'autre) ; (ii) un vrai ralentissement de taux
-   POST-évacuation du récepteur, mesuré à **`×2,2066`**. **Ce `2,2`
-   tombe DANS la fourchette `k∈[1,42 ; 2,45]` du tour 52** — vérifié
-   indépendamment à 3 chiffres significatifs (deux fois : par un
-   agent-dipankar et par moi, `-0,286460`/`-0,129821` = `2,2066`).
-   **Un premier chiffre brut (`×8`) publié plus tôt dans ce tour était
-   FAUX** — contaminé par un bug d'indexage (le "`t=0`" enregistré
-   était déjà après un pas d'Adam complet) et par la non-monotonie de
-   la trajectoire de `r3` (dépassement de 62% sous sa valeur finale) —
-   corrigé dans la même session, script permanent
-   `verifier_evacuation_fond.py` créé (remplace les tests `python -c`
-   jetables, faute en soi corrigée). Point non tranché : un balayage
-   `r_tie` seul (sans masse de fond) ne fait bouger le temps de
-   convergence que d'un facteur <2 sur toute sa plage — pas encore
-   décomposé évacuation/taux, donc pas encore tranché si c'est « le même
-   bouton » que la masse de fond ou un mécanisme séparé. La piste
-   émetteur (le `26` de H7) reste une hypothèse complémentaire.
-   Détail complet et hypothèses datées : `CARNET.md`, fin de §7.65.
+   **(b)/(c) PAS RÉSOLU — un chiffre précis (`×2,2`) a été mesuré PUIS
+   s'est effondré en creusant plus loin, dans la même session. Lire
+   `CARNET.md` en entier avant de citer un chiffre de ce fil.**
+   Chronologie : (1) mesuré un ralentissement récepteur brut `×8` —
+   FAUX, contaminé par un bug d'indexage (`t=0` enregistré après un
+   pas d'Adam complet) et par la non-monotonie de `r3` (dépassement de
+   62%) ; (2) corrigé et décomposé en `~×3,3` (délai d'évacuation de la
+   masse de fond, demi-vie ~2 pas) `×~×2,2` (taux post-évacuation),
+   avec ce `2,2` tombant dans `k∈[1,42;2,45]` du tour 52 — vérifié
+   deux fois indépendamment (agent + moi) ; (3) tranché le point ouvert
+   sur `r_tie` (R_init) seul — trouvé un "pic" non monotone à
+   `r_tie=0,75`, ratio `×2,6`, PUIS un agent a montré que `min(r3)` et
+   son pas d'apparition sont MONOTONES (le pic n'est visible que sur
+   la pente dérivée) — vérifié : en fenêtre tardive, le pic disparaît
+   complètement (taux quasi constant, ~6% de variation) — RÉFUTÉ ; (4)
+   par prudence, revérifié le `×2,2` de l'étape (2) en fenêtre tardive
+   aussi — **il ne se stabilise PAS non plus : la pente continue de
+   rétrécir sans converger, parce que `r3_final` (la référence, prise
+   comme dernière valeur d'un run fini) est elle-même une CIBLE MOBILE
+   près du pli (même ralentissement critique déjà documenté ailleurs
+   ce tour).** **Conclusion actuelle, honnête : le mécanisme récepteur
+   est réel (delta_c le confirme, un seuil discret non affecté par ce
+   problème), mais AUCUN chiffre de taux précis (`×2,2`, `×2,6`, `×5`)
+   n'est fiable tel que mesuré — la méthode (pente contre un run fini)
+   est cassée près du pli.** Prochaine étape concrète et bien identifiée :
+   utiliser `r3_br(s3,s4)` (forme fermée déjà dérivée ce tour) comme
+   référence FIXE au lieu d'un run fini, pour éliminer le problème de
+   cible mobile, avant de remesurer quoi que ce soit. La piste émetteur
+   (le `26` de H7) reste une hypothèse complémentaire, jamais testée.
+   Scripts : `verifier_evacuation_fond.py` (méthode de mesure à
+   corriger, pas le mécanisme lui-même). Détail complet et hypothèses
+   datées : `CARNET.md`, fin de §7.65.
 2bis. **Piste 2 : soumise à un agent-dipankar après coup (oubli initial,
    repéré par Théo, corrigé).** Deux corrections mineures confirmées
    (`0,0016%` pas `0,0015%` ; `delta_c(3/4)` tombe à 71% du bracket, pas
