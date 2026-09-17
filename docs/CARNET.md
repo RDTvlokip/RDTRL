@@ -8232,7 +8232,61 @@ plancher de bruit), contrairement à celle de M=0 qui EST propre (132
 pas, bien après tout extremum, bien avant le plancher). **Comparer une
 fenêtre propre à une fenêtre qui ne l'est pas donne un nombre, pas une
 mesure.** Relancé avec un budget beaucoup plus long (`pas=20000`) pour
-M=25, pour trouver SA propre fenêtre adaptative propre — en cours.
+M=25, pour trouver SA propre fenêtre adaptative propre.
+
+**Trouvé la VRAIE raison pour laquelle aucune fenêtre n'est jamais
+propre pour M=25 — pas un problème de budget, un phénomène déjà connu
+dans ce projet.** À `pas=20000`, l'écart au point fixe ne décroît PAS
+monotonement :
+
+```
+pas=1000   ecart=5,1300e-04
+pas=3000   ecart=6,9651e-05
+pas=5000   ecart=1,9891e-05
+pas=10000  ecart=3,7972e-05
+pas=15000  ecart=4,6416e-04   <- REBOND de presque 2 ordres de grandeur
+pas=19999  ecart=1,1902e-07
+```
+
+**C'est le même phénomène d'EXCURSIONS déjà caractérisé en détail plus
+haut dans ce même tour (H15 : artefact du second moment d'Adam,
+`beta2=0,999`, confirmé via l'optimiseur hybride sur le VRAI système à
+27 référents — pas une coïncidence, le même mécanisme, retrouvé
+indépendamment ici sur le jouet réduit).** Ce n'est donc pas un
+problème de fenêtre de mesure à affiner encore — c'est une limite
+FONDAMENTALE de l'approche "lire une pente sur une trajectoire" près
+d'un pli sous Adam : la trajectoire elle-même n'est jamais un simple
+exponentiel unique, elle est ponctuée d'excursions imprévisibles.
+**Exactement la raison pour laquelle le tour 52 avait dû abandonner la
+mesure directe de taux au profit du protocole "épingler-falsifier"
+(bissecter le point de bascule, ajuster `k` sur l'ODE à deux
+échelles de temps) plutôt que de lire `k` sur une trajectoire brute.**
+
+**Conclusion méthodologique pour cette piste : la bonne façon de
+chiffrer le lien entre la masse de fond et `k(R)` n'est PAS de mesurer
+une pente de trajectoire (quelle que soit la fenêtre, la référence, ou
+le budget) — c'est de construire l'ODE à deux échelles de temps ET le
+protocole pin-and-falsify POUR CE JOUET**, en utilisant les fonctions
+de branche maintenant disponibles (`r3_br(s3,s4)`, le point fixe
+algébrique déjà résolu plus haut), exactement le travail de
+modélisation identifié comme la vraie prochaine étape dès le début de
+cette piste — confirmé, pas contourné, après plusieurs tentatives de
+raccourci toutes tombées sur la même limite fondamentale.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| une fenêtre adaptative bien choisie donne une pente stable et fiable pour M=25 | 17-18/09 (moi) | **réfutée** le 18/09 — même à 20000 pas, l'écart au point fixe n'est pas monotone, rebond de ~2 ordres de grandeur à pas=15000 |
+| l'échec des mesures de pente vient des mêmes excursions (H15, second moment d'Adam) déjà trouvées sur le système complet | 18/09 (moi) | **confirmée** le 18/09 — signature identique (rebond imprévisible, pas de décroissance monotone) retrouvée indépendamment sur le jouet réduit |
+| la mesure directe de taux sur trajectoire ne peut pas donner de `k` fiable près d'un pli sous Adam, quelle que soit la méthode de fenêtrage | 18/09 (moi) | **confirmée** le 18/09 — cohérent avec le choix méthodologique du tour 52 (pin-and-falsify sur l'ODE, pas de lecture directe de pente) |
+
+**Bilan définitif de ce fil (piste 3, lien k(R)) : le mécanisme
+récepteur/masse de fond est réel et son existence est solidement
+établie (via `delta_c`, un seuil discret non affecté par les
+excursions). Sa taille précise, comparée à `k∈[1,42;2,45]`, ne peut
+PAS se mesurer par lecture directe de trajectoire — seul le protocole
+ODE+pin-and-falsify (déjà utilisé au tour 52 pour la même raison)
+peut la chiffrer correctement. C'est la tâche pour la prochaine
+session, pas un raccourci qui reste à trouver.**
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
