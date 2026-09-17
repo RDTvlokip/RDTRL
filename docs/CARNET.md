@@ -7057,6 +7057,37 @@ Script : `verifier_ralentissement_hybride.py`.
 
 ---
 
+### k(R) : la piste beta2 testée, réfutée dans le même sens que beta1
+
+Étape 2 de `ETAT.md` : `H_chemin` et `H_momentum` (beta1) réfutées au
+tour 52, restait `beta2` (mémoire du second moment) jamais testée
+directement. Trois valeurs de beta2 à `R_init=0,60` fixe, delta=0,013 :
+
+```
+beta2=0,99    flip=0,979397  k_fit=1,5676
+beta2=0,999   flip=0,979616  k_fit=1,5859   (defaut, coherent avec la baseline)
+beta2=0,9999  flip=0,979643  k_fit=1,5883
+```
+
+**Effet minuscule** (étendue totale 0,0207 sur deux ordres de grandeur
+de `1-beta2`) **comparé à la dérive de k avec R_init** (~1,03 entre
+R=0,75 et R=0,50, tour 52). `H_beta2` réfutée, dans le même sens que
+`H_momentum` : ni beta1 ni beta2 pris isolément n'expliquent la dérive
+de k avec l'état de départ.
+
+**Ce qui reste : `k(R)` est de plus en plus solidement une propriété de
+l'ÉTAT lui-même (pas d'un réglage particulier d'Adam), cohérent avec
+l'hypothèse des 25 autres lignes du système complet (non testée
+directement, toujours ouverte).**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| k dérive à cause de `beta2` (mémoire du second moment) | 17/09 (moi) | **réfutée** le 17/09 (effet minuscule, 0,02 contre ~1,03 de dérive totale) |
+
+Script : `verifier_k_beta2.py`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en

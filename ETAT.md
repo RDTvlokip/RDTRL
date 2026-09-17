@@ -94,10 +94,15 @@ Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026).
    ralentissement critique existe, mais amorti, plausiblement par le
    couplage à la dynamique rapide du récepteur (SGD). Laissé comme
    résultat intermédiaire honnête plutôt que forcé vers un camp.
-2. **`k(R)` reste sans mécanisme fermé** — H_chemin et H_momentum
-   réfutées, il reste "fonction de l'état, probablement liée à `beta2`
-   ou aux 25 autres lignes du système complet à 27 référents" — aucune
-   des deux pistes testée directement.
+2. **`k(R)` reste sans mécanisme fermé — `beta2` testée et réfutée aussi
+   (FAIT le 17/09).** `verifier_k_beta2.py` : k(R_init=0,60) varie de
+   1,5676 à 1,5883 sur beta2=0,99→0,9999, un effet minuscule (0,02)
+   comparé à la dérive totale avec R_init (~1,03). Ni beta1 ni beta2
+   n'expliquent la dérive. **Reste la seule piste non testée : les 25
+   autres lignes du système complet à 27 référents** (le modèle réduit
+   à 2 équations est peut-être juste une projection incomplète). Pas
+   encore attaquée — demanderait de refaire tout le protocole
+   pin-and-falsify sur le système complet (27x27), pas le modèle réduit.
 3. **Aucune reproduction sur une autre collision/graine** — tout ce
    travail (tours 48-52) repose sur UNE SEULE paire (référents 3/4,
    graine 77777, k=3). Le mur idx5 (référents 0, graine 999) est déjà
