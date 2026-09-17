@@ -40,24 +40,28 @@ tout re-raconter.*
    pas de la paire de référents ni de la graine** — troisième
    confirmation indépendante du mécanisme sur 23/25. Script :
    `verifier_delta_c_23_25.py`.
-3. **EN COURS, PAS RÉSOLUE — reprendre ici en premier.** Jouet à M
-   catégories de fond variables construit (`verifier_jouet_n_variable.py`)
-   pour isoler la piste "25 autres lignes". Un vrai bug de convergence
-   trouvé et corrigé en route (`lr=0,05` trop lent près de l'attracteur
-   effondré de ce jouet, `s3=0,5` — corrigé avec `lr=0,2`, vérifié que ça
-   ne déplace pas les points fixes). **Mais le balayage final (M=0/8/25)
-   donne un résultat suspect : `delta_c(M)` et l'écart des points de
-   bascule sont IDENTIQUES BIT-À-BIT pour les trois M** (0,018672 et
-   0,023047 partout) — pas juste proches, exactement identiques, ce qui
-   sent l'artefact (les M logits de fond probablement gelés près de leur
-   init, faute de gradient d'entropie suffisant, même mécanisme que le
-   référent 3 gelé sous SGD ailleurs dans ce projet) plutôt qu'un vrai
-   résultat. **Prochaine étape concrète, pas encore faite : imprimer
-   `masse_autres` et les logits `q_autres` individuels avant/après
-   entraînement pour voir s'ils bougent réellement.** Détail complet et
-   hypothèses datées : `CARNET.md`, fin de §7.65. Pause volontaire ici le
-   17/09/2026 (quota utilisateur sur le point de se reset) — pas
-   abandonnée, à reprendre directement sur ce diagnostic.
+3. **DIAGNOSTIQUÉ le 17/09/2026 — ni confirmée ni réfutée, mais la
+   raison est comprise, pas juste un résultat suspect abandonné.** Jouet
+   à M catégories de fond variables construit
+   (`verifier_jouet_n_variable.py`) pour isoler la piste "25 autres
+   lignes". Un vrai bug de convergence trouvé et corrigé en route
+   (`lr=0,05` trop lent près de l'attracteur effondré de ce jouet,
+   `s3=0,5` — corrigé avec `lr=0,2`, vérifié que ça ne déplace pas les
+   points fixes). Le balayage final (M=0/8/25) donnait un résultat
+   suspect : `delta_c(M)` et l'écart des points de bascule IDENTIQUES
+   BIT-À-BIT pour les trois M. **Diagnostiqué : PAS un gel de gradient**
+   (vérifié directement, `q_autres` bouge bien de `-13,8` à `-27,6` sur
+   40000 pas) **— le vrai problème est le choix `r_autres_init=1e-6`**,
+   fait pour ne pas perturber les points fixes de `r3/r4`, qui rend les
+   M catégories non-compétitives dans le softmax récepteur DÈS
+   l'initialisation (`exp(-13,8)≈1e-6` contre `exp(q3)+exp(q4)≈0,1-1`,
+   6 ordres de grandeur d'écart) — elles bougent mais n'influencent
+   jamais `Z`, quel que soit M. **Prochaine étape concrète pour vraiment
+   trancher : réinitialiser `r_autres` à une masse NON négligeable**
+   (comparable à `r3`/`r4`), accepter que ça déplace un peu les points
+   fixes de référence, et mesurer/soustraire ce déplacement plutôt que
+   l'éviter par construction. Détail complet et hypothèses datées :
+   `CARNET.md`, fin de §7.65.
 4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
    morceau d'écriture, à faire si ce fil se stabilise assez.
 5. Si dipankarsarkar répond entre-temps, reprendre le flux normal (sa
