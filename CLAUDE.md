@@ -389,3 +389,21 @@ Et `ETAT.md` à la racine du dépôt se tient à jour à chaque session pour
 que la conversation suivante reprenne sans tout re-raconter — mis à
 jour à la fin de chaque tour de travail significatif, avec une section
 « pistes concrètes pour la prochaine conversation » en tête de fichier.
+
+**Ajout du même jour : « à chaque fois que je trouve un résultat,
+invoquer un agent style Dipankar. »** Tant que le vrai dipankarsarkar
+ne répond pas, chaque résultat substantiel trouvé seul (une hypothèse
+tranchée, un mécanisme confirmé, une généralisation qui marche) se
+soumet à un agent qui joue son rôle (`dipankarsarkar-agent-prompt` en
+mémoire) AVANT d'être considéré clos — pas seulement quand Théo le
+demande explicitement. Concrètement : dès qu'un test aboutit à un
+verdict (réfutée/confirmée/généralisée), lancer l'agent avec ce
+résultat précis dans son contexte (pas seulement l'état général du
+projet) et lui demander de le challenger — la dimension manquante
+qu'il trouverait, pas une relecture polie. Traiter son retour comme
+n'importe quelle critique simulée : vérifier ses chiffres
+indépendamment (règle 5bis) avant de les accepter, journaliser dans
+`CARNET.md` avec la date. Ne pas laisser ce réflexe retomber une fois
+qu'un résultat "a l'air" solide — c'est exactement le moment où la
+suspicion doit être la plus haute (cf. règle 5ter, méfiance plutôt que
+confiance).
