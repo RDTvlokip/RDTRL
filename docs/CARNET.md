@@ -8071,6 +8071,46 @@ probablement pas IDENTIQUES (un seul et même paramètre sous-jacent),
 mais du même ordre de grandeur et de la même famille phénoménologique
 (vitesse relative de traversée d'une dynamique en S).
 
+**CORRECTION IMMÉDIATE (agent-dipankar, vérifiée indépendamment,
+RÉFUTE ce qui précède) : le "pic à 0,75" est un artefact de fenêtre,
+pas un vrai phénomène physique.** L'agent a repéré, avant même de
+recalculer quoi que ce soit : `min(r3)` (0,0527→0,0269) et son pas
+d'apparition (14→26) sont tous les deux MONOTONES sur les 6 points —
+seule ma pente calculée sur une fenêtre FIXE `[1,9)` ne l'est pas. Un
+signal brut monotone + une statistique dérivée non-monotone est la
+signature d'un artefact de la fenêtre, pas d'un nouveau phénomène.
+Confirmé par un modèle nul construit par l'agent (taux vraiment
+CONSTANT + une bosse parasite qui se déplace, calée sur mes propres
+`argmin`) : appliquer EXACTEMENT le même calcul de pente `[1,9)` à ce
+modèle sans aucun mécanisme réel produit AUSSI un pic à `r_tie=0,75`.
+
+**Vérifié directement (fenêtre TARDIVE, bien après tout dépassement,
+`[200,400)`, sur les mêmes 6 trajectoires) :**
+
+```
+r_tie=0,50  pente[1,9)=-0,286460  pente[200,400)=-0,050615
+r_tie=0,60  pente[1,9)=-0,453440  pente[200,400)=-0,052669
+r_tie=0,70  pente[1,9)=-0,541894  pente[200,400)=-0,054030
+r_tie=0,75  pente[1,9)=-0,610464  pente[200,400)=-0,052617   <- plus de pic
+r_tie=0,80  pente[1,9)=-0,438835  pente[200,400)=-0,053246
+r_tie=0,90  pente[1,9)=-0,234749  pente[200,400)=-0,053716
+```
+
+**La pente tardive est QUASI CONSTANTE (-0,0506 à -0,0540, ~6 % de
+variation) sur toute la plage de `r_tie`, pas `×2,60`.** Le pic à
+`0,75` disparaît complètement une fois mesuré loin de la fenêtre
+précoce contaminée par le passage du minimum mobile. **La conclusion
+« R_init seul produit une variation de taux comparable à `k` »
+publiée plus haut est FAUSSE — réfutée, pas juste nuancée.** Le vrai
+taux asymptotique de `r3` ne dépend quasiment pas de `r_tie` dans ce
+jouet.
+
+**Conséquence logique immédiate, à vérifier avant de continuer :** le
+`×2,2` de la masse de fond a été mesuré de la MÊME façon (fenêtre
+précoce, `[1,9)` pour M=0 contre `[16,34)` pour M=25 — pas une fenêtre
+tardive) — est-il LUI AUSSI un artefact du même type ? Vérification
+lancée immédiatement (pas laissé en suspens).
+
 **Suivi de l'agent (message séparé) : sa bissection indépendante de
 `delta_c` a fini après son rapport initial — `delta_c(M=0)=0,018711`,
 `delta_c(M=25)=0,018555` (tolérance de bissection plus large que la
