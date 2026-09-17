@@ -1,26 +1,45 @@
 # État du projet RDTRL — où on en est
 
-*Dernière mise à jour : 17/09/2026. Ce fichier n'est pas un article, c'est
-un pense-bête pour reprendre le travail dans une nouvelle conversation
-sans tout re-raconter.*
+*Dernière mise à jour : 17/09/2026 (pistes 1 et 2 résolues dans cette
+session, voir ci-dessous). Ce fichier n'est pas un article, c'est un
+pense-bête pour reprendre le travail dans une nouvelle conversation sans
+tout re-raconter.*
 
 ## Pistes concrètes pour la prochaine conversation, par ordre de priorité probable
 
-1. **Refitter le coefficient de ralentissement (0,2212·√(delta_c-delta))
-   avec de vraies données sauvées, pas seulement les 3 points cités par
-   dipankar.** Maintenant qu'on a `verifier_ralentissement_hybride.py`
-   (le bon optimiseur), on peut mesurer le VRAI gap branche-selle en
-   `s3` à plusieurs `delta` avec un optimiseur qui entraîne réellement
-   le référent, refitter l'exposant (est-ce vraiment du `-1/2`, ou autre
-   chose vu que la hausse mesurée 760/880/940 est plus faible que
-   prédit ?), et sauver ça dans `verifier_coefficient_ralentissement.py`
-   au lieu des 3 points codés en dur.
-2. **Calculer `delta_c` pour la paire 23/25** (maintenant reconstruite
-   dans `replay_23_25.py`) et comparer à celui de 3/4 (`0,013437210`).
-   S'ils sont identiques (pas juste les valeurs de R à delta fixé, mais
-   le SEUIL lui-même), ça renforce encore plus l'universalité du
-   mécanisme. S'ils diffèrent, ça dit que `delta_c` dépend de quelque
-   chose de spécifique à la paire malgré tout.
+1. **RÉSOLU le 17/09/2026, EN DEUX PASSES (auto puis agent-dipankar).**
+   Refit du coefficient 0,2212 sur 11 points algébriques (au lieu de 3) :
+   `0,2212` = écart entre racine stable et racine instable du système
+   couplé (`d3_instable - d3_stable`), pas un résidu contre une loi
+   molle. **Un agent-dipankar (nouvelle règle CLAUDE.md : challenger
+   chaque résultat avant de le clore) a ensuite trouvé deux vraies
+   erreurs dans ce premier passage, vérifiées indépendamment en mpmath
+   50 chiffres avant d'être acceptées :** (a) mon « plateau » à
+   0,221305-0,221372 était un plancher de précision float64, pas la
+   vraie asymptote — retraçage à `eps=1,3437e-8` en haute précision + un
+   calcul analytique local au pli (Lyapunov-Schmidt) tombent tous les
+   deux, indépendamment, sur **0,2212604** (7 chiffres significatifs de
+   concordance) ; (b) mon modèle de dérive à 2 termes
+   (`gap=C1·√eps+C2·eps`) utilisait une base analytiquement fausse — le
+   terme en `eps¹` est structurellement NUL, le vrai terme suivant est
+   en `eps^(3/2)` (coefficient empirique `D≈8,0021`, pas encore fermé
+   analytiquement). Une 3e correction, plus mineure : mon affirmation
+   que les 3 points publiés par dipankar « ne pouvaient pas venir d'un
+   entraînement Adam » était surinterprétée — une correspondance
+   numérique seule ne distingue pas « jamais entraîné » de « entraîné et
+   convergé exactement » ; rétrogradée à indéterminée. Scripts :
+   `verifier_refit_gap_hybride.py` (essai raté, documenté),
+   `verifier_gap_racines.py` (bonne cible), `verifier_puiseux_gap.py`
+   (corrections de l'agent, vérifiées indépendamment). Détail complet :
+   `CARNET.md`, fin de §7.65.
+2. **RÉSOLU le 17/09/2026.** `delta_c` pour la paire 23/25 (bissection
+   empirique par entraînement réel, pas seulement l'algèbre qui le
+   prédisait déjà trivialement) : `0,0134370`, contre `0,0134372` pour
+   3/4 — écart 0,0015 %, au niveau du bruit de la bissection elle-même.
+   **Le SEUIL lui-même est une propriété de l'objectif (N=27, beta=0,02),
+   pas de la paire de référents ni de la graine** — troisième
+   confirmation indépendante du mécanisme sur 23/25. Script :
+   `verifier_delta_c_23_25.py`.
 3. **Isoler proprement la piste "25 autres lignes"** pour k(R) — pas
    avec le jouet à 2 catégories (qui change aussi N, donc pas une
    ablation propre), mais avec un jouet à N variable (3, 5, 10, 27
