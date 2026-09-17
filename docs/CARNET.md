@@ -7485,11 +7485,34 @@ réellement bougé, avant de conclure quoi que ce soit sur M.**
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| `delta_c(M)` et l'écart flip(M) sont réellement indépendants de M (les 25 autres lignes n'expliquent pas la dérive de k) | 17/09 (moi) | **ouverte, pas fiable en l'état** — l'identité bit-à-bit suggère un artefact de mesure (catégories de fond gelées), pas encore distingué d'un vrai résultat |
-| les logits `q_autres` (M catégories de fond) restent gelés près de leur init faute de gradient suffisant | 17/09 (moi) | **ouverte, à tester en priorité à la reprise** |
+| `delta_c(M)` et l'écart flip(M) sont réellement indépendants de M (les 25 autres lignes n'expliquent pas la dérive de k) | 17/09 (moi) | **ni confirmée ni réfutée** — le test lui-même s'avère invalide (voir ci-dessous), pas de conclusion possible sur l'hypothèse elle-même |
+| les logits `q_autres` (M catégories de fond) restent gelés près de leur init faute de gradient suffisant | 17/09 (moi) | **réfutée** le 17/09 — voir diagnostic ci-dessous |
 
-Script : `verifier_jouet_n_variable.py` (corrigé, balayage terminé,
-résultat en attente de diagnostic).
+**Diagnostic final (17/09/2026, avant la pause).** Vérifié directement :
+`q_autres` AVANT/APRÈS 40000 pas (M=8, delta=0,013, lr=0,2) passe de
+`-13,8155` à `-27,6331` — **ils bougent bel et bien, l'hypothèse
+"gelés faute de gradient" est réfutée.** Mais leur influence sur `Z`
+(le dénominateur du softmax récepteur) est nulle depuis le DÉBUT, pas
+seulement à la fin : `exp(-13,8155)≈1e-6` contre `exp(q3)+exp(q4)≈
+0,1-1` — **6 ordres de grandeur d'écart dès l'initialisation.** Le
+choix `r_autres_init=1e-6` (fait exprès pour ne pas perturber les
+points fixes de `r3,r4`) a eu un effet de bord non anticipé : il rend
+les M catégories dynamiquement NON-COMPÉTITIVES par construction, quel
+que soit M, donc incapables de tester l'hypothèse "25 autres lignes"
+telle quelle — **pas un bug de gel, un problème de calibration de
+l'init.** Le résultat bit-à-bit identique s'explique entièrement par
+ça : peu importe combien de catégories inertes on ajoute, `r3,r4` ne
+les "voient" jamais.
+
+**Piste 3 conclue pour cette session : NI confirmée NI réfutée, avec un
+diagnostic complet plutôt qu'un résultat forcé.** Pour vraiment tester
+l'hypothèse à la reprise : réinitialiser `r_autres` à une masse NON
+négligeable (comparable à celle de `r3`/`r4`, pas `1e-6`), quitte à ce
+que ça déplace un peu les points fixes de référence (ce serait alors à
+mesurer et soustraire, pas à éviter par construction comme tenté ici).
+
+Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
+convergence, mais l'init `r_autres_init` reste à refaire).
 
 ---
 
