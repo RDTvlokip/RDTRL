@@ -7286,6 +7286,137 @@ ouverte).
 
 Scripts : `verifier_refit_gap_hybride.py`, `verifier_gap_racines.py`.
 
+**Soumis à l'agent-dipankar (nouvelle règle CLAUDE.md : chaque résultat
+substantiel se challenge avant d'être clos) — retour reçu et vérifié
+indépendamment avant d'être accepté (règle 5bis, appliquée à l'agent
+aussi).** Deux corrections réelles, une clarification importante :
+
+**Correction 1 (confirmée indépendamment, en mpmath 50 chiffres, de
+zéro) : mon « plateau » à 0,221305-0,221372 était un plancher de
+précision float64, pas la vraie asymptote.** Retraçage des racines en
+haute précision jusqu'à `eps=1,3437e-8` (au lieu de `1,3437e-6`) :
+
+```
+eps=1,3437e-06  gap/sqrt(eps)=0,22127114
+eps=4,0312e-07  gap/sqrt(eps)=0,22126361
+eps=1,3437e-07  gap/sqrt(eps)=0,22126146
+eps=1,3437e-08  gap/sqrt(eps)=0,22126049
+```
+
+**La suite continue de décroître, elle ne rebrousse pas** — mon tableau
+à 11 points remontait à la fin uniquement parce que float64 n'a plus la
+précision nécessaire à `eps<1e-6` sur cette quantité. Calcul analytique
+indépendant (développement de Lyapunov-Schmidt au pli, dérivées
+partielles de `h(d3,delta)` en mpmath par différences finies à 50
+chiffres) :
+
+```
+F_xx   = -12,953066831876...
+F_xxx  = -3920,783893665...
+F_eps  =   0,079266549789...
+F_xeps =  26,660897830202...
+A = -2*F_eps/F_xx = 0,012239039729...
+C0 = 2*sqrt(A) = 0,22126038714443992922...
+```
+
+**Deux méthodes complètement indépendantes (retraçage de racines
+extrapolé, dérivées locales au pli) tombent sur 0,2212604 à 7 chiffres
+significatifs près.** C'est la vraie valeur asymptotique — encore plus
+proche du 0,2212 publié que je ne le pensais (mon 0,05 % d'écart
+rapporté plus haut venait de MON erreur de précision, pas d'un vrai
+écart avec dipankar).
+
+**Correction 2 : mon modèle à 2 termes (`gap = C1·√eps + C2·eps`)
+utilisait une base fausse — pas un problème de pondération.** Un
+développement de pli générique (forme normale nœud-col) donne
+`gap = 2·√(A·eps) + O(eps^(3/2))` : le terme d'ordre `eps¹` est
+ANALYTIQUEMENT NUL (il s'annule entre les deux branches, ne survit que
+dans la SOMME des deux racines, pas dans leur écart). Le bon modèle est
+`ratio := gap/√eps = C0 + D·eps` (linéaire en `eps`, pas en `√eps`).
+Refit avec la bonne base : résidus de ±0,03 % à ±0,11 % sans dérive
+monotone (contre -0,75 % à -10,5 % qui grandissait sans cesse avec mon
+ancien modèle). **Le symptôme que j'avais déjà repéré moi-même
+(« résidu qui croît en approchant le pli, non concluant ») était le bon
+diagnostic — juste attribué à la mauvaise cause (pondération plutôt que
+base fonctionnelle).**
+
+**Poussé un cran de plus (le coefficient du terme `eps^(3/2)`, que
+l'agent lui-même n'avait pas fermé analytiquement) : converge
+proprement vers `D≈8,0021`, stable sur les 4 derniers chiffres sur 3
+décades** (`D_empirique(eps) = (gap - C0·√eps)/eps^1,5`, de 8,49 à
+`eps=6,7e-3` jusqu'à 8,0021 à `eps=1,3e-8`). **Pas encore de forme
+fermée pour ce second coefficient** (demanderait `F_xxxx` et un ordre de
+Lyapunov-Schmidt supplémentaire) — laissé ouvert.
+
+**Clarification (pas une erreur, une précision) : il existe DEUX
+résidus distincts dans l'historique du projet, à ne pas confondre.**
+En cherchant si le tour 50 (§7.62, `REPONSE_ORDRE51.md`) avait déjà
+cette quantité, trouvé une table DIFFÉRENTE : `resid/(1-s3)` contre la
+loi molle naïve `R_molle=sigmoid(2·delta/beta)`, valant 9,736 / 8,750 /
+8,189 à delta=0,010/0,012/0,013 — DÉCROISSANT en approchant `delta_c`,
+contrairement à mon premier essai raté (§ ci-dessus) qui croît. Ce
+n'est pas une contradiction : ce sont deux normalisations différentes
+(résidu/`d3` ici, vs résidu/`√eps` dans mon essai), qui n'ont aucune
+raison de partager le même sens de variation. Le tour 50 avait déjà
+noté que CE coefficient dérive (~8-10, non résolu à l'époque) — une
+piste ouverte plus ancienne, distincte du `0,2212` de ce tour-ci,
+laissée telle quelle plutôt que réconciliée en profondeur (rendement
+décroissant à creuser toutes les archives des tours précédents dans ce
+tour-ci).
+
+**Correction 3 : mon affirmation « les 3 points publiés n'étaient PAS
+mesurés par entraînement Adam » était une conclusion plus forte que ma
+preuve ne le permettait — corrigée.** Une correspondance à 4 chiffres
+significatifs entre le résidu publié et mon calcul algébrique est
+compatible avec DEUX hypothèses également : (a) jamais entraîné, résolu
+par algèbre pure, ou (b) entraîné par Adam et convergé exactement vers
+le point fixe que l'algèbre prédit (ce que le système fait déjà
+démontrablement ailleurs, à 5-6 chiffres). Rien dans ce que j'ai
+vérifié ne distingue les deux. Statut correct : **indéterminé**, pas
+« confirmé ».
+
+**Journal (corrections) :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le plateau 0,221305-0,221372 est la vraie asymptote | 17/09 (moi) | **réfutée** le 17/09 par l'agent, confirmée indépendamment (mpmath 50 chiffres) : plancher de précision float64, vraie valeur 0,2212604 |
+| le terme correctif suivant est linéaire en `(dc-delta)` | 17/09 (moi, ouverte) | **réfutée** le 17/09 (analytiquement nul à cet ordre — le vrai terme suivant est en `eps^(3/2)`, coefficient empirique D≈8,0021, pas encore fermé) |
+| les 3 points publiés (tour 51) prouvent qu'ils n'étaient pas issus d'un entraînement Adam | 17/09 (moi) | **rétrogradée** le 17/09 (agent) : correspondance a 4 chiffres compatible avec les deux hypothèses, non tranchée |
+
+Script : `verifier_puiseux_gap.py`.
+
+---
+
+### Piste 2 de `ETAT.md` : `delta_c` pour la paire 23/25 — identique à celui de 3/4
+
+17/09/2026, même tour. La forme fermée ne mentionne que `N=27` et
+`beta=0,02`, jamais l'identité des référents — donc l'ALGÈBRE prédit
+déjà un `delta_c` identique par construction, peu importe la paire. Le
+test qui a de la valeur n'est pas algébrique : est-ce que la DYNAMIQUE
+D'ENTRAÎNEMENT RÉELLE sur la collision 23/25 (naturelle, graine 50000,
+message 13) reproduit ce seuil par bissection empirique — même
+protocole que `verifier_bissection_delta_c.py` sur 3/4.
+
+```
+delta_c(23/25) encadré entre 0,0134365 et 0,0134375, centre = 0,0134370
+delta_c(3/4)   = 0,0134372
+écart = -0,0000002  (0,0015 %)
+```
+
+**Écart au niveau de la résolution même de la bissection (10 itérations
+sur un intervalle initial de 0,001, résolution ~1e-6)** — pas
+distinguable de zéro avec ce budget. Confirme que ce n'est pas
+seulement `R` à `delta` fixé qui se généralise (déjà montré,
+`verifier_prior_23_25.py`) : **le SEUIL lui-même est une propriété de
+l'objectif (N, beta), pas de la paire de référents ni de la graine.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `delta_c` dépend de la paire de référents (identité, graine) | 17/09 (implicite, à réfuter) | **réfutée** le 17/09 (écart 0,0015 %, au niveau du bruit de bissection) |
+| `delta_c` est une propriété de l'objectif seul (N=27, beta=0,02) | 17/09 (moi) | **confirmée** le 17/09 — troisième confirmation du mécanisme sur 23/25 après R(delta) et l'effondrement vers 1/27 |
+
+Script : `verifier_delta_c_23_25.py`.
+
 ---
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
