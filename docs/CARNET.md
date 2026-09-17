@@ -7553,14 +7553,29 @@ plausible, pas la seule explication qui reste.
 | le mécanisme "25 autres lignes" est côté ÉMETTEUR (renormalisation sur 26 messages, le `26` de H7), pas côté récepteur | 17/09 (moi, affinée) | **affaiblie** le 17/09 — le récepteur a bien un effet (petit, sensible à la masse initiale), donc ce n'est plus "l'un ou l'autre", possiblement les deux mécanismes contribuent |
 
 **Ce qui reste réellement ouvert, honnêtement, en fin de session :** un
-effet récepteur PETIT et POSITIF existe (-0,84 % sur `delta_c` à
+effet récepteur PETIT existe (-0,84 % sur `delta_c` à
 `r_autres_init=0,01`), mais sa GRANDEUR exacte en fonction de M et de
 l'init, et s'il suffit à expliquer la dérive de `k(R)` mesurée au tour
 52 (facteur ~1,7 sur `k`, pas 0,84 % sur `delta_c` — deux grandeurs
-différentes, jamais mises sur la même échelle) restent à faire. Ne pas
-répéter l'erreur de ce tour : mesurer `delta_c(M)` pour plusieurs M et
-plusieurs `r_autres_init`, pas un seul point de chaque, avant de
-conclure quoi que ce soit la prochaine fois.
+différentes, jamais mises sur la même échelle) restent à faire.
+
+**Troisième point mesuré (M=8, r_autres_init=0,01) : `delta_c=0,018672`
+— IDENTIQUE à M=0, pas intermédiaire entre M=0 et M=25.** L'effet n'est
+donc PAS linéaire en M : négligeable à M=8 (masse totale de fond = 8 %),
+réel à M=25 (masse totale = 25 %) — un comportement plutôt à seuil qu'à
+pente constante. Cohérent avec l'idée que ce qui compte n'est pas M en
+soi mais la masse totale de fond (`M×r_autres_init`) une fois qu'elle
+devient une fraction non négligeable du total — reste à vérifier en
+faisant varier la masse totale à M fixe plutôt que M à init fixe,
+prochaine fois. Ne pas répéter l'erreur de ce tour : mesurer
+`delta_c(M)` sur une vraie grille (plusieurs M ET plusieurs masses
+totales), pas un seul point de chaque, avant de conclure quoi que ce
+soit.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'effet récepteur croît linéairement avec M (à `r_autres_init` fixe) | 17/09 (moi) | **réfutée** le 17/09 (M=8 donne le même `delta_c` que M=0, M=25 seul montre un écart — pas de progression linéaire visible sur ces 3 points) |
+| c'est la masse totale de fond (`M×r_autres_init`), pas M seul, qui gouverne l'effet | 17/09 (moi) | **ouverte** — cohérent avec les 3 points (8 % → nul, 25 % → réel) mais pas testé directement (nécessiterait de fixer la masse totale et varier M seul) |
 
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence ; le résultat "nul" à `delta=0,013` était un artefact du
