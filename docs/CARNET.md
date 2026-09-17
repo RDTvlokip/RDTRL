@@ -7759,8 +7759,35 @@ qui croît indéfiniment avec la masse de fond.
 
 **Bilan piste 3 : le mécanisme récepteur EXISTE (confirmé, pas écarté),
 a un profil à seuil puis plafond en fonction de la masse totale de
-fond (pas de M). Cartographie de la forme de la transition (8 %-25 %,
-8 points) lancée pour préciser (a).**
+fond (pas de M). Cartographie de la transition (8 points, 8 %-25 %) :**
+
+```
+masse=8%   delta_c=0,018672
+masse=10%  delta_c=0,018672
+masse=12%  delta_c=0,018672
+masse=15%  delta_c=0,018672
+masse=18%  delta_c=0,018516
+masse=20%  delta_c=0,018516
+masse=22%  delta_c=0,018516
+masse=25%  delta_c=0,018516
+```
+
+**Ce n'est PAS une transition graduelle — c'est un SAUT NET entre 15 %
+et 18 %, sans aucune valeur intermédiaire sur 8 points.** `delta_c` ne
+prend que DEUX valeurs distinctes sur toute la plage testée, jamais un
+chiffre entre les deux. Bissection lancée entre 15 % et 18 % pour
+localiser le seuil exact (`verifier_jouet_n_variable.py`, invocation ad
+hoc). Cette netteté (pas un dégradé) suggère que le mécanisme n'est pas
+un simple décalage continu du point fixe avec la masse de fond, mais
+plutôt un changement QUALITATIF (une bascule entre deux branches
+distinctes du système, chacune avec son propre `delta_c`) une fois un
+seuil de masse franchi — hypothèse à affiner une fois le seuil localisé
+précisément.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la transition entre "nul" et "-0,84%" est graduelle (delta_c varie continûment avec la masse) | 17/09 (moi, implicite) | **réfutée** le 17/09 (saut net entre 15% et 18%, aucune valeur intermédiaire sur 8 points) |
+| le saut correspond à une bascule qualitative entre deux branches distinctes du système, pas un décalage continu du même point fixe | 17/09 (moi) | **ouverte** — cohérente avec le saut nul, pas encore testée directement |
 
 **(c) « relier à `k(R)` » : précisé pourquoi ce n'est PAS une simple
 conversion numérique, pour ne pas laisser un item vague.** `delta_c`
