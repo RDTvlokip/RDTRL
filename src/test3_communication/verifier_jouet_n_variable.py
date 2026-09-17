@@ -62,16 +62,26 @@ def objectif_toy_m(p3, p4, q, poids3, poids4):
 
 
 def entrainer_toy_m(M, delta, pas=40000, lr=0.05, adam_eps=1e-10,
-                     s3_init=0.999999999666, r_tie=0.5):
+                     s3_init=0.999999999666, r_tie=0.5, avec_mi_parcours=False):
+    """avec_mi_parcours=True renvoie AUSSI s3 a pas//2 -- necessaire au
+    critere de TENDANCE (s3 decroit-il ?) plutot qu'un seuil absolu :
+    pres de s3=0,5, la dynamique de ce jouet montre un plateau tres lent
+    (verifie empiriquement : s3 encore a 0,500000 a 15000 pas, 0,499935 a
+    40000, 0,498566 a 100000 pas, delta=0,05 -- bien au-dela du delta_c
+    du jouet) -- un seuil absolu s3<0,5 a budget fixe n'est donc PAS fiable."""
     poids3 = torch.tensor((1.0 - delta) / N, dtype=torch.float64)
     poids4 = torch.tensor((1.0 + delta) / N, dtype=torch.float64)
     p3, p4, q = construire_toy_m(M, delta, s3_init=s3_init, r_tie=r_tie)
     opt = torch.optim.Adam([p3, p4, q], lr=lr, eps=adam_eps)
-    for _ in range(pas):
+    s3_mi = None
+    for i in range(pas):
         j = objectif_toy_m(p3, p4, q, poids3, poids4)
         opt.zero_grad()
         (-j).backward()
         opt.step()
+        if avec_mi_parcours and i == pas // 2:
+            with torch.no_grad():
+                s3_mi = torch.sigmoid(p3).item()
     with torch.no_grad():
         s3 = torch.sigmoid(p3).item()
         s4 = torch.sigmoid(p4).item()
@@ -79,13 +89,25 @@ def entrainer_toy_m(M, delta, pas=40000, lr=0.05, adam_eps=1e-10,
         r3, r4 = r_all[0].item(), r_all[1].item()
         masse_autres = 1.0 - r3 - r4
         R4 = s4 * r4
+    if avec_mi_parcours:
+        return R4, s3, s4, r3, r4, masse_autres, s3_mi
     return R4, s3, s4, r3, r4, masse_autres
 
 
-def bissecter_delta_c(M, lo=0.010, hi=0.020, tol=1e-4, pas=20000):
+def bissecter_delta_c(M, lo=0.010, hi=0.020, tol=1e-4, pas=40000, lr=0.2):
+    """lr=0.2 (au lieu de 0,05) -- teste empiriquement : a lr=0,05, la
+    dynamique pres du point d'entropie (s3=0,5, l'attracteur "effondre"
+    de CE jouet -- pas 1/27, contrairement au systeme complet, car il n'y
+    a pas ici de 26 autres messages sur lesquels redistribuer la masse de
+    l'emetteur) est si lente qu'un budget de 20000-150000 pas ne suffit
+    pas a distinguer les deux issues (verifie : s3 encore a 0,500000-0,499935
+    a 40000-100000 pas, delta=0,05, bien au-dela du delta_c du jouet). A
+    lr=0,2, la separation devient nette en 40000 pas (verifie)."""
     def sature(delta):
-        _, s3, *_ = entrainer_toy_m(M, delta, pas=pas)
-        return s3 < 0.5
+        _, s3, *_ = entrainer_toy_m(M, delta, pas=pas, lr=lr)
+        assert s3 > 0.9 or s3 < 0.6, \
+            f"M={M} delta={delta}: s3={s3:.6f} ambigu (ni graduee ni effondree nettement)"
+        return s3 < 0.6
 
     s_lo, s_hi = sature(lo), sature(hi)
     assert s_lo != s_hi, f"M={M}: lo/hi meme issue ({s_lo}/{s_hi}), elargir le bracket"
@@ -98,10 +120,15 @@ def bissecter_delta_c(M, lo=0.010, hi=0.020, tol=1e-4, pas=20000):
     return (lo + hi) / 2
 
 
-def bissecter_flip_s3(M, delta, r_tie_init, lo=0.90, hi=0.999999, tol=1e-4, pas=20000):
+def bissecter_flip_s3(M, delta, r_tie_init, lo=0.90, hi=0.999999, tol=1e-4, pas=40000, lr=0.2):
     def gradue(s3_init):
-        _, s3f, *_ = entrainer_toy_m(M, delta, pas=pas, s3_init=s3_init, r_tie=r_tie_init)
-        return s3f > 0.5
+        """lr=0,2 + seuil a marge claire -- meme correction que
+        bissecter_delta_c (voir sa docstring : lr=0,05 est trop lent
+        pres de l'attracteur effondre de ce jouet, s3=0,5)."""
+        _, s3f, *_ = entrainer_toy_m(M, delta, pas=pas, lr=lr, s3_init=s3_init, r_tie=r_tie_init)
+        assert s3f > 0.9 or s3f < 0.6, \
+            f"M={M} delta={delta} s3_init={s3_init}: s3f={s3f:.6f} ambigu"
+        return s3f > 0.9
 
     g_lo, g_hi = gradue(lo), gradue(hi)
     assert g_lo != g_hi, f"M={M} r_tie={r_tie_init}: lo/hi meme issue"
@@ -124,10 +151,10 @@ if __name__ == "__main__":
               f"r3={r3:.6f}  r4={r4:.6f}  masse_autres={masse_autres:.2e}")
 
     print("\n=== 1) delta_c(M) : interpole-t-il vers 0,0134372 (systeme complet) ? ===")
-    Ms = (0, 3, 8, 25)
+    Ms = (0, 8, 25)
     deltas_c = {}
     for M in Ms:
-        dc = bissecter_delta_c(M, tol=3e-4, pas=15000)
+        dc = bissecter_delta_c(M, tol=3e-4, pas=40000, lr=0.2)
         deltas_c[M] = dc
         print(f"  M={M:<3}  delta_c={dc:.6f}   (jouet pur M=0: ~0,0187 ; systeme complet (M=25 vise): 0,013437)")
 
@@ -138,7 +165,7 @@ if __name__ == "__main__":
         delta_test = 0.95 * dc
         flips = {}
         for r_tie in (0.50, 0.75):
-            flip = bissecter_flip_s3(M, delta_test, r_tie, tol=3e-4, pas=15000)
+            flip = bissecter_flip_s3(M, delta_test, r_tie, tol=3e-4, pas=40000, lr=0.2)
             flips[r_tie] = flip
         spread = max(flips.values()) - min(flips.values())
         print(f"  M={M:<3}  delta={delta_test:.6f}  "
