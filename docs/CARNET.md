@@ -6854,8 +6854,8 @@ dans la lettre anglaise plutôt que redupliquée ici.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| (excursions = mode propre) | 14/09 (moi) | **réfutée** le 15/09 (zéro excursion sous SGD pur) |
-| (excursions = artefact second moment Adam) | 14/09 (lui) | **soutenue** le 15/09 (SGD plat, Adam ne l'est pas) |
+| (excursions = mode propre) | 14/09 (moi) | **rouverte** le 17/09 (le test SGD qui l'a réfutée avait le référent 3 gelé — voir ci-dessous) |
+| (excursions = artefact second moment Adam) | 14/09 (lui) | **rouverte** le 17/09 (idem — plus de preuve nette dans un sens ou l'autre) |
 | (k constant) | implicite au tour 51 | **réfutée** le 15/09 (k=1,42 à 2,45 selon R_init) |
 | (SGD converge à la vraie valeur de branche) | 15/09 (implicite) | **réfutée** le 15/09 (0,786283 contre 0,794756 prédit — pas encore expliqué) |
 | k(R) standard, fonction lisse de l'état seul | 15/09 (moi) | **soutenue** le 15/09 (survit aux deux réfutations ci-dessous) |
