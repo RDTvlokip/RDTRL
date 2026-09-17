@@ -353,3 +353,39 @@ du test concerné), pas dans `/d/tmp`. Un script utile à une réponse
 mérite d'être retrouvable la prochaine fois sans repasser par une chasse
 dans le transcript — `/tmp` n'est bon que pour des sorties vraiment
 jetables (logs de run), jamais pour le code qui les produit.
+
+# Quand dipankarsarkar ne répond pas : creuser seul, éventuellement via un agent qui joue son rôle
+
+Théo, 17/09/2026 : « depuis 2 jours il ne répond pas, il doit être
+occupé et je n'aime pas attendre » — continuer à chercher soi-même en
+son absence plutôt que d'attendre, y compris en lançant un agent qui
+adopte son raisonnement pour produire une critique simulée.
+
+**Sa façon de raisonner est notée en détail dans la mémoire
+`dipankarsarkar-style-relecture` — jamais d'affirmation sans chiffre,
+toujours une forme fermée avant l'intuition, le protocole
+« épingler avec un essai, falsifier avec deux », précommettre le test
+qui distingue, chercher la dimension manquante du modèle plutôt que
+dire « c'est faux ».** Quand Théo demande de lancer un agent « comme
+dipankarsarkar » : ne pas réécrire sa persona à chaque fois — lire
+`dipankarsarkar-agent-prompt` (mémoire) et copier le prompt tel quel
+dans l'outil Agent. Ce prompt a été affiné une fois déjà (17/09/2026,
+« améliore le style, il faut qu'il soit le plus proche possible de
+Dipankar ») pour être aussi prescriptif que possible — structure en
+7 étapes, liste explicite de ce qu'il ne fait jamais / fait toujours,
+formulations verbatim tirées de ses vraies lettres.
+
+**Ce qu'un tel agent produit reste une critique SIMULÉE, pas une vraie
+critique de dipankarsarkar** — elle se traite comme une trouvaille de
+plus dans le tour en cours (une réponse = un tour, cf. plus haut), pas
+comme un nouveau tour qui justifierait un nouveau
+`REPONSE_ORDREN.md`. Ses affirmations se vérifient indépendamment avant
+d'être acceptées, exactement comme celles du vrai relecteur (règle
+5bis) — un agent qui l'imite peut se tromper comme n'importe quel
+calcul, et l'a déjà fait une fois utilement (trouvé un référent gelé
+dans un test SGD, confirmé indépendamment avant d'être accepté).
+
+Et `ETAT.md` à la racine du dépôt se tient à jour à chaque session pour
+que la conversation suivante reprenne sans tout re-raconter — mis à
+jour à la fin de chaque tour de travail significatif, avec une section
+« pistes concrètes pour la prochaine conversation » en tête de fichier.
