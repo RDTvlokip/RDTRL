@@ -8111,6 +8111,53 @@ précoce, `[1,9)` pour M=0 contre `[16,34)` pour M=25 — pas une fenêtre
 tardive) — est-il LUI AUSSI un artefact du même type ? Vérification
 lancée immédiatement (pas laissé en suspens).
 
+**Résultat de la vérification, plus compliqué que prévu — un DEUXIÈME
+problème méthodologique trouvé, distinct du premier.** Fenêtre tardive
+`[200,400)` : pente(M=0)=`-0,050615`, pente(M=25)=`-0,001039` — ratio
+`×5,07`, PAS nul (contrairement au cas `r_tie`) mais aussi PAS `×2,2`.
+Poussé plus loin (`pas=3000`, plusieurs fenêtres) pour vérifier la
+stabilité :
+
+```
+M=0   : pente[200,400)=-0,050610  pente[500,1000)=-0,006512  pente[1000,2000)=-0,000751  pente[1500,2500)=-0,000997
+M=25  : pente[200,400)=-0,001039  pente[500,1000)=-0,002241  pente[1000,2000)=-0,001608  pente[1500,2500)=-0,001745
+```
+
+**La pente NE SE STABILISE PAS — elle continue de rétrécir avec la
+fenêtre pour M=0 (`-0,0506→-0,0007`), sans converger vers une valeur
+fixe.** Diagnostic : `r3_final` (la dernière valeur d'un run FINI,
+utilisée comme référence pour `|r3(t)-r3_final|`) est elle-même une
+CIBLE MOBILE près du pli — vérifié : `r3_final` à `pas=500` valait
+`0,139522` (run précédent), à `pas=3000` il vaut `0,140897` (ce
+run-ci) — pas identiques. **C'est le même ralentissement critique déjà
+documenté ailleurs dans ce même tour (§ ralentissement critique,
+tour 50-52) qui contamine ici la mesure : tant que le "point final" de
+référence n'est pas le VRAI point fixe (mais la fin d'un run fini plus
+proche du pli que je ne le pensais), toute pente calculée contre lui
+est biaisée, et le biais rétrécit avec la fenêtre sans jamais se
+stabiliser sur un run fini.**
+
+**Conclusion honnête : NI le `×2,2` (masse de fond) NI le `×2,6`
+(r_tie) ne sont des mesures fiables du "vrai" taux asymptotique —
+tous les deux souffraient d'une référence `r3_final` non convergée,
+juste de façons différentes (fenêtre trop précoce pour l'un, cible
+mobile pour l'autre). Le "`×2,2` tombe dans `k∈[1,42;2,45]`" n'est
+PAS confirmé de façon fiable — ni infirmé, simplement pas mesuré
+correctement.** Pour trancher proprement, il faudrait soit (a) des
+runs BEAUCOUP plus longs pour que `r3_final` soit vraiment stable
+avant de calculer quoi que ce soit, soit (b) utiliser la valeur fixe
+ANALYTIQUE du point de branche (`r3_br(s3,s4)` dérivé plus haut ce
+même tour) comme référence au lieu de la dernière valeur d'un run
+fini — cette deuxième option est probablement la bonne, puisque la
+forme fermée existe déjà et évite tout le problème de convergence.
+**Pas fait cette session — noté comme la vraie prochaine étape,
+distincte de celle notée plus haut.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le ratio `×2,2` (masse de fond) est, comme le `×2,6` de r_tie, un artefact de fenêtre qui disparaît en fenêtre tardive | 17/09 (moi) | **réfutée en partie** le 17/09 — le ratio ne disparaît PAS (`×5,07` en fenêtre tardive, pas nul), mais un second problème (référence `r3_final` non convergée) invalide la mesure elle-même dans les deux cas |
+| la pente se stabilise à une valeur fixe en fenêtre suffisamment tardive | 17/09 (moi) | **réfutée** le 17/09 — continue de rétrécir de `pas=200` à `pas=2500` sans se stabiliser, signature d'une référence `r3_final` elle-même non convergée |
+
 **Suivi de l'agent (message séparé) : sa bissection indépendante de
 `delta_c` a fini après son rapport initial — `delta_c(M=0)=0,018711`,
 `delta_c(M=25)=0,018555` (tolérance de bissection plus large que la
@@ -8122,29 +8169,35 @@ seul point qu'il avait annoncé ne pas avoir vérifié.
 |---|---|---|---|
 | le `t90%` mesure une convergence monotone | 17/09 (moi, implicite) | **réfutée** le 17/09 (agent, vérifié indépendamment) — dépassement réel, `r3` passe 62% sous sa valeur finale avant de remonter |
 | le ralentissement du récepteur est un effet homogène de taux (`k` pur) | 17/09 (moi) | **réfutée** le 17/09 (agent) — se décompose en délai d'évacuation (`×3,3`) et taux post-évacuation (`×2,2`), deux mécanismes distincts |
-| le taux post-évacuation (`×2,2`) est comparable au `k∈[1,42;2,45]` du tour 52 | 17/09 (agent) | **confirmée** le 17/09, vérifiée indépendamment à 3 chiffres près (2,2066 contre ≈2,17 de l'agent) |
-| `delta_c(M=0)`/`delta_c(M=25)` se reproduisent indépendamment | 17/09 (agent, suivi) | **confirmée** le 17/09 (écart relatif -0,835% contre -0,84% publié) |
-| `R_init` (`r_tie`) seul, sans masse de fond, produit une variation de taux du même ordre de grandeur (`×2-2,6`) que la masse de fond | 17/09 (moi, tranchant le point laissé ouvert) | **confirmée** le 17/09 (pente de `-0,2865` à `-0,6105` selon `r_tie`, ratio extrême `×2,60`) |
-| le mécanisme "R_init" et le mécanisme "masse de fond" sont IDENTIQUES (un seul et même paramètre sous-jacent) | 17/09 (moi) | **réfutée** le 17/09 — la dépendance en `r_tie` est non monotone (pic à 0,75), celle en masse de fond est un plafond monotone ; même famille phénoménologique, pas le même mécanisme exact |
+| le taux post-évacuation (`×2,2`) est comparable au `k∈[1,42;2,45]` du tour 52 | 17/09 (agent) | **rétrogradée** le 17/09 (moi, en creusant plus loin) — le `×2,2` lui-même s'est révélé instable selon la fenêtre (`×5,07` en fenêtre tardive), la référence `r3_final` n'étant pas convergée ; ni confirmée ni infirmée, mesure à refaire proprement |
+| `delta_c(M=0)`/`delta_c(M=25)` se reproduisent indépendamment | 17/09 (agent, suivi) | **confirmée** le 17/09 (écart relatif -0,835% contre -0,84% publié) — CE résultat n'est pas affecté par le problème de fenêtre ci-dessus (delta_c est un seuil discret, pas une pente) |
+| `R_init` (`r_tie`) seul, sans masse de fond, produit une variation de taux du même ordre de grandeur (`×2-2,6`) que la masse de fond | 17/09 (moi, tranchant le point laissé ouvert) | **réfutée** le 17/09 — le pic à 0,75 était un artefact de fenêtre précoce (agent + vérification directe), le vrai taux tardif est quasi constant (~6% de variation) |
+| le mécanisme "R_init" et le mécanisme "masse de fond" sont IDENTIQUES (un seul et même paramètre sous-jacent) | 17/09 (moi) | **sans objet** le 17/09 — l'effet R_init lui-même est réfuté (ci-dessus), rien à comparer |
 
-**Bilan final piste 3 : mécanisme récepteur confirmé réel (seuil à
-17,75% de masse totale, plafond à -0,84% sur `delta_c`), relié à
-`k(R)` par un chiffre précis et vérifié (`×2,2` post-évacuation, dans
-la fourchette du tour 52), ET généralisé : `R_init` seul (sans masse
-de fond du tout) produit une variation de taux de grandeur comparable
-(`×2,6`) — les deux mécanismes ne sont pas identiques (formes
-différentes : plafond monotone vs pic non monotone) mais appartiennent
-clairement à la même famille phénoménologique (vitesse de traversée
-d'une dynamique compétitive en S). Le lien complet et quantitatif
-(ODE + table k propre au jouet, calibrée sur les DEUX paramètres à la
-fois) reste à construire pour une comparaison entièrement rigoureuse,
-mais la correspondance de grandeur, vérifiée deux fois indépendamment,
-est maintenant solide sur les deux axes.**
+**Bilan final piste 3, honnête : ce qui reste solide, ce qui ne l'est
+plus.** Solide, vérifié plusieurs fois indépendamment : (1) le
+mécanisme récepteur/masse de fond sur `delta_c` est réel (seuil à
+17,75%, plafond à -0,84%, confirmé par l'agent lui-même en bissection
+séparée) ; (2) le "`×8`" original était un artefact (bug d'indexage +
+non-monotonie), confirmé. **Ce qui s'est effondré en creusant plus
+loin, dans la MÊME session, et c'est très bien ainsi (règle méfiance —
+le résultat qui vient de confirmer une hypothèse se vérifie PLUS, pas
+moins) :** le chiffre précis `×2,2` censé tomber dans
+`k∈[1,42;2,45]` n'est PAS fiable tel que mesuré — sa méthode
+(pente contre la dernière valeur d'un run fini) souffre du même
+ralentissement critique déjà documenté ailleurs dans ce tour, rendant
+`r3_final` lui-même une cible mobile. Le lien QUANTITATIF entre le
+mécanisme récepteur et `k(R)` du tour 52 reste donc À FAIRE
+correctement — soit avec des runs beaucoup plus longs, soit (mieux) en
+utilisant `r3_br(s3,s4)` (la forme fermée déjà dérivée ce même tour)
+comme référence fixe au lieu d'un run fini. **Pas de chiffre à retenir
+pour l'instant — juste la certitude qu'un mécanisme réel existe, sans
+que sa taille précise soit encore mesurable proprement.**
 
 Scripts : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence), `verifier_evacuation_fond.py` (nouveau, corrige le bug
-d'indexage et décompose évacuation/taux — remplace les tests
-`python -c` jetables non sauvés de ce fil).
+d'indexage et décompose évacuation/taux, mais dont la méthode de
+mesure de pente reste elle-même à corriger — voir ci-dessus).
 
 ---
 
