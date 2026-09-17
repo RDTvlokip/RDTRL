@@ -6909,6 +6909,20 @@ permanence ne peut pas montrer d'excursions par construction ; un vrai
 test sous SGD demanderait un taux d'apprentissage calibre separement par
 parametre, ce qui va a l'encontre de l'idee de tester "SGD pur".
 
+**Croisé avec le carnet avant de crier au nouveau résultat (règle « le
+standard a des biais », mais ici appliquée à ma propre nouveauté plutôt
+qu'à un seuil reçu) : ce n'est PAS un phénomène nouveau.** Même
+signature exactement au tour 47 (`REPONSE_ORDRE48.md`, §7.60quinquies) :
+SGD à 100× le taux d'Adam sur le mur idx5 laissait `r[0,0]` à exactement
+0,000000 et `1-s[0,0]` presque immobile — même conclusion tirée alors
+(« l'échelle adaptative d'Adam ne remplace pas juste un pas plus grand,
+elle fait quelque chose que SGD ne peut pas reproduire »). Deux
+collisions indépendantes (référents 3/4 ici, référent 0 d'idx5 là-bas),
+deux dispositifs de perturbation différents, même mécanisme les deux
+fois — ça renforce la lecture au lieu de la répéter : c'est une
+propriété de la géométrie de l'objectif près de la saturation, pas un
+artefact d'un run particulier.
+
 Script : `verifier_point_fixe_sgd.py`.
 
 ---
