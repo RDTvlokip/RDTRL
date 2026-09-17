@@ -8199,7 +8199,40 @@ convergence), `verifier_evacuation_fond.py` (nouveau, corrige le bug
 d'indexage et décompose évacuation/taux, mais dont la méthode de
 mesure de pente reste elle-même à corriger — voir ci-dessus).
 
----
+**Repris le 18/09/2026 : point fixe algébrique résolu (pas de
+gradient, pas de ralentissement critique de descente) comme référence
+FIXE au lieu de la dernière valeur d'un run fini.** Système à 4
+équations couplées (`s3=sigmoid(N·poids3·r3/beta)`,
+`r3=exp(N·poids3·s3/beta)/Z`, etc.), itération de point fixe pure —
+converge en 25-26 itérations à precision machine, sans aucun des
+problèmes de cible mobile du gradient.
+
+```
+M=0  : point fixe r3*=0,1384022335 — apres 3000 pas d'entrainement, r3=0,1384022336 (ecart 2,18e-11)
+M=25 : point fixe r3*=0,1409666240 — apres 3000 pas d'entrainement, r3=0,1408969731 (ecart 6,97e-05)
+```
+
+**Déjà révélateur avant même de calculer une pente : à 3000 pas, M=0
+est à `2e-11` de son point fixe, M=25 est encore à `7e-5` — 6 ordres
+de grandeur d'écart, la lenteur du récepteur avec masse de fond est
+massive, pas juste `×2` ou `×8`.**
+
+**Fenêtre adaptative (du dernier extremum local jusqu'au plancher de
+bruit `1e-6`, calculée automatiquement, pas choisie à l'œil) :**
+
+```
+M=0  : fenetre [190,322)   pente=-0,050454
+M=25 : fenetre [143,3001)  pente=-0,001277   (n'atteint PAS le plancher 1e-6 en 3000 pas — fenetre = tout le budget)
+```
+
+**Ratio brut `39,5` — mais PAS un chiffre fiable tel quel** : la
+fenêtre de M=25 ne représente pas un régime exponentiel unique propre
+(elle couvre tout le budget disponible faute d'avoir atteint le
+plancher de bruit), contrairement à celle de M=0 qui EST propre (132
+pas, bien après tout extremum, bien avant le plancher). **Comparer une
+fenêtre propre à une fenêtre qui ne l'est pas donne un nombre, pas une
+mesure.** Relancé avec un budget beaucoup plus long (`pas=20000`) pour
+M=25, pour trouver SA propre fenêtre adaptative propre — en cours.
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
