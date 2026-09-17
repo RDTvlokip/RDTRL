@@ -7185,6 +7185,109 @@ noté dans le code — a corriger avant réutilisation).
 
 ---
 
+### Piste 1 de `ETAT.md` refaite : le coefficient 0,2212 est confirmé — mais mon premier essai visait la mauvaise cible
+
+17/09/2026 (suite du même tour, toujours aucune nouvelle critique de
+dipankarsarkar). Reprise de la piste 1 : refitter le coefficient de
+ralentissement `0,2212·√(delta_c-delta)` avec de vraies données plutôt
+que les 3 points cités au tour 51.
+
+**Premier essai, raté proprement.** Défini le « résidu » comme
+`R_mesuré` (optimiseur hybride, médiane sur une fenêtre de fin de run,
+robuste aux excursions) moins `R_molle = sigmoid(2·delta/beta)` — la
+même « loi molle » naïve utilisée dans `verifier_jouet_2_referents.py`.
+Sur 9 points (`delta` de 0,0067 à 0,01342), ce résidu ne rétrécit PAS
+vers `delta_c` — il CROÎT : coefficient individuel `gap_R/√(dc-delta)`
+de 0,00018 à 4,99 (facteur ~28 000), exposant log-log mesuré = **-0,94**
+(attendu +0,5 si ça s'annulait au pli). Diagnostiqué avant de crier à
+l'erreur de dipankar (règle méfiance) plutôt que de m'arrêter au chiffre
+qui surprend : `R_molle` ignore le terme de couplage `(1-delta)*d3` de
+l'équation récepteur ; `d3` (le déficit du référent 3) CROÎT en
+approchant `delta_c`, donc le terme négligé grossit lui aussi — la loi
+molle naïve devient MOINS bonne près du pli, pas meilleure. Ce n'était
+pas la bonne référence : rien n'oblige un résidu contre elle à s'annuler
+au pli.
+
+Script : `verifier_refit_gap_hybride.py`.
+
+**Deuxième essai, bonne cible.** La vraie signature de nœud-col,
+algébrique, indépendante de tout optimiseur : l'ÉCART ENTRE LES DEUX
+RACINES (stable, instable) du système couplé, en unités `d3=1-s3` — pas
+un résidu contre une loi externe. Recalculé sur **11 points** (au lieu
+de 3), de `dc-delta=6,7e-3` à `1,3e-6` (4 décades de plus que les 3
+points publiés), purement par recherche de racines — aucun entraînement
+nécessaire :
+
+```
+dc-delta=6,7186e-03  gap_d3/√(dc-delta)=0,278313
+dc-delta=4,0312e-03  gap_d3/√(dc-delta)=0,255546
+dc-delta=2,6874e-03  gap_d3/√(dc-delta)=0,243873
+dc-delta=1,3437e-03  gap_d3/√(dc-delta)=0,232339
+dc-delta=6,7186e-04  gap_d3/√(dc-delta)=0,226724
+dc-delta=4,0312e-04  gap_d3/√(dc-delta)=0,224518
+dc-delta=1,3437e-04  gap_d3/√(dc-delta)=0,222340
+dc-delta=4,0312e-05  gap_d3/√(dc-delta)=0,221585
+dc-delta=1,3437e-05  gap_d3/√(dc-delta)=0,221372
+dc-delta=4,0312e-06  gap_d3/√(dc-delta)=0,221305
+dc-delta=1,3437e-06  gap_d3/√(dc-delta)=0,221309
+```
+
+**Le coefficient converge exactement vers 0,221305-0,221372 sur les 3
+points les plus proches du pli** — identique au 0,2212 publié, à moins
+de 0,05 % près. Loin du pli (`frac=0,5`), le même rapport vaut 0,278
+(+26 %) : la « dérive de 24 % » déjà notée au tour 51 est confirmée et
+affinée avec 8 points de résolution supplémentaires, pas un artefact de
+seulement 3 mesures.
+
+**Vérification directe et décisive : recalcul du `gap_d3` algébrique
+EXACTEMENT aux 3 deltas publiés par dipankar (0,0100000 / 0,0130000 /
+0,0134300).** Correspondance à 4 chiffres significatifs ou mieux avec
+ses résidus publiés (ratio publié/algébrique = 1,0000 / 0,9999 / 1,0000
+— voir sortie complète, script one-off basé sur `verifier_gap_racines.py`).
+**Conséquence : ses 3 points n'étaient PAS mesurés par entraînement Adam
+comme le disait le docstring de `verifier_coefficient_ralentissement.py`
+(« mesuré sur des trajectoires ADAM ») — c'est exactement la même
+quantité algébrique (écart de racines) que je viens de recalculer, sans
+aucun entraînement. Ce docstring est faux, à corriger.**
+
+**`delta_c` relocalisé une troisième fois, par une méthode encore
+différente (fusion directe des racines stable/instable par recherche de
+racines pure, sans passer par un critère d'effondrement dynamique comme
+la bissection du tour 50) : `0,013437210`, identique au chiffre près.**
+Déjà vérifié deux fois par ailleurs (intersections du système couplé au
+tour 51, sonde de bassin au tour 51/§7.64) — troisième méthode
+indépendante, même réponse (règle SUR COMBIEN).
+
+**Tentative d'expliquer la dérive par un terme correctif d'ordre
+supérieur (`gap_d3 = C1·√(dc-delta) + C2·(dc-delta)`, moindres carrés
+non pondérés sur les 11 points) : ÉCHOUÉE.** Donne `C1=0,1979` (pas
+`0,2212`) — le fit global est dominé par les points loin du pli (échelle
+linéaire, leur magnitude écrase celle des points proches), pas par le
+comportement asymptotique. Diagnostic : le coefficient ASYMPTOTIQUE
+d'une singularité ne se retrouve pas par un ajustement global non
+pondéré sur une gamme large — il faut soit pondérer vers le pli, soit le
+lire directement dans la limite (ce que la table de ratios individuels
+fait déjà correctement). Le résidu du fit à 2 termes croît
+MONOTONEMENT de -1,5 % à +10 % en approchant le pli — signe que la forme
+correctrice `C2·(dc-delta)` n'est elle-même pas la bonne forme
+fonctionnelle du terme suivant (probablement une puissance non entière,
+ou un terme logarithmique, pas simplement linéaire — non résolu, piste
+ouverte).
+
+**Journal des hypothèses :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le résidu 0,2212 est un écart training/loi-molle-naïve qui s'annule au pli | 17/09 (moi, 1ère lecture) | **réfutée** le 17/09 (résidu contre `R_molle=sigmoid(2delta/beta)` CROÎT, exposant -0,94, pas +0,5) |
+| le résidu 0,2212 est l'écart algébrique racine-stable/racine-instable (`d3`) | 17/09 (moi, corrigée) | **confirmée** le 17/09 (match exact aux 3 points publiés, 4 chiffres significatifs) |
+| 0,2212 est le coefficient asymptotique correct du terme `√()` dominant près du pli | 17/09 (moi) | **confirmée** le 17/09 (converge à 0,221305-0,221372 sur les 3 points les plus proches, 11 au total) |
+| un fit global à 2 termes (`√` + linéaire) non pondéré retrouve ce même coefficient asymptotique | 17/09 (moi) | **réfutée** le 17/09 (donne 0,1979, biaisé par les points loin du pli) |
+| le terme correctif suivant est linéaire en `(dc-delta)` | 17/09 (moi) | **ouverte** — résidu du fit à 2 termes montre une tendance monotone, forme fonctionnelle du terme suivant non identifiée |
+
+Scripts : `verifier_refit_gap_hybride.py`, `verifier_gap_racines.py`.
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en

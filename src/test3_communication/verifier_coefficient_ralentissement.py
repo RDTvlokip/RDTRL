@@ -2,12 +2,20 @@
 coefficient 0.2212*sqrt(delta_c-delta)") n'existait nulle part ailleurs
 dans le depot -- signale par l'agent-dipankar le 17/09/2026 ("a number
 that got written down without being computed"). Il vient bien d'un calcul
-reel (les trois points de residu publies par dipankar au tour 51,
-verifies independamment dans cette session), mais jamais sauve en script.
-Corrige ici : les trois points, le calcul du coefficient, et une mise en
-garde sur ce qu'il mesure reellement (le residu de la loi molle en
-UNITES s3, sur des points Adam, pas SGD -- donc pas touche par
-l'artefact de gel du referent 3 sous SGD trouve le meme jour).
+reel, mais jamais sauve en script -- corrige ici avec les trois points et
+le calcul du coefficient.
+
+CORRECTION du 17/09/2026 (verifier_gap_racines.py) : la remarque
+precedente de ce docstring ("mesure sur des trajectoires ADAM") etait
+FAUSSE. Ce residu n'est PAS un ecart mesure par entrainement -- c'est
+l'ecart ALGEBRIQUE entre la racine stable et la racine instable du
+systeme couple (d3_instable - d3_stable), qui se calcule par recherche
+de racines pure, sans entrainer quoi que ce soit. Verifie : recalcule de
+ce gap_d3 algebrique aux 3 memes deltas donne un ratio publie/algebrique
+de 1,0000 / 0,9999 / 1,0000. Etendu a 11 points dans
+verifier_gap_racines.py : le coefficient converge vers 0,221305-0,221372
+tout pres de delta_c (confirmation du 0,2212), et vaut 0,278 loin du pli
+(la "derive" est confirmee et affinee, pas un artefact de 3 points).
 """
 
 import math
