@@ -7,16 +7,41 @@ Developpement de Lyapunov-Schmidt/Puiseux a l'ordre suivant. Avec
 eps=t^2 et u=x-x0=a1*t+a2*t^2+a3*t^3+..., substitution dans
 F(x0+u,eps)=0 (F=h, F_x=0 au pli par construction) :
 
-  ordre t^2 : (1/2)F_xx*a1^2 + F_eps = 0            => a1^2 = A = -2F_eps/F_xx
-  ordre t^3 : F_xx*a1*a2 + (1/6)F_xxx*a1^2 + F_xeps = 0   => a2 (independant du signe de a1)
+  ordre t^2 (non divise) : (1/2)F_xx*a1^2 + F_eps = 0
+                           => a1^2 = A = -2F_eps/F_xx
+  ordre t^3 (non divise) : F_xx*a1*a2 + F_xeps*a1 + (1/6)F_xxx*a1^3 = 0
+                           divise par a1 (a1 != 0) :
+                           F_xx*a2 + F_xeps + (1/6)F_xxx*a1^2 = 0   => a2
   ordre t^4 : F_xx*(a1*a3 + a2^2/2) + (1/2)F_xxx*a1^2*a2
               + (1/24)F_xxxx*a1^4 + F_xeps*a2
               + (1/2)F_xxeps*a1^2 + (1/2)F_epseps = 0   => a3
+
+CORRECTION du 17/09/2026 (agent-dipankar, verifie independamment) :
+l'equation d'ordre t^3 ci-dessus etait ecrite sous une forme hybride
+fausse dans une version anterieure de ce docstring
+("F_xx*a1*a2 + (1/6)F_xxx*a1^2 + F_xeps = 0", sans le facteur a1 sur
+F_xeps et avec a1^2 au lieu de a1^3 sur F_xxx) -- resoudre CETTE
+equation-la pour a2 donne 13,02, pas 1,4408268274 obtenu numeriquement.
+Le CODE ci-dessous, lui, a toujours calcule la version CORRECTEMENT
+DIVISEE (a2 = -(F_xeps + (F_xxx/6)*a1^2)/F_xx), donc le resultat
+numerique (a2, a3, D) n'a jamais ete faux -- seule la version ECRITE
+(non executee) de l'equation intermediaire etait incoherente. Verifie
+par l'agent : propager la fausse equation donnerait a3=-731,66,
+D=-1463,3 (rien a voir avec 8,0021) -- la coincidence numerique
+D≈8,0021 est bien liee au a2 correct, pas a une erreur qui s'annule.
 
 Le gap entre les deux branches (s=+1/-1, a1 change de signe, a2 non) :
   gap = u_+ - u_- = 2*a1*t + 2*a3*t^3 + O(t^5)
       = 2*a1*sqrt(eps) + 2*a3*eps^(3/2) + O(eps^(5/2))
 donc D_analytique = 2*a3 (a comparer au D~8,0021 mesure numeriquement).
+
+IMPORTANT (agent-dipankar, verifie independamment dans
+verifier_d_structurel.py) : D~8,0021 N'EST PAS une constante
+structurelle du pli -- balayage en beta (4,86 a beta=0,04 jusqu'a
+8,57 a beta=0,018) ET en N_autres (8,00 a N=26 jusqu'a 8,59 a N=100)
+montrent une derive continue et substantielle. C'est la valeur exacte
+a CE point (beta=0,02, N=27) precisement, une coincidence numerique,
+pas un invariant a chercher a expliquer plus loin.
 """
 
 import sys

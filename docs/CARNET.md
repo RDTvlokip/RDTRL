@@ -7373,9 +7373,85 @@ significatifs. Ferme la question laissée ouverte par l'agent-dipankar
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| le coefficient `D` du terme `eps^(3/2)` a une forme fermée dérivable à l'ordre suivant du développement de Lyapunov-Schmidt | 17/09 (moi, reprenant la question laissée ouverte par l'agent) | **confirmée** le 17/09 (`D_analytique=8,0021212` contre `D_empirique=8,0021`, écart 0,0003 %) |
+| le coefficient `D` du terme `eps^(3/2)` a une forme fermée dérivable à l'ordre suivant du développement de Lyapunov-Schmidt | 17/09 (moi, reprenant la question laissée ouverte par l'agent) | **confirmée** le 17/09 (`D_analytique=8,0021212` contre `D_empirique=8,0021`, écart 0,000265 % — pas 0,0003 % comme je l'avais arrondi à un chiffre significatif, corrigé) |
 
 Script : `verifier_puiseux_ordre_suivant.py`.
+
+**Soumis à un agent-dipankar (règle CLAUDE.md), retour reçu et vérifié
+indépendamment avant d'être accepté.** Trois trouvailles, toutes
+confirmées par recalcul indépendant :
+
+**1. Vraie erreur de transcription trouvée dans mon équation écrite (pas
+dans le calcul).** L'équation d'ordre `t³` que j'avais écrite,
+`F_xx·a1·a2 + (1/6)F_xxx·a1² + F_xeps = 0`, mélangeait la forme divisée
+et non-divisée — résoudre CETTE équation littéralement donne `a2=13,02`,
+pas `1,4408268274` obtenu numériquement. **Vérifié par re-dérivation
+manuelle (Taylor de `F(x0+u,eps)` collecté ordre par ordre) : la vraie
+équation non-divisée est `F_xx·a1·a2 + F_xeps·a1 + (1/6)F_xxx·a1³ = 0`**
+— en la divisant par `a1` on retombe exactement sur ce que le CODE a
+toujours calculé (`a2 = -(F_xeps + (F_xxx/6)·a1²)/F_xx`). **Le résultat
+numérique n'a jamais été faux — seule la ligne écrite (jamais exécutée
+telle quelle) l'était.** Corrigé dans le docstring du script.
+
+**2. `D≈8,0021` est confirmé RÉFUTÉ comme constante structurelle —
+c'est une coïncidence numérique à CE `(beta,N)` précis.** Balayage
+indépendant (`verifier_d_structurel.py`, refait de zéro sans faire
+confiance aux chiffres de l'agent) :
+
+```
+D(beta), N_autres=26 fixe :
+  beta=0,0180  D=8,574754
+  beta=0,0200  D=8,002121   <- le point publie
+  beta=0,0220  D=7,508526
+  beta=0,0250  D=6,880408
+  beta=0,0300  D=6,045929
+  beta=0,0400  D=4,856302
+
+D(N_autres), beta=0,02 fixe :
+  N_autres=26   D=8,002121   <- le point publie
+  N_autres=30   D=8,068807
+  N_autres=40   D=8,199495
+  N_autres=60   D=8,376332
+  N_autres=100  D=8,587531
+```
+
+**Concordance à 4-5 chiffres significatifs avec les chiffres de
+l'agent sur les DEUX balayages.** `D` bouge continûment et
+substantiellement dans les deux cas — ni un invariant topologique, ni
+un nombre rond qui mériterait d'être expliqué plus loin. Cohérent avec
+mon propre test similaire sur `C0` (réfuté aussi, plus haut) : aucun
+des coefficients de ce développement n'a de forme simple en `(beta,N)`
+en dehors du point exact où ils sont évalués.
+
+**3. Question de l'agent (Jacobien singulier près de `beta=0,015`) :
+RÉSOLUE, PAS un vrai phénomène.** Continuation indépendante de
+`beta=0,019` à `beta=0,014` par pas de `0,0005-0,001`, `F_xx` recalculé
+à chaque point :
+
+```
+beta=0,0190  F_xx=-13,864617
+beta=0,0180  F_xx=-14,887092
+beta=0,0170  F_xx=-16,041032
+beta=0,0160  F_xx=-17,352284
+beta=0,0155  F_xx=-18,076864
+beta=0,0150  F_xx=-18,853822   <- exactement le point ou son solveur echouait
+beta=0,0145  F_xx=-19,688822
+beta=0,0140  F_xx=-20,588358
+```
+
+**Aucune singularité — `F_xx` varie de façon parfaitement lisse et
+monotone à travers `beta=0,015`, sans aucun signe de dégénérescence.**
+Réponse à sa question précommise : pas un cusp réel, très probablement
+un mauvais point de départ de continuation de son côté (qu'il avait
+lui-même identifié comme possibilité).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'équation d'ordre t³ que j'ai écrite est correcte telle quelle | 17/09 (moi) | **réfutée** le 17/09 (agent) — transcription incohérente, vérifiée par re-dérivation manuelle ; le CODE, lui, était toujours correct |
+| `D≈8,0021` est une constante structurelle du pli (indépendante de beta/N) | 17/09 (moi, implicite en la trouvant « proche de 8 ») | **réfutée** le 17/09 (agent, confirmé indépendamment) — dérive continue de 4,86 à 8,59 sur les balayages beta et N |
+| le Jacobien singulier de l'agent à beta≈0,015 signale une vraie dégénérescence (cusp) | 17/09 (agent) | **réfutée** le 17/09 (moi, indépendamment) — `F_xx` parfaitement lisse à ce beta, artefact de son point de départ |
+
+Script : `verifier_d_structurel.py`.
 
 **Nouvelle hypothèse formée et testée en attendant d'autres calculs
 (17/09/2026) : `C0=0,2212603871` suit-il une loi de puissance simple
