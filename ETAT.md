@@ -40,32 +40,44 @@ tout re-raconter.*
    pas de la paire de référents ni de la graine** — troisième
    confirmation indépendante du mécanisme sur 23/25. Script :
    `verifier_delta_c_23_25.py`.
-3. **EN COURS, PAS RÉSOLUE — un vrai effet (petit) trouvé, sa taille
-   exacte reste à caractériser. Une fausse conclusion a été écrite PUIS
-   corrigée dans la même session — lire `CARNET.md` avant de faire
-   confiance à un résumé rapide de cette piste.** Jouet à M catégories
-   de fond variables construit (`verifier_jouet_n_variable.py`). Un bug
-   de convergence trouvé et corrigé en route (`lr=0,05` trop lent près
-   de l'attracteur effondré du jouet — corrigé avec `lr=0,2`, vérifié
-   que ça ne déplace pas les points fixes). Le balayage M=0/8/25 à
-   `r_autres_init=1e-6` donnait `delta_c` et l'écart de bascule
-   IDENTIQUES bit-à-bit — **j'ai d'abord conclu (à tort, sur la base
-   d'un seul point à `delta=0,013`) que le mécanisme récepteur était
-   écarté.** Correction immédiate : `bissecter_delta_c(M=25,
-   r_autres_init=0,01)` = **0,018516**, contre **0,018672** pour M=0 —
-   un écart réel de **-0,84 %**, pas zéro. Le point unique à
-   `delta=0,013` (loin du pli) était juste insensible à cet effet, qui
-   se manifeste À la bifurcation. **Le mécanisme récepteur N'EST PAS
-   écarté — il a un effet réel mais petit, sensible à la masse initiale
-   des catégories de fond.** Reste à faire : mesurer `delta_c(M)` pour
-   plusieurs M ET plusieurs `r_autres_init` (pas un seul point de
-   chaque), et comparer la grandeur de cet effet (-0,84 % sur
-   `delta_c`) à celle de la dérive de `k(R)` mesurée au tour 52
-   (facteur ~1,7 sur `k` — deux échelles jamais encore reliées). La
-   piste émetteur (le `26` de H7, renormalisation sur les 26 autres
-   messages) reste une hypothèse complémentaire plausible, pas la seule
-   explication restante. Détail complet et hypothèses datées :
-   `CARNET.md`, fin de §7.65.
+3. **CARACTÉRISÉE le 17/09/2026 — mécanisme confirmé réel, profil à
+   seuil+plafond établi, reste à chiffrer contre `k(R)`.** (Une fausse
+   conclusion intermédiaire — « effet nul, mécanisme récepteur écarté »
+   — a été écrite PUIS corrigée dans la même session ; voir `CARNET.md`
+   pour l'historique complet si besoin, mais l'état final ci-dessous est
+   le bon.) Jouet à M catégories de fond variables
+   (`verifier_jouet_n_variable.py`), bug de convergence corrigé
+   (`lr=0,2` au lieu de 0,05). **Grille ciblée finale (masse totale
+   fixée, M variable) :**
+   ```
+   M=25, masse totale=8 %   -> delta_c=0,018672  (= M=8 a 8%, = M=0 : NUL)
+   M=15, masse totale=25 %  -> delta_c=0,018516  (= M=25 a 25% : REEL, -0,84%)
+   M=25, masse totale=50 %  -> delta_c=0,018516  (IDENTIQUE a 25% — pas plus)
+   ```
+   **Deux faits établis : (1) c'est la MASSE TOTALE de fond qui compte,
+   pas M (confirmé — même masse, M différent, même résultat) ; (2)
+   l'effet a un SEUIL (entre 8% et 25%) puis un PLAFOND (25% et 50%
+   donnent le même -0,84%, pas de croissance continue).** Prochaines
+   étapes précises : (a) localiser le seuil par bissection entre 8% et
+   25%, (b) comparer l'ampleur du plafond (-0,84% sur `delta_c`) à la
+   dérive de `k(R)` du tour 52 (facteur ~1,7 sur `k` — deux échelles
+   jamais encore reliées). La piste émetteur (le `26` de H7) reste une
+   hypothèse complémentaire, pas la seule explication. Détail complet
+   et hypothèses datées : `CARNET.md`, fin de §7.65.
+4bis. **Nouveau (17/09/2026, en marge de piste 3) : le coefficient `D`
+   du terme `eps^(3/2)` de la forme normale du pli, dérivé à la main
+   (Lyapunov-Schmidt à l'ordre suivant), confirmé par un agent-dipankar
+   ET vérifié indépendamment.** `D_analytique=8,0021212` matche
+   `D_empirique=8,0021` (extrapolation numérique) à 0,000265% près.
+   Deux corrections trouvées par l'agent et confirmées : (a) une
+   équation intermédiaire mal écrite dans la doc (le CODE, lui, était
+   toujours correct) ; (b) `D≈8` n'est PAS une constante structurelle —
+   dérive continûment avec `beta` (4,86 à 8,57) et `N` (8,00 à 8,59),
+   confirmé par balayage indépendant à 4-5 chiffres significatifs. Une
+   question de l'agent (singularité à `beta=0,015`) a été réfutée
+   indépendamment (juste un mauvais point de départ de son côté).
+   Scripts : `verifier_puiseux_ordre_suivant.py`,
+   `verifier_d_structurel.py`, `verifier_c0_vs_beta.py`.
 4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
    morceau d'écriture, à faire si ce fil se stabilise assez.
 5. Si dipankarsarkar répond entre-temps, reprendre le flux normal (sa
