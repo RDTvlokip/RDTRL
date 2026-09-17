@@ -21,7 +21,7 @@ from verifier_prior_asymetrique import objectif_pondere
 
 DELTA_C = 0.0134295
 PAS_MAX = 60_000
-CHECK_TOUS = 200
+CHECK_TOUS = 20
 LR_ADAM_E = 0.05
 ADAM_EPS = 1e-10
 LR_SGD_R = 50.0

@@ -83,17 +83,17 @@ n'avait jamais été sauvé).
 
 Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026).
 
-1. **Ralentissement critique refait avec l'optimiseur hybride — FAIT le
-   17/09, résultat mitigé, pas totalement clos.** `verifier_ralentissement_hybride.py` :
-   800/1000/1000 pas pour converger aux trois distances (3%/0,3%/0,03%).
-   Légère hausse entre le premier et le deuxième point (25 %), mais plat
-   ensuite — ne colle pas à une vraie loi en racine carrée (qui
-   prédirait une accélération continue en s'approchant de `delta_c`).
-   **H6 (nœud-col, pas de fort ralentissement) tient globalement, mais la
-   granularité de mesure (pas de 200) est trop grossière pour trancher
-   finement entre "un peu de ralentissement" et "aucun".** À refaire avec
-   un `CHECK_TOUS` plus fin (10-20 pas) si on veut vraiment clore ce
-   point.
+1. **Ralentissement critique refait avec l'optimiseur hybride, puis à
+   résolution fine — FAIT le 17/09, résultat NUANCÉ, considéré assez
+   clos pour l'instant.** `verifier_ralentissement_hybride.py` : à
+   résolution grossière (pas de 200), 800/1000/1000 — semblait plat. À
+   résolution fine (pas de 20) : **760/880/940 — une vraie hausse
+   monotone apparaît** (ratios 1,158 puis 1,068), mais bien plus faible
+   qu'une loi `(delta_c-delta)^(-1/2)` classique (qui prédirait ~3,16×
+   par décade). **Lecture retenue : ni H6 pur ni H11 pur** — un vrai
+   ralentissement critique existe, mais amorti, plausiblement par le
+   couplage à la dynamique rapide du récepteur (SGD). Laissé comme
+   résultat intermédiaire honnête plutôt que forcé vers un camp.
 2. **`k(R)` reste sans mécanisme fermé** — H_chemin et H_momentum
    réfutées, il reste "fonction de l'état, probablement liée à `beta2`
    ou aux 25 autres lignes du système complet à 27 référents" — aucune

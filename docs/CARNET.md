@@ -7026,7 +7026,32 @@ Laissé ouvert plutôt que forcé à une conclusion nette.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| H6 (pas de ralentissement critique fort) tient avec le bon optimiseur | 17/09 (moi) | **partiellement soutenue** le 17/09 — hausse de 25% notée mais pas concluante à cette résolution |
+| H6 (pas de ralentissement critique fort) tient avec le bon optimiseur | 17/09 (moi) | **affinée** le 17/09 — voir résolution fine ci-dessous |
+
+**Refait à résolution 10× plus fine** (`CHECK_TOUS=20` au lieu de 200,
+même protocole sinon) :
+
+```
+760 pas   (3,000 % sous delta_c)
+880 pas   (0,300 % sous delta_c)   ratio vs precedent : 1,158
+940 pas   (0,030 % sous delta_c)   ratio vs precedent : 1,068
+```
+
+**Une vraie hausse monotone apparaît, pas plate comme à résolution
+grossière — mais bien plus faible qu'une divergence en racine carrée
+classique.** Une vraie loi `(delta_c-delta)^(-1/2)` prédirait un
+facteur `sqrt(10)≈3,16` par décade de distance ; on observe 1,16 puis
+1,07 — un ralentissement réel, mesurable, mais loin d'être le
+ralentissement critique complet d'un nœud-col 1D classique.
+
+**Lecture retenue : ni « H6 pur » ni « H11 pur ».** Le système montre un
+vrai signe de ralentissement en approchant `delta_c` (contre l'ancienne
+lecture "parfaitement plat" qui était un artefact de mesure), mais
+l'effet est nettement plus faible que la loi théorique à une variable.
+Cohérent avec un système ou le ralentissement d'un noeud-col existe mais
+est partiellement masqué/amorti par le couplage a la dynamique rapide du
+recepteur (SGD ici) — une lecture intermediaire, pas tranchee entre les
+deux camps, a garder ouverte plutôt que forcee.
 
 Script : `verifier_ralentissement_hybride.py`.
 
