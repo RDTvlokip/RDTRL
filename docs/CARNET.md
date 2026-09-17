@@ -7875,18 +7875,67 @@ cours.
 | c'est donc un effet TRANSITOIRE (dilution de `Z` en début d'entraînement), du même type que ce que `k` capture | 17/09 (moi) | **ouverte, cohérente avec la dérivation, pas encore mesurée directement** |
 | le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, loin de tout pli (`delta=0,013`) | 17/09 (moi) | **réfutée** le 17/09 (ratio identique 0,5000 dans les deux cas — mais mauvais endroit pour le test, voir ci-dessus) |
 
-**Prochaines étapes précises pour la reprise :**
-1. Résultat du retest près du pli (`delta=0,95×delta_c` de chaque
-   config) — lancé en fin de session, à lire en premier.
-2. Si un écart de ratio apparaît près du pli mais pas loin de lui, ça
-   confirme le mécanisme transitoire et permet de construire le lien
-   quantitatif avec `k(R)` (toujours à faire : ODE + table k du jouet,
-   mais maintenant motivée par une preuve directe plutôt qu'une
-   analogie).
-3. Si le ratio reste identique même près du pli, le mécanisme
-   transitoire proposé ici serait lui aussi réfuté, et il faudrait
-   revenir à la piste émetteur (le `26` de H7) ou une troisième
-   hypothèse pas encore nommée.
+**Retesté près du pli (`delta=0,95×delta_c` de chaque config) —
+résultat POSITIF, pas nul cette fois.** Premier passage, résolution
+grossière (`check_tous=20`) :
+
+```
+sans fond (M=0)   : t90%(s3)=220  t90%(r3)=20   ratio=0,0909
+fond 25% (M=25)   : t90%(s3)=260  t90%(r3)=40   ratio=0,1538
+```
+
+**Écart de ratio ×1,69 — troublement proche du facteur ~1,7 de dérive
+de `k` au tour 52.** Méfiance immédiate (règle 5ter) avant de crier
+victoire : `t90%(r3)=20` et `=40` avec une résolution de mesure de
+`check_tous=20` pas veut dire une incertitude de ±20 sur des valeurs de
+20-40 — potentiellement rien qu'un artefact de quantification. **Refait
+à résolution fine (`check_tous=1`, chaque pas individuellement) avant
+d'accepter le chiffre :**
+
+```
+sans fond (M=0)   : t90%(s3)=208  t90%(r3)=4    ratio=0,01923
+fond 25% (M=25)   : t90%(s3)=230  t90%(r3)=32   ratio=0,13913
+```
+
+**Le signal est RÉEL et même PLUS FORT à résolution fine, pas un
+artefact de quantification — l'écart de ratio grandit à ×7,2 (pas
+×1,69) une fois mesuré précisément.** Décomposition claire : `s3`
+(émetteur) converge à peu près à la même vitesse dans les deux cas
+(208 contre 230 pas, ×1,1 seulement) — **c'est `r3` (récepteur) qui
+ralentit spécifiquement et fortement (4 contre 32 pas, ×8)** avec la
+masse de fond. Ceci confirme directement l'hypothèse transitoire posée
+plus haut : la masse de fond dilue `Z` en tout début d'entraînement, ce
+qui retarde spécifiquement la convergence du RÉCEPTEUR — exactement
+l'asymétrie qu'un paramètre `k` (vitesse relative récepteur/émetteur)
+est censé capturer, mesurée ici directement plutôt que supposée.
+
+**Ce que ce chiffre n'est PAS encore : une valeur de `k` comparable au
+facteur ~1,7 du tour 52.** Le `×8` mesuré ici est un ratio brut de
+temps de convergence (`t90%`), pas le paramètre `k` ajusté dans l'ODE à
+deux échelles de temps (qui est calibré différemment, via le point de
+bascule de la séparatrice, pas une mesure directe de vitesse). Les deux
+quantités pointent dans la MÊME direction qualitative (le récepteur
+ralentit relativement à l'émetteur quand un paramètre externe change),
+mais ne sont pas sur la même échelle sans le travail de calibration
+ODE encore à faire.
+
+**Soumis à un agent-dipankar (règle CLAUDE.md) pour challenger ce
+résultat avant de le considérer clos.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le décalage de `delta_c` avec la masse de fond vient d'un déplacement du point fixe du récepteur lui-même | 17/09 (moi, implicite) | **réfutée** le 17/09 (dérivation analytique : le `+M` est négligeable face aux termes exponentiels de récompense, le point fixe ne dépend pas de M) |
+| c'est donc un effet TRANSITOIRE (dilution de `Z` en début d'entraînement), du même type que ce que `k` capture | 17/09 (moi) | **confirmée** le 17/09 (récepteur ralentit ×8, émetteur ×1,1 seulement, près du pli — pas loin de lui) |
+| le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, loin de tout pli (`delta=0,013`) | 17/09 (moi) | **réfutée** le 17/09 (ratio identique 0,5000 dans les deux cas — mais mauvais endroit pour le test) |
+| le ratio de temps de convergence r3/s3 diffère avec/sans masse de fond, PRÈS du pli | 17/09 (moi) | **confirmée** le 17/09, à résolution fine (×7,2 sur le ratio, dominé par un ralentissement ×8 du récepteur seul) |
+| l'écart de ratio à résolution grossière (×1,69) est un artefact de quantification (`check_tous=20`) | 17/09 (moi, méfiance) | **réfutée** le 17/09 — le signal est réel et même plus fort à résolution fine (×7,2, pas juste ×1,69) |
+
+**Bilan final piste 3 : mécanisme récepteur confirmé réel (seuil à
+17,75% de masse totale, plafond à -0,84% sur `delta_c`), ET
+mécaniquement relié à `k(R)` par une démonstration directe (ralentissement
+spécifique du récepteur près du pli, pas de l'émetteur) — sans encore
+avoir la calibration quantitative précise (l'ODE + table k du jouet).
+Un progrès réel, pas juste une analogie plausible.**
 
 Script : `verifier_jouet_n_variable.py` (corrigé pour la lenteur de
 convergence ; le résultat "nul" à `delta=0,013` était un artefact du
