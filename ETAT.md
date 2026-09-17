@@ -57,13 +57,30 @@ tout re-raconter.*
    **Deux faits établis : (1) c'est la MASSE TOTALE de fond qui compte,
    pas M (confirmé — même masse, M différent, même résultat) ; (2)
    l'effet a un SEUIL (entre 8% et 25%) puis un PLAFOND (25% et 50%
-   donnent le même -0,84%, pas de croissance continue).** Prochaines
-   étapes précises : (a) localiser le seuil par bissection entre 8% et
-   25%, (b) comparer l'ampleur du plafond (-0,84% sur `delta_c`) à la
-   dérive de `k(R)` du tour 52 (facteur ~1,7 sur `k` — deux échelles
-   jamais encore reliées). La piste émetteur (le `26` de H7) reste une
-   hypothèse complémentaire, pas la seule explication. Détail complet
-   et hypothèses datées : `CARNET.md`, fin de §7.65.
+   donnent le même -0,84%, pas de croissance continue).**
+
+   **(a) FAIT — seuil localisé précisément entre 17,7422 % et
+   17,7539 % de masse totale** (18 points au total, bissection, jamais
+   de valeur intermédiaire entre les deux `delta_c` — un vrai saut
+   binaire, pas un dégradé). Hypothèse ouverte : ce saut net suggère une
+   bascule qualitative entre deux branches du système, pas un décalage
+   continu du même point fixe — pas encore démontré directement.
+
+   **(b)/(c) « relier au facteur ~1,7 de `k(R)` » — PAS une conversion
+   numérique, précisé pourquoi.** `delta_c` (et son décalage) est une
+   propriété STATIQUE (où se situe le pli algébrique) ; `k` est une
+   propriété DYNAMIQUE (vitesse de relaxation récepteur/émetteur dans
+   l'ODE à deux échelles de temps du tour 52). Un décalage du pli
+   n'implique rien en soi sur la vitesse d'approche. **Pour vraiment
+   relier les deux, il faudrait construire l'ODE et la table k↔bascule
+   POUR CE JOUET** (masse de fond nulle vs non-négligeable) et voir si
+   `k` y dérive aussi — un vrai travail de modélisation, pas fait cette
+   session, correctement scopé plutôt que laissé vague. Prochaine étape
+   concrète pour la reprise : construire cette ODE/table, comparer le
+   sens et l'ordre de grandeur de la dérive de `k` à celle du système
+   réel. La piste émetteur (le `26` de H7) reste une hypothèse
+   complémentaire, pas la seule explication. Détail complet et
+   hypothèses datées : `CARNET.md`, fin de §7.65.
 4bis. **Nouveau (17/09/2026, en marge de piste 3) : le coefficient `D`
    du terme `eps^(3/2)` de la forme normale du pli, dérivé à la main
    (Lyapunov-Schmidt à l'ordre suivant), confirmé par un agent-dipankar
