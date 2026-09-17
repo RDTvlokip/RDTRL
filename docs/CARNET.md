@@ -7419,6 +7419,46 @@ Script : `verifier_delta_c_23_25.py`.
 
 ---
 
+### Piste 3 de `ETAT.md` (en cours) : jouet à M catégories de fond variables — un vrai obstacle de convergence trouvé et corrigé en route
+
+17/09/2026, même tour. Construction du jouet à M catégories de fond
+(`verifier_jouet_n_variable.py`) pour tester si `k(R)` s'aplatit quand
+le nombre de lignes participantes grandit (M=0 → M=25, vers le système
+complet). Le test de non-régression (M=0 doit reproduire
+`verifier_jouet_2_referents.py`) passe. La première bissection de
+`delta_c(M=0)` plante (`AssertionError: lo/hi meme issue`) — creusé
+avant de corriger à l'aveugle, plusieurs hypothèses formées et testées
+dans l'ordre :
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le bracket (0,010 ; 0,020) ne contient plus `delta_c` de ce jouet | 17/09 (moi) | **réfutée** le 17/09 (le test de non-régression, `pas=40000` par défaut, montre bien `delta=0,02` effondré — le bracket est correct) |
+| c'est juste un budget de pas insuffisant (15000 contre 40000) | 17/09 (moi) | **réfutée** le 17/09 (`pas=25000/30000` donnent encore `s3≈0,500000`, pile sur la frontière, pas franchement effondré) |
+| la dynamique près de l'attracteur effondré (`s3=0,5`, PAS `1/27` — ce jouet n'a pas les 26 autres messages de l'émetteur du vrai système, donc rien n'aspire la masse ailleurs que vers l'optimum d'entropie pur) a un vrai plateau lent, distinct d'un simple manque de pas | 17/09 (moi) | **confirmée** le 17/09 (`delta=0,05`, bien au-delà de `delta_c≈0,0187` : `s3=0,500000` à 15000 pas, `0,499935` à 40000, `0,498566` à 100000 — mouvement réel mais très lent, pas un plateau permanent) |
+| augmenter `lr` de 0,05 à 0,2 suffit à sortir de ce plateau dans un budget raisonnable | 17/09 (moi) | **confirmée** le 17/09 (`delta_c(M=0)` proprement bracketé entre 0,0185 (gradué, `s3=0,997521`) et 0,0187 (effondré, `s3=0,500000`) à `pas=40000, lr=0,2` — cohérent avec le `~0,0187` déjà connu) |
+
+**Pourquoi ce plateau existe (COMMENT, pas seulement QUE) :** la
+pression d'entropie de ce jouet vaut `beta/N=0,02/27≈7,4e-4` — une
+force de rappel faible vers `s3=0,5`. Sans les 26 autres messages pour
+« aspirer » la masse de l'émetteur (comme dans le vrai système, où le
+`26` apparaît explicitement dans l'équation H7), l'unique force qui
+pousse `s3` sous 1 une fois la récompense insuffisante est cette
+pression faible — d'où une échelle de temps de convergence bien plus
+longue que dans le système complet. Corrigé en augmentant `lr` (pas en
+changeant le modèle), ce qui est une intervention sur la DYNAMIQUE,
+pas sur l'ALGÈBRE — cohérent avec l'esprit de l'ablation (on ne veut
+changer que la vitesse d'exploration, pas les points fixes eux-mêmes).
+**Vérifié dans la foulée (pas laissé en suspens) : `lr=0,2` ne déplace
+pas les points fixes.** À `delta=0,013` (loin du pli), `lr=0,05` donne
+`s3=0,999974  R4=0,786040` et `lr=0,2` donne `s3=0,999974  R4=0,786045`
+— identiques à 4-5 chiffres significatifs près. Le changement de `lr`
+accélère la convergence sans changer où le système converge —
+exactement l'intervention voulue (dynamique, pas algèbre).
+
+Script : `verifier_jouet_n_variable.py` (corrigé, balayage en cours).
+
+---
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
