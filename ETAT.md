@@ -66,21 +66,38 @@ tout re-raconter.*
    bascule qualitative entre deux branches du système, pas un décalage
    continu du même point fixe — pas encore démontré directement.
 
-   **(b)/(c) « relier au facteur ~1,7 de `k(R)` » — PAS une conversion
-   numérique, précisé pourquoi.** `delta_c` (et son décalage) est une
-   propriété STATIQUE (où se situe le pli algébrique) ; `k` est une
-   propriété DYNAMIQUE (vitesse de relaxation récepteur/émetteur dans
-   l'ODE à deux échelles de temps du tour 52). Un décalage du pli
-   n'implique rien en soi sur la vitesse d'approche. **Pour vraiment
-   relier les deux, il faudrait construire l'ODE et la table k↔bascule
-   POUR CE JOUET** (masse de fond nulle vs non-négligeable) et voir si
-   `k` y dérive aussi — un vrai travail de modélisation, pas fait cette
-   session, correctement scopé plutôt que laissé vague. Prochaine étape
-   concrète pour la reprise : construire cette ODE/table, comparer le
-   sens et l'ordre de grandeur de la dérive de `k` à celle du système
-   réel. La piste émetteur (le `26` de H7) reste une hypothèse
-   complémentaire, pas la seule explication. Détail complet et
-   hypothèses datées : `CARNET.md`, fin de §7.65.
+   **(b)/(c) RÉSOLU, avec un chiffre précis, pas juste une analogie.**
+   Mesuré directement (pas via l'ODE complète, via une décomposition
+   du temps de convergence du récepteur) : près du pli, la masse de
+   fond crée un mécanisme en DEUX temps — (i) un délai (`~×3,3`)
+   pendant que la masse de fond s'évacue géométriquement (demi-vie
+   ~2 pas, `r3` et `r4` montent ENSEMBLE contre le fond avant de
+   s'opposer l'un à l'autre) ; (ii) un vrai ralentissement de taux
+   POST-évacuation du récepteur, mesuré à **`×2,2066`**. **Ce `2,2`
+   tombe DANS la fourchette `k∈[1,42 ; 2,45]` du tour 52** — vérifié
+   indépendamment à 3 chiffres significatifs (deux fois : par un
+   agent-dipankar et par moi, `-0,286460`/`-0,129821` = `2,2066`).
+   **Un premier chiffre brut (`×8`) publié plus tôt dans ce tour était
+   FAUX** — contaminé par un bug d'indexage (le "`t=0`" enregistré
+   était déjà après un pas d'Adam complet) et par la non-monotonie de
+   la trajectoire de `r3` (dépassement de 62% sous sa valeur finale) —
+   corrigé dans la même session, script permanent
+   `verifier_evacuation_fond.py` créé (remplace les tests `python -c`
+   jetables, faute en soi corrigée). Point non tranché : un balayage
+   `r_tie` seul (sans masse de fond) ne fait bouger le temps de
+   convergence que d'un facteur <2 sur toute sa plage — pas encore
+   décomposé évacuation/taux, donc pas encore tranché si c'est « le même
+   bouton » que la masse de fond ou un mécanisme séparé. La piste
+   émetteur (le `26` de H7) reste une hypothèse complémentaire.
+   Détail complet et hypothèses datées : `CARNET.md`, fin de §7.65.
+2bis. **Piste 2 : soumise à un agent-dipankar après coup (oubli initial,
+   repéré par Théo, corrigé).** Deux corrections mineures confirmées
+   (`0,0016%` pas `0,0015%` ; `delta_c(3/4)` tombe à 71% du bracket, pas
+   au centre). Une crainte plus sérieuse (valeurs `R` près de `delta_c`
+   non convergées à `pas=40000`) testée directement et RÉFUTÉE (`R`
+   identique à 6 décimales de 40k à 400k pas). Le résultat original
+   (delta_c universel entre 3/4 et 23/25) tient, juste mieux
+   caractérisé.
 4bis. **Nouveau (17/09/2026, en marge de piste 3) : le coefficient `D`
    du terme `eps^(3/2)` de la forme normale du pli, dérivé à la main
    (Lyapunov-Schmidt à l'ordre suivant), confirmé par un agent-dipankar
