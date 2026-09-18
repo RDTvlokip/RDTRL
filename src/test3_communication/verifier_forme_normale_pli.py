@@ -110,18 +110,25 @@ if __name__ == "__main__":
 
     print("### H6-direct (sans masse de fond, s3/R places sur le point instable) ###")
     trace_h6_effondre = trace_s3(0.994295, R_init=0.829390, masse_fond=0.0, pas=60, check_tous=1)
-    A_h6, B_h6, C_h6, x0_h6, mu_h6 = analyser("H6-direct (effondre, cible=0,994295)", trace_h6_effondre)
+    # restreindre au voisinage IMMEDIAT du point selle connu (0,994300) --
+    # pas toute la trajectoire (qui inclut la chute complete jusqu'a s3~0,5)
+    trace_h6_local = [(i, s3) for (i, s3) in trace_h6_effondre if s3 >= 0.97]
+    A_h6, B_h6, C_h6, x0_h6, mu_h6 = analyser(
+        "H6-direct, fenetre LOCALE (s3>=0,97)", trace_h6_local)
 
     print()
     print("### Cas retarde (masse de fond 25%, R_init=0,60) ###")
-    trace_delayed_effondre = trace_s3(0.999455, R_init=0.60, masse_fond=0.25, pas=800, check_tous=5)
-    # ne garder que la fenetre pres du goulot (pas 400-800, avant effondrement total)
-    trace_delayed_fenetre = [(i, s3) for (i, s3) in trace_delayed_effondre if 400 <= i <= 780]
-    A_d, B_d, C_d, x0_d, mu_d = analyser("Cas retarde (effondre, fenetre 400-780)", trace_delayed_fenetre)
+    trace_delayed_effondre = trace_s3(0.999455, R_init=0.60, masse_fond=0.25, pas=800, check_tous=2)
+    # restreindre au voisinage IMMEDIAT du point selle du cas retarde
+    # (s3 y vaut ~0,993-0,996 pendant la fenetre de ralentissement, PAS
+    # les valeurs post-effondrement (s3<0,5))
+    trace_delayed_local = [(i, s3) for (i, s3) in trace_delayed_effondre if s3 >= 0.97]
+    A_d, B_d, C_d, x0_d, mu_d = analyser(
+        "Cas retarde, fenetre LOCALE (s3>=0,97)", trace_delayed_local)
 
     print()
-    print("=== COMPARAISON DIRECTE DU COEFFICIENT QUADRATIQUE 'a' ===")
-    print(f"  a_H6direct = {A_h6:.6e}")
-    print(f"  a_delayed  = {A_d:.6e}")
+    print("=== COMPARAISON DIRECTE DU COEFFICIENT QUADRATIQUE 'a' (fenetres locales) ===")
+    print(f"  a_H6direct = {A_h6:.6e}  (x0={x0_h6:.6f}, attendu pres de 0,994300)")
+    print(f"  a_delayed  = {A_d:.6e}  (x0={x0_d:.6f})")
     if A_h6 != 0 and A_d != 0:
         print(f"  ratio a_delayed/a_H6direct = {A_d/A_h6:.4f}")
