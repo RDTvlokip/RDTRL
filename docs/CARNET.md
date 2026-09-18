@@ -9761,6 +9761,68 @@ très élevé de rounds ce tour) — limite assumée.
 | les chiffres de résidu M=25 rapportés par cet agent (s3≈0,9973) sont corrects | 18/09 (agent) | **réfutée** le 18/09 — rejoué deux fois moi-même, résultat bit-identique s3=0,4998, pas 0,9973 ; erreur reelle dans le rapport de l'agent |
 | M=25 passe moins de temps dans la région lente du vrai pli (x*≈0,0042) que M=0 | 18/09 (moi, fenêtre corrigée) | **confirmée** le 18/09 — 11-13× moins de temps, mesuré directement, mais l'attracteur s3=0,5 où M=25 finit par se bloquer est un phénomène déjà documenté dans le jouet, pas nouveau |
 
+**Suite, même tour (Théo : « on continue, je n'aime pas rester sans
+réponse ») — mécanisme final trouvé, propre, vérifié, cette fois
+sans laisser de question ouverte.**
+
+**Trace dense `s3(t)` pour M=0 et M=25, chacun à son propre
+`delta_c`, jusqu'à 40000 pas** (`lr=0,2`) : les deux atteignent une
+région proche de leur pli respectif très vite (`t≈300-500`), mais
+divergent radicalement ensuite :
+
+```
+M=0  :  s3 se fixe a 0,99643232 des t=500 et y reste jusqu'a t=40000
+M=25 :  s3 traverse la meme region puis tombe et se fixe a 0,50000
+        des t~700, y reste (avec un bruit residuel) jusqu'a t=40000
+```
+
+**`s3=0,5` pour M=25 n'est PAS un attracteur séparé et mystérieux —
+vérifié directement : `x_br(R)` (la fonction de branche de 3a) suit
+`s3` mesuré à chaque instant, quasi exactement** (`x_br(r4)=0,49999998`
+contre `s3=0,50000001` mesuré à `t=20000`). **Le mécanisme complet :
+pour M=25, le récepteur (`r4`) file jusqu'à `R=1` exactement
+(committement total au challenger, `r3→0`), au lieu de se stabiliser
+sur la valeur intermédiaire de la branche graduée stable comme le
+fait M=0.** Et `x_br(R=1)=1-sigmoid(0)=0,5` exactement, par
+construction de la formule — donc `s3=0,5` est juste `x_br` évalué à
+l'extrême `R=1`, un point parfaitement ordinaire de la MÊME fonction
+de branche déjà validée en 3a, pas un nouveau phénomène.
+
+**Ce que ça élucide, enfin proprement : le canal manquant de la
+réduction (x,R) n'est pas dans `x_br` ni dans la position/courbure
+du pli (les deux confirmés indépendants de M, 3a+3b) — il est dans
+LA STABILITÉ DE LA BRANCHE GRADUÉE ELLE-MÊME côté récepteur.** M=0
+converge vers un `R` intermédiaire stable (la vraie branche graduée) ;
+M=25 déstabilise cette branche et pousse `R` jusqu'à saturation
+complète (`R=1`), un point différent bien que gouverné par la même
+fonction `x_br`. **Cohérent avec la construction du jouet** (M est
+strictement côté récepteur, jamais vu par l'émetteur) — la fonction
+de branche de l'émetteur reste inchangée, c'est la DYNAMIQUE du
+récepteur (quel `R` il choisit d'atteindre) qui change avec M. Piste
+concrète pour trancher le POURQUOI si besoin un jour : comparer le
+gradient du récepteur en `R` proche de sa valeur de branche graduée
+(pas à `R=1`) entre M=0 et M=25, pour voir si M change le signe/la
+magnitude de la force de rappel qui, pour M=0, empêche `R` de
+dépasser sa valeur stable.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| s3=0,5 (M=25) est un attracteur séparé, non lié à la fonction de branche x_br déjà établie | 18/09 (moi, implicite) | **réfutée** le 18/09 — x_br(r4) colle exactement à s3 mesuré à chaque instant, s3=0,5=x_br(R=1) exactement |
+| M déstabilise la branche graduée côté récepteur (R file jusqu'à 1 au lieu de se stabiliser à sa valeur intermédiaire) plutôt que de changer la géométrie du pli | 18/09 (moi) | **confirmée** le 18/09 — R=1,00000000 exact pour M=25 à t=20000-40000, contre R intermédiaire stable pour M=0 |
+
+**Bilan final de la piste 3 (masse de fond) pour cette session : le
+pli algébrique quasi-statique (position, courbure) ne dépend PAS de
+M — confirmé trois fois. Ce qui dépend de M, et l'explique
+proprement : la stabilité dynamique de la branche graduée côté
+récepteur, qui se déstabilise vers une saturation complète (R=1)
+plutôt que de rester sur son point d'équilibre intermédiaire. Fil
+refermé avec un mécanisme complet, pas juste un constat.**
+
+Scripts (tracés jetables, à rapatrier si besoin futur — pas fait ce
+tour, volume déjà élevé) : traces `s3(t)`/`r4(t)` reproductibles
+directement depuis `entrainer_toy_m`/`construire_toy_m` de
+`verifier_jouet_n_variable.py` et `x_br` de `verifier_ode_jouet_m.py`.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
