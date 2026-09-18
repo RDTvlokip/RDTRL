@@ -211,10 +211,26 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    s'explique entièrement par l'approximation déjà connue `r3≈1-R`**
    (fausse de 67% à M=25), pas un second phénomène. La réduction
    (x,R) n'était donc pas cassée — juste mal exprimée pour analyser la
-   dynamique loin du pli. Piste ouverte, non testée : vérifier si le
-   plateau Adam s'explique par cette même relation exacte en espace
-   logit. Détail complet (y compris la fausse alerte initiale, laissée
-   dans le carnet plutôt qu'effacée) : `CARNET.md` fin de §7.65.
+   dynamique loin du pli.
+
+   **CLÔTURE FINALE le 18/09/2026 (goal actif : « continue, ne
+   t'arrête pas »).** Le plateau Adam s'explique bien par la même
+   relation exacte — et son jumeau côté récepteur, jamais écrit avant
+   ce tour, a été dérivé par un troisième agent :
+   `u*=(1/beta)*[(1-delta)*s3-(1+delta)*s4]`, `r4*=1-sigmoid(u*)`.
+   **Vérifié indépendamment : `r4*=0,8852106009` contre le plateau
+   Adam observé `0,8852130348` — écart 2,4e-6.** Test précommis
+   (système couplé émetteur+récepteur en gradient naturel, doit
+   converger vers `r4*` en un budget comparable à Adam) : échoué à
+   `lr=0,02` (encore loin à t=20000), **confirmé à `lr=5,0`** — écart
+   final à la prédiction de **1,845e-7**, et `s3` correspond EXACTEMENT
+   au plateau Adam à 7 chiffres significatifs. **Conclusion définitive :
+   Adam et le flot de gradient réel convergent vers exactement le
+   même point fixe — Adam n'est qu'un accélérateur, confirmé
+   analytiquement des deux côtés (émetteur et récepteur), vérifié
+   trois fois indépendamment.** Détail complet (y compris la fausse
+   alerte initiale et son échec-puis-succès du test précommis, laissés
+   dans le carnet plutôt qu'effacés) : `CARNET.md` fin de §7.65.
 
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
