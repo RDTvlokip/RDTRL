@@ -236,6 +236,31 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    alerte initiale et son échec-puis-succès du test précommis, laissés
    dans le carnet plutôt qu'effacés) : `CARNET.md` fin de §7.65.
 
+   **PERCÉE le 18/09/2026 sur l'identité du point selle H6 (système
+   RÉEL, pas le jouet) — première preuve dynamique positive après six
+   échecs.** Une trajectoire naturelle (aucun départ à froid, `R`
+   naturel `~0,5`, pas de `fixer_r4`) trouvée en bissectant
+   `s3_init` : seuil net à `0,972646` (effondre) / `0,972661`
+   (gradué). La trajectoire "SOUS le seuil" ralentit véritablement
+   (`|Δs3|` minimal, 55 pas quasi immobiles) à `s3=0,994327`,
+   `R[10,4]=0,829197` — à moins de **0,0002** du point H6 publié
+   (0,994300 / 0,829390), après ~260 pas de réchauffement Adam réel.
+   **Vérifié deux fois indépendamment (moi + un agent, accord à 6
+   décimales).** Un vrai bug d'optimiseur trouvé au passage dans un
+   script committé plus tôt (`continuer_sous_prior` rappelée en
+   boucle par blocs, réinitialisant Adam tous les 20 pas) — corrigé.
+   **Le coefficient `a` sur cette trajectoire reste insaisissable**
+   (signe s'inverse en élargissant la fenêtre de 100 pas, variation
+   ×11500 sur sous-fenêtres — pire que `a_H6direct` déjà disqualifié)
+   pour une raison numérique bien comprise (fenêtre trop étroite en
+   `x`, mauvais conditionnement du solveur). **Protocole précommis
+   pour la suite (pas encore exécuté) : mesurer un temps de résidence
+   `τ~C/√μ` (la méthode qui a déjà donné `a_delayed` de façon stable)
+   plutôt qu'un fit de courbure brute.** Identité toujours NI
+   confirmée NI réfutée, mais avec un signal positif fort (coïncidence
+   de coordonnées) pour la première fois. Détail complet : `CARNET.md`
+   fin de §7.65. Script : `verifier_trajectoire_naturelle_mur23.py`.
+
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
    (`a=F''(x*)/2`, calculé directement avec les fonctions de branche
