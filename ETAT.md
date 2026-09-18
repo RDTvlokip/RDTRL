@@ -52,13 +52,21 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    fixée, M variable) :**
    ```
    M=25, masse totale=8 %   -> delta_c=0,018672  (= M=8 a 8%, = M=0 : NUL)
-   M=15, masse totale=25 %  -> delta_c=0,018516  (= M=25 a 25% : REEL, -0,84%)
+   M=15, masse totale=25 %  -> delta_c=0,018516  (= M=25 a 25% : REEL, -0,84% a tol=3e-4)
    M=25, masse totale=50 %  -> delta_c=0,018516  (IDENTIQUE a 25% — pas plus)
    ```
+   **CORRIGÉ le 18/09/2026 (piste 3a ci-dessous) : le -0,84% ci-dessus
+   était mesuré à `tol=3e-4`, un seuil de bissection du même ordre que
+   l'effet lui-même (`ε_tol=0,80%`) — recalculé à `tol=1e-5`, le vrai
+   chiffre est `-0,6275%`, revérifié indépendamment. L'effet reste
+   réel (23× au-dessus du bruit à cette résolution plus fine), juste
+   plus petit de ~25% que publié ici. Les deux faits établis
+   ci-dessous (seuil, plafond) restent qualitativement valides —
+   seule la GRANDEUR du décalage à 25% de masse est corrigée.**
    **Deux faits établis : (1) c'est la MASSE TOTALE de fond qui compte,
    pas M (confirmé — même masse, M différent, même résultat) ; (2)
    l'effet a un SEUIL (entre 8% et 25%) puis un PLAFOND (25% et 50%
-   donnent le même -0,84%, pas de croissance continue).**
+   donnent le même décalage, pas de croissance continue).**
 
    **(a) FAIT — seuil localisé précisément entre 17,7422 % et
    17,7539 % de masse totale** (18 points au total, bissection, jamais
@@ -107,15 +115,29 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    **PIVOT décidé le 18/09/2026 (Théo : « on n'arrête pas ») — noté
    explicitement pour la reprise, trois pistes distinctes :**
 
-   **3a. Construire l'ODE + protocole pin-and-falsify POUR LE JOUET**
-   (dériver ses fonctions de branche, l'ODE à deux échelles de temps,
-   bissecter des points de bascule sur le jouet réduit). **Vrai travail
-   de modélisation neuf, plusieurs heures probables, même risque de
-   retomber sur d'autres subtilités** (comme celles déjà traversées ce
-   tour — excursions, fantôme du pli, cible mobile). Pas commencé,
-   mis de côté au profit de 3c (ci-dessous), qui teste directement
-   l'hypothèse sur le VRAI système plutôt que de la reconstruire dans
-   un modèle réduit. À reprendre seulement si 3c ne tranche pas.
+   **3a. FAITE le 18/09/2026 (Théo : « commence par 3a »).** Fonctions
+   de branche dérivées, ODE à deux échelles de temps construite
+   (`verifier_ode_jouet_m.py`). **Deux corrections en cours de route,
+   toutes deux trouvées puis vérifiées indépendamment (un bug de
+   grille faux de 40%, un chiffre de sensibilité d'agent lui-même faux
+   de 10 ordres de grandeur — corrigé à 8e-21, cohérent avec la borne
+   théorique).** Résultat central : **M est négligeable sur le pli
+   quasi-statique** (~21 ordres de grandeur sous `e3+e4`, confirmé
+   deux fois). Ce résultat a ensuite servi à corriger un chiffre déjà
+   publié : le décalage `-0,84%` de `delta_c(M)` (ligne ci-dessus,
+   piste 3) était **gonflé de ~25% par la résolution de la bissection
+   elle-même** (`ε_tol=(tol/2)/delta_c=0,80%` à `tol=3e-4`, du même
+   ordre que l'effet rapporté) — recalculé à `tol=1e-5` :
+   **-0,6275%**, revérifié indépendamment au 4e chiffre significatif.
+   L'effet SURVIT à la correction (23× au-dessus du plancher de bruit
+   à cette résolution) — un vrai canal manquant existe dans la
+   réduction quasi-statique, mais **l'hypothèse `s4` non saturé est
+   réfutée** (`s4=1,0000000000` à 10 décimales, M=0 et M=25, de 90% à
+   99% de `delta_c`, vérifié indépendamment). Protocole précommis non
+   encore lancé (coûteux, ~15 min/point) : comparer le décalage à
+   `lr=0,2` contre `lr=0,05` pour trancher artefact-Adam vs vrai canal
+   manquant indépendant de l'optimiseur. Détail complet : `CARNET.md`
+   fin de §7.65.
 
    **3b. La géométrie locale du pli.** Pourquoi M change-t-il la
    courbure (ou une direction propre lente) du pli, pas seulement sa
