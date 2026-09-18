@@ -8690,10 +8690,44 @@ elle change QUAND le système rencontre le même type de point selle
 qui existait déjà (H6, confirmé au tour 51), le repoussant dans le
 temps plutôt que dans l'espace des conditions initiales.
 
-**Reste à faire (pas cette session) : zoom fin sur pas=550-850 pour
-localiser le pas exact du basculement, et vérifier si `g_e3` change
-littéralement de signe à ce moment (pas juste "quasi nul") — lancé en
-parallèle, résultat à suivre.**
+**Zoom fin fait (pas=550-850, tous les 5 pas) : le moment exact est
+localisé, et `g_e3` change bien littéralement de signe.**
+
+```
+config SOUS le seuil (survit) :
+  pas=600  g_e3=+8,1540e-12   (derniere valeur positive)
+  pas=605  g_e3=-1,3590e-10   <- CHANGEMENT DE SIGNE ICI, entre pas=600 et 605
+  pas=610  g_e3=-2,8982e-10   (de plus en plus negatif, s3 remonte franchement ensuite)
+
+config AU-DESSUS du seuil (s'effondre) :
+  pas=550 a 845 : g_e3 reste POSITIF tout du long, sans jamais changer
+  de signe -- au contraire, sa MAGNITUDE croit (2,2e-9 a pas=550, jusqu'a
+  2,1e-6 a pas=760) -- puis effondrement catastrophique :
+  pas=745  s3=0,976822
+  pas=750  s3=0,963591
+  pas=755  s3=0,927345
+  pas=760  s3=0,783917
+  pas=765  s3=0,316994
+  pas=770  s3=0,088940   <- l'essentiel de la chute en 25 pas
+```
+
+**Le mécanisme est maintenant entièrement clair : les deux
+trajectoires, qui ne diffèrent que de `5e-6` sur `s3_init`, restent
+quasi confondues pendant ~600 pas (approche lente commune d'un point
+selle DYNAMIQUE, pas juste algébrique) ; à `pas≈600-605`, le gradient
+de la config « SOUS » change de signe (rebondit) alors que celui de
+« AU-DESSUS » ne change jamais de signe (continue d'éroder, de plus en
+plus vite) — un cas manuel, texbook, de sensibilité extrême aux
+conditions initiales près d'un point selle, où 600 pas de dynamique
+lente amplifient un écart de `5e-6` en une divergence totale.** C'est
+exactement la signature attendue d'une séparatrice traversée EN TEMPS
+plutôt qu'en ESPACE DES CONDITIONS INITIALES — cohérent à 100% avec le
+POURQUOI déjà écrit (même point selle H6, déplacé dans le temps par la
+masse de fond).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `g_e3` change littéralement de signe au moment du basculement (pas juste "quasi nul") | 18/09 (moi) | **confirmée** le 18/09 — changement de signe net entre pas=600 et pas=605 pour la trajectoire qui survit ; la trajectoire qui s'effondre ne change jamais de signe |
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
