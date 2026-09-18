@@ -8633,9 +8633,72 @@ session, tâche bien scopée pour la suite.
 | le gradient du récepteur (pas de l'émetteur) a la vraie discontinuité au seuil | 18/09 (agent, alternative proposée) | **réfutée** le 18/09 — `grad_r3-grad_r4` aussi lisse et sans croisement que côté émetteur |
 | le mécanisme du renversement est authentiquement dynamique (visible seulement en suivant la trajectoire, pas un instantané) | 18/09 (moi) | **confirmée par élimination** le 18/09 — aucune explication statique (émetteur OU récepteur, à t=0) ne tient |
 
-Script : les deux tests de gradient (émetteur, récepteur) sont des
-invocations ad hoc — à sauver en script permanent si cette piste est
-reprise pour suivre la trajectoire complète.
+Script : `verifier_trajectoire_renversement.py` (permanent, remplace
+les invocations ad hoc de gradient).
+
+**TROUVÉ (18/09/2026, suite immédiate) : le moment exact du
+renversement, en suivant la trajectoire complète plutôt qu'un
+instantané.** Les deux configurations (`cible_s3=0,999450` vs
+`0,999455`, écart de `5e-6` seulement) sont QUASI IDENTIQUES pendant
+les 600 premiers pas :
+
+```
+pas=0    : s3=0,999450 vs 0,999455 (les deux)
+pas=300  : s3=0,997367 vs 0,997357 (quasi identiques)
+pas=600  : s3=0,995611 vs 0,995291 (encore tres proches)
+```
+
+**Puis elles divergent brutalement entre pas=600 et pas=800 :**
+
+```
+config SOUS le seuil (0,999450) :
+  pas=600  s3=0,995611  g_e3=8,1540e-12   <- gradient quasi NUL, point selle en TEMPS
+  pas=700  s3=0,996039  <- REMONTE (le signe du gradient a bascule)
+  pas=800  s3=0,997898  <- continue de remonter, va converger vers la branche graduee
+
+config AU-DESSUS du seuil (0,999455) :
+  pas=600  s3=0,995291  g_e3=2,8931e-09
+  pas=700  s3=0,993272  <- continue de DESCENDRE
+  pas=800  s3=0,038651  <- EFFONDREMENT CATASTROPHIQUE entre pas=700 et pas=800
+```
+
+**Interprétation, avec les axes QUAND/COMMENT/POURQUOI :**
+
+**QUAND :** le point de bifurcation temporelle se situe autour de
+`pas≈600-700` — PAS à `t=0`. C'est exactement pourquoi aucun
+instantané statique (gradient émetteur OU récepteur, à `t=0`) ne
+pouvait révéler le mécanisme : il n'existe simplement pas encore à ce
+moment-là.
+
+**COMMENT :** la trajectoire, après avoir évacué la masse de fond
+(rapide, `pas<200`) et traversé une phase de réajustement (`pas
+200-600`), ARRIVE À UN POINT DE PRESSION QUASI NULLE (`g_e3≈8e-12` à
+`pas=600` pour la config qui va survivre) — un vrai point selle
+rencontré EN COURS DE ROUTE, pas au départ. La minuscule différence
+initiale (`5e-6` sur `s3_init`), amplifiée par ~600 pas de dynamique
+lente, suffit à déterminer de quel côté du point selle la trajectoire
+arrive à ce moment précis — et donc si elle rebondit (branche graduée)
+ou s'effondre.
+
+**POURQUOI :** c'est le même phénomène de « fantôme »/bottleneck déjà
+théorisé (par un agent) pour un pli en dynamique lente — sauf qu'ici,
+contrairement au cas sans masse de fond (où le point selle est
+rencontré directement à `t=0`, via le choix de `s3_init`), la masse de
+fond retarde et DÉPLACE le moment de rencontre avec ce point selle à
+`pas≈600-700`. La masse de fond ne crée pas un nouveau mécanisme —
+elle change QUAND le système rencontre le même type de point selle
+qui existait déjà (H6, confirmé au tour 51), le repoussant dans le
+temps plutôt que dans l'espace des conditions initiales.
+
+**Reste à faire (pas cette session) : zoom fin sur pas=550-850 pour
+localiser le pas exact du basculement, et vérifier si `g_e3` change
+littéralement de signe à ce moment (pas juste "quasi nul") — lancé en
+parallèle, résultat à suivre.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le renversement de bassin se joue à un moment précis PENDANT l'entraînement (pas à t=0), visible en suivant la trajectoire | 18/09 (moi) | **confirmée** le 18/09 — divergence nette entre pas=600 et pas=800, gradient quasi nul à pas=600 pour la trajectoire qui survit |
+| la masse de fond crée un NOUVEAU mécanisme de bifurcation, distinct du point selle H6 déjà connu | 18/09 (moi, implicite) | **réfutée** le 18/09 — c'est le MÊME type de point selle (gradient quasi nul, extrême sensibilité), juste rencontré à un autre moment, pas un mécanisme différent |
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
