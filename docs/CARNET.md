@@ -8865,6 +8865,80 @@ la trajectoire H6 d'origine, reste le test le plus direct, pas encore
 fait), mais un indice de plus dans ce sens plutôt que dans celui d'un
 mécanisme entièrement nouveau.**
 
+**Test 1 de l'agent exécuté (superposition temporelle avec H6
+d'origine) — résultat qui COMPLIQUE la lecture précédente, pas qui la
+confirme.** Rejoué le test H6 original (`verifier_sonde_bassin.py`
+round 2 : `s3` ET `R` placés directement sur le point instable prédit,
+`0,994300`/`0,829390`), avec deux points à `±5e-6` du seuil connu
+(`0,994295` et `0,994305`), tracés à résolution fine (`check_tous=1`)
+dès `pas=0` :
+
+```
+H6 direct (cible_s3=0,994295, s'effondre vraiment) :
+  pas=0-20  : g_e3 oscille pres de zero (bruit ~1e-6)
+  pas=20-59 : g_e3 croit clairement, s3 chute de 0,994 a 0,588 en 59 pas
+  facteur de croissance g_e3 (pas 30->50) = 57,85x en 20 pas
+  lambda_local = ln(57,85)/20 = 0,2029/pas  (e-folding = 4,93 pas)
+
+H6 direct (cible_s3=0,994305, reste gradue) :
+  g_e3 oscille pres de zero tout du long, s3 remonte tranquillement vers 0,999
+```
+
+**Même structure qualitative à deux phases (lente puis rapide) que le
+cas retardé — MAIS une échelle de temps locale RADICALEMENT
+différente.** Comparé au taux local du cas retardé (`λ_grad=0,0327`/pas,
+e-folding 30,6 pas, calculé par l'agent) :
+
+```
+ratio des e-folding (retarde / H6 direct) = 30,58/4,93 = 6,20x plus lent
+
+Test plus dur (meme prefacteur C, meme mu) :
+  mu_H6 = 5e-6 (identique en ordre de grandeur au mu du cas retarde, 2,5e-6)
+  duree predite pour H6 direct SI meme C=0,95 que le cas retarde :
+    tau = C/sqrt(mu) = 0,95/sqrt(5e-6) = 424,9 pas
+  duree REELLEMENT observee pour H6 direct : ~20-30 pas
+  ECART : facteur 17x
+```
+
+**Pour un `mu` de grandeur comparable, la durée du goulot d'étranglement
+diffère d'un facteur `~17×` entre le point selle H6 direct et le point
+selle rencontré à `pas≈600` dans le cas avec masse de fond. Si
+c'était EXACTEMENT le même point selle (même linéarisation locale,
+même préfacteur `C`), ces deux durées devraient être du même ordre
+pour un `mu` comparable — elles ne le sont pas.** Ça penche maintenant
+vers **« point selle DIFFÉRENT, de la même FAMILLE structurelle (même
+forme normale, fantôme de nœud-col), mais avec une géométrie locale
+distincte (courbure/raideur différente) »** — pas littéralement le
+même point que H6, cohérent avec la découverte antérieure du même
+tour : « M change la géométrie locale du pli, pas seulement sa
+position ».
+
+**Synthèse finale, toutes preuves pesées (réponse honnête à « c'est le
+H6 ? ») :**
+- **Même TYPE de mécanisme** (fantôme de nœud-col, structure à deux
+  phases, préfacteur `C` d'ordre 1) — confirmé, solide.
+- **`s3` domine le signal sur la masse de fond résiduelle** (protocole
+  3) — cohérent avec « pas un canal causal séparé », plutôt en faveur
+  d'un lien avec H6.
+- **MAIS la géométrie locale (taux, durée du goulot pour `mu`
+  comparable) diffère nettement (`×6` à `×17`)** — plutôt en défaveur
+  de « exactement le même point selle ».
+- **Conclusion la plus honnête : parenté structurelle forte, identité
+  exacte réfutée.** C'est un point selle DE LA MÊME FAMILLE que H6
+  (même équation locale, même type de bifurcation), mais PAS le même
+  point précis dans l'espace des phases — la masse de fond ne fait pas
+  que retarder la rencontre avec LE point selle H6, elle en crée un
+  voisin avec sa propre géométrie locale.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| c'est littéralement le MÊME point selle que H6, juste rencontré plus tard | 18/09 (moi, hypothèse de départ) | **réfutée** le 18/09 — écart de `×6` à `×17` sur le taux/la durée locale pour un `mu` comparable, incompatible avec une linéarisation identique |
+| c'est un point selle DE LA MÊME FAMILLE (même forme normale) mais avec sa propre géométrie locale | 18/09 (moi, affinée) | **confirmée** le 18/09 — structure qualitative partagée (fantôme à deux phases), paramètres locaux distincts |
+
+Scripts : trace H6 directe — invocation ad hoc, à sauver en script
+permanent si cette piste est reprise (comparer avec
+`verifier_sonde_bassin.py` existant).
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
