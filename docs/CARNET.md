@@ -10167,6 +10167,99 @@ naïf ne reproduit même pas le point de départ historique attendu.**
 Laissé comme piste pour une session dédiée, avec ce premier essai
 documenté pour ne pas le retenter à l'identique.
 
+**PERCÉE, même tour (Théo, goal actif : « continue sans arrêter,
+cherche, pense, réfléchis... n'oublie pas les agents ») — un agent en
+worktree isolé a repris exactement là où l'essai précédent s'était
+arrêté, et a trouvé la trajectoire naturelle cherchée.**
+
+**Le vrai seuil ROUND 1 de `verifier_sonde_bassin.py` (celui que je
+n'avais pas su reproduire) est en réalité à `s3_init≈0,9726`, PAS à
+0,994 — vérifié : ROUND 1 reproduit tel quel aujourd'hui donne
+GRADUÉ partout de 0,98 à 0,98 (aucune collision testée sous 0,98),
+et c'est en étendant la plage bien plus bas (jusqu'à 0,001) qu'un
+effondrement net apparaît, entre `s3_init=0,90` (effondre) et
+`0,98` (gradué).** Bissecté finement (R laissé NATUREL, `~0,5`, PAS
+placé artificiellement) : seuil net entre **`s3_init=0,972646`**
+(effondre à `pas=4000`) et **`0,972661`** (reste gradué) — stable de
+`pas=4000` à `40000` (vérifié indépendamment par l'agent, pas un
+artefact de fenêtre trop courte).
+
+**En traçant la trajectoire "SOUS le seuil" (celle qui finit par
+s'effondrer) pas par pas : sa vitesse `|Δs3|` est MINIMALE à
+`t≈263-265`, à `s3=0,994327`, `R[10,4]=0,829197` — à seulement
+0,000027 et 0,000193 du point H6 publié (0,994300 / 0,829390).**
+Quasi immobile de `t≈235` à `t≈290` (55 pas), après ~260 pas de
+réchauffement Adam RÉEL. **Reproduit indépendamment par l'agent au
+chiffre près (6 décimales), avec un croisement de vitesse net (pas
+de bruit) entre `t=264` et `t=266`.** C'est la première trajectoire
+naturelle (pas de départ à froid, pas de `fixer_r4` artificiel) qui
+passe véritablement par le voisinage du point H6, avec un optimiseur
+déjà chaud — exactement l'ingrédient qui manquait depuis six échecs.
+
+**Vrai bug trouvé au passage, corrigé** : les fonctions
+`tracer_trajectoire_naturelle`/`balayage_delta_naturel` du script
+`verifier_trajectoire_naturelle_mur23.py` (committé plus tôt ce
+tour) appelaient `continuer_sous_prior()` EN BOUCLE par blocs de 20
+pas — or cette fonction reconstruit un `torch.optim.Adam` NEUF à
+CHAQUE appel, donc l'optimiseur était remis à zéro tous les 20 pas.
+**Ça invalide (en partie) la conclusion précédente "aucune
+trajectoire naturelle ne ralentit"** — testé par l'agent : à `t=40`,
+la version buguée donne `s3=0,973571` contre `s3=0,994822` pour la
+version corrigée, un écart de 0,021 qui grossit ensuite jusqu'à
+l'effondrement complet côté buggé. **Corrigé (optimiseur unique
+continu) et recommité.** Ma propre découverte du seuil `0,972646`
+n'était PAS affectée par ce bug (bissection par appel unique, trace
+manuelle avec boucle Adam continue) — confirmée indépendante et
+correcte par l'agent.
+
+**Le coefficient `a` sur cette nouvelle trajectoire : PAS UTILISABLE,
+même échec (en pire) que `a_H6direct`.** Premier fit (fenêtre
+`pas=100-400`, coordonnées centrées pour éviter le mauvais
+conditionnement déjà documenté) donnait `a≈+1990` à `+2016` selon la
+foulée de différenciation, stable à 2% près sur 3 réglages — signe
+POSITIF, à l'opposé de `a_delayed=-9,70`. **Mais l'agent a montré
+que ce résultat ne survit PAS à un test de robustesse simple** : en
+étendant la fenêtre de seulement 100 pas de plus (`pas=100-500`), le
+signe s'INVERSE (`a≈-282` à `-350`) ; sur des sous-fenêtres
+disjointes de 75 pas, `a` varie de `-1683` à `+9865` — **un facteur
+>11500, pire que la dispersion `×5,6` qui avait déjà disqualifié
+`a_H6direct`.** Mécanisme identifié : sur cette fenêtre, `x` (=`s3`)
+ne varie que de `6e-5` — le terme quadratique `a·(Δx)²` au bord de la
+fenêtre (`~1,8e-6`) dépasse à peine `μ` (`~1,4e-7`, marge `×12,4`
+seulement), et le solveur `moindres_carres_quadratique` (élimination
+de Gauss SANS PIVOT, déjà utilisé ailleurs dans ce projet) est
+structurellement mal conditionné dans ce régime — le même mode
+d'échec que celui d'`a_H6direct`, mais encore plus sévère ici.
+
+**Protocole précommis proposé par l'agent pour la suite (pas encore
+exécuté) — la méthode qui a DÉJÀ produit `a_delayed` de façon
+stable, pas un nouveau fit de courbure brute** : mesurer un TEMPS DE
+RÉSIDENCE (nombre de pas où `|s3-0,9943|<1e-3`) pour plusieurs
+`s3_init` bissectés autour de `0,972646`-`0,972661`, et vérifier la
+loi d'échelle `τ~C/√μ` (la même méthode déjà validée pour
+`a_delayed`, prédiction précommise : si c'est le même point selle
+que H6, l'exposant doit être `-1/2` et le préfacteur `C` du même
+ordre que celui déjà mesuré pour `a_delayed` — pas à ×200 près).
+
+**Bilan honnête de cette percée : la COORDONNÉE du ralentissement
+(0,994327 ; 0,829197) colle au H6 publié à moins de 0,0002 près,
+vérifiée deux fois indépendamment — la meilleure preuve dynamique
+d'identité obtenue à ce jour. Mais le coefficient `a` reste
+insaisissable, pour une raison numérique maintenant bien comprise
+(fenêtre trop étroite en `x`, mauvais conditionnement), pas pour un
+défaut de la trajectoire elle-même.** L'identité exacte du point
+selle reste donc NI confirmée NI réfutée — mais avec, pour la
+première fois, un signal positif fort (la coïncidence de
+coordonnées) plutôt qu'une liste d'échecs de mesure seuls.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| une trajectoire naturelle (sans départ à froid artificiel) peut passer près des coordonnées H6 publiées | 18/09 (moi) | **confirmée** le 18/09, deux fois indépendamment — écart <0,0002 sur les deux coordonnées, croisement de vitesse net (pas de bruit) |
+| le coefficient a mesuré sur cette trajectoire (+1990 à +2016) est fiable | 18/09 (moi, implicite) | **réfutée** le 18/09 par un agent — signe s'inverse en élargissant la fenêtre de 100 pas, variation ×11500 sur sous-fenêtres disjointes, pire que a_H6direct |
+| verifier_trajectoire_naturelle_mur23.py (committé plus tôt) a un bug d'optimiseur qui invalide sa conclusion négative | 18/09 (agent) | **confirmée** le 18/09, vérifié directement dans le code (continuer_sous_prior reconstruit Adam a chaque appel, appelee en boucle) — corrigé et recommité |
+
+Scripts (permanents, corrigés) : `verifier_trajectoire_naturelle_mur23.py`.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
