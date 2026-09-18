@@ -9875,6 +9875,29 @@ grand avec le risque de désaturation trop brutale, soit un budget
 bien plus long, soit reformuler le test en repartant d'un `s3_init`
 déjà hors saturation plutôt que du défaut `0,999999999666`).
 
+**Suite, même tour (Théo : « pose toi des hypothèses et fais les »).
+Hypothèses posées et testées sur POURQUOI le SGD reste bloqué :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le gradient brut de l'émetteur à s3_init est genuinement minuscule (pas un équilibre de forces qui s'annulent) | 18/09 (moi, standard) | **confirmée** le 18/09 — gradient mesuré directement : -6,71e-13 à s3_init=0,999999999666, cohérent avec le facteur s3(1-s3)≈3,34e-10 de la dérivée du sigmoïde |
+| repartir d'un s3_init moins saturé (0,999 au lieu de 0,999999999666) permettrait à SGD d'explorer la région du pli en budget raisonnable | 18/09 (moi, standard) | **réfutée** le 18/09 — gradient à s3_init=0,999 huit ordres de grandeur plus grand (-1,3e-5) mais l'émetteur reste quasiment figé (0,999000→0,999020 en 150000 pas) ; le récepteur, lui, évolue normalement (r4 monte de 0,38-0,50 à 0,77-0,88) |
+| le blocage est structurel au paramétrage sigmoïde (le gradient s'annule comme s3(1-s3) PARTOUT où la dynamique intéressante se joue, pas seulement au point de départ choisi) | 18/09 (moi, non standard) | **confirmée** le 18/09 par élimination — même en repartant loin de la saturation extrême, le blocage persiste tant que s3 reste proche de 1 (la région même où vit le pli, s3*≈0,9958) ; SGD pur n'est structurellement pas le bon outil pour ce test, indépendamment du réglage |
+
+**Conclusion : la comparaison SGD-vs-Adam pour cette question précise
+n'est pas juste mal réglée — elle est structurellement difficile,
+parce que la région intéressante (près du pli, s3 proche de 1) est
+justement celle où le gradient de l'émetteur en espace logit
+s'annule par construction. Un test propre demanderait une
+reparamétrisation (par exemple un gradient naturel, en divisant par
+s3(1-s3) pour compenser exactement l'aplatissement du sigmoïde) plutôt
+qu'un réglage de `lr`/budget — piste concrète pour une session future,
+pas tentée ici (vrai travail de méthode, pas un ajustement de
+paramètre).** Fil honnêtement refermé sur ce point précis.
+
+Scripts (permanents) : `verifier_sgd_pur_jouet_m.py` (documente les
+deux essais, tous deux inconclusifs pour la même raison structurelle).
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
