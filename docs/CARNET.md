@@ -9593,7 +9593,49 @@ jouet — pas encore vérifiée directement).
 |---|---|---|---|
 | M a un effet négligeable sur le pli quasi-statique (~21 ordres de grandeur sous e3+e4) | 18/09 (moi) | **confirmée** le 18/09, deux fois (mpmath direct + agent challengé et re-vérifié sur son propre chiffre de sensibilité) |
 | le décalage empirique -0,84% de delta_c(M) est un artefact de budget de convergence fini | 18/09 (moi) | **réfutée** le 18/09 — identique à 5x le budget (40000 vs 200000 pas) |
-| s4 (challenger) reste saturé à ~1 sous masse de fond, comme dans le système réel | 18/09 (moi, hypothèse pour le canal manquant) | ouverte, soumise à l'agent en cours |
+| s4 (challenger) reste saturé à ~1 sous masse de fond, comme dans le système réel | 18/09 (moi, hypothèse pour le canal manquant) | **réfutée** le 18/09 — s4=1,0000000000 à 10 décimales, M=0 et M=25, de 90% à 99% de delta_c, ce n'est pas le canal manquant |
+
+**Suite, même tour — le -0,835% publié était lui-même gonflé
+d'environ 25% par la résolution de MA PROPRE bissection, pas un
+artefact de M.** Un 3e agent, challengé sur le canal manquant, a
+trouvé la vraie faille avant de la chercher où je pensais : l'erreur
+relative plancher d'une bissection à seuil `tol` est
+`ε_tol=(tol/2)/delta_c` — `ε_{3e-4}=0,802%`, DU MÊME ORDRE que l'effet
+rapporté (0,84%). Ma mesure tournait au plancher de résolution de son
+propre outil. Recalculé à `tol=1e-5` (30× plus fin, `ε_{1e-5}=0,027%`)
+: **-0,6275%**, pas -0,835% — **REJOUÉ MOI-MÊME, confirmé au 4e
+chiffre significatif** (`delta_c(M=0)=0,01867676`,
+`delta_c(M=25)=0,01855957`, 946s de calcul, chiffres identiques à
+ceux de l'agent).
+
+**L'effet SURVIT à la correction — -0,6275% reste très au-dessus du
+plancher de bruit de cette mesure plus fine (0,027%) — donc ce n'est
+PAS un pur artefact de bissection non plus : c'est un vrai effet,
+juste plus petit de ~25% que ce qui était publié.** Le canal manquant
+de la réduction quasi-statique (qui prédit M négligeable à 21 ordres
+de grandeur) reste non identifié — s4 est réfuté, `masse_autres`
+reste stable (~4,09e-11) pendant toute l'approche du pli (pas
+seulement au point fixe final), donc l'hypothèse d'une asymétrie de
+fond en transitoire est elle aussi affaiblie. Protocole précommis par
+l'agent pour la suite (non lancé, coûteux — chaque point ~15 min) :
+comparer le décalage à `lr=0,2` contre `lr=0,05` — s'il varie avec
+`lr`, c'est un artefact Adam ; s'il reste proche de -0,63% quel que
+soit `lr`, c'est un vrai canal manquant indépendant de l'optimiseur.
+
+**Bilan honnête de la piste 3a pour cette session : construite de
+zéro (jamais commencée avant), un bug de grille de 40% corrigé, un
+chiffre de sensibilité d'agent revérifié et corrigé (2e-11→8e-21), un
+chiffre publié corrigé de 25% par ma propre vérification rejouée, et
+un canal manquant restreint (s4 exclu) mais pas encore identifié.**
+Bon point d'arrêt : le mécanisme algébrique (M négligeable) est
+solide, l'effet dynamique résiduel (-0,63%) est maintenant mesuré
+proprement, et le prochain pas (test `lr`) est précommis et prêt à
+lancer si ce fil rouvre.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le décalage -0,84% publié est correct en grandeur, pas seulement en signe | 18/09 (moi, implicite) | **réfutée** le 18/09 — gonflé de ~25% par la résolution de bissection (ε_tol du même ordre que l'effet) ; vrai chiffre -0,6275%, revérifié indépendamment |
+| après correction du tol, le décalage résiduel (-0,63%) est un pur artefact de bissection | 18/09 (agent) | **réfutée** le 18/09 — -0,6275% reste ~23× au-dessus du plancher de bruit à tol=1e-5 (0,027%), un vrai effet subsiste |
 
 Scripts (permanents) : `verifier_ode_jouet_m.py`.
 
