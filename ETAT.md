@@ -1,8 +1,12 @@
 # État du projet RDTRL — où on en est
 
-*Dernière mise à jour : 18/09/2026 (mécanisme du chaos H6-direct
-tranché : artefact de démarrage à froid d'Adam sur un vrai col
-hyperbolique, pas une différence de géométrie — voir piste 3c).
+*Dernière mise à jour : 18/09/2026 (piste 3a/3b construites et
+refermées jusqu'au bout : le pli du jouet à masse de fond est
+M-indépendant en position ET en courbure, et Adam converge vers
+exactement le même point fixe que le flot de gradient réel, vérifié
+à 7 chiffres significatifs — voir piste 3a. `ARTICLE4.md` intègre
+maintenant toute cette suite. Toutes les pistes concrètes de ce
+fichier sont closes à ce stade.)
 Ce fichier n'est pas un article, c'est un pense-bête pour reprendre le
 travail dans une nouvelle conversation sans tout re-raconter.*
 
