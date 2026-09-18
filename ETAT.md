@@ -253,13 +253,38 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    (signe s'inverse en élargissant la fenêtre de 100 pas, variation
    ×11500 sur sous-fenêtres — pire que `a_H6direct` déjà disqualifié)
    pour une raison numérique bien comprise (fenêtre trop étroite en
-   `x`, mauvais conditionnement du solveur). **Protocole précommis
-   pour la suite (pas encore exécuté) : mesurer un temps de résidence
-   `τ~C/√μ` (la méthode qui a déjà donné `a_delayed` de façon stable)
-   plutôt qu'un fit de courbure brute.** Identité toujours NI
-   confirmée NI réfutée, mais avec un signal positif fort (coïncidence
-   de coordonnées) pour la première fois. Détail complet : `CARNET.md`
-   fin de §7.65. Script : `verifier_trajectoire_naturelle_mur23.py`.
+   `x`, mauvais conditionnement du solveur).
+
+   **PROTOCOLE EXÉCUTÉ, RÉSULTAT MAJEUR — reformulation complète de la
+   question d'identité, appuyée sur deux preuves convergentes.** Temps
+   de résidence mesuré près de H6 (bande `1e-3`, distance au seuil de
+   `1e-3` à `1e-5`) : croît selon une loi **LOGARITHMIQUE**
+   (`R²=0,998`), PAS une loi de puissance en `1/√μ` (`R²=0,966`
+   seulement, exposant `-0,21` loin de `-1/2`) — reproduit bit-à-bit
+   et confirmé robuste par un agent (`λ_SOUS≈λ_SUR` à <1% en changeant
+   bande/budget). **C'est la signature d'un COL HYPERBOLIQUE
+   ORDINAIRE, pas d'un fantôme de pli dégénéré.** Recoupé avec un
+   résultat déjà établi PLUS TÔT cette même session sur le VRAI
+   système (pas le jouet) : la jacobienne au point H6 exact a deux
+   valeurs propres RÉELLES de signe opposé, confirmée deux fois
+   indépendamment. **Les deux preuves convergent : H6 (`delta` fixe)
+   est un col hyperbolique ordinaire.** Au passage, une correction
+   importante : l'accord "à 6%" du préfacteur `C` cité plus tôt comme
+   confirmation du fantôme (`a_delayed`, cas retardé) s'est révélé
+   être une **tautologie algébrique** (même `τ=600` partagé par les
+   deux configs) — rétrogradée, elle ne prouvait rien sur l'exposant.
+   **Conclusion : H6 et le point rencontré sous masse de fond sont
+   probablement deux TYPES DE STRUCTURES CRITIQUES DIFFÉRENTS
+   (hyperbolique vs nœud-col dégénéré), pas "même point selle ou
+   voisin" comme la question était posée depuis le début.** Reste
+   ouvert : la prédiction naïve `λ=2√(delta_c-delta)` ne colle pas à
+   la valeur mesurée (écart ×13-20, cause non élucidée), avec un
+   protocole précis déjà précommis pour la suite (isoler `λ_instable`
+   après le vrai croisement d'échappement). Détail complet :
+   `CARNET.md` fin de §7.65. Scripts :
+   `verifier_trajectoire_naturelle_mur23.py`,
+   `verifier_temps_residence_traj_naturelle_180926.py`,
+   `verifier_lambda_local_traj_naturelle_180926.py`.
 
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
