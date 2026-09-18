@@ -110,21 +110,22 @@ if __name__ == "__main__":
 
     print("### H6-direct (sans masse de fond, s3/R places sur le point instable) ###")
     trace_h6_effondre = trace_s3(0.994295, R_init=0.829390, masse_fond=0.0, pas=60, check_tous=1)
-    # restreindre au voisinage IMMEDIAT du point selle connu (0,994300) --
-    # pas toute la trajectoire (qui inclut la chute complete jusqu'a s3~0,5)
-    trace_h6_local = [(i, s3) for (i, s3) in trace_h6_effondre if s3 >= 0.97]
+    # restreindre par INDICE DE PAS (pas par valeur de s3, qui melange des
+    # regimes differents) -- la zone de ralentissement "lente" est pas=0-24
+    # (avant que le regime rapide/runaway prenne clairement le dessus)
+    trace_h6_local = [(i, s3) for (i, s3) in trace_h6_effondre if i <= 24]
     A_h6, B_h6, C_h6, x0_h6, mu_h6 = analyser(
-        "H6-direct, fenetre LOCALE (s3>=0,97)", trace_h6_local)
+        "H6-direct, fenetre LOCALE (pas<=24)", trace_h6_local)
 
     print()
     print("### Cas retarde (masse de fond 25%, R_init=0,60) ###")
     trace_delayed_effondre = trace_s3(0.999455, R_init=0.60, masse_fond=0.25, pas=800, check_tous=2)
-    # restreindre au voisinage IMMEDIAT du point selle du cas retarde
-    # (s3 y vaut ~0,993-0,996 pendant la fenetre de ralentissement, PAS
-    # les valeurs post-effondrement (s3<0,5))
-    trace_delayed_local = [(i, s3) for (i, s3) in trace_delayed_effondre if s3 >= 0.97]
+    # restreindre par INDICE DE PAS : exclure la phase d'evacuation precoce
+    # (pas<400, sans rapport) ET l'effondrement catastrophique (pas>700) --
+    # ne garder QUE la zone de ralentissement pres du point selle
+    trace_delayed_local = [(i, s3) for (i, s3) in trace_delayed_effondre if 400 <= i <= 700]
     A_d, B_d, C_d, x0_d, mu_d = analyser(
-        "Cas retarde, fenetre LOCALE (s3>=0,97)", trace_delayed_local)
+        "Cas retarde, fenetre LOCALE (pas=400-700)", trace_delayed_local)
 
     print()
     print("=== COMPARAISON DIRECTE DU COEFFICIENT QUADRATIQUE 'a' (fenetres locales) ===")
