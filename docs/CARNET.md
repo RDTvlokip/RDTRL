@@ -8600,6 +8600,43 @@ mêmes points, et/ou suivre `g3(t)` sur toute la trajectoire (pas
 seulement `t=0`) pour voir s'il croise un plancher `adam_eps` en cours
 de route plutôt qu'au départ.
 
+**Fait tout de suite (pas laissé en suspens) : gradient du RÉCEPTEUR
+aux mêmes points.**
+
+```
+cible_s3=0,99000   grad_r3=-2,437375e-03  grad_r4=-4,118794e-03  diff=1,681418e-03
+cible_s3=0,99900   grad_r3=-2,506465e-03  grad_r4=-4,074379e-03  diff=1,567913e-03
+cible_s3=0,99944   grad_r3=-2,509843e-03  grad_r4=-4,072207e-03  diff=1,562364e-03
+cible_s3=0,99945   grad_r3=-2,509920e-03  grad_r4=-4,072158e-03  diff=1,562238e-03
+cible_s3=0,999452  grad_r3=-2,509935e-03  grad_r4=-4,072148e-03  diff=1,562213e-03
+cible_s3=0,999453  grad_r3=-2,509943e-03  grad_r4=-4,072143e-03  diff=1,562200e-03
+cible_s3=0,99946   grad_r3=-2,509996e-03  grad_r4=-4,072108e-03  diff=1,562112e-03
+cible_s3=0,99950   grad_r3=-2,510303e-03  grad_r4=-4,071911e-03  diff=1,561608e-03
+cible_s3=0,99990   grad_r3=-2,513374e-03  grad_r4=-4,069937e-03  diff=1,556563e-03
+```
+
+**Même verdict que côté émetteur : `grad_r3-grad_r4` reste POSITIF et
+quasi constant (~1,562e-3) sur toute la plage, aucun croisement, aucune
+discontinuité au seuil.** Ni le gradient de l'émetteur, ni celui du
+récepteur, pris à `t=0`, n'expliquent le seuil précis. **Conclusion
+robuste : le mécanisme du renversement de bassin n'est PAS visible
+dans un instantané statique (quel que soit le côté regardé) — c'est
+un phénomène authentiquement DYNAMIQUE/TEMPOREL, qui se joue au fil
+des ~40000 pas d'entraînement, pas dans l'état de départ.** Cohérent
+avec l'intuition de dilution/évacuation (une COURSE dans le temps, pas
+une différence de point de départ), mais reste à observer directement
+(suivre la trajectoire complète, pas un instantané) — pas fait cette
+session, tâche bien scopée pour la suite.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le gradient du récepteur (pas de l'émetteur) a la vraie discontinuité au seuil | 18/09 (agent, alternative proposée) | **réfutée** le 18/09 — `grad_r3-grad_r4` aussi lisse et sans croisement que côté émetteur |
+| le mécanisme du renversement est authentiquement dynamique (visible seulement en suivant la trajectoire, pas un instantané) | 18/09 (moi) | **confirmée par élimination** le 18/09 — aucune explication statique (émetteur OU récepteur, à t=0) ne tient |
+
+Script : les deux tests de gradient (émetteur, récepteur) sont des
+invocations ad hoc — à sauver en script permanent si cette piste est
+reprise pour suivre la trajectoire complète.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
