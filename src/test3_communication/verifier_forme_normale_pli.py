@@ -176,18 +176,26 @@ if __name__ == "__main__":
         print(f"  ratio a_delayed/a_H6direct = {A_d/A_h6:.4f}")
 
     print()
-    print("### H6-direct : mesure DENSE, un seul pas d'Adam depuis 21 points pres du seuil ###")
-    cibles = [0.994300 + d for d in
-              (-0.0025, -0.0022, -0.0019, -0.0016, -0.0013, -0.0010, -0.0007,
-               -0.0004, -0.0002, -0.0001, 0.0, 0.0001, 0.0002, 0.0004, 0.0007,
-               0.0010, 0.0013, 0.0016, 0.0019, 0.0022, 0.0025)]
-    xs_dense, vs_dense = mapper_v_de_x(cibles, R_init=0.829390, masse_fond=0.0)
-    A_dense, B_dense, C_dense, x0_dense, mu_dense = analyser_xv(
-        "H6-direct DENSE (21 points, un pas chacun)", xs_dense, vs_dense)
+    print("### H6-direct : POOL de plusieurs trajectoires courtes (pas la 1ere mesure,")
+    print("    biaisee par le premier pas Adam a etat frais -- corrige en sautant pas<3) ###")
+    cibles_pool = [0.994300 + d for d in
+                   (-0.0020, -0.0014, -0.0008, -0.0004, -0.0002,
+                    0.0002, 0.0004, 0.0008, 0.0014, 0.0020)]
+    xs_pool, vs_pool = [], []
+    for cible in cibles_pool:
+        tr = trace_s3(cible, R_init=0.829390, masse_fond=0.0, pas=25, check_tous=1)
+        # ne garder que pas>=3 (evite le biais du tout premier pas Adam)
+        # et s3 pas encore parti en effondrement/saturation complete
+        tr_utile = [(i, s3) for (i, s3) in tr if i >= 3 and 0.98 <= s3 <= 0.9999]
+        x_part, v_part = trace_vers_xv(tr_utile)
+        xs_pool.extend(x_part)
+        vs_pool.extend(v_part)
+    A_pool, B_pool, C_pool, x0_pool, mu_pool = analyser_xv(
+        "H6-direct POOL (10 trajectoires courtes, pas>=3)", xs_pool, vs_pool)
 
     print()
-    print("=== COMPARAISON FINALE (mesure dense vs cas retarde) ===")
-    print(f"  a_H6direct_dense = {A_dense:.6e}  (x0={x0_dense:.6f})")
-    print(f"  a_delayed        = {A_d:.6e}  (x0={x0_d:.6f})")
-    if A_dense != 0 and A_d != 0:
-        print(f"  ratio a_delayed/a_H6direct_dense = {A_d/A_dense:.4f}")
+    print("=== COMPARAISON FINALE (pool vs cas retarde) ===")
+    print(f"  a_H6direct_pool = {A_pool:.6e}  (x0={x0_pool:.6f}, attendu pres de 0,994300)")
+    print(f"  a_delayed       = {A_d:.6e}  (x0={x0_d:.6f})")
+    if A_pool != 0 and A_d != 0:
+        print(f"  ratio a_delayed/a_H6direct_pool = {A_d/A_pool:.4f}")
