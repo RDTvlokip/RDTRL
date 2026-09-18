@@ -9639,6 +9639,62 @@ lancer si ce fil rouvre.
 
 Scripts (permanents) : `verifier_ode_jouet_m.py`.
 
+**Piste 3b (18/09/2026, Théo : « 3b ») — la géométrie locale du pli,
+résolue en réutilisant directement les fonctions de branche de 3a.**
+Coefficient de courbure `a` (forme normale `dx/dt=μ+a(x-x*)²`,
+`a=F''(x*)/2`) calculé pour M∈{0,1,3,8,25} au pli localisé en 3a :
+**identique à M=99,064645 pour tout M testé** (stable h∈[1e-6,1e-4]).
+**Même conclusion que pour la position (3a) : la géométrie locale du
+vrai pli algébrique — position ET courbure — ne dépend pas de M.**
+
+**Le "6,5 ordres de grandeur" qui motivait cette piste ne se
+reproduit PAS — trouvé par un agent, confirmé par moi en rejouant le
+script tel quel.** `verifier_point_fixe_jouet_m.py` (inchangé) donne
+aujourd'hui un ratio de pente M=0/M=25 de **39,50 (1,60 décade)**, pas
+6,5. Vérifié indépendamment : rejoué moi-même, ratio=39,4955,
+identique à 3 chiffres significatifs. **Et le git log règle la
+question en une commande** : le commit original (`fe737ef`) porte lui
+même le message *« écart 6 ordres de grandeur à 3000 pas, mais fenêtre
+adaptative de M=25 pas encore propre, relance plus longue »* — un
+avertissement que J'AVAIS DÉJÀ ÉCRIT MOI-MÊME et qui s'est perdu en
+route jusqu'à ETAT.md, où il a fini cité comme un fait propre
+("6,5 décades"). **Mécanisme exact, montré par l'agent puis vérifié
+(fenêtre adaptative de M=25 : `[143,3001)`, ne se ferme JAMAIS avant
+la fin du budget — contre `[190,322)` pour M=0, fermée bien avant)** :
+la "pente" mesurée pour M=25 n'est pas une vitesse de relaxation
+asymptotique près du pli — c'est une moyenne glissante prise EN PLEIN
+TRANSITOIRE D'ÉVACUATION DE MASSE, tronquée par le budget, pas par la
+convergence. Confirmé par la trace de `masse_autres(t)` (rejouée
+indépendamment) : encore 4,8e-6 de masse sur le fond à t=3000, cinq
+ordres de grandeur au-dessus de la valeur d'équilibre réelle
+(~4e-11), avec un ralentissement du taux de décroissance entre
+t=1000 et t=3000 suggérant un second mode plus lent qui prend le
+relais.
+
+**Conclusion pour 3a+3b ensemble : le pli algébrique quasi-statique
+(position, courbure) ne dépend pas de M, point final — chaque
+différence empirique attribuée à M (décalage de seuil, vitesse de
+convergence) s'est révélée être un artefact du budget/de la
+résolution de MESURE, pas une propriété du pli lui-même.** Ce qui
+reste réel et non expliqué : un effet dynamique résiduel de -0,6275%
+sur `delta_c` (piste 3a, confirmé au-dessus du bruit) et un temps
+d'évacuation de la masse de fond visiblement multi-échelle (piste 3b,
+pas encore caractérisé proprement — fenêtre trop courte pour le
+voir converger). Les deux pointent vers le même type de mécanisme :
+quelque chose hors de la réduction (x,R) à 2 variables, probablement
+lié à la dynamique du fond lui-même (les M catégories), pas à
+l'émetteur.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le coefficient de courbure a du pli dépend de M | 18/09 (moi, motivation de 3b) | **réfutée** le 18/09 — identique (99,064645) pour tout M, confirmé stable en h par un agent |
+| l'écart de "6,5 décades" en vitesse de convergence (ETAT.md) est un chiffre propre et reproductible | 18/09 (moi, implicite) | **réfutée** le 18/09 — ne se reproduit pas (39,50=1,60 décade en rejouant le script tel quel), le chiffre d'origine portait déjà sa propre mise en garde (commit fe737ef) perdue dans le résumé ETAT.md |
+| la pente M=25 mesurée à budget=3000 est une vraie vitesse de relaxation post-transitoire | 18/09 (moi, implicite dans le script d'origine) | **réfutée** le 18/09 — la fenêtre adaptative ne se ferme jamais avant la fin du budget pour M=25, donc c'est une moyenne en plein transitoire d'évacuation, pas une pente asymptotique |
+
+Scripts (permanents) : `verifier_ode_jouet_m.py`, agent a produit
+`verifier_evacuation_masse_jouet_m.py` (pas encore rapatrié dans le
+dépôt, dans le worktree de l'agent).
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
