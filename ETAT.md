@@ -189,32 +189,32 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    branche se joue. Piste complète pour une session future : ajouter
    une 3e équation (`d(masse_autres)/dt`) et refaire l'analyse en 3D.
 
-   **LIMITE DE MÉTHODE DÉCOUVERTE le 18/09/2026 (Théo : « continue, ne
-   t'arrête pas sur des hypothèses simples ») — plus profonde que
-   prévu.** Gradient naturel implémenté pour l'émetteur (divise par
-   `s3(1-s3)`, compense l'aplatissement du sigmoïde) : ça marche
-   (l'émetteur bouge sans Adam), mais `s3` grimpe en continu vers 1 au
-   lieu de se stabiliser à `0,9964` comme sous Adam. Vérifié que le
-   plateau Adam est un vrai point fixe (pas un blocage transitoire) en
-   étendant sa trace à 400000 pas (10× le budget) : `s3` reste stable
-   à 6 chiffres significatifs (avec une excursion H15 isolée à
-   t=300000 qui récupère — mécanisme déjà connu, retrouvé sans le
-   chercher). **En creusant cette divergence, la "racine stable" que
-   j'avais calculée en 3a/3b s'est révélée être une FAUSSE racine**
-   (`F(x_s)=-1,42e-5`, pas zéro — bug de précision de bissection,
-   même famille que le bug de grille du pli trouvé plus tôt) **— et
-   pire, `F(x)` ne s'annule JAMAIS quand `x→0` (elle approche un
-   plateau positif ~8e-4), en contradiction directe avec ce que montre
-   la simulation.** Conclusion honnête : **la réduction quasi-statique
-   (x,R) elle-même cesse d'être fiable dès qu'on s'écarte du pli —
-   pas seulement en présence de masse de fond (M=0 montre le même
-   problème). Ce n'est plus une question qui se règle avec un script
-   de plus : il faudrait refaire la dérivation de `R_br(x)` sans
-   supposer le récepteur à l'équilibre instantané.** Le résultat le
-   plus solide de la session (le pli, position et courbure,
-   M-indépendant) tient toujours, vérifié plusieurs fois
-   indépendamment — c'est l'outil construit AUTOUR du pli qui a montré
-   ses limites. Détail complet : `CARNET.md` fin de §7.65.
+   **Épisode du 18/09/2026 (Théo : « continue, pose des hypothèses
+   inconnues ») — une alerte sérieuse levée, puis RÉTRACTÉE après
+   vérification plus poussée.** Gradient naturel implémenté pour
+   l'émetteur (divise par `s3(1-s3)`, compense l'aplatissement du
+   sigmoïde) a d'abord semblé montrer une contradiction de signe entre
+   la réduction (x,R) et la simulation directe (le plateau Adam à
+   `s3=0,9964` confirmé robuste sur 400000 pas entre-temps). **En
+   creusant, la contradiction s'est révélée être une comparaison à la
+   mauvaise variable** (R algébrique au lieu de R réellement mesuré,
+   qui n'est pas à l'équilibre pendant le transitoire — déjà su) —
+   **aucune vraie contradiction.** Ce qui restait (un facteur
+   d'échelle ~3000-6000×) n'était pas non plus une simple constante
+   manquante, mais un **mauvais choix de coordonnée** : la dynamique
+   est linéaire et EXACTE en espace LOGIT (`z3`), pas en espace
+   probabilité (`x`) — `dz3/dt = lr*(poids3*r3-(β/N)*z3)`, vérifié à
+   ratio=1,0000 exact (pas approximatif) à deux `lr` différents. La
+   compression exponentielle du sigmoïde masquait, en espace `x`, un
+   écart réel de 17,6 unités en espace logit derrière une différence
+   de probabilité de ~2,5e-4. **Le facteur ~2× en plus à M=25
+   s'explique entièrement par l'approximation déjà connue `r3≈1-R`**
+   (fausse de 67% à M=25), pas un second phénomène. La réduction
+   (x,R) n'était donc pas cassée — juste mal exprimée pour analyser la
+   dynamique loin du pli. Piste ouverte, non testée : vérifier si le
+   plateau Adam s'explique par cette même relation exacte en espace
+   logit. Détail complet (y compris la fausse alerte initiale, laissée
+   dans le carnet plutôt qu'effacée) : `CARNET.md` fin de §7.65.
 
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
