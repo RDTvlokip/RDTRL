@@ -188,7 +188,33 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    tient pas assez longtemps pour M>0 pendant que le sort de la
    branche se joue. Piste complète pour une session future : ajouter
    une 3e équation (`d(masse_autres)/dt`) et refaire l'analyse en 3D.
-   Détail complet : `CARNET.md` fin de §7.65.
+
+   **LIMITE DE MÉTHODE DÉCOUVERTE le 18/09/2026 (Théo : « continue, ne
+   t'arrête pas sur des hypothèses simples ») — plus profonde que
+   prévu.** Gradient naturel implémenté pour l'émetteur (divise par
+   `s3(1-s3)`, compense l'aplatissement du sigmoïde) : ça marche
+   (l'émetteur bouge sans Adam), mais `s3` grimpe en continu vers 1 au
+   lieu de se stabiliser à `0,9964` comme sous Adam. Vérifié que le
+   plateau Adam est un vrai point fixe (pas un blocage transitoire) en
+   étendant sa trace à 400000 pas (10× le budget) : `s3` reste stable
+   à 6 chiffres significatifs (avec une excursion H15 isolée à
+   t=300000 qui récupère — mécanisme déjà connu, retrouvé sans le
+   chercher). **En creusant cette divergence, la "racine stable" que
+   j'avais calculée en 3a/3b s'est révélée être une FAUSSE racine**
+   (`F(x_s)=-1,42e-5`, pas zéro — bug de précision de bissection,
+   même famille que le bug de grille du pli trouvé plus tôt) **— et
+   pire, `F(x)` ne s'annule JAMAIS quand `x→0` (elle approche un
+   plateau positif ~8e-4), en contradiction directe avec ce que montre
+   la simulation.** Conclusion honnête : **la réduction quasi-statique
+   (x,R) elle-même cesse d'être fiable dès qu'on s'écarte du pli —
+   pas seulement en présence de masse de fond (M=0 montre le même
+   problème). Ce n'est plus une question qui se règle avec un script
+   de plus : il faudrait refaire la dérivation de `R_br(x)` sans
+   supposer le récepteur à l'équilibre instantané.** Le résultat le
+   plus solide de la session (le pli, position et courbure,
+   M-indépendant) tient toujours, vérifié plusieurs fois
+   indépendamment — c'est l'outil construit AUTOUR du pli qui a montré
+   ses limites. Détail complet : `CARNET.md` fin de §7.65.
 
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
