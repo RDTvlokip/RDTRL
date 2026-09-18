@@ -8816,6 +8816,55 @@ masse résiduelle) reste ouverte — protocole précis proposé par l'agent
 (overlay temporel avec la trajectoire H6 d'origine, continuation
 paramétrique sur la fraction de masse) pour la prochaine reprise.**
 
+**Protocole 3 de l'agent exécuté (18/09, suite immédiate, Théo :
+« on continue ») : la DIFFÉRENTIELLE de masse de fond entre les deux
+configs, pas juste sa valeur absolue.**
+
+```
+pas    diff_s3       diff_masse_fond
+  0    -5,000e-06    +0,000e+00
+200    +2,029e-06    +3,116e-09
+450    +3,144e-05    +1,111e-07
+550    +1,337e-04    +3,822e-07
+600    +3,207e-04    +8,217e-07
+650    +8,571e-04    +1,952e-06
+700    +2,767e-03    +5,350e-06
+750    +3,328e-02    +2,697e-05
+775    +9,497e-01    +2,436e-04
+```
+
+**`diff_s3` est SYSTÉMATIQUEMENT 2 à 3 ordres de grandeur plus grand
+que `diff_masse_fond`, à chaque pas, pendant toute la phase de
+divergence** (ratio `~390` à pas=600, `~518` à pas=700, `~1234` à
+pas=750). Les deux différentielles CROISSENT ENSEMBLE, à partir
+d'environ pas=450-500 (avant `t_cross=600,283`, pas après) — donc la
+masse de fond n'est pas totalement inerte, elle réagit bien avant la
+bifurcation elle-même. **Mais elle ne DOMINE jamais : `s3` porte et
+amplifie l'essentiel du signal, la masse de fond suit avec un facteur
+constant de retard, plutôt que de le devancer ou de le piloter.**
+
+**Lecture du critère précommis par l'agent (protocole 3) : le
+différentiel de masse DÉPART bien de ~0 aux alentours de la fenêtre
+critique (`±100` pas de `600,283`) — mais son AMPLEUR reste toujours
+trop petite pour être le canal causal principal.** Résultat mitigé
+mais penchant plutôt vers « même famille de point selle que H6, la
+masse résiduelle est un paramètre qui l'influence sans être elle-même
+la variable dynamique qui pilote la bifurcation » — cohérent avec (pas
+une preuve définitive de) la lecture « point selle déplacé dans le
+temps », pas « mécanisme entièrement nouveau ».
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la masse de fond résiduelle est le canal causal principal qui porte le signal (`5e-6`) jusqu'à la bifurcation | 18/09 (agent, protocole 3) | **réfutée** le 18/09 — `diff_masse` toujours 2-3 ordres de grandeur plus petit que `diff_s3`, corrélé mais pas dominant |
+| `diff_s3` et `diff_masse` divergent ensemble à partir d'environ pas=450-500, avant le croisement à `600,283` | 18/09 (moi) | **confirmée** le 18/09 |
+
+**Bilan affiné : penche vers « même famille de point selle que H6,
+influencée mais pas remplacée par la masse résiduelle » — pas une
+preuve complète (le test 1 de l'agent, superposition temporelle avec
+la trajectoire H6 d'origine, reste le test le plus direct, pas encore
+fait), mais un indice de plus dans ce sens plutôt que dans celui d'un
+mécanisme entièrement nouveau.**
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
