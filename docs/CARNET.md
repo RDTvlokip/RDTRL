@@ -8885,7 +8885,7 @@ H6 direct (cible_s3=0,994305, reste gradue) :
 ```
 
 **Même structure qualitative à deux phases (lente puis rapide) que le
-cas retardé — MAIS une échelle de temps locale RADICALEMENT
+cas retardé — MAIS une échelle de temps locale apparemment
 différente.** Comparé au taux local du cas retardé (`λ_grad=0,0327`/pas,
 e-folding 30,6 pas, calculé par l'agent) :
 
@@ -8900,44 +8900,114 @@ Test plus dur (meme prefacteur C, meme mu) :
   ECART : facteur 17x
 ```
 
-**Pour un `mu` de grandeur comparable, la durée du goulot d'étranglement
-diffère d'un facteur `~17×` entre le point selle H6 direct et le point
-selle rencontré à `pas≈600` dans le cas avec masse de fond. Si
-c'était EXACTEMENT le même point selle (même linéarisation locale,
-même préfacteur `C`), ces deux durées devraient être du même ordre
-pour un `mu` comparable — elles ne le sont pas.** Ça penche maintenant
-vers **« point selle DIFFÉRENT, de la même FAMILLE structurelle (même
-forme normale, fantôme de nœud-col), mais avec une géométrie locale
-distincte (courbure/raideur différente) »** — pas littéralement le
-même point que H6, cohérent avec la découverte antérieure du même
-tour : « M change la géométrie locale du pli, pas seulement sa
-position ».
+**CORRECTION IMMÉDIATE (agent-dipankar, vérifiée indépendamment) : ce
+`×17` était en grande partie un ARTEFACT DE DÉFINITION, pas une preuve
+de géométrie différente.** Le `C=0,95` avait été calibré avec
+`τ=600` — le nombre de pas ÉCOULÉS DEPUIS `t=0` — alors que la fenêtre
+où `λ_grad` a réellement été mesurée est `pas=550-760`, soit **210**
+pas, pas 600. Ce sont deux définitions différentes de « durée du
+goulot » (temps total écoulé vs temps réellement passé dans le régime
+mesuré). Recalculé avec la définition COHÉRENTE (`τ=210`) :
 
-**Synthèse finale, toutes preuves pesées (réponse honnête à « c'est le
-H6 ? ») :**
+```
+C' = 210 * sqrt(2,5e-6) = 0,3320
+tau_predit_H6_direct = C' / sqrt(5e-6) = 148,49 pas
+ratio a la duree observee (25 pas) = 5,94
+```
+
+**`5,94`, à comparer au ratio e-folding indépendant `6,20` — les deux
+s'accordent à 4,3% près.** Une simple correction de définition fait
+passer l'écart de `×17` à `×5,94-6,20` (cohérent entre deux méthodes
+de calcul indépendantes). **Vérifié indépendamment (recalcul complet en
+Python), tous les chiffres de l'agent confirmés au chiffre près.**
+
+**Deuxième correction, plus profonde : `λ_local=0,2029` (H6-direct)
+N'EST PAS une mesure de la linéarisation près du point selle — c'est
+`45,4×` AU-DESSUS du plancher théorique.** Forme normale canonique du
+fantôme (`dx/dt=μ+a·x²`, `a=1` implicitement supposé) : taux minimal
+théorique `λ_min=2√μ`. Pour `mu_H6=5e-6` : `λ_min=0,00447`. Le taux
+MESURÉ (`0,2029`) est `45,4×` plus grand — **ma fenêtre de mesure
+(pas 30-50) n'était déjà plus dans le régime "près du point selle",
+elle mesurait la queue non-linéaire de l'envolée, loin du plancher.**
+En sens inverse : le `mu` qui rendrait `0,2029` cohérent avec le taux
+MINIMAL théorique serait `0,0103` — **2058× plus grand que
+`mu_H6=5e-6`** (la distance statique `s3-0,994300`). Autrement dit,
+la distance statique en `s3` seul n'est probablement PAS la bonne
+coordonnée de forme normale (le coefficient `a` n'est sans doute pas
+`1`, ou `s3` n'est pas la bonne combinaison linéaire des variables du
+système).
+
+**Table de sensibilité de l'agent : le "×17" que j'avais publié était
+le coin le PLUS EXTRÊME d'une fourchette de `×2,52` à `×16,97`, selon
+seulement des choix de comptabilité (quelle définition de `τ`, quelle
+fenêtre de durée pour H6-direct) — aucun de ces choix n'est de la
+physique.** Publier le pire cas sans le signaler était une erreur de
+ma part (règle méfiance : je n'ai pas assez cherché ce qui pourrait
+RENDRE MON RÉSULTAT FAUX avant de le publier).
+
+**Conséquence sur le verdict "même famille, point différent" : à
+RÉOUVRIR, pas à confirmer.** Les deux lectures (même point avec de
+mauvaises unités, vs point réellement différent) restent toutes les
+deux possibles avec les données actuelles — **la question n'est PAS
+tranchée**, contrairement à ce que j'avais écrit. Protocole de l'agent
+pour trancher vraiment (aucun fait cette session) : (1) redéfinir la
+fenêtre de `mu_delayed` avec le MÊME critère opérationnel que
+H6-direct ; (2) ajuster le coefficient quadratique `a` directement sur
+les données brutes `(s3, g_e3)` de chaque run séparément, sans
+supposer `a=1` ; (3) recalculer `mu_eff=a·mu_brut` avant toute
+comparaison de `C` ; (4) vérifier si `R` dérive AUSSI loin de
+`0,829390` pendant les 59 pas de H6-direct (la prémisse « R exactement
+sur cible » ne vaudrait alors qu'à `t=0`) ; (5) vérifier le biais de
+correction Adam spécifiquement pour une paire "run frais vs run
+réchauffé" (jamais testé — mon refus de l'artefact d'optimiseur
+concernait une paire différente de trajectoires).
+
+**Synthèse finale RÉVISÉE, toutes preuves pesées (réponse honnête à
+« c'est le H6 ? ») — la question N'EST PAS tranchée, contrairement à ce
+que j'avais écrit avant la correction ci-dessus :**
 - **Même TYPE de mécanisme** (fantôme de nœud-col, structure à deux
-  phases, préfacteur `C` d'ordre 1) — confirmé, solide.
+  phases) — confirmé, solide.
 - **`s3` domine le signal sur la masse de fond résiduelle** (protocole
   3) — cohérent avec « pas un canal causal séparé », plutôt en faveur
   d'un lien avec H6.
-- **MAIS la géométrie locale (taux, durée du goulot pour `mu`
-  comparable) diffère nettement (`×6` à `×17`)** — plutôt en défaveur
-  de « exactement le même point selle ».
-- **Conclusion la plus honnête : parenté structurelle forte, identité
-  exacte réfutée.** C'est un point selle DE LA MÊME FAMILLE que H6
-  (même équation locale, même type de bifurcation), mais PAS le même
-  point précis dans l'espace des phases — la masse de fond ne fait pas
-  que retarder la rencontre avec LE point selle H6, elle en crée un
-  voisin avec sa propre géométrie locale.
+- **L'écart de taux/durée (`×17` publié) était en grande partie un
+  artefact de définition de `τ` — corrigé à `×5,94`, cohérent à 4,3%
+  près avec le ratio e-folding indépendant (`×6,20`).** Ce qui reste
+  (`×6` environ) pourrait être un vrai signal de géométrie différente,
+  OU un résidu d'une comparaison encore mal posée (le `mu` statique en
+  `s3` seul n'est probablement pas la bonne coordonnée — l'écart
+  `2058×` entre `mu_H6=5e-6` et le `mu` impliqué par le taux mesuré le
+  suggère fortement).
+- **Conclusion honnête : NI confirmé NI réfuté.** La parenté
+  structurelle (fantôme de nœud-col, même famille) est solide ; mais
+  savoir si c'est LE MÊME point précis ou un voisin avec sa propre
+  géométrie demande un travail que je n'ai pas fait (ajuster le
+  coefficient quadratique `a` sur les données brutes, pas le supposer
+  à 1 ; redéfinir `mu`/`τ` de façon cohérente entre les deux runs ;
+  vérifier la dérive de `R` dans H6-direct aussi). **Je m'étais arrêté
+  trop tôt sur un chiffre confirmant une lecture séduisante — exactement
+  le moment où la méfiance doit être la plus haute (règle 5ter),
+  et je ne l'ai pas appliquée assez fort la première fois.**
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| c'est littéralement le MÊME point selle que H6, juste rencontré plus tard | 18/09 (moi, hypothèse de départ) | **réfutée** le 18/09 — écart de `×6` à `×17` sur le taux/la durée locale pour un `mu` comparable, incompatible avec une linéarisation identique |
-| c'est un point selle DE LA MÊME FAMILLE (même forme normale) mais avec sa propre géométrie locale | 18/09 (moi, affinée) | **confirmée** le 18/09 — structure qualitative partagée (fantôme à deux phases), paramètres locaux distincts |
+| c'est littéralement le MÊME point selle que H6, juste rencontré plus tard | 18/09 (moi, hypothèse de départ) | **rouverte** le 18/09 — le `×17` qui la réfutait était en grande partie un artefact de définition de `τ`, corrigé à `×5,94-6,20`, insuffisant pour trancher |
+| c'est un point selle DE LA MÊME FAMILLE (même forme normale) mais avec sa propre géométrie locale | 18/09 (moi, affinée) | **rétrogradée à ouverte** le 18/09 — plausible mais plus confirmée, la distance statique `mu_H6` s'est révélée être une coordonnée probablement incorrecte (`×2058` d'écart avec le `mu` implicite du taux mesuré) |
+| la définition de `τ` (temps écoulé total vs fenêtre de mesure réelle) change matériellement la conclusion d'une comparaison de préfacteur `C` | 18/09 (agent) | **confirmée** le 18/09, vérifiée indépendamment — `×17` devient `×5,94` avec une définition cohérente |
+| `λ_local` mesuré pour H6-direct (pas 30-50) est dans le régime linéaire propre du fantôme, près du plancher théorique | 18/09 (moi, implicite) | **réfutée** le 18/09 (agent, vérifié indépendamment) — `45,4×` au-dessus du plancher théorique `λ_min=2√μ`, la fenêtre mesure déjà la queue non-linéaire |
 
-Scripts : trace H6 directe — invocation ad hoc, à sauver en script
-permanent si cette piste est reprise (comparer avec
-`verifier_sonde_bassin.py` existant).
+**Protocole précis pour vraiment trancher, à faire la prochaine fois
+(aucune étape faite cette session) :** (1) redéfinir la fenêtre de
+`mu_delayed` avec le même critère opérationnel que H6-direct ; (2)
+ajuster `a` directement sur `(s3,g_e3)` bruts, séparément par run,
+sans supposer `a=1` ; (3) recalculer `mu_eff=a·mu_brut` avant toute
+comparaison ; (4) vérifier si `R` dérive loin de `0,829390` pendant
+les 59 pas de H6-direct aussi ; (5) vérifier le biais de correction
+Adam pour une paire "run frais vs run réchauffé" spécifiquement (mon
+refus antérieur de l'artefact d'optimiseur concernait une paire de
+runs différente, tous deux "réchauffés").
+
+Scripts : `verifier_h6_direct_trace.py` (sauvé en script permanent).
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
