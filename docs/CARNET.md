@@ -10093,6 +10093,38 @@ Scripts (permanent) : traces reproductibles depuis
 `verifier_gradient_naturel_jouet_m.py` (à étendre avec le gradient
 naturel du récepteur si ce fil est repris).
 
+**Note de synthèse finale, même tour — l'outil qui répondait à tout
+existait déjà avant que la question soit posée.**
+
+`R_br(x;M)` (utilisé depuis 3a) n'était pas une approximation qui
+avait besoin d'être complétée par le gradient naturel du récepteur —
+**c'est déjà, algébriquement, l'exact maximiseur softmax sous
+contrainte** (récompense linéaire + entropie ⇒ distribution de Gibbs
+`r_i ∝ exp(N·reward_i/β)`, exactement la forme déjà codée). Seule
+l'approximation `r3≈1-R` (utilisée UNIQUEMENT dans la réduction ODE
+simplifiée `x_br`, jamais dans `R_br` lui-même) portait l'erreur à
+M=25. **Et `point_fixe(M,delta)` — codé bien avant ce fil, dans
+`verifier_point_fixe_jouet_m.py`, pour une tout autre raison (mesurer
+des taux de relaxation) — EST la solution jointe exacte** (émetteur
+ET récepteur, sans aucune approximation) : vérifié contre le plateau
+Adam (M=0) avec un écart de **3,929e-8 sur s3, 2,238e-6 sur r4** —
+retombant exactement sur les précisions déjà trouvées séparément côté
+émetteur et récepteur ce tour, parce que c'est littéralement le même
+système d'équations.
+
+**Ce que ça dit sur toute la piste 3 (masse de fond), avec le recul :**
+le pli, sa position, sa courbure — tout ça ne dépendait jamais de M
+parce que le VRAI point fixe joint (`point_fixe`) ne dépend pas de M
+là où on l'a sondé (confirmé, exponentielles dominantes). Ce qui
+dépendait de M — et qui a occupé l'essentiel de ce tour — n'était
+jamais la DESTINATION mais le CHEMIN pour y arriver : quelle
+dynamique transitoire, à quelle vitesse, via quelle variable
+(logit vs probabilité), sous quel optimiseur. Le fil est refermé avec
+la conscience claire que ces deux questions (où est le point fixe /
+comment y arrive-t-on) sont restées séparées tout du long, et que la
+confusion entre les deux a produit la plupart des fausses alertes
+diagnostiquées et corrigées ce soir.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
