@@ -80,9 +80,38 @@ def moindres_carres_quadratique(xs, ys):
     return A, B, C
 
 
-def analyser(label, trace, x0_guess=None):
-    """Calcule la vitesse discrete ds3/dpas et ajuste une parabole
-    vitesse = A*(s3-x0)^2 + mu."""
+def mapper_v_de_x(cibles_s3, R_init=0.829390, masse_fond=0.0, lr=0.05):
+    """Mesure directement v(x)=ds3/dpas en prenant UN SEUL pas d'Adam
+    depuis chaque cible_s3 (etat frais a chaque fois) -- beaucoup plus
+    dense et propre que de tracer une seule trajectoire, puisque chaque
+    point est une mesure INDEPENDANTE de v a cet x precis, sans se
+    soucier de savoir si la trajectoire y passe vraiment ou pas."""
+    poids = poids_delta(DELTA)
+    xs, vs = [], []
+    for cible in cibles_s3:
+        e, r = construire_mur23(adam_eps=ADAM_EPS)
+        fixer_s3(e, cible)
+        fixer_r4(r, R_init)
+        if masse_fond > 0:
+            fixer_masse_fond(r, REFERENTS_FOND, masse_fond)
+        activer(e, r)
+        opt = torch.optim.Adam(parametres(e, r), lr=lr, eps=ADAM_EPS)
+        with torch.no_grad():
+            s3_avant = e.loi()[3, 10].item()
+        j, _ = objectif_pondere(e, r, BETA, poids)
+        opt.zero_grad()
+        (-j).backward()
+        opt.step()
+        with torch.no_grad():
+            s3_apres = e.loi()[3, 10].item()
+        v = s3_apres - s3_avant
+        xs.append((s3_avant + s3_apres) / 2)
+        vs.append(v)
+    return xs, vs
+
+
+def trace_vers_xv(trace):
+    """Convertit une trace (pas,s3) en paires (x,v) par difference finie."""
     xs, vs = [], []
     for k in range(len(trace) - 1):
         pas0, s3_0 = trace[k]
@@ -92,6 +121,13 @@ def analyser(label, trace, x0_guess=None):
         x_mid = (s3_0 + s3_1) / 2
         xs.append(x_mid)
         vs.append(v)
+    return xs, vs
+
+
+def analyser_xv(label, xs, vs):
+    """Ajuste une parabole vitesse = A*(x-x0)^2 + mu sur des paires (x,v)
+    deja calculees (par difference finie sur trajectoire OU par mesure
+    directe d'un seul pas depuis plusieurs points de depart)."""
     A, B, C = moindres_carres_quadratique(xs, vs)
     if A != 0:
         x0 = -B / (2 * A)
@@ -103,6 +139,11 @@ def analyser(label, trace, x0_guess=None):
     print(f"  fit: v = {A:.6e}*(x)^2 + {B:.6e}*x + {C:.6e}")
     print(f"  vertex x0={x0}  mu(=v au vertex)={mu}")
     return A, B, C, x0, mu
+
+
+def analyser(label, trace, x0_guess=None):
+    xs, vs = trace_vers_xv(trace)
+    return analyser_xv(label, xs, vs)
 
 
 if __name__ == "__main__":
@@ -133,3 +174,20 @@ if __name__ == "__main__":
     print(f"  a_delayed  = {A_d:.6e}  (x0={x0_d:.6f})")
     if A_h6 != 0 and A_d != 0:
         print(f"  ratio a_delayed/a_H6direct = {A_d/A_h6:.4f}")
+
+    print()
+    print("### H6-direct : mesure DENSE, un seul pas d'Adam depuis 21 points pres du seuil ###")
+    cibles = [0.994300 + d for d in
+              (-0.0025, -0.0022, -0.0019, -0.0016, -0.0013, -0.0010, -0.0007,
+               -0.0004, -0.0002, -0.0001, 0.0, 0.0001, 0.0002, 0.0004, 0.0007,
+               0.0010, 0.0013, 0.0016, 0.0019, 0.0022, 0.0025)]
+    xs_dense, vs_dense = mapper_v_de_x(cibles, R_init=0.829390, masse_fond=0.0)
+    A_dense, B_dense, C_dense, x0_dense, mu_dense = analyser_xv(
+        "H6-direct DENSE (21 points, un pas chacun)", xs_dense, vs_dense)
+
+    print()
+    print("=== COMPARAISON FINALE (mesure dense vs cas retarde) ===")
+    print(f"  a_H6direct_dense = {A_dense:.6e}  (x0={x0_dense:.6f})")
+    print(f"  a_delayed        = {A_d:.6e}  (x0={x0_d:.6f})")
+    if A_dense != 0 and A_d != 0:
+        print(f"  ratio a_delayed/a_H6direct_dense = {A_d/A_dense:.4f}")
