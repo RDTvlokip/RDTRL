@@ -9389,6 +9389,79 @@ et comparable à `a_delayed`.**
 Scripts (permanents) : `verifier_injection_moments_adam.py`,
 `verifier_saddle_h6_jacobien_independant.py`.
 
+**Suite du même tour (18/09/2026, sans nouvelle critique de dipankar —
+je creuse seul, règle du fichier) : la recette « réchauffer Adam »
+identifiée ci-dessus a été mise à l'épreuve pour EXTRAIRE un
+`a_H6direct` chiffré, pas seulement pour prouver la causalité. Résultat
+: NÉGATIF, mais informatif — deux essais, deux échecs distincts,
+documentés plutôt qu'ignorés.**
+
+**Essai 1 — fenêtre tardive (attendre que le chaos s'éteigne tout
+seul, sans injection).** Prédiction directe du mécanisme : si on
+laisse Adam tourner plus longtemps depuis le MÊME départ froid, l'état
+interne devrait se réchauffer tout seul. **Confirmée en partie** :
+`verifier_a_h6direct_fenetre_tardive.py` montre que les changements de
+signe tombent à 0 dès pas≥18 (7 à 23 points selon la fenêtre). **Mais
+le prix à payer casse l'utilité du fit** : à pas=18-24 (fenêtre encore
+étroite), `a=+256` à `+406` — signe INVERSÉ par rapport à `a_delayed`
+(`-9,70`), sommet `x0≈0,9927` loin du vrai `x0=0,994300`. Aux fenêtres
+plus larges (18-40, 25-40), le sommet dérive encore plus loin
+(`x0≈0,925-0,938`) et le fit décrit la pente de fuite catastrophique,
+pas le voisinage du col. **Diagnostic : le temps qu'il faut pour que
+le chaos s'éteigne tout seul est aussi le temps qu'il faut pour que la
+trajectoire quitte la zone locale du col — les deux échelles de temps
+ne sont pas séparables ici, contrairement au cas retardé qui a 400 pas
+de marge avant son propre goulot.**
+
+**Essai 2 — fitter `a` directement sur la trajectoire à moments
+injectés (celle qui a servi au test causal décisif).** Résultat plus
+riche mais tout aussi négatif pour l'objectif de mesure :
+
+| `t_injecte` | a (pas 1-24) | x0 | x range |
+|---|---|---|---|
+| 10 | +25,08 | 0,99377 | [0,994311; 0,995330] |
+| 20 | +15,05 | 0,99306 | [0,994312; 0,995478] |
+| 30 | +9,66 | 0,99211 | [0,994314; 0,995642] |
+| 40 | +3,92 | 0,98816 | [0,994316; 0,995801] |
+
+**`a` dépend fortement et continûment de `t_injecte` — pas un
+plateau, une dérive monotone sur tout l'intervalle testé.** Un vrai
+coefficient local ne devrait pas dépendre du paramètre de la recette
+utilisée pour "réchauffer" l'optimiseur. **Sous-fenêtres de robustesse
+pour `t_injecte=20`, encore pire** : pas 1-12 donne `a=-18,7`
+(NÉGATIF), pas 13-24 donne `a=+28,2` (POSITIF) — changement de signe
+à l'intérieur même de la fenêtre "propre" (0 changement de signe de
+`Δs3`, pourtant). **Diagnostic : l'état `(exp_avg=g, exp_avg_sq=g²)`
+injecté à partir d'UN SEUL gradient capturé n'est pas un proxy fidèle
+d'un vrai historique de 20 pas — feule la dépendance systématique à
+`t_injecte` (qui ne devrait rien changer si la recette était fidèle)
+le prouve directement.** Le test d'injection reste un bon outil CAUSAL
+(isoler ce qui cause le chaos brut) mais n'est PAS un bon outil de
+MESURE (le nombre qu'il produit dépend de sa propre recette, pas
+seulement de la géométrie locale réelle).
+
+**Nouvelles hypothèses sur POURQUOI aucune méthode ne converge (posées
+le 18/09/2026, à tester si ce fil rouvre) :**
+
+| # | hypothèse | type | statut |
+|---|---|---|---|
+| la réduction 1D (v=f(s3) seul) reste invalide même une fois le chaos brut d'Adam éliminé, parce que R continue de bouger de façon significative dans toutes les variantes essayées | standard | ouverte |
+| l'injection synthétique (m=g,v=g²) est un proxy trop grossier d'un vrai historique de gradients — un vrai réchauffement (pas juste 1 gradient dupliqué) donnerait un a stable | standard | ouverte, plausible vu la dérive monotone avec t_injecte |
+| le passage au col pour H6-direct (masse_fond=0) est intrinsèquement trop RAPIDE (quelques dizaines de pas max) pour qu'aucune fenêtre ne sépare "assez de pas pour lisser" de "assez proche de x0 pour rester locale" — contrairement au cas retardé qui a ~400 pas de marge | non standard | ouverte, cohérente avec l'essai 1 |
+| 24-40 points ne suffisent pas pour un fit à 3 paramètres près de x≈1 (mauvais conditionnement numérique d'une quasi-Vandermonde) | standard | non testée |
+
+**Bilan honnête de ce sous-fil à ce stade : le MÉCANISME est
+maintenant solide (col hyperbolique réel, artefact de démarrage à
+froid confirmé deux fois indépendamment), mais la MESURE chiffrée de
+`a_H6direct` reste hors de portée de toutes les méthodes essayées
+(6 maintenant, comptant celle-ci). Ce n'est plus « je ne sais pas
+pourquoi c'est dur » — c'est « je sais précisément pourquoi chaque
+tentative échoue, et la piste la plus prometteuse restante (un vrai
+réchauffement multi-pas, pas une injection à 1 gradient) n'a pas
+encore été essayée ». Pas soumis à un nouvel agent-dipankar pour ce
+résultat précis (volume déjà élevé de rounds ce tour) — limite
+assumée, à faire si ce fil rouvre.**
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
