@@ -9049,9 +9049,71 @@ aussi les étapes 1, 4, 5 du protocole de l'agent (fenêtre `mu_delayed`
 avec le même critère que H6-direct, dérive de `R` dans H6-direct,
 biais Adam run-frais-vs-réchauffé) — aucune faite.
 
+**Deux tentatives supplémentaires pour densifier les données H6-direct
+(18/09, suite immédiate) — TOUTES LES DEUX ÉCHOUÉES, chacune pour une
+raison précise et instructive, rapportées honnêtement plutôt que
+cachées :**
+
+**Tentative 2 : un seul pas d'Adam depuis 21 points frais près du
+seuil.** Résultat absurde : sommet à `x0=0,998736`, signe de `a`
+inversé. **Diagnostic : avec un état Adam FRAIS (`m=0, v=0`), le
+PREMIER pas a TOUJOURS une magnitude ≈ `lr` complet, quel que soit le
+gradient réel** (`m̂/√(v̂+eps) → sign(gradient)` dès que
+`|gradient|≫eps`, par construction de la correction de biais d'Adam au
+pas 1). **Cette mesure n'a jamais capté la vraie vitesse locale — elle
+mesurait uniquement `±lr`, écrasant toute l'information de magnitude
+du gradient.** Piège réel, pas un bug de code : tout protocole qui
+mesure "un seul pas Adam depuis un état frais" pour sonder une
+dynamique locale fine est structurellement biaisé de cette façon.
+
+**Tentative 3 : regrouper 10 trajectoires courtes (5 sous le seuil, 5
+au-dessus), en sautant les 3 premiers pas de chacune (pour éviter le
+biais de la tentative 2).** Résultat encore absurde : sommet à
+`x0=1,0052368` — **au-dessus de 1,0, physiquement IMPOSSIBLE pour une
+probabilité `s3`.** Diagnostic : mélanger des trajectoires des DEUX
+côtés du seuil (certaines qui RÉCUPÈRENT vers la branche graduée
+`~0,999`, d'autres qui S'EFFONDRENT) revient à ajuster une seule
+parabole sur DEUX comportements globaux qualitativement différents —
+la forme normale locale `v=a(x-x0)²+μ` ne décrit correctement le
+voisinage d'UN point selle que d'un côté cohérent, pas un mélange des
+deux issues.
+
+**Bilan de ces trois tentatives : chacune a révélé un piège
+méthodologique réel et distinct (fenêtre trop large / biais du premier
+pas Adam / mélange des deux issues), aucune n'a produit un `a_H6direct`
+fiable.** Ce n'est pas un échec à cacher — chaque diagnostic est en
+soi une leçon utile sur comment (ne pas) sonder une forme normale de
+pli via un optimiseur Adam discret. **La comparaison quantitative
+précise du coefficient `a` reste donc NON RÉSOLUE** — la voie la plus
+prometteuse non essayée : ajuster uniquement sur des trajectoires d'UN
+SEUL côté du seuil (toutes collapsantes, ou toutes récupérantes, jamais
+les deux), en sautant les tout premiers pas (biais Adam) mais en
+restant dans la fenêtre où `|x-x0|` est petite (zone linéaire), ce qui
+demanderait un point de départ encore plus proche du seuil que ceux
+tentés ici.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| mesurer v(x) via un seul pas Adam depuis un etat frais donne une mesure fiable de la vitesse locale | 18/09 (moi) | **réfutée** le 18/09 — le premier pas Adam a toujours une magnitude ≈lr par construction (correction de biais), indépendamment du vrai gradient |
+| regrouper des trajectoires des deux côtés du seuil stabilise le fit quadratique | 18/09 (moi) | **réfutée** le 18/09 — sommet physiquement impossible (`x0>1`), mélange de deux dynamiques globales incompatibles |
+
+**Bilan global de la piste "identité du point selle" pour cette
+session : caractérisée en profondeur, correction majeure faite en
+cours de route (le `×17` initial était un artefact), mais NON
+TRANCHÉE.** Ce qui reste solide : le mécanisme est un vrai fantôme de
+nœud-col (structure à deux phases confirmée plusieurs fois), la masse
+de fond n'est pas le canal causal dominant (protocole 3), et la durée
+du goulot correctement mesurée (ratio `τ`) donne un facteur `~5,94-6,20`
+raisonnablement cohérent entre deux méthodes. Ce qui reste ouvert :
+la comparaison directe du coefficient `a` (3 tentatives, 3 échecs
+méthodologiques distincts, tous diagnostiqués) et les étapes 1, 4, 5 du
+protocole de l'agent (fenêtre `mu_delayed` avec le même critère que
+H6-direct, dérive de `R` dans H6-direct, biais Adam run-frais-vs-
+réchauffé).
+
 Scripts : `verifier_h6_direct_trace.py`, `verifier_forme_normale_pli.py`
-(script permanent, ajustement quadratique direct — la méthode est
-bonne, les données H6-direct actuelles sont juste trop clairsemées).
+(script permanent, trois méthodes tentées et documentées, dont deux
+échecs instructifs).
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
