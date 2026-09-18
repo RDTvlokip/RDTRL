@@ -10125,6 +10125,28 @@ comment y arrive-t-on) sont restées séparées tout du long, et que la
 confusion entre les deux a produit la plupart des fausses alertes
 diagnostiquées et corrigées ce soir.
 
+**Tentative de transfert au VRAI système (H6, six échecs
+diagnostiqués plus tôt dans la session) — essayée, et honnêtement
+non concluante, pour une raison structurelle claire, pas un échec de
+réglage.** L'idée : appliquer le même gradient naturel (diviser par
+`s3(1-s3)`) au point H6-direct pour enfin obtenir un coefficient `a`
+stable, sans les artefacts d'Adam déjà catalogués. Testé à
+`lr=0,01/0,05/0,2` : `s3` bouge à peine (0,994295→0,994298 en 60 pas
+au mieux). **Ce n'est pas un problème de réglage — c'est que le
+gradient naturel corrige un ralentissement dû au CHOIX DE COORDONNÉE
+(sigmoïde saturé, le problème du jouet), pas un ralentissement dû à
+la PROXIMITÉ D'UN VRAI POINT FIXE (le problème de H6-direct, placé
+délibérément à 5e-6 du col, un vrai ralentissement critique
+`μ≈0`).** Ces deux lenteurs se ressemblent en surface mais ont des
+causes différentes ; l'outil qui répare l'une ne répare pas l'autre.
+**La conclusion de la session précédente sur H6 (mécanisme compris —
+démarrage à froid d'Adam sur un vrai col hyperbolique — mais mesure
+précise de `a` toujours hors de portée, chemin restant : une vraie
+trajectoire d'approche lente) reste donc l'état de l'art, pas
+remplacée par cette tentative.** Noté honnêtement plutôt que forcé
+vers une fausse victoire — transférer une bonne leçon au mauvais
+problème est aussi une leçon.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
