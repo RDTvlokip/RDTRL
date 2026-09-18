@@ -9115,6 +9115,154 @@ Scripts : `verifier_h6_direct_trace.py`, `verifier_forme_normale_pli.py`
 (script permanent, trois méthodes tentées et documentées, dont deux
 échecs instructifs).
 
+**Reprise du 18/09/2026 (suite, même tour) — étapes 4 et 5 du protocole
+enfin exécutées, et une explication MÉCANISTIQUE trouvée, pas juste un
+quatrième échec de plus.** Script permanent :
+`verifier_biais_adam_fenetre.py`.
+
+**Hypothèse H_biais (standard/académique), posée le 18/09 : la
+correction de biais d'Adam (`m̂=m/(1-β1^t)`, `v̂=v/(1-β2^t)`) forme une
+enveloppe multiplicative `g(t)=bias1(t)/√bias2(t)` qui varie encore
+fortement sur les 24 premiers pas (t=1→24 : `g` passe de 0,316 à un
+minimum ~0,15 puis remonte à 0,167, ratio max/min=2,08 sur la fenêtre),
+contre une variation bien plus douce sur la fenêtre du cas retardé
+(t=400→700 : `g` de 0,574 à 0,710, ratio=1,24) — assez pour expliquer,
+à elle seule, l'instabilité de `a_H6direct` sans invoquer une géométrie
+différente.**
+
+D'abord vérifiée : la formule `g(t)` a été comparée à l'état RÉEL de
+l'optimiseur (`opt.state[...]['exp_avg']`, `['exp_avg_sq']`, `['step']`)
+plutôt que prise pour acquise (règle 5bis s'applique à mes propres
+dérivations aussi) :
+
+| t | g formule | g mesuré sur l'état réel | écart |
+|---|---|---|---|
+| 1 | 0,316228 | 0,319788 | 3,6e-3 |
+| 5 | 0,172499 | 0,172622 | 1,2e-4 |
+| 10 | 0,153189 | 0,153276 | 8,7e-5 |
+| 24 | 0,167384 | 0,167456 | 7,2e-5 |
+| 50 | 0,222039 | 0,222040 | 8,3e-7 |
+
+Formule **confirmée** (écart décroissant, dominé par `eps` non nul
+seulement à `t=1`).
+
+**H_biais testée en déflatant `v(x)` par `g(t_milieu)` avant le fit :
+RÉFUTÉE le 18/09/2026 comme explication PRINCIPALE.** La correction ne
+stabilise rien — elle aggrave même le symptôme le plus grave : sur les
+deux sous-fenêtres pas=1-12 et pas=13-24, le `a` BRUT change déjà de
+signe (`-48,6` puis `+323,4`), et le `a` CORRIGÉ aussi (`+1183,7` puis
+`+2039,3`, cette fois sans changer de signe mais toujours incohérent
+d'un facteur ~1,7). Un vrai coefficient quadratique local ne devrait
+pas changer de SIGNE d'une sous-fenêtre à l'autre, biais Adam ou pas —
+ce n'est donc pas (seulement) l'enveloppe `g(t)` qui casse le fit.
+
+**Étape 4 (dérive de `R` dans la fenêtre H6-direct) — résultat plus
+gros que prévu.** `R` (mesuré comme `r[10,4]`, fixé à 0,829390 par
+`fixer_r4` avant le premier pas) :
+
+| cas | fenêtre | amplitude de dérive de R | pas pour cette amplitude |
+|---|---|---|---|
+| H6-direct | pas 1-59 | 0,829390 → 0,996612 (Δ=0,176) | 59 |
+| retardé | pas 400-700 | 0,819258 → 0,832248 (Δ=0,013) | 300 |
+
+**Δ(R) par pas est ~100× plus grand pour H6-direct que pour le cas
+retardé** (0,176/59≈3,0e-3/pas contre 0,013/300≈4,3e-5/pas) — et ce dès
+le tout PREMIER pas Adam (`R` saute de 0,829390 à 0,843024, `ΔR=0,0136`,
+alors que le biais Adam à `t=1` DÉFLATE le pas d'un facteur ~3× : le
+saut est donc dû à un vrai gradient important sur `R`, pas à un
+artefact de démarrage — élimine une objection immédiate).
+
+**Nouvelle hypothèse non standard, née de ce chiffre (18/09/2026) :
+la réduction 1D (`v=f(s3)` seul, `R` traité comme asservi/esclave) est
+INVALIDE précisément dans la fenêtre utilisée pour `a_H6direct`, parce
+que `R` n'a pas eu le temps de se relaxer sur la variété lente avant
+que la fenêtre de fit ne commence.** Testée directement en traçant
+`|ΔR/Δs3|` pas par pas (au lieu d'une seule amplitude globale) :
+
+| cas | fenêtre | min | max | comportement |
+|---|---|---|---|---|
+| H6-direct | pas 1-24 | 0,01 | 1688 | **chaotique, changements de signe multiples** (t=13→14→15 : la direction de `ΔR` change deux fois de suite) |
+| retardé | pas 400-700 | 2,82 | 6,17 | **lisse, décroissance monotone, jamais de changement de signe** |
+
+**CONFIRMÉE le 18/09/2026, par deux métriques indépendantes (le
+ratio ET l'amplitude absolue de `ΔR`, pour écarter l'objection
+« un ratio explose juste quand `Δs3≈0` au dénominateur » — l'amplitude
+absolue de `ΔR` est ~100× plus grande indépendamment du ratio).**
+
+**Mécanisme (COMMENT) : la forme fermée quasi-statique suppose `R`
+esclave de `s3` (relaxation rapide vers `R_br(s3)`) — une approximation
+valide pour une trajectoire qui a DÉJÀ eu le temps de converger dessus
+(le cas retardé, après 400 pas), mais pas pour une trajectoire posée à
+froid EXACTEMENT aux coordonnées `(s3,R)` prédites par cette même
+approximation adiabatique. `R` doit d'abord faire son propre transitoire
+de relaxation (non monotone, visible pas=1-20) AVANT que la dynamique
+locale de `s3` seule devienne un bon résumé 1D — et ce transitoire
+recouvre EXACTEMENT la fenêtre `pas≤24` choisie pour le fit, parce que
+c'est aussi la fenêtre où `s3` reste proche de son propre point
+d'arrêt apparent.**
+
+**QUAND** : le chaos du ratio commence au tout premier pas (`t=1`,
+ratio=61,7) et ne se calme qu'à partir de `t≈21-24` (ratio tombe sous
+3) — pile la frontière déjà choisie empiriquement (`pas≤24`) pour
+séparer « zone lente » de « fuite catastrophique », mais pour une
+MAUVAISE raison présumée jusqu'ici (on croyait que `s3` seul y était
+lent ; en fait c'est `R` qui y est encore instable).
+**COMMENT** : ci-dessus (relaxation non asservie de `R`).
+**POURQUOI** : parce que le point de départ H6-direct est construit à
+partir d'une solution FERMÉE (adiabatique), pas d'une trajectoire
+Adam réelle qui y aurait naturellement convergé — le cas retardé, lui,
+y arrive par une vraie trajectoire de 600 pas, donc `R` y est
+automatiquement asservi.
+**OÙ** : dans le couplage récepteur→émetteur via `R=r[10,4]`
+spécifiquement (déjà localisé au récepteur, cohérent avec les tests
+précédents qui avaient écarté un artefact purement émetteur).
+**COMBIEN** : facteur ~100× sur l'amplitude de `ΔR`/pas, facteur
+~5 ordres de grandeur sur le ratio `|ΔR/Δs3|` (0,01 à 1688) contre
+un facteur ~2,2× seulement pour le cas retardé (2,82 à 6,17).
+**JUSQU'OÙ** : ce diagnostic (borner `|ΔR/Δs3|` et vérifier l'absence
+de changement de signe) devrait être un PRÉALABLE obligatoire avant de
+faire confiance à tout futur fit 1D de ce genre sur ce système — pas
+seulement pour ce cas précis.
+**DEPUIS QUAND** : présent dès `t=1`, donc antérieur à toute tentative
+de fit déjà essayée (les 3 échecs précédents étaient TOUS mesurés,
+même partiellement, à l'intérieur de cette zone contaminée).
+**SUR COMBIEN** : vérifié sur une seule paire de trajectoires
+(H6-direct côté effondré `0,994295` / retardé `0,999455`) — pas encore
+rejoué sur la trajectoire miroir côté gradué (`0,994305`) ni sur
+d'autres `R_init`/`masse_fond` du cas retardé, à faire si ce fil
+rouvre.
+
+**Ce que ça change pour la conclusion précédente : ce n'est plus
+seulement « 3 méthodes ont échoué pour des raisons distinctes et on ne
+sait pas pourquoi c'est si dur » — c'est maintenant « les 3 méthodes
+ont échoué pour la MÊME raison de fond : elles tentaient toutes
+d'extraire un coefficient local 1D d'un régime qui n'est
+structurellement PAS 1D, parce que `R` n'y est pas encore asservi ».**
+La comparaison directe de `a_H6direct` contre `a_delayed`, telle que
+tentée jusqu'ici, n'est donc pas juste difficile à mesurer
+précisément : elle compare deux quantités qui ne sont pas définies
+dans le même régime dynamique. Un `a_H6direct` fiable demanderait de
+laisser `R` s'asservir D'ABORD (partir d'un point plus loin du seuil,
+avec assez de pas pour que `R` relaxe, comme le cas retardé) — piste
+non essayée, mise de côté pour une session future si ce fil rouvre.
+
+**Méfiance appliquée à ce résultat lui-même : qu'est-ce qui le
+ferait basculer s'il était faux ?** Si le même diagnostic
+(`|ΔR/Δs3|` chaotique avec changements de signe) apparaissait AUSSI
+dans la fenêtre du cas retardé à une résolution plus fine (pas
+testée ici — vérifié seulement tous les 50 pas), la distinction
+s'effondrerait. Pas vérifié à grain fin sur le cas retardé — limite
+explicite de ce résultat, à corriger avant de le citer comme
+définitivement tranché.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H_biais : l'enveloppe de correction de biais Adam g(t) explique (seule) l'instabilité de a_H6direct | 18/09 (moi) | **réfutée** le 18/09 — la déflation par g(t) n'élimine pas le changement de signe entre sous-fenêtres |
+| la formule g(t)=bias1(t)/√bias2(t) prédit exactement le facteur multiplicatif réel appliqué par Adam | 18/09 (moi) | **confirmée** le 18/09 — vérifiée contre l'état interne réel de l'optimiseur, écart <1e-3 dès t=5 |
+| R n'est pas asservi à s3 pendant la fenêtre de fit de H6-direct (contrairement au cas retardé), expliquant mécaniquement l'instabilité de a_H6direct par les 3 méthodes précédentes | 18/09 (moi) | **confirmée** le 18/09, par deux métriques indépendantes (ratio ET amplitude absolue) — limite : pas vérifiée à grain fin sur le cas retardé, ni sur la trajectoire miroir |
+
+Scripts : `verifier_biais_adam_fenetre.py`.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
