@@ -8381,6 +8381,89 @@ Scripts : `verifier_point_fixe_jouet_m.py` (point fixe + fenêtre
 adaptative), tests `beta2` ad hoc (à sauver en script permanent si
 cette piste est reprise).
 
+---
+
+### Piste 3c : test direct sur le VRAI système — le bassin s'inverse sous masse de fond
+
+18/09/2026, suite du même tour (Théo : « on n'arrête pas »). Reprise du
+protocole pin-and-falsify du tour 52 DIRECTEMENT sur le système complet
+à 27 référents, plutôt que de construire une ODE pour le jouet
+(`verifier_masse_fond_systeme_reel.py`).
+
+**Baseline (sans masse de fond), reproduit avec succès :** bissection
+du point de bascule à `R_init=0,60`, `delta=0,013` — `flip=0,979616`,
+`k` lu sur la table de dipankar (tour 52) par interpolation :
+`k=1,613`. Dans la fourchette `[1,42 ; 2,45]` déjà connue.
+
+**Avec 25 % de masse de fond (10 référents parmi les 25 autres, message
+10) : le script a PLANTÉ (assertion `lo/hi même issue`), pas un signe
+d'échec — un signe qu'il fallait regarder de plus près plutôt que
+d'élargir le bracket à l'aveugle.** Diagnostic : `s3_init=0,999` →
+GRADUÉ (`R=0,794022`, exactement la branche connue) ; `s3_init=0,9999`
+→ EFFONDRÉ (`s3=0,037037=1/27`, la signature de collapse connue).
+**`s3_init` plus ÉLEVÉ donne l'effondrement, pas la branche graduée —
+l'INVERSE du cas non perturbé.**
+
+**Cartographié sur 9 points (0,90 à 0,99999) : le renversement est net
+et monotone dans les DEUX régimes, pas un artefact isolé.**
+
+```
+s3_init=0,90000  ->  GRADUEE  (R=0,794022)
+s3_init=0,95000  ->  GRADUEE  (R=0,795609)
+s3_init=0,97000  ->  GRADUEE  (R=0,794022)
+s3_init=0,99000  ->  GRADUEE  (R=0,794022)
+s3_init=0,99500  ->  GRADUEE  (R=0,794022)
+s3_init=0,99900  ->  GRADUEE  (R=0,794022)
+s3_init=0,99950  ->  EFFONDRE (s3=0,037035, R=1,000000)
+s3_init=0,99990  ->  EFFONDRE (s3=0,037037, R=1,000000)
+s3_init=0,99999  ->  EFFONDRE (s3=0,037032, R=1,000000)
+```
+
+**Cycle complet appliqué avant la bissection précise du nouveau seuil
+(Théo a rappelé le cycle répondre/expérimenter/hypothèses/analyser,
+les axes QUAND/COMMENT/POURQUOI, le quota 3-5 hypothèses) :**
+
+**Hypothèses (posées le 18/09, AVANT de connaître le seuil précis) :**
+
+| # | hypothèse | type | posée le | statut |
+|---|---|---|---|---|
+| H-ordre : pendant l'évacuation du fond, r3 ET r4 montent ensemble contre le fond ; à s3_init très élevé, l'émetteur n'a "nulle part où monter" (déjà saturé) et ne peut pas compenser l'avantage structurel de poids4>poids3 pendant cette phase, alors qu'à s3_init modéré l'émetteur bouge encore et peut compenser | standard (gradient/saturation) | 18/09 | ouverte |
+| H-plancher : le gradient de l'émetteur est quasi nul très près de la saturation (déjà documenté ailleurs dans ce projet, planchers `adam_eps`) — à s3_init=0,9999+ l'émetteur est effectivement gelé pendant toute la phase critique, contrairement à s3_init=0,90-0,999 où il a encore un vrai gradient | standard (plancher numérique) | 18/09 | ouverte |
+| H-course : le "vainqueur" de la compétition r3-vs-r4 après évacuation dépend d'un avantage marginal accumulé PENDANT les premiers pas (pas de la préférence de départ) — le seuil de bascule devrait coïncider avec là où le gradient de l'émetteur devient négligeable, pas un chiffre arbitraire | non standard | 18/09 | ouverte |
+| H-artefact-optimiseur : `continuer_sous_prior` ne réinitialiserait pas l'état Adam entre les appels de bissection, contaminant les résultats successifs | non standard (mais vérifiable directement dans le code) | 18/09 | **réfutée le 18/09** — vérifié : `continuer_sous_prior` appelle `torch.optim.Adam(...)` à chaque appel, un optimiseur frais à chaque fois, pas d'état résiduel |
+| H-bug-fixer : `fixer_masse_fond` interagit mal avec `fixer_s3` (ordre d'appel, cases qui se chevauchent) | non standard (vérification de code) | 18/09 | **réfutée le 18/09** — les deux fonctions touchent des tenseurs différents (`e.p` pour l'émetteur, `r.p` pour le récepteur), aucun chevauchement possible |
+
+**QUAND :** le seuil de bascule se situe entre `s3_init=0,999` (gradué)
+et `0,9995` (effondré) — pas encore localisé plus précisément,
+bissection en cours.
+
+**COMMENT (mécanisme, étape par étape) :** la masse de fond (25 %,
+répartie sur 10 référents) s'évacue rapidement (par analogie avec le
+jouet, demi-vie de quelques pas) ; PENDANT cette évacuation, `r3` et
+`r4` montent tous les deux contre le fond (pas encore l'un contre
+l'autre) ; une fois le fond épuisé, la compétition `r3`-vs-`r4`
+commence avec un avantage relatif hérité de cette phase — et cet
+avantage semble dépendre de l'état de l'ÉMETTEUR au moment où la
+compétition démarre (mobile vs déjà figé), pas de sa valeur de départ
+en tant que telle.
+
+**POURQUOI (à confirmer) :** si H-plancher/H-course tiennent, c'est
+parce qu'un émetteur encore mobile (`s3_init` pas trop proche de 1)
+peut continuer à répondre au signal de récompense PENDANT la phase
+critique d'évacuation, alors qu'un émetteur déjà saturé (`s3_init`
+quasi 1) ne peut plus bouger et rate cette fenêtre — inversant quel
+référent « gagne » la course, sans rapport avec la préférence de
+poids `delta`.
+
+**Croisement (quand du comment) :** est-ce que ce mécanisme
+d'inversion existe UNIQUEMENT très près de la saturation du
+checkpoint d'origine (`s3` déjà quasi figé avant même la
+perturbation), ou apparaît-il aussi à des deltas plus éloignés du pli,
+ou avec un `s4_init` différent ? Pas testé.
+
+Script : `verifier_masse_fond_systeme_reel.py`. Bissection précise du
+nouveau seuil en cours — résultat et lecture de `k` à suivre.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
