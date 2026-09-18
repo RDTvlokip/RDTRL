@@ -8519,6 +8519,30 @@ question posée, à soumettre à un agent-dipankar avant de le considérer
 clos (règle CLAUDE.md), puis à explorer plus loin (est-ce spécifique à
 `R_init=0,60`, à `delta=0,013`, à ce jeu précis de 10 référents ?).
 
+**Testé tout de suite (pas laissé en suspens) : le renversement est-il
+universel sur tous les `R_init`, ou spécifique à `0,60` ?** À
+`R_init=0,75` (plus proche de la vraie valeur de branche `≈0,794` que
+`0,60`), les deux extrêmes testés restent GRADUÉS :
+
+```
+R_init=0,75  s3_init=0,9000  ->  GRADUEE (R=0,794112)
+R_init=0,75  s3_init=0,9999  ->  GRADUEE (R=0,794022)
+```
+
+**Pas de renversement à `R_init=0,75` — le phénomène n'est PAS
+universel, il est spécifique (au moins) à `R_init=0,60`.** Cohérent
+avec une lecture géométrique simple : `R_init=0,75` est déjà proche de
+la vraie branche (`0,794`), donc robustement dans le bassin gradué
+quel que soit `s3_init` et la perturbation ; `R_init=0,60` est plus
+loin de la branche, plus proche de la zone sensible où la séparatrice
+d'origine (au seuil `s3=0,9943`) passait déjà — c'est là que la
+perturbation a le plus de prise pour renverser l'issue.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le renversement de bassin sous masse de fond est universel, indépendant de `R_init` | 18/09 (moi, implicite) | **réfutée** le 18/09 — absent à `R_init=0,75`, présent à `R_init=0,60` |
+| le renversement se manifeste préférentiellement près de la zone de sensibilité déjà connue de la séparatrice d'origine, pas partout | 18/09 (moi) | **cohérente avec les 2 points testés, pas encore un test direct** |
+
 Script : `verifier_masse_fond_systeme_reel.py`.
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
