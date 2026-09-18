@@ -9462,6 +9462,61 @@ encore été essayée ». Pas soumis à un nouvel agent-dipankar pour ce
 résultat précis (volume déjà élevé de rounds ce tour) — limite
 assumée, à faire si ce fil rouvre.**
 
+**Essai 3, même tour (18/09/2026), Théo : « on continue une dernière
+fois » — la piste "la plus prometteuse" ci-dessus (vrai réchauffement
+multi-pas) a été essayée. ÉCHEC, pour une TROISIÈME raison distincte,
+elle aussi diagnostiquée.** `verifier_a_h6direct_rechauffement_reel.py` :
+au lieu de dupliquer un seul gradient, recalcule un VRAI gradient à
+chaque pas de réchauffement (position re-fixée exactement sur la
+cible après chaque pas, donc `m,v` accumulent une vraie récursion EMA
+d'Adam sur une séquence de gradients réels, pas une copie).
+
+**Résultat : pire, pas mieux.** `a` reste instable ET change de signe
+selon `n_chauffe` (`-20,9` à `n=5`, `-7,6` à `n=10`, `-5,1` à `n=20`,
+`+2,5` à `n=40`, `+1,2` à `n=80`, `+0,31` à `n=160`) — aucun plateau.
+`x0` devient même **physiquement impossible** (`>1`) pour `n_chauffe`
+∈ {10,20}. Et le nombre de changements de signe reste bloqué à 3 pour
+TOUTE valeur de `n_chauffe` testée (contre 0 pour l'injection à un
+seul gradient) — cette recette est donc STRICTEMENT PIRE que l'essai
+précédent sur le critère même qu'elle visait à améliorer.
+
+**Pourquoi (COMMENT) : parce que le gradient recalculé est IDENTIQUE à
+chaque pas de réchauffement (position remise exactement au même point
+à chaque fois, système déterministe, pas de bruit) — `m` et `v`
+convergent donc vers `m≈g`, `v≈g²` en quelques pas seulement, et la
+correction de biais fait alors que `m̂/√v̂≈sign(g)` : Adam se met à
+appliquer un pas de magnitude `lr` COMPLET, dans la même direction, à
+CHAQUE pas de réchauffement (pas de décroissance). Plus `n_chauffe`
+est grand, plus l'optimiseur est "certain" de vouloir prendre un pas
+maximal dans cette direction — et une fois relâché, il fonce à travers
+toute la zone locale en quelques pas au lieu de ralentir dessus (`s3`
+tombe à 0,868 en seulement 24 pas pour `n_chauffe=160`, contre 0,988
+pour `n_chauffe=5`). **Le réchauffement sur point fixe apprend le
+mauvais invariant : "ce gradient ne change jamais" au lieu de "voici
+la vraie courbure locale", parce que la vraie courbure ne peut
+s'observer qu'en laissant la position RÉELLEMENT bouger — exactement
+ce que le cas retardé fait (400 pas de vraie trajectoire), et
+qu'aucune recette de réchauffement sur point fixe ne peut imiter.**
+
+**Bilan à ce stade (3 recettes de réchauffement essayées, 3 échecs
+distincts et compris) : le seul chemin qui reste plausible est de
+construire une VRAIE trajectoire d'approche lente pour le cas
+masse_fond=0 (partir d'un point suffisamment loin pour que la
+dynamique ait le temps de se stabiliser AVANT d'atteindre le
+voisinage du col, comme le fait naturellement le cas retardé) — pas
+une astuce de réchauffement d'optimiseur sur place. C'est un vrai
+travail de modélisation (trouver/construire un point de départ qui
+funnelle naturellement vers 0,994300 sur assez de pas), pas un script
+de plus. Mis de côté comme travail futur plutôt que retenté sans fin
+dans ce tour — la piste `a_H6direct` est refermée ici pour cette
+session, avec une carte complète et honnête de six échecs diagnostiqués.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| un réchauffement Adam sur VRAIS gradients répétés (pas une injection à un seul gradient dupliqué) donnerait un a stable | 18/09 (moi, motivée par les résultats précédents) | **réfutée** le 18/09 — pire que l'injection à un seul gradient sur le critère même qu'elle visait (3 changements de signe pour toute valeur de n_chauffe testée, contre 0) |
+
+Scripts (permanent) : `verifier_a_h6direct_rechauffement_reel.py`.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
