@@ -9259,9 +9259,135 @@ définitivement tranché.
 |---|---|---|---|
 | H_biais : l'enveloppe de correction de biais Adam g(t) explique (seule) l'instabilité de a_H6direct | 18/09 (moi) | **réfutée** le 18/09 — la déflation par g(t) n'élimine pas le changement de signe entre sous-fenêtres |
 | la formule g(t)=bias1(t)/√bias2(t) prédit exactement le facteur multiplicatif réel appliqué par Adam | 18/09 (moi) | **confirmée** le 18/09 — vérifiée contre l'état interne réel de l'optimiseur, écart <1e-3 dès t=5 |
-| R n'est pas asservi à s3 pendant la fenêtre de fit de H6-direct (contrairement au cas retardé), expliquant mécaniquement l'instabilité de a_H6direct par les 3 méthodes précédentes | 18/09 (moi) | **confirmée** le 18/09, par deux métriques indépendantes (ratio ET amplitude absolue) — limite : pas vérifiée à grain fin sur le cas retardé, ni sur la trajectoire miroir |
+| R n'est pas asservi à s3 pendant la fenêtre de fit de H6-direct (contrairement au cas retardé), expliquant mécaniquement l'instabilité de a_H6direct par les 3 méthodes précédentes | 18/09 (moi) | **partiellement réfutée / affinée** le 18/09 par un agent-dipankar puis confirmée indépendamment — voir bloc ci-dessous : la VRAIE cause est l'état interne d'Adam (m,v), pas la position de R elle-même |
 
 Scripts : `verifier_biais_adam_fenetre.py`.
+
+**Suite du même tour (18/09/2026) — un agent-dipankar challenge ce
+résultat, et sa lecture, bien que plus fine, est CONFIRMÉE par un test
+que j'ai rejoué moi-même, pas seulement acceptée sur sa parole (règle
+5bis).** Points de son rapport, chacun vérifié indépendamment avant
+d'être accepté :
+
+1. **La trajectoire MIROIR (0,994305, reste graduée) est TOUT AUSSI
+   chaotique** (agent : 3 changements de signe, ratio max 1653 ; ma
+   propre re-mesure indépendante : 2 changements, ratio max 392 —
+   chiffres exacts différents, mais même verdict qualitatif). **Ma
+   lecture « spécifique à l'effondrement » est donc RÉFUTÉE** — ce
+   n'est pas parce que la trajectoire va collapser que R est instable,
+   les deux issues montrent le même chaos près du point de départ.
+2. **La fenêtre précoce du cas retardé LUI-MÊME (pas 1-24, avant
+   d'atteindre son propre goulot vers pas=600) est lisse en SIGNE (0
+   changement) mais PAS en amplitude de ratio** (agent : ratio
+   221,7-893 ; ma remesure : 221,65-552 — le minimum matche
+   quasi-exactement, 221,7 vs 221,65). **Ça réfute l'hypothèse
+   concurrente « tout démarrage à froid est bruité »** (ici aussi
+   démarrage à froid, mais lisse) ET **ça montre que le ratio
+   |ΔR/Δs3| n'est pas le bon diagnostic à lui seul** — le nombre de
+   changements de signe de `Δs3` est la métrique robuste, le ratio
+   brut explose mécaniquement même dans un régime par ailleurs propre.
+3. **Ma propre approximation « ~100× » était fausse — le bon chiffre
+   est ×67,53 (par pas), pas ×100.** Vérifié indépendamment (recalcul
+   direct : `0,175690/59 = 2,9778e-3` contre `0,013228732/300 =
+   4,4096e-5`, ratio exact `67,53`) : le chiffre de l'agent est
+   confirmé au chiffre près par mon propre calcul, ma formulation
+   imprécise (« ~100× ») est corrigée ici.
+4. **Softmax couplé aux 25 autres référents et bruit float64 comme
+   explications alternatives : écartés par l'agent sur un simple
+   argument d'ordre de grandeur (masse des autres catégories 9-10
+   ordres sous l'amplitude de R ; `Δs3`/`ΔR` 12-14 ordres au-dessus
+   d'epsilon machine) — PAS revérifié indépendamment par moi (limite
+   assumée, faible risque vu l'écart d'ordres de grandeur avancé).**
+
+**Le point décisif du rapport, et le plus surprenant : une jacobienne
+2x2 du champ CONTINU (avant Adam) au point H6 donnerait deux valeurs
+propres RÉELLES de signe opposé (`+3,226e-6` / `-1,128e-4`, séparation
+×35) — un vrai col hyperbolique, pas un régime intrinsèquement non-1D.
+Le chaos observé serait donc un ARTEFACT DE DÉMARRAGE À FROID D'ADAM
+(m=0, v=0), pas une propriété de l'objectif lui-même.**
+
+**Vérifié indépendamment par une méthode DIFFÉRENTE de celle de
+l'agent** (`verifier_saddle_h6_jacobien_independant.py` — différences
+finies directement en espace `(s3,R)` via un vrai pas SGD brut sur
+TOUS les paramètres, pas la réduction analytique `ds/dz=s(1-s)` sur 2
+logits isolés utilisée par l'agent) : **CONFIRMÉ, avec des réserves
+honnêtes sur ma propre précision.** Aux réglages les plus fiables
+(`h=1e-3`, moins sensible à l'annulation flottante que `h=1e-4`) :
+valeur propre "instable" `+2,28e-6` à `+3,75e-6` selon `lr_probe`
+(encadre bien le `+3,226e-6` de l'agent), valeur propre "stable"
+`-2,17e-4` à `-2,17e-4` (même ordre de grandeur que `-1,128e-4`, environ
+2× plus grande en magnitude — écart réel mais pas alarmant vu la
+différence de méthode). **Mais à `h=1e-4` mes résultats deviennent
+franchement bruités** (la valeur propre "instable" oscille entre
+`-4,44e-6` et `+7,08e-5` selon `lr_probe`, changeant même de SIGNE) —
+noté explicitement plutôt que caché : ma méthode (différences finies
+sur un pas SGD brut de magnitude `lr_probe`, à travers ~1458
+paramètres) est plus bruitée que celle de l'agent, mais confirme le
+signal central (deux valeurs propres réelles, signes opposés, même
+ordre de grandeur) aux réglages où le bruit numérique est sous
+contrôle. **Structure de vrai col hyperbolique confirmée par deux
+méthodes indépendantes.**
+
+**Correction que l'agent a lui-même signalée après coup (bonne
+hygiène, à noter) : le rapport de séparation côté "cas retardé"
+(cité comme ×114) dépend d'une convention arbitraire** (comment les 10
+référents de fond sont gelés pendant la différentiation numérique — à
+leur valeur réellement entraînée à pas=550, ou reforcés à 25%
+uniforme à chaque échantillon) — l'autre convention donne ×255, avec
+même le signe de `J00` qui change. **Le chiffre côté H6 (×35,
+masse_fond=0, donc cette ambiguïté ne s'applique pas) reste solide ;
+le chiffre côté cas retardé ne doit PAS être cité avec la même
+confiance.**
+
+**Test PRÉCOMMIS par l'agent pour trancher entre "R lui-même est en
+cause" et "c'est l'état interne d'Adam" — REJOUÉ MOI-MÊME (pas
+seulement pris sur sa proposition), et DÉCISIF.**
+(`verifier_injection_moments_adam.py`) : aux coordonnées EXACTES de
+H6-direct (s3=0,994295, R=0,829390 — rien ne bouge), comparer un Adam
+qui démarre réellement à froid (m=0,v=0,t=0) contre un Adam dont
+l'état interne (m, v, t=20) est écrasé pour correspondre au gradient
+local réel AVANT le premier pas, sur 24 pas :
+
+```
+froid    : 5 changements de signe de Δs3, s3 : 0,994295 -> 0,992400 (non monotone)
+injecté  : 0 changement de signe,          s3 : 0,994295 -> 0,995523 (parfaitement monotone)
+```
+
+**RÉSULTAT NET, PAS AMBIGU : injecter un état Adam cohérent élimine
+TOUT le chaos, sans déplacer R ni s3 d'un iota au départ.** Ça tranche
+sans appel en faveur de la lecture de l'agent : **ce n'est PAS la
+position de R qui est le problème (elle reste identique dans les deux
+cas), c'est l'état interne d'Adam (m,v) qui a besoin de vrais pas pour
+se verrouiller sur la direction propre locale d'un col authentique.**
+Ma phrase « R n'est pas asservi à s3 » était une corrélation vraie
+(R bouge beaucoup dans la fenêtre chaotique) mais PAS la bonne causalité
+— confirmé en gardant R fixe et en ne changeant QUE l'état de
+l'optimiseur.
+
+**Ce que ça change concrètement pour la piste "identité du point
+selle" : la comparaison `a_H6direct` vs `a_delayed` n'était pas
+condamnée par une différence de régime dynamique — elle était
+condamnée par un ARTEFACT D'OPTIMISEUR CORRIGIBLE.** Le cas retardé
+arrive à son goulot après 400 pas réels (Adam déjà verrouillé
+gratuitement) ; H6-direct n'a jamais eu cette chance (placé à froid
+exactement aux coordonnées prédites). **Recette actionnable pour une
+session future, non encore essayée : reproduire l'injection de moments
+(comme `verifier_injection_moments_adam.py`) avec `t_injecte` plus
+grand et des moments dérivés d'un vrai passage lent (pas juste un seul
+gradient capturé), puis refaire le fit quadratique sur cette
+trajectoire "réchauffée" — devrait enfin donner un `a_H6direct` stable
+et comparable à `a_delayed`.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le chaos de H6-direct vient de la position de R (pas asservie), pas de l'état de l'optimiseur | 18/09 (moi) | **réfutée** le 18/09 — test précommis (injection de moments Adam à R et s3 INCHANGÉS) : chaos disparaît entièrement (5→0 changements de signe) |
+| l'état interne d'Adam (m,v) doit se verrouiller sur la direction propre locale d'un col authentique, indépendamment de la position de R | 18/09 (agent, testé par moi) | **confirmée** le 18/09 — test précommis rejoué moi-même, résultat net (0 changement de signe vs 5) |
+| au point H6, le champ continu (avant Adam) a une vraie structure de col hyperbolique (valeurs propres réelles, signes opposés) | 18/09 (agent) | **confirmée** le 18/09, par une méthode indépendante (différences finies SGD brutes en espace (s3,R), pas la réduction analytique de l'agent) — signal net à h=1e-3, bruité à h=1e-4 (noté, pas caché) |
+| la trajectoire miroir (côté gradué) est plus stable/moins chaotique que le côté effondré | 18/09 (moi, implicite) | **réfutée** le 18/09 par l'agent, confirmé par ma propre remesure — chaos comparable des deux côtés |
+| le rapport de séparation propre ×114 côté cas retardé est un chiffre aussi solide que le ×35 côté H6 | 18/09 (agent, puis corrigé par l'agent lui-même) | **réfutée** le 18/09 — convention-dépendant (×114 ou ×255 selon comment les référents de fond sont gelés), non revérifié par moi |
+
+Scripts (permanents) : `verifier_injection_moments_adam.py`,
+`verifier_saddle_h6_jacobien_independant.py`.
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
