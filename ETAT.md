@@ -155,13 +155,26 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    ensuite bloqué à `s3=0,5`, un attracteur DÉJÀ DOCUMENTÉ dans le
    docstring de `bissecter_delta_c` (pas une découverte de cette
    session) — dont l'interaction précise avec M reste non élucidée.
-   **Bon point d'arrêt : le décalage lr-dépendant est confirmé réel,
-   la géométrie du pli n'y est pour rien (confirmé 3 fois), le
-   mécanisme dynamique exact (pourquoi M=25 spécifiquement tombe dans
-   l'attracteur s3=0,5 documenté) reste ouvert pour une session
-   future, avec un protocole déjà esquissé** (tracer `s3(t)` dense
-   autour de `s3=0,5` pour M=0 et M=25). Détail complet : `CARNET.md`
-   fin de §7.65.
+
+   **MÉCANISME FINAL ÉLUCIDÉ le 18/09/2026 (Théo : « on continue, je
+   n'aime pas rester sans réponse »).** Trace dense `s3(t)` pour M=0
+   et M=25 à leur propre `delta_c` : les deux atteignent la région du
+   pli vite (`t≈300-500`) puis divergent — M=0 s'y fixe et y reste
+   (`s3=0,99643232` jusqu'à t=40000) ; M=25 la traverse puis tombe à
+   `s3=0,5` et s'y fixe. **`s3=0,5` n'est PAS un attracteur séparé
+   mystérieux — vérifié : `x_br(r4)` colle exactement à `s3` mesuré à
+   chaque instant, et `s3=0,5=x_br(R=1)` exactement.** Le mécanisme
+   complet : **pour M=25, le récepteur file jusqu'à `R=1` (saturation
+   totale, committement au challenger) au lieu de se stabiliser sur la
+   valeur intermédiaire de la branche graduée stable comme le fait
+   M=0.** Cohérent avec la construction du jouet (M est strictement
+   côté récepteur) : ce n'est pas la fonction de branche de l'émetteur
+   ni la géométrie du pli qui changent avec M — c'est LA STABILITÉ DE
+   LA BRANCHE GRADUÉE côté récepteur, qui se déstabilise vers une
+   saturation complète plutôt que de rester sur son équilibre
+   intermédiaire. **Fil de la piste 3 (masse de fond) refermé avec un
+   mécanisme complet, pas juste un constat.** Détail complet :
+   `CARNET.md` fin de §7.65.
 
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
