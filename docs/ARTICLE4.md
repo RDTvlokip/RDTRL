@@ -1,4 +1,4 @@
-# 🧵 Forty-two more rounds with the same reader. He found a rule I broke ten times before naming it, and a collision that wasn't one 🇫🇷
+# 🧵 Fifty-two rounds with the same reader, then a saddle I chased alone. He found a rule I broke ten times before naming it; I found a col that took six tries to even locate 🇫🇷
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21726216.svg)](https://doi.org/10.5281/zenodo.21726216)
 
@@ -8,13 +8,15 @@
 
 [Article 1](https://huggingface.co/blog/RDTvlokip/teaching-a-network-to-write-with-reward-only) trained networks from a reward signal alone. [Article 2](https://huggingface.co/blog/RDTvlokip/i-published-my-rl-experiments) was a reader running the code and four of my numbers not surviving. [Article 3](https://huggingface.co/blog/RDTvlokip/i-made-my-world-small-enough-to-compute-everything) was the same reader's fifth round: a closed-form no-go theorem, a phase diagram, a literature review that found the whole thing published in 2021.
 
-This is rounds six through forty-seven. Same reader, `dipankarsarkar` ([ORCID 0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)), same project, about three weeks. Two eras, almost nothing in common except who kept finding the mistakes.
+This is rounds six through fifty-two, plus a stretch after round fifty-two with no round at all. Same reader, `dipankarsarkar` ([ORCID 0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)), same project. Three eras: two with him in the room, one without.
 
 **The first era** (rounds 6–24) is a fight over one small table: how many of a 27-referent game's runs land on a "collision," and how that count relates to a hand-searched worst case. It produced eleven numbered rules — most of them because something I had already published broke under a check that cost less than a minute — and two separate times where the number under a dozen rounds of dispute had already been computed and saved, correctly, on the first day.
 
 **The second era** (rounds 25–47) is what happens once you stop trusting the aggregate table and look inside a single collision. "Collision" turned out to be three different things wearing one name: a genuine tie protected by a symmetry argument, a referent that never engaged with anything, and — the one this whole era kept circling back to — an Adam optimizer floor that froze a receiver mid-transfer and made a real transfer look like a permanent stall.
 
-Read start to finish, this is a long argument for one habit: **before you contrast a statistic, check what it's a function of — and check again when the reconstruction it was measured on changes underneath you.**
+**The third era** (rounds 48–52, then two days with no round) closes a fixed-point question on a second, unrelated collision, derives a closed form for the fold that separates a graceful capture from a collapse, and then — once the reader went quiet — keeps going alone: a real saddle found hiding under an optimizer that had simply never been given time to warm up, proven by a causal test rather than argued from a hunch, and an exact identity question it still couldn't close after six honestly diagnosed attempts.
+
+Read start to finish, this is a long argument for one habit: **before you contrast a statistic, check what it's a function of — and check again when the reconstruction it was measured on changes underneath you.** The third era adds a corollary: **that habit doesn't need someone else in the room to keep applying it, including to yourself.**
 
 Everything is reproducible: [RDTvlokip/RDTRL](https://github.com/RDTvlokip/RDTRL), MIT, archived at [10.5281/zenodo.21726216](https://doi.org/10.5281/zenodo.21726216).
 
@@ -683,6 +685,57 @@ Somewhere in this stretch, the exact seed recipe behind "wall one" — everythin
 
 ---
 
+## 🕳️ Part three: a wall that wasn't fighting anything, and a col that took six tries to even locate
+
+Rounds forty-eight through fifty-two, then a stretch with no round at all — `dipankarsarkar` went quiet for two days, and rather than wait, I kept pulling the same thread alone, sometimes running a second copy of his own reading style against my own results before trusting them. Everything in this part that isn't credited to a round number is that: not a new critique, my own suspicion applied to my own numbers, because the rule that produced this whole article — check what a statistic is a function of — doesn't stop applying just because the person who taught it isn't in the room.
+
+### Forty-eighth round — is 0.5 a posterior, or a fixed point?
+
+A different referents-3/4 tie surfaced (message 10, seed 77777, three pairs skipped, checkpoint 10,000, referent 4 pushed +30) — same 0.5 split as the wall/tie taxonomy above, different route in. His question: is that 0.5 a Bayesian posterior over which referent a collided message "really" names, or a genuine dynamical fixed point that doesn't care how many times each referent was seen? The test he proposed breaks the prior instead of pushing the perturbation — train with referent 4 shown twice as often as referent 3, everything else equal, and watch whether `R[10,4]` migrates toward 2/3.
+
+It didn't. `R[10,4]` and `R[10,3]` both sat within a hair of 0.5, entropy on message 10 landed at 0.693147 — `ln(2)` to six figures, meaning the receiver's mass really was split between exactly two referents and nothing else. **A fixed point, not a posterior** — the count asymmetry that would move a Bayesian estimate left this one exactly where it started.
+
+### Forty-ninth round — where does the losing referent's mass actually go?
+
+If referent 3 loses this fight outright (pushed past the tie, deep into delta territory), does it fall back to 1/2 — ceding the message cleanly to referent 4 — or does its mass scatter somewhere else entirely? It collapses to **1/27**, not 1/2. H13, formed and left open in that round rather than argued from the armchair: the twenty-five referents not even in the collision are the destination for the losing side's mass, not referent 4. Tested properly, not just asserted, by building the two-referent toy *without* the other twenty-five rows and checking whether the same threshold still exists there — it doesn't, on its own, which is the ablation that actually earns H13 its name rather than leaving it as a remark.
+
+### Fiftieth round — a coincidence in the drift, chased instead of dismissed as noise
+
+A residual tracking the emitter's own deficit had been drifting at a coefficient around 8–10 that I'd waved off as "two significant figures, not a mechanism." `dipankarsarkar` asked why it tracked the deficit at all if the regularizer scaling I'd already ruled out wasn't the cause. It shouldn't have taken his asking. Chasing it properly required a mechanism test I hadn't run: do the emitter's two gradients on the contested referents ever cross — a literal "race" where one term briefly overtakes the other and explains the drift's sign flip? Checked on the emitter side (`grad[4,10]` constant and negligible everywhere, the challenger already saturated; `grad3−grad4` never crosses zero) and, pushed further than he'd asked, on the receiver side too (`grad_r3−grad_r4`, same verdict, smooth, no crossing). **H-course is dead, twice, by two independently constructed tests** — whatever the drift is, it isn't a race between competing gradient terms.
+
+### Fifty-first round — a closed form for the fold, and a number I had to stop taking on faith
+
+The wall/tie/fixed-point picture finally got a form: the referents-3/4 separatrix is a genuine saddle-node bifurcation in a coupled sender-receiver system, reducible to two equations —
+
+```
+d3 / (26(1 − d3)) = exp(−(1 − δ)(1 − R) / β)
+logit(R) · β = 2δ + (1 − δ)·d3
+```
+
+— with a fold at `δ_c = 0.013437210`, independently confirmed by four separate methods across this stretch: root-fusion bisection on the closed form, direct algebraic intersection of the two curves, a basin-probe on the actual game, and — much later — an empirical bisection on a *second*, unrelated referent pair, landing on the same threshold to five decimals (below).
+
+He also published a slowdown coefficient, `0.2212`, with three decimal points of confidence and no derivation attached. The instruction I'd been given after the 0.2212-year: never take his numbers on faith just because they arrive with a lot of digits. Refitting it on eleven algebraic points instead of the three he'd published showed `0.2212` really is the gap between the fold's stable and unstable roots (`d3_unstable − d3_stable`), not a residual against the soft law I'd first tried — but a self-invoked adversarial pass (the first of several agent-simulated challenges in this stretch, see below) found my own refit had stopped at a float64 precision floor, not the real asymptote. Retraced at `eps=1.3437×10⁻⁸` in fifty-digit precision, matched independently by a local Lyapunov–Schmidt expansion at the fold: **0.2212604**, seven significant figures of agreement between a brute-force retrace and a closed-form derivation that hadn't existed until that round.
+
+### Fifty-second round — the rate that wouldn't hold still
+
+The reduction above still needed `k`, the relative speed of the receiver's response to the sender's. It isn't a constant. Measured across `R_init = 0.50` to `0.75`, `k` ranges `1.42` to `2.45` — a factor of 1.7 across a range that a clean two-timescale reduction should have made irrelevant. Neither `beta1` nor `beta2` (Adam's own moment decay rates) move it enough to matter (`k` shifts by 0.02 against a total spread of ~1.0 when `beta2` sweeps `0.99→0.9999`) — whatever sets `k`'s value isn't the optimizer's own hyperparameters. Left open at the end of the round: the answer wasn't in the lever anyone had already pulled.
+
+### What I found alone, chasing the same rule without being told to
+
+Two days with no round. Rather than wait, or lower the bar for what counted as worth checking, I kept applying the one instruction that had produced every correction in this article — verify before citing, including my own numbers — sometimes literally running a second, adversarial pass against my own conclusions before writing them down, because the discipline that makes an external reader valuable doesn't require the reader to be present.
+
+**The 0.2212 coefficient's own correction had a hidden gap.** My two-term drift model (`gap = C₁√ε + C₂ε`) used a basis that's analytically wrong — the `ε¹` term is structurally zero, and the true next term is `ε^(3/2)`. Derived by hand (a Lyapunov–Schmidt expansion one order past the one that gave `0.2212604`): `D = 8.0021212`, matching an independent numerical extrapolation (`8.0021`) to five significant figures — then shown, by sweeping `β` and `N` rather than trusting one point, to be *not* a structural constant at all: it drifts continuously with both (4.86 to 8.57 over the `β` range tested, 8.00 to 8.59 over `N`).
+
+**The fold isn't specific to one pair of referents.** A second, independent tie — referents 23/25, message 13, an entirely different seed — gave `δ_c = 0.0134370` against `0.0134372` on the original pair: a 0.0016% gap, indistinguishable from the bisection's own noise floor. The threshold is a property of the objective (`N=27`, `β=0.02`), not of which two rows happen to collide.
+
+**Background mass moves the threshold, with a floor and a ceiling, not a slope.** A toy with `M` variable-weight background categories showed the shift depends on total background *mass*, not on `M` itself (`M=8` at 8% mass and `M=25` at 8% mass give the identical `δ_c`), and that mass's effect has a **sharp, binary threshold** — located between 17.7422% and 17.7539% across eighteen bisection points, never a value in between — past which the shift saturates rather than growing (`δ_c` shift is identical at 25% and 50% background mass).
+
+**And then the same perturbation, run on the real 27-referent game instead of the toy, inverted a basin outright.** Pinning 25% background mass onto ten otherwise-idle referents and re-running the pin-and-falsify protocol from round fifty-two: at `R_init=0.60`, the side of the threshold that used to collapse now converges cleanly, and the side that used to converge now collapses — a full reversal, located to five decimal places (`0.9994521` to `0.9994526`), absent entirely at `R_init=0.75`. A self-invoked adversarial pass killed the first mechanism I proposed for it (a crossing between the sender's two gradients, tested and refuted twice, exactly as in round fifty) and forced the actual one: tracing the full 40,000-step trajectory of both near-threshold configurations showed them running almost identical for ~600 steps, then diverging at `pas=600.283` in a sign flip on the sender's own gradient — a textbook saddle-node ghost (`dx/dt = μ + ax²`, passage time `τ = C/√μ`), confirmed by a passage-time prefactor consistent to 6% between the two configurations (`C = 0.920` and `0.977`).
+
+**Whether that ghost is the *same* saddle as the one closed-formed in round fifty-one, or a distinct neighbor, took six separate failed attempts to even approach — each one diagnosed, not discarded.** Comparing the two points' local quadratic coefficient directly, rather than assuming the normal form's curvature was 1: a single trajectory's fit was unstable across sub-windows (×5.6 spread); a single fresh Adam step turned out to always carry the optimizer's full bias-corrected step size regardless of the true gradient underneath it, a genuine and previously undocumented measurement trap; pooling trajectories from both sides of the threshold produced a mathematically impossible fixed point (`x0 > 1`) by mixing two incompatible global outcomes into one local fit. Deflating the raw signal by Adam's own bias-correction envelope — computed in closed form and checked against the optimizer's actual internal state to five significant figures — didn't fix it either, and a second self-invoked adversarial pass supplied the piece that finally explained why: an independently-computed 2×2 Jacobian at the closed-form saddle has two *real* eigenvalues of opposite sign (`+3.226×10⁻⁶`, `−1.128×10⁻⁴`, a factor of 35 apart) — a genuine hyperbolic saddle in the underlying continuous dynamics, confirmed a second time by a differently-built finite-difference check. **The chaos wasn't the objective's geometry at all — it was Adam started stone cold (zero moment estimates) on a real saddle.** A precommitted causal test settled it outright: injecting a plausible warmed optimizer state at the *exact* starting coordinates, moving neither the sender's nor the receiver's value by anything, took the trajectory's sign flips from five to zero. Three further attempts to turn that causal proof into an actual measurement — a longer cold-start window (loses the local region before the noise clears), fitting directly on the injected trajectory (the fitted curvature depends continuously on how much state is injected, never settling), a real multi-step warm-up on a pinned point (worse than either — the optimizer learns "this gradient never changes" and takes maximum-size steps once released) — all failed for three distinct, understood reasons. **The identity question is still open.** What's no longer open is why it's hard: the real saddle exists, cold-start Adam is a genuine confound on measuring it, and closing the gap needs an actual approach trajectory with the two hundred-plus steps of runway the toy's own delayed case gets for free — not one more trick played on an optimizer started at rest.
+
+---
+
 ## 🪦 A sample of what died, chosen for what it teaches
 
 | what I believed | what killed it |
@@ -706,6 +759,12 @@ Somewhere in this stretch, the exact seed recipe behind "wall one" — everythin
 | sub-optimal attractors can't be escaped by any local method | REINFORCE walks out of the same critical point 92% of the time that traps exact ascent 95% of the time |
 | a leave-one-out baseline can only help by conditioning on a selection event | it raises variance at every point tested, 2–20%, and zeroes out 39–73% of batches outright |
 | a seed determines a published number | the same seed, same budget, reversed loop order, moves a published bound by a factor of 2.17 |
+| a 0.5 split under a count-asymmetric prior is a Bayesian posterior | training referent 4 twice as often leaves R[10,4] at 0.5 and entropy at exactly ln(2) |
+| a losing referent's mass falls back to the referent it lost to | it collapses to 1/27 — the twenty-five idle referents are the destination, confirmed by removing them and losing the effect |
+| a drift I can't explain at two significant figures isn't worth a mechanism | it tracked a real coupled-system signature the whole time — a receiver flip, not noise |
+| an unexplained coefficient's own correction is complete once it matches a second method | the correction itself had a wrong basis (a zero term treated as present), caught on a second pass |
+| chaos in a saddle-adjacent fit means the objective's local geometry is genuinely irregular | a real hyperbolic saddle sits there; the chaos is Adam started at zero moment estimates on it |
+| a single fresh optimizer step measures the true local gradient | it always carries close to the full bias-corrected step size, regardless of what the gradient underneath actually is |
 
 ---
 
@@ -721,22 +780,25 @@ Somewhere in this stretch, the exact seed recipe behind "wall one" — everythin
 - **A reconstruction not saved to a permanent file is not reproducible, no matter how carefully it was run once.** Grep the session's own history before declaring a result unrecoverable; save it the moment it's found.
 - **A seed names a stream, not a state.** Threading one generator through several published computations makes the *order* those computations run in a hidden argument — reversing it moved a published bound by a factor of 2.17 with nothing else changed.
 - **A critical point is not a strong attractor for a noisy method.** The gradient can genuinely fall to 10⁻¹¹ at a sub-optimal point and still not hold a stochastic estimator there — "no local method escapes this" and "the exact method doesn't escape this" are different claims, and only testing both separates them.
+- **Adam started at rest is a confound, not a measurement.** A fresh optimizer's zeroed moment estimates carry no information about the local landscape yet mimic its own bias-correction curve closely enough to be mistaken for a signal — proven by a causal test that moved the optimizer's internal state alone and eliminated the chaos without moving either coordinate.
+- **A discipline for using an outside reader is a discipline you can run on yourself.** Two days without a round didn't lower the bar — the same "verify before citing" instruction that produced this article's corrections caught a wrong basis in my own derivation and a float64 precision floor mistaken for an asymptote, neither one flagged by anyone but a second, adversarial pass at my own conclusions.
 
 ---
 
 ## ⚠️ Limits
 
-- **One toy, two eras, one reader.** Every correction here came from a single outside collaborator across three weeks; this is a record of one adversarial-in-the-best-sense collaboration, not a general audit process.
+- **One toy, two eras, one reader — plus a third stretch with no reader at all.** Every correction through round fifty-two came from a single outside collaborator; the material after that came from continuing the same discipline alone, including self-invoked adversarial passes against my own results — a real substitute for keeping the habit alive, not a real substitute for an independent human reader, and every number produced that way is flagged as such above.
 - **The Adam-epsilon mechanism is confirmed on two walls out of three, in one direction only.** Walls two and three transfer at the predicted window; neither has ever produced a confirmed clean capture at any perturbation tried. Whether a wall *can* ever capture cleanly, versus only tie or freeze, is unresolved.
 - **The grip law is refuted as a cross-defender law, not replaced.** No candidate tested so far — probability grip, raw logit gap — survives a second defender.
 - **The residual's transient mechanism is described, not explained.** What pins it at convergence and what drives its motion mid-transfer are measurements, not derivations from the update rule.
 - **Every number here runs through Adam.** `monter()` builds a `torch.optim.Adam` in every call across this entire investigation; nothing here is a statement about the exact objective's landscape independent of the optimizer that walks it, except where explicitly checked against the raw gradient.
+- **The saddle-identity question closes this article open.** A real hyperbolic saddle is confirmed, and cold-start Adam is confirmed as a genuine confound on measuring it — but whether the ghost encountered under background mass is the *same* saddle as the one closed-formed at δ_c, rather than a close neighbor, is still unresolved after six distinct, diagnosed attempts.
 
 ---
 
 ## 🗂️ Summary
 
-Nineteen rounds went into making one small statistical table honest, and honesty kept moving the goalposts: a threshold measuring a supremum it could never estimate, a "factor" that was the training objective in disguise, eleven rules earned one failure at a time, a seed that turned out to name a stream rather than a state (reversing a loop's order moved a published bound by 2.17×), and two separate instances where the number under a dozen rounds of dispute had already been computed and saved, correctly, before the dispute began. Along the way, the design's own headline premise — 27! tied bijections, 1,296 compositional — turned out to describe a population the dynamics reaches 5% of the time or less, and the REINFORCE experiment the whole project was named for had never actually been run: exact ascent traps at a genuine critical point 95% of the time, and the sampled estimator of the identical gradient walks out of it 92% of the time. Twenty-three more rounds went into a single 27-referent game, discovering that "collision" hides three different things — a real tie protected by symmetry, a wall that was never fighting anything, and an Adam optimizer floor dressed as a permanent stall — then chasing that floor through a latch, a classifier bug, a false non-generalization, a law that fit one defender and refused a second, and a residual whose pinned value at convergence turned out to be the tail of a transient moving nine orders of magnitude on the way there. Neither era ends on a clean theorem. Both end on a sharper question than the one they started with.
+Nineteen rounds went into making one small statistical table honest, and honesty kept moving the goalposts: a threshold measuring a supremum it could never estimate, a "factor" that was the training objective in disguise, eleven rules earned one failure at a time, a seed that turned out to name a stream rather than a state (reversing a loop's order moved a published bound by 2.17×), and two separate instances where the number under a dozen rounds of dispute had already been computed and saved, correctly, before the dispute began. Along the way, the design's own headline premise — 27! tied bijections, 1,296 compositional — turned out to describe a population the dynamics reaches 5% of the time or less, and the REINFORCE experiment the whole project was named for had never actually been run: exact ascent traps at a genuine critical point 95% of the time, and the sampled estimator of the identical gradient walks out of it 92% of the time. Twenty-three more rounds went into a single 27-referent game, discovering that "collision" hides three different things — a real tie protected by symmetry, a wall that was never fighting anything, and an Adam optimizer floor dressed as a permanent stall — then chasing that floor through a latch, a classifier bug, a false non-generalization, a law that fit one defender and refused a second, and a residual whose pinned value at convergence turned out to be the tail of a transient moving nine orders of magnitude on the way there. Five more rounds, on a different collision entirely, closed a fixed-point-versus-posterior question, found a losing referent's mass scattering to twenty-five idle rows rather than its rival, and closed a fold in closed form — before the reader went quiet and the same discipline, applied alone, found a real saddle hiding under a cold-started optimizer's own noise, proved the noise was the optimizer and not the landscape, and still couldn't quite catch the saddle's exact identity after six honestly diagnosed tries. Neither era ends on a clean theorem. None of the three end on a settled question.
 
 ---
 
@@ -754,13 +816,21 @@ Checking a switching criterion on sender confidence and argmax alone, without th
 **Did the reader ever concede a point?**
 Repeatedly — his own quantum-quantization claim, his own AST discriminator's edge case, his own "race" reading of the Adam-epsilon mechanism — and at least once, in article 2, faster than I could deliver the numbers he'd asked for.
 
+**What does "self-invoked adversarial pass" actually mean, mechanically?**
+A second, independent attempt to break a result I'd just produced — sometimes literally a separate process instructed to argue against my conclusion before I trusted it — followed by verifying every number it raised myself, the same standard rounds six through fifty-two applied to his numbers. It caught a wrong basis in my own math and a float64 floor mistaken for a true value; it also produced at least one claim (a rate comparison read as "×17") that turned out to be my own misreading of the *first* adversarial pass, caught by a second one. It is not a substitute for an outside reader. It is what kept the same standard from lapsing while one wasn't available.
+
+**Is the saddle the same one as the closed-form fold in round fifty-one, or isn't it?**
+Genuinely unresolved. What's resolved is that the two most likely reasons to think it *wasn't* — an unstable local-curvature fit, and a chaotic sign pattern near the starting point — are both artifacts of measuring a real saddle with an optimizer that hadn't warmed up, not evidence of a different saddle. Removing a wrong reason to doubt something isn't the same as confirming it.
+
 ---
 
 ## 🙏 Credit
 
-Every correction in this article, across forty-two rounds, is **`dipankarsarkar`**'s ([ORCID 0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)) — the R-is-the-objective catch, all eleven numbered rules, the reservoir-sampler bug, the closed-form supremum question, the REINFORCE-was-never-run catch, the tie/wall separation, the Adam-epsilon mechanism's first identification, the latch-versus-race schedule test, the wrong-window correction that turned a false negative into three-for-three, the grip calibration protocol, and the residual-under-capture question that unwound a round of my own overreach.
+Every correction through round fifty-two is **`dipankarsarkar`**'s ([ORCID 0000-0001-5431-6367](https://orcid.org/0000-0001-5431-6367)) — the R-is-the-objective catch, all eleven numbered rules, the reservoir-sampler bug, the closed-form supremum question, the REINFORCE-was-never-run catch, the tie/wall separation, the Adam-epsilon mechanism's first identification, the latch-versus-race schedule test, the wrong-window correction that turned a false negative into three-for-three, the grip calibration protocol, the residual-under-capture question that unwound a round of my own overreach, the prior-versus-fixed-point test on the second collision, and the closed form for the fold itself.
 
-This is his sixth through forty-seventh round on this project.
+This is his sixth through fifty-second round on this project.
+
+Everything after round fifty-two that isn't credited to a round number was found without him in the room — including a wrong basis in my own drift correction, and the mechanism separating a real saddle from a cold-started optimizer's noise — using self-invoked adversarial passes against my own conclusions in place of his, each one verified independently before being trusted rather than taken on the same faith I'd learned not to extend to his numbers either.
 
 ---
 
