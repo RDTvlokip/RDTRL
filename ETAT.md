@@ -171,16 +171,29 @@ tout re-raconter.*
      analogie.** Risque d'artefact d'optimiseur (état Adam résiduel
      via `fixer_s3`) **définitivement écarté par lecture de code**
      (l'optimiseur est toujours reconstruit neuf APRÈS les `fixer_*`).
-   - **Ce qui reste ouvert : l'IDENTITÉ du point selle** (le même que
-     H6 d'origine, juste rencontré plus tard, ou un point selle
-     DIFFÉRENT créé par la masse résiduelle encore présente à
-     pas=600 — `5e-4`, soit 100× l'écart initial suivi, pas assez
-     petite pour être écartée sans test). Protocole précis proposé par
-     l'agent pour trancher : superposition temporelle avec la
-     trajectoire H6 d'origine (tour 51), continuation paramétrique sur
-     la fraction de masse (0% à 30%), suivi de la DIFFÉRENTIELLE de
-     masse de fond entre les deux configs (pas juste sa valeur
-     absolue) — aucun des trois fait cette session.
+   - **L'IDENTITÉ du point selle (même H6, ou différent ?) : creusée à
+     fond, TOUJOURS OUVERTE — avec une leçon méthodologique importante
+     en prime.** Protocole 3 (différentielle de masse) exécuté :
+     `diff_s3` toujours 2-3 ordres de grandeur plus grand que
+     `diff_masse_fond` pendant la divergence — penche pour « même
+     famille, pas un canal causal séparé ». Protocole 1 (superposition
+     temporelle avec H6 d'origine) exécuté : structure qualitative
+     identique (fantôme à deux phases), mais taux local apparemment
+     `×6-17` plus rapide pour H6-direct — **puis un agent a montré que
+     ce `×17` était en grande partie un ARTEFACT DE DÉFINITION de `τ`
+     (600 pas écoulés vs 210 pas réellement dans la fenêtre de mesure)
+     — corrigé à `×5,94`, cohérent à 4,3% près avec un calcul
+     indépendant (`×6,20`). Vérifié moi-même, confirmé au chiffre
+     près.** **Conclusion honnête : NI confirmé NI réfuté** — j'avais
+     conclu trop vite à « point selle différent » sur un chiffre qui
+     s'est effondré à la vérification ; la parenté structurelle
+     (fantôme de nœud-col) est solide, mais l'identité exacte demande
+     un travail plus rigoureux (ajuster le coefficient quadratique `a`
+     directement sur les données, pas le supposer à 1 ; la distance
+     statique `mu_H6=5e-6` s'est révélée être une coordonnée
+     probablement incorrecte, `×2058` d'écart avec le `mu` implicite du
+     taux mesuré). Protocole précis pour la reprise (5 étapes,
+     détaillées dans `CARNET.md`) — aucune faite encore.
    - **Réponse à la question initiale (« k se déplace-t-il comme
      prévu ? ») : ni oui ni non simplement — le résultat est
      QUALITATIF (réorganisation de la structure de bassin), pas une
