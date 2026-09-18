@@ -283,13 +283,17 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    les chiffres et le cycle QUAND/COMMENT/POURQUOI complet :
    `CARNET.md`, fin de §7.65 (section « Piste 3c »).
 
-   **3d. Piste 4, rappelée ici explicitement (Théo, 18/09/2026 :
-   « rajoute la piste 4 ») — `docs/ARTICLE4.md` n'intègre toujours pas
-   les tours 48-52.** Complètement intouchée cette session. Gros
-   morceau de RÉDACTION (synthétiser ce qui est déjà dans `CARNET.md`
-   §7.60-§7.65 en prose d'article), pas d'expérimentation — un
-   registre différent de 3a/3b/3c. Détail : voir l'entrée « 4. » plus
-   bas dans ce même fichier pour la description complète.
+   **3d. Piste 4 — RÉSOLUE le 18/09/2026.** `docs/ARTICLE4.md` intègre
+   maintenant les tours 48-52 (test point-fixe-vs-posterior, mécanisme
+   H13 du mur, H-course réfutée deux fois, forme fermée du pli et
+   `delta_c`, `k` non constant) ET le travail auto-dirigé après le
+   tour 52 (0,2212604 + coefficient `D`, universalité de `delta_c`,
+   renversement de bassin et fantôme de nœud-col, six échecs
+   diagnostiqués sur le coefficient `a`) — nouvelle « Part three »,
+   titre/intro/crédit/Summary/Q&A/tableau "what died" tous mis à jour
+   pour refléter la troisième ère (avec lecteur, tours 6-52, puis sans
+   lecteur, auto-vérification assumée et documentée comme telle).
+   Poussé sur main (commit `6201bb4`).
 2bis. **Piste 2 : soumise à un agent-dipankar après coup (oubli initial,
    repéré par Théo, corrigé).** Deux corrections mineures confirmées
    (`0,0016%` pas `0,0015%` ; `delta_c(3/4)` tombe à 71% du bracket, pas
@@ -312,8 +316,9 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    indépendamment (juste un mauvais point de départ de son côté).
    Scripts : `verifier_puiseux_ordre_suivant.py`,
    `verifier_d_structurel.py`, `verifier_c0_vs_beta.py`.
-4. **`docs/ARTICLE4.md` n'intègre toujours pas les tours 48-52** — gros
-   morceau d'écriture, à faire si ce fil se stabilise assez.
+4. **RÉSOLU le 18/09/2026.** `docs/ARTICLE4.md` intègre maintenant les
+   tours 48-52 et le travail auto-dirigé qui a suivi (voir piste 3d
+   ci-dessus pour le détail).
 5. Si dipankarsarkar répond entre-temps, reprendre le flux normal (sa
    critique → `REPONSE_ORDRE54.md`, tout ce qu'on a trouvé nous-mêmes
    reste dans `REPONSE_ORDRE53.md`/§7.65 jusqu'à ce moment-là).
@@ -438,8 +443,7 @@ Le fil H15/excursions/optimiseur hybride est **clos** (17/09/2026).
    (N=27, beta=0,02), partagée par toute collision.** Attendu a
    posteriori (la forme fermée de H7 ne mentionne jamais l'identité des
    référents), mais fallait le vérifier plutôt que le supposer.
-4. **`docs/ARTICLE4.md` n'intègre pas les tours 48-52** — à faire si/quand
-   ce fil se stabilise assez pour être résumé.
+4. **RÉSOLU le 18/09/2026** — voir piste 3d/4 plus haut dans ce fichier.
 5. Si dipankarsarkar répond entre-temps : sa critique (une vraie, pas
    simulée) devient un NOUVEAU fichier `REPONSE_ORDRE54.md` — mais tout
    ce qu'on a trouvé nous-mêmes en attendant reste dans `REPONSE_ORDRE53.md`
