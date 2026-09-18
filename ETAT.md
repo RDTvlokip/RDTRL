@@ -1,9 +1,10 @@
 # État du projet RDTRL — où on en est
 
-*Dernière mise à jour : 17/09/2026 (pistes 1 et 2 résolues dans cette
-session, voir ci-dessous). Ce fichier n'est pas un article, c'est un
-pense-bête pour reprendre le travail dans une nouvelle conversation sans
-tout re-raconter.*
+*Dernière mise à jour : 18/09/2026 (mécanisme du chaos H6-direct
+tranché : artefact de démarrage à froid d'Adam sur un vrai col
+hyperbolique, pas une différence de géométrie — voir piste 3c).
+Ce fichier n'est pas un article, c'est un pense-bête pour reprendre le
+travail dans une nouvelle conversation sans tout re-raconter.*
 
 ## Pistes concrètes pour la prochaine conversation, par ordre de priorité probable
 
@@ -209,12 +210,46 @@ tout re-raconter.*
      s'effondrent viole la forme normale locale.** Piste non essayée :
      fit sur UN SEUL côté du seuil, en sautant les premiers pas
      biaisés, avec un point de départ encore plus proche du seuil.
-   - **Conclusion à ce stade : NI confirmé NI réfuté, et cette
-     question précise (identité exacte du point selle) résiste à
-     plusieurs approches d'affinement — un bon point d'arrêt pour cette
-     piste précise, avec 3 pièges méthodologiques bien documentés pour
-     ne pas les retraverser.** Protocole restant (étapes 1, 4, 5,
-     détaillées dans `CARNET.md`) — aucune faite.
+   - **MÉCANISME DU CHAOS ENFIN TRANCHÉ le 18/09/2026 (étapes 4/5 du
+     protocole exécutées, puis un agent-dipankar a affiné et un test
+     précommis rejoué moi-même a tranché net).** Étape 5 (biais Adam
+     seul) réfutée comme cause principale. Étape 4 a trouvé que `R`
+     dérive énormément (×67,5/pas, chiffre exact, pas juste "~100×")
+     dans la fenêtre H6-direct — première lecture (« R n'est pas
+     asservi ») CORRECTE EN CORRÉLATION mais PAS EN CAUSALITÉ : un
+     agent a montré, via une jacobienne indépendante au point H6, que
+     le champ continu (avant Adam) a une vraie structure de col
+     hyperbolique (valeurs propres réelles opposées, `+3,2e-6`/
+     `-1,1e-4`, séparation ×35) — **confirmé par ma propre méthode
+     indépendante** (différences finies SGD brutes en espace `(s3,R)`,
+     méthodologie différente de celle de l'agent, signal net aux
+     réglages fiables). Le chaos vient donc d'un **artefact de
+     démarrage à froid de l'optimiseur** (m=0,v=0), pas d'un régime
+     intrinsèquement non-1D. **Tranché par un test PRÉCOMMIS que j'ai
+     rejoué moi-même** (`verifier_injection_moments_adam.py`) : aux
+     coordonnées EXACTES de H6-direct, injecter un état Adam interne
+     cohérent (sans bouger `s3` ni `R` d'un iota) fait passer les
+     changements de signe de `Δs3` de **5 (froid) à 0 (moments
+     injectés)** — net, décisif, pas ambigu. Corrections en cours de
+     route notées honnêtement : ma lecture « spécifique à
+     l'effondrement » réfutée (la trajectoire miroir est tout aussi
+     chaotique) ; le ratio `|ΔR/Δs3|` seul n'est pas un bon diagnostic
+     (explose même dans des régimes par ailleurs lisses) — le nombre
+     de changements de signe de `Δs3` est la métrique robuste ; le
+     chiffre annexe de l'agent (séparation ×114 côté cas retardé)
+     lui-même signalé par l'agent comme convention-dépendant (×114 ou
+     ×255 selon comment les référents de fond sont gelés), pas cité
+     avec la même confiance que le ×35 côté H6.
+   - **Conséquence actionnable pour l'identité du point selle : la
+     comparaison `a_H6direct` vs `a_delayed` n'était pas condamnée par
+     une différence de géométrie — elle était condamnée par un
+     artefact d'optimiseur CORRIGIBLE.** Recette non encore essayée
+     pour une session future : réchauffer l'état Adam de H6-direct
+     (comme le test d'injection, mais avec un vrai passage lent au
+     lieu d'un seul gradient capturé) puis refaire le fit quadratique
+     — devrait enfin donner un `a_H6direct` stable et comparable.
+     Protocole restant (étapes 1, 4 refaites à grain fin sur le cas
+     retardé) — pas encore fait.
    - **Réponse à la question initiale (« k se déplace-t-il comme
      prévu ? ») : ni oui ni non simplement — le résultat est
      QUALITATIF (réorganisation de la structure de bassin), pas une
