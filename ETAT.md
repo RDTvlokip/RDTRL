@@ -256,11 +256,22 @@ travail dans une nouvelle conversation sans tout re-raconter.*
      temps qu'il faut pour "nettoyer" l'optimiseur est du même ordre
      que le temps que la trajectoire met à quitter le voisinage du
      col — contrairement au cas retardé qui a ~400 pas de marge avant
-     son propre goulot.** 4 nouvelles hypothèses journalisées (dont la
-     plus prometteuse : un VRAI réchauffement multi-pas, pas une
-     injection à un seul gradient dupliqué, pas encore essayé).
-     Protocole restant (étapes 1, 4 refaites à grain fin sur le cas
-     retardé) — pas encore fait.
+     son propre goulot.**
+   - **Essai 3, PISTE FERMÉE le 18/09/2026 (Théo : « on continue une
+     dernière fois ») — la piste "la plus prometteuse" (vrai
+     réchauffement multi-pas sur gradients réels, pas une injection à
+     un seul gradient) a été essayée et a ÉCHOUÉ, pire que les deux
+     précédentes sur son propre critère.** Mécanisme compris : réchauffer
+     sur un point FIXE apprend "ce gradient ne change jamais" (Adam se
+     met à appliquer un pas de magnitude `lr` complète à chaque pas de
+     réchauffement) plutôt que la vraie courbure locale, qui ne peut
+     s'observer qu'en laissant la position réellement bouger — ce que
+     seul le cas retardé fait, via 400 pas de vraie trajectoire.
+     **Six échecs distincts et diagnostiqués au total pour
+     `a_H6direct`. Le seul chemin plausible restant est un vrai travail
+     de modélisation (construire une trajectoire d'approche lente pour
+     masse_fond=0, pas une astuce d'optimiseur) — mis de côté comme
+     travail futur, pas retenté sans fin dans cette session.**
    - **Réponse à la question initiale (« k se déplace-t-il comme
      prévu ? ») : ni oui ni non simplement — le résultat est
      QUALITATIF (réorganisation de la structure de bassin), pas une
