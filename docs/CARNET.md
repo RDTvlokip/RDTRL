@@ -10147,6 +10147,26 @@ remplacée par cette tentative.** Noté honnêtement plutôt que forcé
 vers une fausse victoire — transférer une bonne leçon au mauvais
 problème est aussi une leçon.
 
+**Essai rapide de la recette "trajectoire d'approche naturelle"
+elle-même (repartir de `R_init=0,5` par défaut, sans le placer
+artificiellement, et bissecter `s3_init` pour retrouver le seuil
+H6/H11 historique de `verifier_sonde_bassin.py` ROUND 1) — NE
+REPRODUIT PAS le seuil attendu.** Le ROUND 1 historique rapportait un
+effondrement net à `s3_init=0,99400` (`DELTA=0,013`, `PAS=40000`).
+Rejoué ici avec `continuer_sous_prior` et les mêmes paramètres
+apparents : **tout reste gradué, y compris à `s3_init=0,994`**
+(`s3_final≈0,999`, pas d'effondrement observé sur la plage
+0,994-0,995 testée). Un paramètre diffère quelque part (peut-être
+`R_init` par défaut de `construire_mur23` n'est pas exactement 0,5,
+ou un autre détail de configuration a changé depuis ce test
+historique) — pas élucidé ici, pas le budget pour cette session.
+**Confirme ce qui avait déjà été anticipé : construire une vraie
+trajectoire d'approche lente pour `masse_fond=0` est un vrai travail
+de modélisation neuf, pas un raccourci d'une heure — le premier essai
+naïf ne reproduit même pas le point de départ historique attendu.**
+Laissé comme piste pour une session dédiée, avec ce premier essai
+documenté pour ne pas le retenter à l'identique.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
