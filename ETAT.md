@@ -155,18 +155,41 @@ tout re-raconter.*
      n'est visible dans AUCUN instantané statique (émetteur ou
      récepteur, à `t=0`) — c'est un phénomène authentiquement
      DYNAMIQUE, qui se joue au fil des 40000 pas d'entraînement.**
-     Reste à faire pour vraiment percer le mécanisme : suivre la
-     trajectoire complète (pas un instantané) de `g3(t)`, `g_r3(t)`,
-     `g_r4(t)` et la masse de fond, pour voir où et quand un
-     croisement ou un plancher apparaît EN COURS de route.
+   - **MÉCANISME ENTIÈREMENT ÉLUCIDÉ en suivant la trajectoire
+     complète (`verifier_trajectoire_renversement.py`).** Deux configs
+     à `5e-6` d'écart seulement (`s3_init=0,999450` vs `0,999455`)
+     restent quasi confondues pendant ~600 pas (approche lente
+     commune), puis divergent PRÉCISÉMENT à `pas=600,283`
+     (interpolation) : le gradient de l'émetteur change de signe pour
+     la config qui survit (rebondit vers la branche graduée), reste
+     toujours positif pour celle qui s'effondre (chute catastrophique
+     en ~25 pas, `pas≈745-770`). **Cas manuel, textbook, de fantôme de
+     nœud-col (`dx/dt=μ+x²`, temps de passage `τ=C/√μ`)** — confirmé
+     par un 3e round d'agent-dipankar via un préfacteur `C` d'ordre 1
+     et cohérent entre les deux configs (`0,920` et `0,977`, à 6%
+     près) — **une vraie confirmation de structure, pas juste une
+     analogie.** Risque d'artefact d'optimiseur (état Adam résiduel
+     via `fixer_s3`) **définitivement écarté par lecture de code**
+     (l'optimiseur est toujours reconstruit neuf APRÈS les `fixer_*`).
+   - **Ce qui reste ouvert : l'IDENTITÉ du point selle** (le même que
+     H6 d'origine, juste rencontré plus tard, ou un point selle
+     DIFFÉRENT créé par la masse résiduelle encore présente à
+     pas=600 — `5e-4`, soit 100× l'écart initial suivi, pas assez
+     petite pour être écartée sans test). Protocole précis proposé par
+     l'agent pour trancher : superposition temporelle avec la
+     trajectoire H6 d'origine (tour 51), continuation paramétrique sur
+     la fraction de masse (0% à 30%), suivi de la DIFFÉRENTIELLE de
+     masse de fond entre les deux configs (pas juste sa valeur
+     absolue) — aucun des trois fait cette session.
    - **Réponse à la question initiale (« k se déplace-t-il comme
      prévu ? ») : ni oui ni non simplement — le résultat est
      QUALITATIF (réorganisation de la structure de bassin), pas une
      simple lecture d'un `k` différent sur la même table.** Décisif,
      positif ET négatif à la fois (Théo, 18/09 : « il nous faut des
      réponses même négatives ou positives »).
-   Script : `verifier_masse_fond_systeme_reel.py`. Détail complet,
-   avec tous les chiffres et le cycle QUAND/COMMENT/POURQUOI complet :
+   Scripts : `verifier_masse_fond_systeme_reel.py`,
+   `verifier_trajectoire_renversement.py`. Détail complet, avec tous
+   les chiffres et le cycle QUAND/COMMENT/POURQUOI complet :
    `CARNET.md`, fin de §7.65 (section « Piste 3c »).
 
    **3d. Piste 4, rappelée ici explicitement (Théo, 18/09/2026 :
