@@ -9898,6 +9898,71 @@ paramètre).** Fil honnêtement refermé sur ce point précis.
 Scripts (permanents) : `verifier_sgd_pur_jouet_m.py` (documente les
 deux essais, tous deux inconclusifs pour la même raison structurelle).
 
+**Suite, même tour (Théo : « continue, ne t'arrête pas sur des
+hypothèses simples ») — le gradient naturel implémenté (diviser la
+mise à jour de l'émetteur par `s3(1-s3)`), et un résultat qui remet
+en cause une pièce du modèle établie plus tôt ce soir, pas juste un
+détail.**
+
+**Le gradient naturel FONCTIONNE (l'émetteur bouge enfin sous une
+descente sans Adam) mais donne un résultat qualitativement DIFFÉRENT
+d'Adam** : `s3` grimpe continûment vers 1 (0,999→0,99999833 en 40000
+pas, M=0, toujours en train de monter, pas de plateau) — au lieu de
+se stabiliser à 0,9964 comme sous Adam. **Test direct pour trancher
+si le plateau d'Adam est un vrai point fixe ou un blocage lent près
+du pli** : trace Adam étendue à 400000 pas (10× le budget original).
+**Le plateau TIENT** — `s3=0,99643236` à `t=400000`, stable à 6
+chiffres significatifs sur tout l'intervalle (avec une excursion H15
+isolée à t=300000, `s3=0,9963183`, qui récupère — signature déjà
+connue de ce mécanisme, retrouvée ici sans le chercher). **Donc le
+plateau Adam n'est PAS un simple ralentissement transitoire — il
+tient sur un ordre de grandeur de budget en plus.**
+
+**Ça a forcé une vérification de ma propre "racine stable" (calculée
+plus tôt ce tour pour l'analyse de stabilité en 3b/3a) : ELLE N'EST
+PAS UNE VRAIE RACINE.** `F(x_s=1,141e-3)=-1,42e-5`, pas zéro — un bug
+de précision dans ma propre bissection (même famille que le bug de
+grille du pli trouvé plus tôt ce soir par un agent). **Pire, en
+balayant `x` vers 0 en échelle log, `F(x)` ne s'annule JAMAIS — elle
+approche un plateau POSITIF (~8e-4), pas zéro.** Dans la réduction
+(x,R), `F(x)>0` signifie que `x_br(R)` cible une valeur PLUS GRANDE
+que `x` courant — donc `dx/dt>0`, `x` devrait AUGMENTER (donc `s3`
+DEVRAIT DIMINUER) — l'inverse exact de ce que montre la simulation
+directe (gradient naturel : `s3` monte).
+
+**Conclusion honnête, plus profonde qu'un bug de script : la
+réduction quasi-statique (x,R) et la dynamique réelle simulée
+directement se contredisent maintenant en dehors du voisinage
+immédiat du pli — pas seulement "M n'a pas d'effet dessus" (établi
+et solide, vérifié plusieurs fois AU pli), mais "la réduction
+elle-même cesse d'être fiable dès qu'on s'en éloigne".** Cohérent
+avec ce qui a déjà été trouvé ce tour (R n'est pas réellement
+quasi-stationnaire pendant le transitoire de masse de fond) — mais
+ici le problème apparaît même sans masse de fond (M=0), donc c'est
+plus général qu'un effet de M : c'est une limite de l'hypothèse de
+quasi-stationnarité de `R` elle-même, dans TOUTE la réduction, pas
+seulement en présence de fond. **Ce n'est plus une question qui se
+tranche avec un script de plus — ça demanderait de refaire la
+dérivation de `R_br(x)` en abandonnant l'hypothèse d'équilibre
+instantané du récepteur, un vrai travail de modélisation neuf.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le plateau d'Adam à s3=0,9964 est un ralentissement transitoire près du pli, pas un vrai point fixe | 18/09 (moi) | **réfutée** le 18/09 — tient sur 400000 pas (10× le budget), stable à 6 chiffres significatifs |
+| ma "racine stable" calculée en 3a/3b (x_s=1,141e-3) est une vraie racine de F(x)=0 | 18/09 (moi, implicite) | **réfutée** le 18/09 — F(x_s)=-1,42e-5, pas zéro ; bug de précision dans ma propre bissection |
+| F(x)→0 quand x→0 (s3→1 est cohérent avec la réduction quasi-statique) | 18/09 (moi, implicite) | **réfutée** le 18/09 — F(x) approche un plateau positif ~8e-4, pas zéro, en contradiction directe avec la simulation (s3 monte alors que F>0 prédit qu'il devrait descendre) |
+
+**Bilan honnête final de cette session sur la piste "masse de fond" :
+le résultat le plus solide (le pli lui-même, position et courbure,
+est M-indépendant) tient toujours, vérifié de multiples façons
+indépendantes. Mais la réduction (x,R) censée l'entourer s'est
+révélée moins fiable qu'espéré dès qu'on s'écarte du pli lui-même —
+une vraie limite de méthode découverte cette nuit, pas résolue, et
+qui mérite une reprise complète de la dérivation plutôt que d'autres
+scripts ponctuels. Point d'arrêt honnête : on a appris quelque chose
+d'important sur les limites de l'outil qu'on a construit ce soir,
+même si ça n'a pas donné la réponse finale espérée.**
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
