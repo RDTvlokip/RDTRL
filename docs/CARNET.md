@@ -9695,6 +9695,72 @@ Scripts (permanents) : `verifier_ode_jouet_m.py`, agent a produit
 `verifier_evacuation_masse_jouet_m.py` (pas encore rapatrié dans le
 dépôt, dans le worktree de l'agent).
 
+**Suite, même tour (Théo : « continue à chercher ») — le test précommis
+`lr=0,05` vs `lr=0,2` pour trancher artefact-Adam vs vrai canal
+manquant, enfin exécuté.** Résultat : `lr=0,05` donne un décalage de
+**-1,0447%** (contre -0,6275% à `lr=0,2`) — **le décalage DÉPEND bien
+significativement de `lr`** (facteur ~1,67×), au sens du critère
+précommis par l'agent précédent. Un nouvel agent, challengé
+là-dessus, a réfuté mon explication naïve (« lr petit = moins de
+progrès à budget fixe = pire convergence ») en mesurant l'écart au
+point fixe algébrique : à M=0, `lr=0,05` est en fait **1500× MIEUX
+convergé** que `lr=0,2` (2,6e-11 contre 3,9e-8), pas pire — mon
+mécanisme était faux dans le sens le plus défavorable à ma lecture.
+Sa lecture alternative, plus fine : `bissecter_delta_c` ne mesure
+jamais un résidu de convergence, il mesure de quel côté de la
+séparatrice `s3` tombe à budget fixe — un phénomène de TEMPS DE
+FRANCHISSEMENT DU COL (ralentissement critique), pas de résidu final.
+
+**Son propre test précommis (bon marché, 4 trajectoires courtes) a
+révélé une VRAIE erreur dans son propre rapport, trouvée en le
+rejouant moi-même — règle 5bis, encore.** Sa fenêtre de test
+`s3∈[0,45;0,55]` supposait le col près de `s3=0,5` — mais le pli
+calculé en 3a est à `x*≈0,0042`, donc `s3*≈0,9958`, pas 0,5. Fenêtre
+corrigée (`[0,990;0,999]`) : **M=25 passe 11 à 13× MOINS de temps
+dans la région lente du vrai pli que M=0** (371-393 pas contre
+4293-4797 pas) — un vrai effet dynamique, distinct de la géométrie
+statique (identique, 3a/3b). Mais en recalculant ensuite le résidu au
+point fixe de l'agent pour vérifier sa table, **ses chiffres pour
+M=25 (`s3=0,9972781760/0,9972781724`) NE SE REPRODUISENT PAS** :
+rejoué deux fois moi-même, résultat bit-identique aux deux essais,
+`s3=0,4997803416` — pas 0,9973. **Le tableau central du rapport de
+cet agent contient une vraie erreur sur M=25**, probablement une
+mauvaise valeur transcrite ou un mélange avec les chiffres de M=0
+(qui, eux, se reproduisent exactement : `s3=0,9964323591/
+0,9964323198`, identiques aux siens).
+
+**Ce que `s3=0,5` pour M=25 veut dire, une fois qu'on lit le
+docstring de `bissecter_delta_c`** (déjà écrit AVANT cette session,
+pas une découverte nouvelle) : ce jouet a un attracteur "effondré"
+lent précisément à `s3=0,5`, documenté comme prenant plus de
+40000-100000 pas à se résoudre à `lr=0,05`. `delta_c(M)` est PAR
+CONSTRUCTION le point milieu d'un bracket de bissection — training
+exactement dessus revient à s'asseoir sur la séparatrice elle-même,
+où ce genre de blocage est attendu, pas anormal. **M=0 se résout
+proprement (vers son point fixe algébrique) tandis que M=25 reste
+bloqué à `s3=0,5` aux deux `lr` testés** — une vraie différence
+qualitative entre M=0 et M=25 pile à leur propre seuil, mais dont le
+mécanisme (pourquoi M=25 spécifiquement tombe dans cet attracteur
+documenté alors que M=0 n'y tombe pas) n'est PAS élucidé ici.
+
+**Bilan honnête, fin de session sur cette piste : le décalage
+`delta_c(M)` dépend réellement de `lr` (confirmé), la géométrie
+statique du pli n'en dépend pas (confirmé deux fois), et le
+mécanisme dynamique réel implique un attracteur `s3=0,5` DÉJÀ
+CONNU dans ce jouet (pas une nouveauté) dont l'interaction précise
+avec M reste ouverte — un vrai sujet pour une session future, avec
+un protocole déjà esquissé (tracer `s3(t)` densément autour de
+`s3=0,5` pour M=0 et M=25, comparer les temps de résidence).** Pas
+soumis à un nouvel agent pour cette dernière correction (volume déjà
+très élevé de rounds ce tour) — limite assumée.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le décalage -0,6275%/-1,0447% dépend significativement de lr | 18/09 (moi) | **confirmée** le 18/09 — facteur ~1,67× entre lr=0,05 et lr=0,2, mesuré directement |
+| l'explication "lr petit = moins convergé à budget fixe" pour ce décalage | 18/09 (moi) | **réfutée** le 18/09 par un agent — à M=0, lr=0,05 converge 1500× MIEUX que lr=0,2, sens opposé à l'hypothèse |
+| les chiffres de résidu M=25 rapportés par cet agent (s3≈0,9973) sont corrects | 18/09 (agent) | **réfutée** le 18/09 — rejoué deux fois moi-même, résultat bit-identique s3=0,4998, pas 0,9973 ; erreur reelle dans le rapport de l'agent |
+| M=25 passe moins de temps dans la région lente du vrai pli (x*≈0,0042) que M=0 | 18/09 (moi, fenêtre corrigée) | **confirmée** le 18/09 — 11-13× moins de temps, mesuré directement, mais l'attracteur s3=0,5 où M=25 finit par se bloquer est un phénomène déjà documenté dans le jouet, pas nouveau |
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
