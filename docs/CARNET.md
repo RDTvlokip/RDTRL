@@ -9857,6 +9857,23 @@ ce tour (vrai travail de modélisation neuf).
 |---|---|---|---|
 | la structure locale (dérivées de branche) à la branche graduée STABLE dépend de M, comme au pli | 18/09 (moi) | **réfutée** le 18/09 — identique à 15 chiffres significatifs pour tout M, confirme que la réduction (x,R) est M-indépendante partout |
 | le canal manquant est structurellement hors de la réduction (x,R), lié à la dynamique transitoire de la masse de fond elle-même | 18/09 (moi) | ouverte mais bien étayée — cohérente avec la fenêtre temporelle mesurée (masse de fond non négligeable jusqu'à t≈5000-8000, exactement quand R évolue vers sa valeur finale) ; pas prouvée formellement (nécessiterait l'ODE à 3 variables) |
+| le comportement M-dépendant (R file jusqu'à 1 pour M=25, se stabilise pour M=0) est une propriété du flot de gradient de l'objectif (pas d'Adam) — testable en SGD pur | 18/09 (moi) | **test inconclusif** le 18/09 — à `lr=0,02`, SGD pur laisse `s3` bloqué à 1,00000000 pendant 100000 pas pour M=0 ET M=25 (l'émetteur ne quitte jamais la saturation à ce taux, cohérent avec un fait déjà établi ailleurs dans ce projet : Adam nécessaire pour bouger une sigmoïde saturée), donc la région du pli n'est jamais atteinte — le test ne pouvait pas répondre à la question posée avec ce réglage |
+
+**Bilan final, cette fois pour de vrai, de la piste 3 (masse de fond)
+pour cette session.** Six sous-questions tranchées avec mécanisme
+(pas juste constat) : position du pli (M-indépendante), courbure du
+pli (M-indépendante), stabilité locale à la branche graduée
+(M-indépendante), le "6,5 décades" d'origine (ne se reproduit pas,
+retracé à sa source), le décalage `delta_c` empirique (réel mais
+gonflé de 25% par la résolution de bissection, et lr-dépendant), et
+le mécanisme du canal manquant lui-même (R sature à 1 au lieu de se
+stabiliser, candidat structurel : la masse de fond transitoire).
+**Un test SGD pour distinguer objectif-pur vs artefact-Adam est resté
+inconclusif par réglage inadapté — piste complète mais non close,
+notée pour une prochaine session** (il faudrait soit un `lr` SGD plus
+grand avec le risque de désaturation trop brutale, soit un budget
+bien plus long, soit reformuler le test en repartant d'un `s3_init`
+déjà hors saturation plutôt que du défaut `0,999999999666`).
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
