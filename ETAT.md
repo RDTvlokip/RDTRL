@@ -139,14 +139,32 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    manquant indépendant de l'optimiseur. Détail complet : `CARNET.md`
    fin de §7.65.
 
-   **3b. La géométrie locale du pli.** Pourquoi M change-t-il la
-   courbure (ou une direction propre lente) du pli, pas seulement sa
-   position `delta_c` ? Question plus petite, plus ciblée, trouvée en
-   vérifiant autre chose — pas explorée du tout. Candidat naturel pour
-   une session courte et focalisée : calculer `F_xx(M)` (la dérivée
-   seconde du système couplé au pli, généralisé en M comme dans
-   `verifier_d_structurel.py`) et voir si elle varie avec M de façon à
-   expliquer l'écart de 6,5 décades.
+   **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
+   n'avait plus d'objet : le coefficient de courbure `a` du pli
+   (`a=F''(x*)/2`, calculé directement avec les fonctions de branche
+   de 3a) est **identique (99,064645) pour tout M∈{0,1,3,8,25}
+   testé** — stable en h, confirmé par un agent. Et le chiffre "6,5
+   décades" qui motivait la question **ne se reproduit pas** : rejouer
+   `verifier_point_fixe_jouet_m.py` tel quel donne `39,50` (1,60
+   décade), pas 6,5 — vérifié indépendamment. Le commit d'origine
+   (`fe737ef`) portait déjà sa propre mise en garde dans son message
+   (« fenêtre adaptative de M=25 pas encore propre, relance plus
+   longue »), perdue en route jusqu'ici. **Mécanisme exact** : la
+   fenêtre adaptative de M=25 ne se ferme JAMAIS avant la fin du
+   budget (3000 pas) — la "pente" mesurée est une moyenne prise EN
+   PLEIN TRANSITOIRE D'ÉVACUATION DE MASSE (`masse_autres` encore à
+   4,8e-6 à t=3000, contre ~4e-11 à l'équilibre), pas une vitesse de
+   relaxation asymptotique. **Conclusion 3a+3b réunies : le pli
+   algébrique quasi-statique (position ET courbure) ne dépend pas de
+   M — chaque différence empirique attribuée à M jusqu'ici (seuil,
+   vitesse) était un artefact de budget/résolution de mesure.** Ce
+   qui reste réel : un effet résiduel de -0,6275% sur `delta_c`
+   (piste 3a) et un temps d'évacuation de fond visiblement
+   multi-échelle, pas encore caractérisé proprement (fenêtre trop
+   courte pour le voir converger) — les deux pointent vers un
+   mécanisme hors de la réduction (x,R), probablement dans la
+   dynamique du fond lui-même. Détail complet : `CARNET.md` fin de
+   §7.65.
 
    **3c. FAIT le 18/09/2026 — test direct sur le VRAI système à 27
    référents. Résultat DÉCISIF et inattendu, plus riche que la question
