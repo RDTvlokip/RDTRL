@@ -9963,6 +9963,75 @@ scripts ponctuels. Point d'arrêt honnête : on a appris quelque chose
 d'important sur les limites de l'outil qu'on a construit ce soir,
 même si ça n'a pas donné la réponse finale espérée.**
 
+**RÉTRACTATION, même tour (Théo : « continue, pose des hypothèses
+inconnues ») — l'entrée ci-dessus était une fausse alerte, la vraie
+cause trouvée et vérifiée deux fois indépendamment.**
+
+La « contradiction de signe » venait de comparer `F(x)` calculé avec
+`R_br(x,M,delta)` (la valeur ALGÉBRIQUE d'équilibre du récepteur,
+étant donné x) à une trajectoire où `R` n'est PAS à l'équilibre
+pendant le transitoire (déjà établi plusieurs fois ce tour). En
+substituant le `R` RÉELLEMENT MESURÉ dans la trajectoire au lieu du
+`R_br(x)` algébrique : le signe de `x_br(R_mesuré)-x` colle
+EXACTEMENT au signe de `dx/dt` observé — **pas de contradiction du
+tout, juste une comparaison à la mauvaise variable.**
+
+**Ce qui restait (un facteur d'échelle ~3000-6000x, présenté d'abord
+comme "juste une constante de taux manquante") s'est révélé être
+autre chose : un CHOIX DE COORDONNÉE INVALIDE, pas une constante.**
+Un agent-dipankar (challengé, puis revérifié indépendamment par moi
+avec un résultat encore plus net) a montré que ce "facteur" dérive
+(3999→4234 sur 2400 pas à M=0, +50% de saut à M=25) parce que `x` et
+`x_br(R)` sont tous deux minuscules (~1e-3) même quand le système est
+en fait TRÈS loin de l'équilibre en espace LOGIT (`z3=6,91` contre
+`z3_br=24,53`, écart de 17,6 unités) — la compression exponentielle
+du sigmoïde écrase cet écart en une différence de probabilité de
+~2,5e-4, donnant l'illusion d'être "presque à l'équilibre".
+
+**La bonne relation, dérivée puis vérifiée EXACTEMENT (ratio=1,0000,
+pas ~99,5%, à deux `lr` différents — 0,02 et 0,002) :**
+
+```
+dz3/dt = lr * (poids3*r3 - (beta/N)*z3)
+```
+
+**Linéaire en espace LOGIT, exacte par construction** (le gradient
+naturel divise déjà par `s3(1-s3)`, qui annule exactement ce même
+facteur dans le gradient brut — donc cette relation n'est pas une
+approximation, c'est une identité algébrique, vérifiée numériquement
+aux deux `lr` sans le moindre écart). Le résidu de 3-4% que l'agent
+trouvait en espace `x` vient uniquement de la règle de dérivation
+`dx/dz3≈-s3(1-s3)≈-x`, valable seulement près de `x=0` — pas d'un
+terme manquant dans la dynamique elle-même.
+
+**Et le facteur ~2x supplémentaire trouvé à M=25 (ratio ~6000 au lieu
+de ~4000) s'explique complètement par l'approximation `r3≈1-R` de
+`x_br`, déjà documentée dans son propre docstring comme approximative
+— fausse de 67% à M=25 (`r3` réel=0,375 contre `1-R`=0,625).** Pas un
+second phénomène physique.
+
+**Conclusion propre, cette fois définitive pour ce tour : la
+réduction (x,R) n'est pas cassée — elle était exprimée dans la
+MAUVAISE VARIABLE (`x` au lieu de `z3`, l'espace logit) pour analyser
+la dynamique loin du pli. En espace logit, la relaxation est linéaire
+et exacte. Le "facteur M" à M=25 est entièrement expliqué par
+l'approximation déjà connue `r3≈1-R`, pas par un canal manquant
+supplémentaire.** Piste ouverte notée par l'agent, non testée :
+vérifier si le plateau Adam à `s3=0,9964` (400000 pas, confirmé
+robuste) s'explique par la même relation exacte en espace logit, ou
+si l'adaptivité propre d'Adam (sans le dénominateur explicite
+`s3(1-s3)` du gradient naturel) produit un point fixe différent —
+pas encore vérifié.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la réduction (x,R) se contredit avec la simulation directe (contradiction de signe) hors du pli | 18/09 (moi) | **RÉTRACTÉE** le 18/09 — comparaison à la mauvaise valeur de R (algébrique au lieu de mesurée) ; aucune contradiction une fois corrigé |
+| le facteur d'échelle ~3000-5000x est une simple constante de taux manquante côté émetteur | 18/09 (moi) | **réfutée** le 18/09 par un agent, confirmé par moi — ce n'est pas une constante (dérive de 6%), c'est un choix de coordonnée invalide (x au lieu de z3, espace logit) |
+| la relation dz3/dt=lr*(poids3*r3-(beta/N)*z3) décrit exactement la dynamique en espace logit | 18/09 (agent, revérifié par moi) | **confirmée** le 18/09 — ratio=1,0000 exact à deux lr différents (0,02 et 0,002), pas une approximation |
+| le facteur ~2x supplémentaire à M=25 est un second phénomène physique | 18/09 (moi, implicite) | **réfutée** le 18/09 — entièrement expliqué par l'approximation déjà connue r3≈1-R, fausse de 67% à M=25 |
+
+Scripts (permanent, mis à jour) : `verifier_gradient_naturel_jouet_m.py`.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
