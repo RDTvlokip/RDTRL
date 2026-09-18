@@ -10260,7 +10260,105 @@ coordonnées) plutôt qu'une liste d'échecs de mesure seuls.
 
 Scripts (permanents, corrigés) : `verifier_trajectoire_naturelle_mur23.py`.
 
-## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
+**Suite, même tour — protocole du temps de résidence exécuté, et une
+reformulation profonde de toute la question d'identité du point
+selle, appuyée par deux lignes de preuve convergentes.**
+
+**Temps de résidence mesuré (bande `|s3-0,9943|<1e-3`, `pas=3000`,
+des deux côtés du seuil `0,972646/0,972661`, distance à l'exacte
+frontière de `1e-3` à `1e-5`) :**
+
+```
+offset       n (SOUS)   n (SUR)
+1e-3         236        278
+3e-4         351        398
+1e-4         445        488
+3e-5         540        573
+1e-5         628        638
+```
+
+**Ajustement logarithmique : `R²=0,998325` (excellent). Ajustement en
+loi de puissance : exposant `-0,208`, `R²=0,965825` (nettement pire,
+et loin de `-1/2`, la signature attendue d'un fantôme de pli).**
+**Reproduit EXACTEMENT (bit-à-bit) par un agent, et confirmé ROBUSTE**
+au changement de bande/budget (`bande=5e-4`, `pas=5000`) : `λ_SOUS`
+et `λ_SUR` convergent à moins de 1 % l'un de l'autre — exactement la
+signature symétrique attendue d'un vrai col hyperbolique (échappement
+de part et d'autre à la même vitesse locale), pas d'un fantôme
+asymétrique.
+
+**Correction importante trouvée par le même agent, vérifiée
+indépendamment ici (CARNET, lignes ~8759-8765) : l'accord "à 6% près"
+du préfacteur `C` entre les configs "survit"/"effondre" du cas
+retardé (`0,920` / `0,977`, cité plus tôt cette session comme
+"confirmation d'une vraie structure de fantôme") ÉTAIT UNE TAUTOLOGIE
+ALGÉBRIQUE, pas un test indépendant.** `C_i = τ_partagé·√(μ_i)` avec
+le MÊME `τ=600` pour les deux configs ⇒ `C_effondre/C_survit ≡
+√(μ_effondre/μ_survit)` par construction, quel que soit `τ`. Vérifié
+par calcul direct : `√(2,65e-6/2,35e-6)=1,061913`, et
+`0,977/0,920=1,061957` — identique à la précision de calcul près.
+**Cette "confirmation" doit être rétrogradée : elle ne prouve rien
+sur l'exposant `-1/2`, seulement une identité arithmétique.**
+
+**Reformulation profonde, appuyée par DEUX preuves convergentes,
+établies par des méthodes complètement différentes :**
+1. **La jacobienne 2×2 du VRAI système (pas le jouet — vérifié :
+   `verifier_saddle_h6_jacobien_independant.py` utilise bien
+   `replay_mur23_referent3.construire_mur23`) au point H6 exact
+   (`s3=0,994295`, `R=0,829390`) donne deux valeurs propres RÉELLES
+   de signe opposé — un col hyperbolique ORDINAIRE, établi PLUS TÔT
+   cette même session, confirmé deux fois indépendamment.**
+2. **Le temps de résidence mesuré ce soir près de ce même point suit
+   une loi LOGARITHMIQUE (`R²=0,998`), pas une loi de puissance en
+   `1/√μ` — exactement ce qu'un col hyperbolique ordinaire prédit
+   (échappement linéaire/exponentiel, temps de résidence
+   `~-log(distance)/λ`), PAS ce qu'un fantôme de pli dégénéré
+   prédirait.**
+
+**Ces deux preuves, indépendantes et convergentes, pointent la même
+conclusion : H6 (à `delta=0,013` FIXE, strictement sous `delta_c`)
+est structurellement un col hyperbolique ORDINAIRE — pas un fantôme
+de nœud-col.** Le "fantôme" caractérisé ailleurs dans cette session
+(`a_delayed`, le point rencontré DYNAMIQUEMENT sous masse de fond
+décroissante) reste, lui, un phénomène de type différent — une
+bifurcation réellement dégénérée rencontrée alors que le `delta_c`
+EFFECTIF dérive dans le temps (masse de fond qui s'évacue), pas un
+col fixe à `delta` constant. **La question "même point selle ou
+voisin" était peut-être mal posée depuis le début : ce ne sont
+vraisemblablement pas deux points selles de la MÊME FAMILLE
+dynamique du tout, mais deux TYPES DE STRUCTURES CRITIQUES
+DIFFÉRENTES (hyperbolique ordinaire vs nœud-col dégénéré) qui se
+trouvent avoir des coordonnées proches dans le même coin de l'espace
+des phases.**
+
+**Ce qui reste ouvert, honnêtement non résolu :** la prédiction
+naïve `λ=2√(delta_c-delta)=0,0418`/pas ne colle PAS à la valeur
+mesurée (`λ≈0,0021-0,0031`/pas, écart `×13-20`) — un vrai trou
+quantitatif, candidats non tranchés : unité de temps (pas Adam ≠
+temps de flot continu), mauvaise coordonnée de forme normale (déjà
+suspecté ailleurs dans le projet), ou réduction 1D en `delta` brut
+invalide pour ce système couplé `(s3,r3,R)`. **Protocole précommis
+pour trancher, pas encore exécuté : étendre la trace à offset=1e-5
+au-delà de `pas=628` (la résidence mesurée) pour trouver le vrai
+croisement d'instabilité (comme `g_e3` changeant de signe à
+`pas=600,283` pour le cas retardé), mesurer `λ_instable` APRÈS ce
+croisement, et comparer à `1/(|a_log|·ln10)≈0,0021-0,0022`/pas — un
+facteur <2 confirmerait le lien col-hyperbolique/loi-log ; un facteur
+>5 indiquerait que la loi log mesure autre chose (peut-être un temps
+d'évacuation transverse, pas la fuite le long de la variété
+instable).**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le temps de résidence près de H6 suit une loi logarithmique, pas une loi de puissance en 1/√μ | 18/09 (moi) | **confirmée** le 18/09, reproduite bit-à-bit par un agent, robuste au changement de bande/budget (λ_SOUS≈λ_SUR à <1%) |
+| l'accord à 6% du préfacteur C (a_delayed, cas retardé) confirme empiriquement l'exposant -1/2 | tour précédent (moi) | **RÉTRACTÉE** le 18/09 — c'est une tautologie algébrique (même τ partagé pour les deux configs), vérifié par calcul direct |
+| H6 (delta fixe, vrai système) est un col hyperbolique ordinaire, pas un fantôme de pli dégénéré | 18/09 (moi, appuyée sur un résultat antérieur du même tour) | **confirmée** le 18/09 par deux preuves indépendantes convergentes (jacobienne à valeurs propres réelles établie plus tôt ce tour + loi de résidence logarithmique mesurée ce soir) |
+| H6 et le point rencontré sous masse de fond (a_delayed) sont deux points selles de la même famille dynamique | implicite depuis plusieurs tours | **affaiblie/reformulée** le 18/09 — probablement deux TYPES de structures critiques différents (hyperbolique vs nœud-col dégénéré), pas juste "même point ou voisin" |
+| la prédiction naïve λ=2√(delta_c-delta) prédit le taux d'échappement mesuré | 18/09 (agent) | **réfutée** le 18/09 — écart ×13-20, cause non élucidée (unités, coordonnée, réduction 1D invalide) |
+
+Scripts (permanents) : `verifier_temps_residence_traj_naturelle_180926.py`,
+`verifier_lambda_local_traj_naturelle_180926.py` (produits par l'agent,
+pas encore rapatriés sous un nom permanent).
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
 questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en
