@@ -8461,8 +8461,65 @@ checkpoint d'origine (`s3` déjà quasi figé avant même la
 perturbation), ou apparaît-il aussi à des deltas plus éloignés du pli,
 ou avec un `s4_init` différent ? Pas testé.
 
-Script : `verifier_masse_fond_systeme_reel.py`. Bissection précise du
-nouveau seuil en cours — résultat et lecture de `k` à suivre.
+**Seuil précis localisé : entre `s3_init=0,9994521` et `0,9994526`**
+(net, résolution ~5e-7, pas de flou — un vrai bord, pas un bassin
+fractal). Comparé au seuil non perturbé (`s3=0,994300`, 3 décades plus
+loin de la saturation) : le seuil sous masse de fond est ~10× plus
+proche de `s3=1` que le seuil d'origine.
+
+**H-plancher testée directement et RÉFUTÉE dans sa forme simple.**
+Gradient brut de l'émetteur (`e.p[0].grad[3,10]`, un seul pas avant/
+arrière, pas d'entraînement) à travers la zone du seuil :
+
+```
+s3_init=0,99      grad=-5,144832e-05
+s3_init=0,999     grad=-3,480993e-06
+s3_init=0,9994    grad=-1,862357e-06
+s3_init=0,99945   grad=-1,671796e-06   <- juste sous le seuil
+s3_init=0,9995    grad=-1,484590e-06   <- juste au-dessus
+s3_init=0,9999    grad=-1,778014e-07
+```
+
+**Le gradient décroît de façon parfaitement LISSE et continue à
+travers le seuil — aucune discontinuité, aucun plancher net à cet
+endroit précis.** Ça réfute l'explication la plus simple (« le
+gradient tombe à zéro pile là »). Le seuil est un vrai effet
+DYNAMIQUE de compétition/course pendant la phase d'évacuation
+(H-course), pas un artefact statique de gradient — cohérent avec le
+caractère NET (pas graduel) du seuil lui-même : une course a un
+gagnant net, pas une transition graduelle, même si le gradient qui
+l'alimente varie continûment.
+
+**Conséquence pour la question initiale (« combien vaut le décalage de
+`k` ») : réponse honnête, PAS le chiffre espéré, mais une réponse
+quand même (Théo : « il nous faut des réponses même négatives ou
+positives »).** Ce renversement de bassin est QUALITATIF, pas
+QUANTITATIF — il ne s'agit plus de lire un `k` différent sur la MÊME
+table de dipankar (qui suppose une orientation de bassin fixe), mais
+d'une réorganisation complète de la structure de bassin sous masse de
+fond significative. **Le résultat décisif est donc : « oui, la masse
+de fond affecte massivement la dynamique près du pli — au point de
+retourner l'orientation du bassin, pas seulement de déplacer un
+seuil » — plus fort que ce qui était cherché, mais pas directement
+comparable au chiffre `k∈[1,42;2,45]` sans reconstruire la table pour
+CETTE orientation de bassin.**
+
+| # | hypothèse | type | posée le | statut |
+|---|---|---|---|---|
+| H-plancher : un plancher net de gradient coïncide avec le seuil précis | standard | 18/09 | **réfutée** le 18/09 — gradient parfaitement lisse à travers le seuil, aucune discontinuité |
+| le seuil renversé peut se lire directement sur la table k de dipankar (même convention) | 18/09 (moi, implicite) | 18/09 | **réfutée** le 18/09 — la table suppose une orientation de bassin fixe, un bassin RENVERSÉ n'est pas le même objet, pas de lecture directe possible |
+| la masse de fond a un effet qualitatif (pas seulement quantitatif) sur la dynamique près du pli | 18/09 (moi) | 18/09 | **confirmée** le 18/09 — renversement complet de l'orientation du bassin, pas un simple décalage |
+
+**Bilan piste 3c : résultat DÉCISIF et inattendu — la masse de fond ne
+se contente pas de ralentir le récepteur (déjà établi), elle peut
+RENVERSER l'orientation du bassin de bascule près du pli, sur le vrai
+système à 27 référents.** Ni confirmation simple ni réfutation simple
+de « k se déplace comme prévu » — un résultat plus riche que la
+question posée, à soumettre à un agent-dipankar avant de le considérer
+clos (règle CLAUDE.md), puis à explorer plus loin (est-ce spécifique à
+`R_init=0,60`, à `delta=0,013`, à ce jeu précis de 10 référents ?).
+
+Script : `verifier_masse_fond_systeme_reel.py`.
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
