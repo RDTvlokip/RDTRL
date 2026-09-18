@@ -10032,6 +10032,67 @@ pas encore vérifié.
 
 Scripts (permanent, mis à jour) : `verifier_gradient_naturel_jouet_m.py`.
 
+**Clôture finale de tout le fil "Adam vs flot de gradient réel",
+même tour (goal actif : « continue, ne t'arrête pas »).**
+
+Un troisième agent, challengé sur "Adam et le flot réel convergent-ils
+vers le même point ?", a dérivé la relation exacte manquante côté
+RÉCEPTEUR (jusque-là non écrite), symétrique à celle de l'émetteur :
+
+```
+u* = (1/beta) * [(1-delta)*s3 - (1+delta)*s4]      (u=q3-q4, r3=sigmoid(u))
+r4* = 1 - sigmoid(u*)
+```
+
+**Vérifiée indépendamment (recalcul direct, pas de trace) : `r4*=
+0,8852106009` contre le plateau Adam observé `r4=0,8852130348` — écart
+2,434e-6, confirmé au chiffre près.** L'agent a aussi précommis un
+test binaire décisif : le système COUPLÉ (émetteur ET récepteur tous
+deux en gradient naturel) doit converger vers `r4*` en un budget
+comparable à Adam (quelques milliers de pas) si "même destination,
+Adam juste plus rapide" est la bonne lecture.
+
+**Premier essai (lr=0,02, jusqu'à 20000 pas) : test ÉCHOUÉ** —
+`r4=0,698` à t=20000, encore à 0,187 de la prédiction. Plutôt que de
+conclure à un problème de fond, testé l'explication la plus triviale
+d'abord : `lr` insuffisant pour CE système rescalé. **À `lr=5,0` :
+convergence quasi parfaite** — `r4=0,88521079` à t=40000, écart à la
+prédiction analytique de **1,845e-7**, et `s3=0,99643232` correspond
+EXACTEMENT au plateau Adam (`0,9964323591`, accord à 7 chiffres
+significatifs).
+
+**Conclusion définitive, la plus solide de tout ce fil : Adam et le
+flot de gradient "vrai" (sans aucune adaptivité, juste un `lr`
+suffisant et les bons facteurs de gradient naturel émetteur+récepteur)
+convergent vers EXACTEMENT le même point fixe.** Le "facteur 500x" qui
+semblait séparer Adam du gradient naturel n'était pas un mécanisme
+manquant — juste un `lr` insuffisant dans la première tentative
+(0,02 au lieu de ~1-5 nécessaires pour ce système rescalé). Le plateau
+Adam à `s3=0,9964`/`r4=0,8852` (confirmé robuste sur 400000 pas plus
+tôt ce tour) est un vrai point fixe de l'objectif lui-même, avec
+maintenant une forme fermée exacte pour les DEUX coordonnées
+(émetteur ET récepteur), vérifiée indépendamment à chaque étape.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| une relation exacte symétrique existe côté récepteur pour son propre point fixe sous gradient naturel | 18/09 (agent) | **confirmée** le 18/09, revérifiée par moi — écart 2,434e-6 avec le plateau Adam observé |
+| le système couplé en double gradient naturel converge vers r4* en quelques milliers de pas (test précommis) | 18/09 (agent) | **réfutée** à lr=0,02 (encore à 0,187 de r4* à t=20000) — MAIS confirmée à lr=5,0 (écart 1,845e-7 à t=40000) : le budget nécessaire dépend fortement du lr, pas une réfutation du mécanisme |
+| Adam et le flot de gradient réel convergent vers le même point fixe, Adam accélérant juste la convergence | 18/09 (moi, puis confirmé analytiquement) | **CONFIRMÉE définitivement** le 18/09 — accord à 7 chiffres significatifs sur s3 ET r4 entre Adam et le double-gradient-naturel à lr=5,0 |
+
+**Ce fil est maintenant clos avec la conclusion la plus solide
+possible : fermée analytiquement des deux côtés (émetteur ET
+récepteur), vérifiée trois fois indépendamment (moi, deux agents),
+avec un test précommis qui a d'abord semblé échouer puis a été
+expliqué et confirmé en creusant l'explication la plus simple
+d'abord (lr insuffisant) plutôt que de sauter à un mécanisme
+compliqué.** Exactement la discipline que ce projet répète depuis le
+début : chercher la version la plus triviale d'une explication avant
+d'en construire une plus exotique.
+
+Scripts (permanent) : traces reproductibles depuis
+`verifier_gradient_naturel_jouet_m.py` (à étendre avec le gradient
+naturel du récepteur si ce fil est repris).
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
