@@ -8996,18 +8996,62 @@ que j'avais écrit avant la correction ci-dessus :**
 | la définition de `τ` (temps écoulé total vs fenêtre de mesure réelle) change matériellement la conclusion d'une comparaison de préfacteur `C` | 18/09 (agent) | **confirmée** le 18/09, vérifiée indépendamment — `×17` devient `×5,94` avec une définition cohérente |
 | `λ_local` mesuré pour H6-direct (pas 30-50) est dans le régime linéaire propre du fantôme, près du plancher théorique | 18/09 (moi, implicite) | **réfutée** le 18/09 (agent, vérifié indépendamment) — `45,4×` au-dessus du plancher théorique `λ_min=2√μ`, la fenêtre mesure déjà la queue non-linéaire |
 
-**Protocole précis pour vraiment trancher, à faire la prochaine fois
-(aucune étape faite cette session) :** (1) redéfinir la fenêtre de
-`mu_delayed` avec le même critère opérationnel que H6-direct ; (2)
-ajuster `a` directement sur `(s3,g_e3)` bruts, séparément par run,
-sans supposer `a=1` ; (3) recalculer `mu_eff=a·mu_brut` avant toute
-comparaison ; (4) vérifier si `R` dérive loin de `0,829390` pendant
-les 59 pas de H6-direct aussi ; (5) vérifier le biais de correction
-Adam pour une paire "run frais vs run réchauffé" spécifiquement (mon
-refus antérieur de l'artefact d'optimiseur concernait une paire de
-runs différente, tous deux "réchauffés").
+**Étape 2 du protocole exécutée (18/09, suite immédiate, Théo :
+« continue ») : ajuster `a` directement sur les données brutes de
+vitesse `ds3/dpas` vs `x=s3`, séparément par run, sans supposer `a=1`.**
 
-Scripts : `verifier_h6_direct_trace.py` (sauvé en script permanent).
+Premier essai, fenêtre trop large (`s3>=0,97`, mélange la phase
+d'évacuation précoce du cas retardé avec la vraie zone de
+ralentissement) : sommets absurdes (`x0=0,939`), signes incohérents —
+**écarté, pas un résultat**. Corrigé en restreignant par INDICE DE PAS
+(pas par valeur de `s3`) à la zone de ralentissement réelle de chaque
+run (H6-direct : pas 0-24 ; cas retardé : pas 400-700, excluant
+l'évacuation ET l'effondrement final) :
+
+```
+H6-direct   (pas 0-24)   : a=-98,51   x0=0,994171  (attendu : 0,994300 -- bon accord)
+Cas retarde (pas 400-700): a=-9,70    x0=0,995804
+ratio |a_delayed|/|a_H6direct| = 0,0985  (soit a_H6direct ~10x plus raide)
+```
+
+**Vérification de robustesse (fenêtres légèrement décalées) — résultat
+important et honnête : le fit `a_delayed` est STABLE (`7,56` à `11,76`
+sur 3 fenêtres, facteur `×1,56`), mais le fit `a_H6direct` est
+INSTABLE (`98,5` à `550,7` sur 3 fenêtres, facteur `×5,6`).** La
+fenêtre H6-direct n'a que 20-24 points (contre 115-185 pour le cas
+retardé) — trop peu de données dans la zone vraiment linéaire pour un
+ajustement quadratique robuste. `mu` (valeur au sommet) est lui aussi
+instable pour H6-direct (change de signe entre fenêtres, ordre
+`1e-5`), alors qu'il est stable et cohérent pour le cas retardé
+(`-4,6` à `-4,8e-6`, toujours négatif).
+
+**Conclusion honnête : un écart de géométrie locale est PROBABLEMENT
+réel (même la comparaison la plus conservatrice — plus petit `a_H6direct`
+mesuré, `98,5`, contre plus grand `a_delayed` mesuré, `11,76` — donne
+encore un facteur `~8,4×`), mais son AMPLEUR PRÉCISE n'est pas
+mesurable avec les données actuelles — le fit H6-direct n'est tout
+simplement pas assez robuste. Pas un chiffre à publier comme final,
+juste une direction (probable différence, ordre de grandeur incertain)
+avec la raison technique précise de l'incertitude.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le coefficient `a` de la forme normale diffère substantiellement entre les deux points selles | 18/09 (moi) | **probable mais pas confirmée avec précision** le 18/09 — écart réel même dans la lecture la plus conservatrice (`~×8,4` minimum), mais le fit H6-direct est trop instable pour un chiffre définitif |
+| le fit quadratique de `a_H6direct` est robuste au choix de fenêtre | 18/09 (moi, implicite) | **réfutée** le 18/09 — varie `×5,6` selon la fenêtre (20-24 points seulement, trop peu pour la zone vraiment linéaire) |
+
+**Pour vraiment fermer cette piste (pas fait cette session, faute de
+données H6-direct assez denses) : régénérer une trajectoire H6-direct
+avec BEAUCOUP plus de points dans la zone linéaire** (plusieurs
+`cible_s3` très proches de `0,994300`, ou `check_tous` plus fin sur
+les tout premiers pas) pour stabiliser le fit, avant de comparer le
+`a` final aux `7,56-11,76` déjà bien établis du cas retardé. Restent
+aussi les étapes 1, 4, 5 du protocole de l'agent (fenêtre `mu_delayed`
+avec le même critère que H6-direct, dérive de `R` dans H6-direct,
+biais Adam run-frais-vs-réchauffé) — aucune faite.
+
+Scripts : `verifier_h6_direct_trace.py`, `verifier_forme_normale_pli.py`
+(script permanent, ajustement quadratique direct — la méthode est
+bonne, les données H6-direct actuelles sont juste trop clairsemées).
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
