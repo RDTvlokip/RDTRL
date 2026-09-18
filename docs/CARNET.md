@@ -8543,7 +8543,62 @@ perturbation a le plus de prise pour renverser l'issue.
 | le renversement de bassin sous masse de fond est universel, indépendant de `R_init` | 18/09 (moi, implicite) | **réfutée** le 18/09 — absent à `R_init=0,75`, présent à `R_init=0,60` |
 | le renversement se manifeste préférentiellement près de la zone de sensibilité déjà connue de la séparatrice d'origine, pas partout | 18/09 (moi) | **cohérente avec les 2 points testés, pas encore un test direct** |
 
-Script : `verifier_masse_fond_systeme_reel.py`.
+**Soumis à un agent-dipankar (règle CLAUDE.md). Critique dense —
+plusieurs failles méthodologiques réelles trouvées :** (1) une
+bissection à `tol=1e-7` termine TOUJOURS avec un bracket de cette
+largeur, que la transition soit une vraie discontinuité ou un
+croisement continu raide — « net » décrit mon critère d'arrêt, pas
+forcément le système ; (2) ma grille de gradient (espacement `~5e-5`)
+est 100× plus grossière que le bracket du seuil (`5e-7`) — un
+« lisse » mesuré à cette échelle ne peut pas exclure un coude DANS un
+intervalle entre deux points testés ; (3) surtout : réfuter `g3=0`
+exactement au seuil ne confirme PAS la course — il faudrait observer
+`g3` et `g4` CROISER (changer de signe relatif), pas juste vérifier
+que `g3` seul est non-nul. **Question précise posée par l'agent :
+`grad[4,10]` (émetteur du référent 4) aux mêmes 6 points, `g3-g4`
+change-t-il de signe ?**
+
+**Testé directement, réponse NÉGATIVE et décisive (compte comme
+résultat, pas un échec — Théo, 18/09 : « il nous faut des réponses
+même négatives ») :**
+
+```
+cible_s3=0,99000    grad3=-5,144832e-05  grad4=2,615269e-14  grad3-grad4=-5,14e-05
+cible_s3=0,99900    grad3=-3,480993e-06  grad4=2,615269e-14  grad3-grad4=-3,48e-06
+cible_s3=0,99940    grad3=-1,862357e-06  grad4=2,615269e-14  grad3-grad4=-1,86e-06
+cible_s3=0,99944    grad3=-1,709650e-06  grad4=2,615269e-14  grad3-grad4=-1,71e-06
+cible_s3=0,99945    grad3=-1,671796e-06  grad4=2,615269e-14  grad3-grad4=-1,67e-06
+cible_s3=0,999452   grad3=-1,664241e-06  grad4=2,615269e-14  grad3-grad4=-1,66e-06
+cible_s3=0,999453   grad3=-1,660466e-06  grad4=2,615269e-14  grad3-grad4=-1,66e-06
+cible_s3=0,99946    grad3=-1,634077e-06  grad4=2,615269e-14  grad3-grad4=-1,63e-06
+cible_s3=0,99950    grad3=-1,484590e-06  grad4=2,615269e-14  grad3-grad4=-1,48e-06
+cible_s3=0,99990    grad3=-1,778014e-07  grad4=2,615269e-14  grad3-grad4=-1,78e-07
+```
+
+**`grad4` est CONSTANT et négligeable (2,6e-14, bruit numérique)
+partout — référent 4 est déjà saturé depuis le checkpoint d'origine,
+son émetteur ne bouge jamais. `grad3-grad4` ne change JAMAIS de signe
+sur toute la plage, y compris à résolution fine autour du seuil exact
+(`0,999452`/`0,999453`, à l'intérieur même de l'ancien intervalle
+grossier).** H-course, dans sa formulation littérale (« une course
+entre les deux gradients d'émetteur à `t=0` »), est **RÉFUTÉE** : il
+n'y a pas de croisement à observer, un seul gradient bouge, l'autre
+est figé depuis le départ. Le mécanisme n'est PAS une compétition
+entre les deux ÉMETTEURS — il doit se jouer ailleurs (côté RÉCEPTEUR,
+comme l'agent le suggère en alternative, ou dans l'évolution du
+gradient de l'émetteur 3 PENDANT l'entraînement plutôt qu'à `t=0`,
+que je n'ai pas non plus testée).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H-course littérale : `g3` et `g4` (gradients des deux émetteurs) se croisent près du seuil, déterminant qui « gagne » | 18/09 (moi) | **réfutée** le 18/09 — `g4` constant et négligeable partout, aucun croisement possible |
+| le mécanisme du renversement est une compétition entre les deux ÉMETTEURS | 18/09 (moi, implicite) | **réfutée** le 18/09 — un seul gradient d'émetteur bouge (référent 3), l'autre est figé ; la compétition doit être ailleurs |
+
+Script : `verifier_masse_fond_systeme_reel.py`. Piste ouverte pour la
+reprise : tester le gradient du RÉCEPTEUR (pas de l'émetteur) aux
+mêmes points, et/ou suivre `g3(t)` sur toute la trajectoire (pas
+seulement `t=0`) pour voir s'il croise un plancher `adam_eps` en cours
+de route plutôt qu'au départ.
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
