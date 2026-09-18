@@ -173,8 +173,22 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    LA BRANCHE GRADUÉE côté récepteur, qui se déstabilise vers une
    saturation complète plutôt que de rester sur son équilibre
    intermédiaire. **Fil de la piste 3 (masse de fond) refermé avec un
-   mécanisme complet, pas juste un constat.** Détail complet :
-   `CARNET.md` fin de §7.65.
+   mécanisme complet, pas juste un constat.**
+
+   **POURQUOI la réduction (x,R) ne voit pas ce canal — élucidé
+   structurellement.** Dérivées de branche recalculées à la valeur R
+   de la branche graduée STABLE (pas seulement au pli) : identiques à
+   15 chiffres pour tout M. **La réduction (x,R) est donc
+   M-indépendante PARTOUT, pas seulement au pli — le canal manquant
+   ne peut structurellement pas y être.** Candidat bien étayé : la
+   masse de fond elle-même reste non négligeable jusqu'à `t≈5000-8000`
+   (mesuré), exactement la fenêtre où `R` évolue vers sa valeur
+   finale — l'hypothèse de quasi-stationnarité sous-jacente à
+   `R_br(x;M)` (vraie à l'équilibre, vérifiée plusieurs fois) ne
+   tient pas assez longtemps pour M>0 pendant que le sort de la
+   branche se joue. Piste complète pour une session future : ajouter
+   une 3e équation (`d(masse_autres)/dt`) et refaire l'analyse en 3D.
+   Détail complet : `CARNET.md` fin de §7.65.
 
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
