@@ -8734,6 +8734,88 @@ masse de fond).
 | le renversement de bassin se joue à un moment précis PENDANT l'entraînement (pas à t=0), visible en suivant la trajectoire | 18/09 (moi) | **confirmée** le 18/09 — divergence nette entre pas=600 et pas=800, gradient quasi nul à pas=600 pour la trajectoire qui survit |
 | la masse de fond crée un NOUVEAU mécanisme de bifurcation, distinct du point selle H6 déjà connu | 18/09 (moi, implicite) | **réfutée** le 18/09 — c'est le MÊME type de point selle (gradient quasi nul, extrême sensibilité), juste rencontré à un autre moment, pas un mécanisme différent |
 
+**Soumis à un agent-dipankar une 3e fois sur ce fil. Retour riche —
+chiffres affinés, un préfacteur qui confirme joliment la lecture
+« fantôme de nœud-col », et sa question finale réglée par simple
+lecture de code, pas par expérience.**
+
+**Précisions numériques (recalculées indépendamment par l'agent, sans
+prendre mes valeurs pour acquises) :**
+- Traversée de zéro de `g_e3` (config SURVIT) : pas exactement
+  `600,283` par interpolation linéaire entre pas=600 et 605 — pas «
+  pas=600-605 », une valeur précise.
+- Facteur de croissance du gradient (config EFFONDRE, pas 550→760) :
+  `954,5×`, pas `~1000` (j'avais arrondi 5% trop haut).
+- `λ_grad` (taux local, pas 550-760) = `0,0327`/pas (e-folding 30,6
+  pas) ; `λ_state` (taux sur toute la fenêtre 0-770) = `0,0157`/pas
+  (e-folding 63,6 pas). **Ratio `2,08` entre les deux — les deux NE
+  DEVRAIENT PAS concorder si la croissance n'est pas uniformément
+  exponentielle, et elles ne concordent pas : ~550 des 770 pas sont
+  passés dans un régime de passage LENT (bien en dessous du taux
+  asymptotique), puis ~210 pas au taux rapide.** Exactement la forme
+  attendue d'un « fantôme » de nœud-col (forme normale de Strogatz
+  `dx/dt=μ+x²`, temps de passage `τ=C/√μ`).
+
+**Préfacteur `C` calculé (test que je n'avais pas fait) — confirmation
+propre :**
+
+```
+mu_survit = |0,999450-0,99945235| = 2,35e-6  ->  C = 600/mu^(-1/2) = 0,920
+mu_effondre = |0,999455-0,99945235| = 2,65e-6 ->  C = 600/mu^(-1/2) = 0,977
+```
+
+**`C` d'ordre 1 dans les deux configs, à 6% près l'une de l'autre —
+cohérent avec un vrai fantôme de nœud-col.** Ne règle PAS à lui seul
+« même point selle que H6 » (un point selle DIFFÉRENT créé par la
+masse résiduelle donnerait aussi un `C` d'ordre 1) — juste une
+confirmation supplémentaire de la STRUCTURE (fantôme), pas de
+l'IDENTITÉ (même point selle vs nouveau).
+
+**Correction sur « masse de fond négligeable à pas=600 » : vraie
+mais mauvais dénominateur.** `masse_fond≈5e-4` à pas=600 est bien
+`0,2%` de la masse initiale injectée (25%) — MAIS elle est **100×
+plus grande** que l'écart initial `s3` (`5e-6`) qu'on essaie de
+suivre. Pas assez petite pour être écartée sans vérification — reste
+une piste ouverte (protocole 3 de l'agent : suivre la DIFFÉRENTIELLE
+`masse_fond_effondre(t) - masse_fond_survit(t)`, pas encore fait).
+
+**Comparaison `λ` à `k∈[1,42;2,45]`/`D≈8,0021`/`C0≈0,2212604` :
+refusée à raison, unités incommensurables (même mise en garde que la
+fois précédente sur une comparaison similaire) — `λ` est un taux par
+pas d'Adam discret, `k`/`D`/`C0` sont des constantes d'ajustement
+d'équations différentes, paramétrées par `delta` ou `s3_init`, pas par
+le nombre de pas. Pas de ratio à publier.
+
+**Question finale de l'agent, réglée par lecture de code (pas besoin
+d'expérience) : `fixer_s3` réinitialise-t-il l'état Adam `(m,v)` de la
+case `[3,10]` ?** Vérifié directement dans `verifier_prior_asymetrique.py`
+: `continuer_sous_prior` crée `opt = torch.optim.Adam(...)` **APRÈS**
+que `fixer_s3`/`fixer_r4`/`fixer_masse_fond` aient modifié les
+paramètres — un optimiseur TOUJOURS neuf (déjà vérifié dans ce même
+fil pour une question connexe). **Réponse : oui, l'état est
+implicitement "réinitialisé" — en réalité il n'existe simplement pas
+encore, `exp_avg`/`exp_avg_sq` s'initialisent à zéro pour TOUTES les
+cases (y compris `[3,10]`) au premier `step()`, aucun état antérieur
+ne peut être "resté" puisque l'optimiseur vient d'être construit.**
+Le risque d'artefact d'optimiseur (protocole 4-5 de l'agent) est donc
+**réfuté par construction**, pas seulement par une expérience — pas
+d'état résiduel possible, point.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la croissance de `g_e3` est uniformément exponentielle sur toute la fenêtre 0-770 | 18/09 (agent, implicite pour tester) | **réfutée** le 18/09 — `λ_grad` et `λ_state` diffèrent d'un facteur 2,08, signe d'un régime de passage lent suivi d'un régime rapide, pas une seule exponentielle |
+| le préfacteur `C` du temps de passage est d'ordre 1, cohérent avec un fantôme de nœud-col | 18/09 (agent) | **confirmée** le 18/09 — `C=0,920` et `0,977`, à 6% près |
+| `fixer_s3` pourrait laisser un état Adam résiduel qui fausse la lecture du point selle | 18/09 (agent) | **réfutée** le 18/09, par lecture de code — l'optimiseur est toujours construit APRÈS les `fixer_*`, aucun état préexistant possible |
+| la masse de fond résiduelle à pas=600 (`5e-4`) est négligeable face à l'écart initial suivi (`5e-6`) | 18/09 (moi, implicite) | **réfutée** le 18/09 (agent) — elle est 100× PLUS GRANDE, mauvais dénominateur utilisé, piste toujours ouverte |
+
+**Bilan à ce stade : le mécanisme est confirmé être un fantôme de
+nœud-col authentique (structure confirmée par le préfacteur `C`), le
+risque d'artefact d'optimiseur est définitivement écarté, mais
+l'identité exacte du point selle (même que H6, ou nouveau créé par la
+masse résiduelle) reste ouverte — protocole précis proposé par l'agent
+(overlay temporel avec la trajectoire H6 d'origine, continuation
+paramétrique sur la fraction de masse) pour la prochaine reprise.**
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
