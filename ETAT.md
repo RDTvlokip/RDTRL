@@ -125,24 +125,49 @@ tout re-raconter.*
    `verifier_d_structurel.py`) et voir si elle varie avec M de façon à
    expliquer l'écart de 6,5 décades.
 
-   **3c. EN COURS au moment de cette note — test direct sur le VRAI
-   système à 27 référents, pas le jouet.** Plutôt que de construire une
-   ODE pour un modèle réduit (dont `k` lui-même n'a jamais été
-   dérivable analytiquement, même au tour 52 — seulement mesuré
-   empiriquement), applique le protocole pin-and-falsify du tour 52
-   DIRECTEMENT sur le système complet : perturbe la masse initiale de
-   10 « autres » référents (6 à 15) sur le message 10 à 25% de masse
-   totale (analogue au jouet M=25), bissecte le point de bascule à
-   `R_init=0,60`, `delta=0,013`, avec et sans cette perturbation, lit
-   `k` sur la table de dipankar (tour 52) dans les deux cas et compare.
-   **Script `verifier_masse_fond_systeme_reel.py`, lancé, ~29 minutes
-   estimées (72s par appel d'entraînement × ~24 appels), résultat pas
-   encore connu au moment de cette note — lire sa sortie en premier à
-   la reprise.** Réponse positive (k se déplace, cohérent en sens et en
-   ordre de grandeur avec `k∈[1,42;2,45]`) OU négative (k ne bouge
-   pas) : LES DEUX comptent comme résultat (Théo, 18/09/2026 : « il
-   nous faut des réponses même négatives ou positives ») — ne pas
-   laisser ce test à moitié fait si le résultat semble décevant.
+   **3c. FAIT le 18/09/2026 — test direct sur le VRAI système à 27
+   référents. Résultat DÉCISIF et inattendu, plus riche que la question
+   posée, mais le mécanisme précis reste ouvert.** Plutôt que de
+   construire une ODE pour un modèle réduit, applique le protocole
+   pin-and-falsify du tour 52 DIRECTEMENT sur le système complet :
+   perturbe la masse initiale de 10 « autres » référents (6 à 15) sur
+   le message 10 à 25 % de masse totale, bissecte le point de bascule à
+   `R_init=0,60`, `delta=0,013`, avec et sans cette perturbation.
+   - **Baseline reproduite avec succès** : `flip=0,979616`, `k≈1,613`
+     (dans la fourchette `[1,42;2,45]` déjà connue).
+   - **Avec 25 % de masse de fond : LE BASSIN S'INVERSE.** `s3_init`
+     BAS (0,90-0,999) → gradué ; `s3_init` HAUT (≥0,9995) → effondré —
+     l'exact inverse du cas non perturbé. Seuil localisé précisément :
+     entre `0,9994521` et `0,9994526`.
+   - **Ce n'est PAS universel** : à `R_init=0,75` (plus proche de la
+     branche `≈0,794`), aucun renversement, tout reste gradué —
+     spécifique à `R_init=0,60` (zone déjà sensible de la séparatrice
+     d'origine).
+   - **Soumis à un agent-dipankar, plusieurs vraies failles trouvées et
+     corrigées** : bissection ne prouve pas une vraie discontinuité
+     (juste son critère d'arrêt) ; grille de gradient 100× trop
+     grossière ; surtout — **H-course (les deux gradients d'émetteur se
+     croisent) RÉFUTÉE** : `grad[4,10]` est constant et négligeable
+     partout (référent 4 déjà saturé), `grad3-grad4` ne croise jamais
+     zéro. **Testé aussi côté récepteur (`grad_r3-grad_r4`) : même
+     verdict, lisse, pas de croisement.**
+   - **Conclusion robuste par élimination : le renversement de bassin
+     n'est visible dans AUCUN instantané statique (émetteur ou
+     récepteur, à `t=0`) — c'est un phénomène authentiquement
+     DYNAMIQUE, qui se joue au fil des 40000 pas d'entraînement.**
+     Reste à faire pour vraiment percer le mécanisme : suivre la
+     trajectoire complète (pas un instantané) de `g3(t)`, `g_r3(t)`,
+     `g_r4(t)` et la masse de fond, pour voir où et quand un
+     croisement ou un plancher apparaît EN COURS de route.
+   - **Réponse à la question initiale (« k se déplace-t-il comme
+     prévu ? ») : ni oui ni non simplement — le résultat est
+     QUALITATIF (réorganisation de la structure de bassin), pas une
+     simple lecture d'un `k` différent sur la même table.** Décisif,
+     positif ET négatif à la fois (Théo, 18/09 : « il nous faut des
+     réponses même négatives ou positives »).
+   Script : `verifier_masse_fond_systeme_reel.py`. Détail complet,
+   avec tous les chiffres et le cycle QUAND/COMMENT/POURQUOI complet :
+   `CARNET.md`, fin de §7.65 (section « Piste 3c »).
 
    **3d. Piste 4, rappelée ici explicitement (Théo, 18/09/2026 :
    « rajoute la piste 4 ») — `docs/ARTICLE4.md` n'intègre toujours pas
