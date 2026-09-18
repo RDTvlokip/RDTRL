@@ -9517,6 +9517,86 @@ session, avec une carte complète et honnête de six échecs diagnostiqués.**
 
 Scripts (permanent) : `verifier_a_h6direct_rechauffement_reel.py`.
 
+**Piste 3a (18/09/2026, Théo : « commence par 3a, regarde si on ne l'a
+pas fait avant ») — jamais commencée avant cette session (vérifié par
+grep sur tout `src/test3_communication/` : seul l'ODE du SYSTÈME RÉEL,
+M=0 implicite, existait). Construite ici, avec un vrai va-et-vient
+d'auto-correction et d'agents.**
+
+**Fonctions de branche dérivées pour le jouet à M catégories de fond**
+(`verifier_ode_jouet_m.py`) : émetteur en sigmoïde binaire (pas un
+softmax à 27 voies comme le système réel — bug trouvé et corrigé EN
+TOURNANT le script une première fois, `x_br` réutilisait à tort la
+forme du système réel) :
+
+```
+x_br(R)   = 1 - sigmoid(N*poids3*(1-R)/beta)
+R_br(x;M) = e4 / (e3(x) + e4 + M)
+```
+
+Sanité M=0 vs forme fermée du système réel : écart <1e-15, formule
+`R_br` validée dans son cas limite.
+
+**Premier calcul du pli (comptage de racines sur grille fixe) : FAUX
+DE 40%, trouvé par un agent-dipankar.** `delta_c(M)` sortait identique
+à 16 décimales pour tout M (0,011151...) — un premier agent a montré
+(vérifié indépendamment en mpmath 50 chiffres, confirmé au chiffre
+près) que le vrai pli est à `x*≈0,0042146`, `delta_c≈0,018699092479`,
+et que ma grille (pas ~5e-6 sur [0,1]) était ~40× trop grossière pour
+voir un pli logé dans une fenêtre de cette taille — un artefact de
+grille stable, pas une vraie insensibilité à M.
+
+**Le chiffre de sensibilité à M de l'agent lui-même (2e-11) était
+FAUX aussi — revérifié indépendamment, agent challengé une deuxième
+fois sur ce point précis.** En gardant tout le calcul en mpmath
+(jamais de conversion float64 avant la soustraction finale, l'erreur
+exacte que je venais de faire une fois moi-même avec la fausse
+alerte des trois amplitudes différentes, §7.65 plus haut) : l'écart
+relatif réel entre `delta_c(M=25)` et `delta_c(M=0)` est **8,002e-21**,
+cohérent avec la borne théorique `M/(e3+e4)=1,68e-21` à un facteur
+~4,8 près — PAS `2e-11`, dix ordres de grandeur d'écart avec le
+chiffre de l'agent, qui avait lui-même perdu la précision dans sa
+propre soustraction. **Mon diagnostic initial (M négligeable sur le
+vrai pli, par ~21 ordres de grandeur) tenait — c'est la vérification
+de l'agent qui ne tenait pas, pas la mienne.**
+
+Script corrigé (`localiser_pli` par tangence Newton au lieu du
+comptage de grille) : `delta_c(M)=0,018699092479043` pour tout
+M∈{0,1,3,8,25} testé, points de bascule ODE identiques bit-à-bit
+entre M=0 et M=25 (résultat maintenant ATTENDU — 8e-21 est ~5 ordres
+sous le plancher de précision float64 ~1e-16, pas un bug).
+
+**LE TEST DÉCISIF — l'hypothèse « budget de convergence fini »
+RÉFUTÉE le 18/09/2026.** Le modèle quasi-statique dit M négligeable ;
+une expérience dynamique antérieure (entraînement réel) avait mesuré
+un vrai décalage de -0,84% entre `delta_c(M=0)` et `delta_c(M=25)`.
+Hypothèse : cet écart est un artefact de budget fini (motif déjà
+rencontré plusieurs fois cette session — ralentissement critique,
+cible mobile). **Test précommis : rejouer la bissection dynamique à
+5× le budget (40000→200000 pas).**
+
+```
+pas=40000   delta_c(M=0)=0,018711  delta_c(M=25)=0,018555  shift=-0,835%
+pas=200000  delta_c(M=0)=0,018711  delta_c(M=25)=0,018555  shift=-0,835%  (IDENTIQUE)
+```
+
+**Le décalage ne bouge pas d'un chiffre significatif à 5× le budget.
+L'hypothèse budget-fini est RÉFUTÉE.** Le -0,835% est un vrai
+phénomène dynamique, reproductible, que la réduction quasi-statique à
+2 variables (x, R) ne capture PAS. Un troisième agent est en cours
+pour challenger ce résultat et la piste la plus probable pour le
+canal manquant (l'hypothèse `s4=1` saturé, empruntée du système réel,
+pourrait être fausse spécifiquement sous masse de fond dans ce
+jouet — pas encore vérifiée directement).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| M a un effet négligeable sur le pli quasi-statique (~21 ordres de grandeur sous e3+e4) | 18/09 (moi) | **confirmée** le 18/09, deux fois (mpmath direct + agent challengé et re-vérifié sur son propre chiffre de sensibilité) |
+| le décalage empirique -0,84% de delta_c(M) est un artefact de budget de convergence fini | 18/09 (moi) | **réfutée** le 18/09 — identique à 5x le budget (40000 vs 200000 pas) |
+| s4 (challenger) reste saturé à ~1 sous masse de fond, comme dans le système réel | 18/09 (moi, hypothèse pour le canal manquant) | ouverte, soumise à l'agent en cours |
+
+Scripts (permanents) : `verifier_ode_jouet_m.py`.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
