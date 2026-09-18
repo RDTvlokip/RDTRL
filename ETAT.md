@@ -192,8 +192,29 @@ tout re-raconter.*
      directement sur les données, pas le supposer à 1 ; la distance
      statique `mu_H6=5e-6` s'est révélée être une coordonnée
      probablement incorrecte, `×2058` d'écart avec le `mu` implicite du
-     taux mesuré). Protocole précis pour la reprise (5 étapes,
-     détaillées dans `CARNET.md`) — aucune faite encore.
+     taux mesuré).
+   - **Étape 2 du protocole tentée (ajuster le coefficient quadratique
+     `a` directement) — 3 méthodes essayées, 3 échecs DIAGNOSTIQUÉS,
+     aucune n'a produit de chiffre fiable.** (i) Fit sur trajectoire
+     unique bien localisée par indice de pas : `a_H6direct=-98,5`, mais
+     INSTABLE (`×5,6` selon la fenêtre, trop peu de points) contre
+     `a_delayed=-9,7`, LUI stable (`×1,56` seulement) → écart minimum
+     robuste `~×8,4`, mais pas de chiffre précis. (ii) Un seul pas Adam
+     depuis 21 points frais : sommet absurde — **le premier pas Adam à
+     état frais a TOUJOURS une magnitude ≈lr complet (correction de
+     biais), écrasant l'info de gradient — piège méthodologique réel,
+     pas un bug.** (iii) Regrouper 10 trajectoires des deux côtés du
+     seuil : sommet `x0=1,005`, physiquement impossible — **mélanger
+     des trajectoires qui récupèrent avec des trajectoires qui
+     s'effondrent viole la forme normale locale.** Piste non essayée :
+     fit sur UN SEUL côté du seuil, en sautant les premiers pas
+     biaisés, avec un point de départ encore plus proche du seuil.
+   - **Conclusion à ce stade : NI confirmé NI réfuté, et cette
+     question précise (identité exacte du point selle) résiste à
+     plusieurs approches d'affinement — un bon point d'arrêt pour cette
+     piste précise, avec 3 pièges méthodologiques bien documentés pour
+     ne pas les retraverser.** Protocole restant (étapes 1, 4, 5,
+     détaillées dans `CARNET.md`) — aucune faite.
    - **Réponse à la question initiale (« k se déplace-t-il comme
      prévu ? ») : ni oui ni non simplement — le résultat est
      QUALITATIF (réorganisation de la structure de bassin), pas une
