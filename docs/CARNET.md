@@ -9823,6 +9823,41 @@ tour, volume déjà élevé) : traces `s3(t)`/`r4(t)` reproductibles
 directement depuis `entrainer_toy_m`/`construire_toy_m` de
 `verifier_jouet_n_variable.py` et `x_br` de `verifier_ode_jouet_m.py`.
 
+**Dernier pas, même tour (Théo : « continue ») — POURQUOI la
+réduction (x,R) ne voit pas ce canal, élucidé structurellement.**
+Piste suggérée en fin d'entrée précédente : comparer la stabilité
+locale (dérivées de branche) à la valeur R de la branche graduée
+STABLE (pas seulement au pli instable) entre M=0 et M=25. Racine
+stable localisée (`x_s≈1,141e-3`, `s3_s≈0,998859`, `R_s≈0,862052`) et
+dérivées `x_br'(R_s)` et `R_br'(x_s;M)` calculées : **identiques à 15
+chiffres significatifs pour tout M∈{0,1,3,8,25}.** Donc la réduction
+(x,R) n'est pas seulement M-indépendante AU pli — elle l'est
+PARTOUT (pli ET branche stable). **Conclusion structurelle : le
+canal manquant ne peut PAS être dans cette réduction à 2 variables,
+quel que soit le point qu'on y sonde — il faut une vraie 3e
+variable qu'elle omet par construction.** Candidat naturel, déjà
+mesuré dans ce même tour (traces `masse_autres(t)`) : la masse de
+fond elle-même reste non négligeable (`>1e-6`) jusqu'à `t≈5000-8000`
+— exactement la fenêtre où `R` évolue de son départ vers `R=1`. Tant
+que cette masse n'a pas drainé, l'hypothèse « `r3+r4≈1` » qui sous-
+tend `R_br(x;M)` est fausse EN TRANSITOIRE (elle n'est vraie qu'À
+L'ÉQUILIBRE) — la réduction (x,R) suppose R toujours à son
+quasi-équilibre instantané, une hypothèse qui s'effondre précisément
+pendant la fenêtre où le sort de la branche se joue. **Le canal
+manquant est donc, structurellement, la dynamique propre de la masse
+de fond pendant le transitoire — pas un défaut de `x_br`/`R_br`
+eux-mêmes (tous deux valides à l'équilibre, vérifiés multiples fois),
+mais une hypothèse de quasi-stationnarité qui ne tient pas assez
+longtemps pour M>0.** Piste complète pour une session future si
+besoin : ajouter une 3e équation (`d(masse_autres)/dt`) à l'ODE de
+3a et refaire l'analyse de stabilité en 3D plutôt qu'en 2D — pas fait
+ce tour (vrai travail de modélisation neuf).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la structure locale (dérivées de branche) à la branche graduée STABLE dépend de M, comme au pli | 18/09 (moi) | **réfutée** le 18/09 — identique à 15 chiffres significatifs pour tout M, confirme que la réduction (x,R) est M-indépendante partout |
+| le canal manquant est structurellement hors de la réduction (x,R), lié à la dynamique transitoire de la masse de fond elle-même | 18/09 (moi) | ouverte mais bien étayée — cohérente avec la fenêtre temporelle mesurée (masse de fond non négligeable jusqu'à t≈5000-8000, exactement quand R évolue vers sa valeur finale) ; pas prouvée formellement (nécessiterait l'ODE à 3 variables) |
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
