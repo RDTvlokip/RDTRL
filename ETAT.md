@@ -139,6 +139,30 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    manquant indépendant de l'optimiseur. Détail complet : `CARNET.md`
    fin de §7.65.
 
+   **Protocole lr exécuté le 18/09/2026 (Théo : « continue à
+   chercher »).** `lr=0,05` donne un décalage de **-1,0447%** (contre
+   -0,6275% à `lr=0,2`) — **le décalage dépend bien significativement
+   de `lr`.** Un agent a réfuté mon explication naïve pour ce
+   résultat (résidu de convergence) et proposé un mécanisme plus fin
+   (temps de franchissement du col, pas résidu final) — **mais SON
+   PROPRE tableau de vérification contenait une vraie erreur sur
+   M=25, trouvée en le rejouant deux fois moi-même** (`s3=0,4998`
+   reproductible bit-à-bit, pas `0,9973` comme rapporté). En
+   corrigeant sa fenêtre de mesure (le vrai col est à `s3≈0,9958`,
+   pas `0,5`), confirmé : **M=25 passe 11-13× moins de temps dans la
+   région lente du VRAI pli que M=0** — un effet dynamique réel,
+   distinct de la géométrie statique (identique). Mais M=25 finit
+   ensuite bloqué à `s3=0,5`, un attracteur DÉJÀ DOCUMENTÉ dans le
+   docstring de `bissecter_delta_c` (pas une découverte de cette
+   session) — dont l'interaction précise avec M reste non élucidée.
+   **Bon point d'arrêt : le décalage lr-dépendant est confirmé réel,
+   la géométrie du pli n'y est pour rien (confirmé 3 fois), le
+   mécanisme dynamique exact (pourquoi M=25 spécifiquement tombe dans
+   l'attracteur s3=0,5 documenté) reste ouvert pour une session
+   future, avec un protocole déjà esquissé** (tracer `s3(t)` dense
+   autour de `s3=0,5` pour M=0 et M=25). Détail complet : `CARNET.md`
+   fin de §7.65.
+
    **3b. DISSOUTE le 18/09/2026 (Théo : « 3b »).** La question elle-même
    n'avait plus d'objet : le coefficient de courbure `a` du pli
    (`a=F''(x*)/2`, calculé directement avec les fonctions de branche
