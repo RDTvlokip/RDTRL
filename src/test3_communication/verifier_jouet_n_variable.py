@@ -62,16 +62,23 @@ def objectif_toy_m(p3, p4, q, poids3, poids4):
 
 
 def entrainer_toy_m(M, delta, pas=40000, lr=0.05, adam_eps=1e-10,
-                     s3_init=0.999999999666, r_tie=0.5, avec_mi_parcours=False):
+                     s3_init=0.999999999666, r_tie=0.5, avec_mi_parcours=False,
+                     r_autres_init=1e-6):
     """avec_mi_parcours=True renvoie AUSSI s3 a pas//2 -- necessaire au
     critere de TENDANCE (s3 decroit-il ?) plutot qu'un seuil absolu :
     pres de s3=0,5, la dynamique de ce jouet montre un plateau tres lent
     (verifie empiriquement : s3 encore a 0,500000 a 15000 pas, 0,499935 a
     40000, 0,498566 a 100000 pas, delta=0,05 -- bien au-dela du delta_c
-    du jouet) -- un seuil absolu s3<0,5 a budget fixe n'est donc PAS fiable."""
+    du jouet) -- un seuil absolu s3<0,5 a budget fixe n'est donc PAS fiable.
+
+    r_autres_init=1e-6 (le defaut d'origine) rend les M categories de
+    fond non-competitives des l'init (verifie le 17/09/2026 : elles
+    bougent mais n'influencent jamais Z, 6 ordres de grandeur d'ecart) --
+    passer une valeur plus grande (ex 0,01) pour un vrai test de
+    competition, en gardant M*r_autres_init < 1."""
     poids3 = torch.tensor((1.0 - delta) / N, dtype=torch.float64)
     poids4 = torch.tensor((1.0 + delta) / N, dtype=torch.float64)
-    p3, p4, q = construire_toy_m(M, delta, s3_init=s3_init, r_tie=r_tie)
+    p3, p4, q = construire_toy_m(M, delta, s3_init=s3_init, r_tie=r_tie, r_autres_init=r_autres_init)
     opt = torch.optim.Adam([p3, p4, q], lr=lr, eps=adam_eps)
     s3_mi = None
     for i in range(pas):
@@ -94,7 +101,7 @@ def entrainer_toy_m(M, delta, pas=40000, lr=0.05, adam_eps=1e-10,
     return R4, s3, s4, r3, r4, masse_autres
 
 
-def bissecter_delta_c(M, lo=0.010, hi=0.020, tol=1e-4, pas=40000, lr=0.2):
+def bissecter_delta_c(M, lo=0.010, hi=0.020, tol=1e-4, pas=40000, lr=0.2, r_autres_init=1e-6):
     """lr=0.2 (au lieu de 0,05) -- teste empiriquement : a lr=0,05, la
     dynamique pres du point d'entropie (s3=0,5, l'attracteur "effondre"
     de CE jouet -- pas 1/27, contrairement au systeme complet, car il n'y
@@ -104,7 +111,7 @@ def bissecter_delta_c(M, lo=0.010, hi=0.020, tol=1e-4, pas=40000, lr=0.2):
     a 40000-100000 pas, delta=0,05, bien au-dela du delta_c du jouet). A
     lr=0,2, la separation devient nette en 40000 pas (verifie)."""
     def sature(delta):
-        _, s3, *_ = entrainer_toy_m(M, delta, pas=pas, lr=lr)
+        _, s3, *_ = entrainer_toy_m(M, delta, pas=pas, lr=lr, r_autres_init=r_autres_init)
         assert s3 > 0.9 or s3 < 0.6, \
             f"M={M} delta={delta}: s3={s3:.6f} ambigu (ni graduee ni effondree nettement)"
         return s3 < 0.6
