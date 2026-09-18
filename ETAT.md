@@ -243,11 +243,22 @@ travail dans une nouvelle conversation sans tout re-raconter.*
    - **Conséquence actionnable pour l'identité du point selle : la
      comparaison `a_H6direct` vs `a_delayed` n'était pas condamnée par
      une différence de géométrie — elle était condamnée par un
-     artefact d'optimiseur CORRIGIBLE.** Recette non encore essayée
-     pour une session future : réchauffer l'état Adam de H6-direct
-     (comme le test d'injection, mais avec un vrai passage lent au
-     lieu d'un seul gradient capturé) puis refaire le fit quadratique
-     — devrait enfin donner un `a_H6direct` stable et comparable.
+     artefact d'optimiseur, mais PAS aussi facilement corrigible
+     qu'espéré.** Recette testée le 18/09/2026 (même tour) : (1)
+     fenêtre tardive (attendre que le chaos brut s'éteigne tout seul,
+     pas 18+) — marche pour le chaos (0 changement de signe) mais la
+     trajectoire a alors QUITTÉ la zone locale du col (`x0` dérive à
+     0,925-0,938, loin de 0,994300) ; (2) fit direct sur la trajectoire
+     à moments injectés — `a` dépend fortement et continûment de
+     `t_injecte` (`+25` à `t=10`, `+4` à `t=40`, pas de plateau), et
+     instable même en sous-fenêtre (`-18,7` puis `+28,2`, changement de
+     signe). **Les deux échouent pour la MÊME raison de fond : le
+     temps qu'il faut pour "nettoyer" l'optimiseur est du même ordre
+     que le temps que la trajectoire met à quitter le voisinage du
+     col — contrairement au cas retardé qui a ~400 pas de marge avant
+     son propre goulot.** 4 nouvelles hypothèses journalisées (dont la
+     plus prometteuse : un VRAI réchauffement multi-pas, pas une
+     injection à un seul gradient dupliqué, pas encore essayé).
      Protocole restant (étapes 1, 4 refaites à grain fin sur le cas
      retardé) — pas encore fait.
    - **Réponse à la question initiale (« k se déplace-t-il comme
