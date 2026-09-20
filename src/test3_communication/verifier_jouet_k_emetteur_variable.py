@@ -61,10 +61,10 @@ def objectif_toy(p3, p4, q, poids3, poids4, K):
     return (recompense + (BETA / N) * entropie).sum()
 
 
-def entrainer(delta, K, r_init=0.5, pas=40000, lr=0.05, adam_eps=1e-10):
+def entrainer(delta, K, r_init=0.5, s3_init=0.999, pas=40000, lr=0.05, adam_eps=1e-10):
     poids3 = torch.tensor((1.0 - delta) / N, dtype=torch.float64)
     poids4 = torch.tensor((1.0 + delta) / N, dtype=torch.float64)
-    p3, p4, q = construire_toy(K, r_init=r_init)
+    p3, p4, q = construire_toy(K, s3_init=s3_init, r_init=r_init)
     opt = torch.optim.Adam([p3, p4, q], lr=lr, eps=adam_eps)
     for _ in range(pas):
         j = objectif_toy(p3, p4, q, poids3, poids4, K)
@@ -75,6 +75,32 @@ def entrainer(delta, K, r_init=0.5, pas=40000, lr=0.05, adam_eps=1e-10):
         s3 = torch.sigmoid(p3).item()
         r4 = torch.sigmoid(q).item()
     return s3, r4
+
+
+def bissecter_flip_s3(K, delta, r_init, lo, hi, tol=1e-5, pas=4000):
+    """Protocole analogue a verifier_derive_k.py sur le vrai systeme :
+    a delta et r_init FIXES, et un budget LIMITE (pas de convergence
+    complete -- c'est la course entre s3 et r4 qui compte, pas
+    l'equilibre final), bissecte sur s3_INIT pour trouver le point de
+    bascule grade/effondre. La position de ce point de bascule, comparee
+    entre deux r_init a K fixe, est la mesure de k(R_init) sur ce
+    jouet -- jamais faite avant pour K != 1 (K=1 correspondrait au
+    jouet deja tente et abandonne en 17/09, verifier_k_jouet.py,
+    invalide car R_init hors de la region graduee du jouet a K=1)."""
+    seuil = 0.5 * (1.0 + 1.0 / (K + 1))
+
+    def grade(s3_init):
+        s3, r4 = entrainer(delta, K, r_init=r_init, s3_init=s3_init, pas=pas)
+        return s3 > seuil
+    grade_lo, grade_hi = grade(lo), grade(hi)
+    assert grade_lo != grade_hi, f"bornes ne separent pas: K={K} r_init={r_init} lo={lo} hi={hi}"
+    while hi - lo > tol:
+        mid = 0.5 * (lo + hi)
+        if grade(mid) == grade_lo:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
 
 
 def bissecter_delta_c(K, r_init, lo, hi, tol=1e-5, pas=40000):

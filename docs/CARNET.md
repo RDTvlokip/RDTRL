@@ -11081,6 +11081,133 @@ mécanisme de mélange est faux.
 
 ---
 
+## Piste émetteur (le « 26 » de H7) — jouet à K variable, 20/09/2026
+
+**JAMAIS journalisé ici avant — trouvé par un agent-dipankar qui a dû
+tout reconstruire depuis le script seul.** Un jouet à K variable côté
+émetteur (`verifier_jouet_k_emetteur_variable.py`, généralise
+`verifier_jouet_2_referents.py` qui fige K=1) a été construit et testé
+ce tour, avec des résultats substantiels — mais je l'avais mentionné
+UNIQUEMENT dans `ETAT.md` et les messages de commit, jamais dans ce
+carnet. **`ETAT.md` pointait vers « CARNET.md fin de §7.65/8ter » pour
+ces chiffres alors que rien n'y existait — un pointeur dans le vide,
+repéré par un second lecteur (l'agent) qui a dû tout rejouer depuis le
+code source sans pouvoir vérifier contre une dérivation écrite.** Leçon
+retenue : journaliser AU MOMENT du commit, pas après coup — exactement
+la règle déjà écrite dans CLAUDE.md, que j'ai suivie pour d'autres
+fils ce tour mais pas pour celui-ci.
+
+**Construction.** Chaque émetteur (référent 3, référent 4) a un
+softmax à K+1 issues (message10 vs K catégories "ailleurs"
+symétriques, repliées en un seul paramètre par symétrie — l'entropie
+du softmax complet est calculée analytiquement, `K` entre comme
+préfacteur multiplicatif dans la fonction de partition, exactement la
+structure de la formule fermée de H7 `d3=K·exp(-N·poids3·r3/beta)`).
+Récepteur binaire (r3 vs r4), comme le jouet H13 original.
+
+**Validation structurelle — solide.**
+```
+collapse exact a 1/(K+1) :  K=1 -> 0,500000   K=8 -> 0,111111   K=26 -> 0,037037
+delta_c(K=1)  = 0,018699   (reproduit le bracket H13 (0,018688;0,018711))
+delta_c(K=8)  = 0,015098
+delta_c(K=26) = 0,013438   (vrai systeme : 0,0134372)
+```
+**CORRECTION IMMÉDIATE d'une erreur trouvée par l'agent, avant de
+continuer** — j'avais écrit "écart ≈0,03%" pour `delta_c(K=26)` contre
+le vrai système : **faux, l'écart réel est 0,00588% ≈ 0,006%, cinq
+fois plus petit que ce que j'avais annoncé.** Recalcul direct :
+`|0,013438-0,013437210|/0,013437210 = 0,0000588`. Pas une simple
+coquille cosmétique — c'est ce chiffre correct (0,006%, pas 0,03%) qui
+rend l'argument de spécificité-à-K réellement fort : l'agent a mesuré
+la pente locale `delta_c(K)` près de K=26 (`≈-5,4e-5` par unité de K,
+soit `~0,4%` de décalage relatif pour K=25 ou K=27) et montre que
+l'écart résiduel observé correspond à un `ΔK` effectif de seulement
+`0,015` — 1,5% d'un pas entier. Deux courbes lisses sans rapport ne se
+croiseraient pas par hasard à 1/70e de l'espacement entre voisins.
+
+**Confirmation indépendante par résolution d'équilibre (Newton, pas
+Adam) — un pli authentique, pas un artefact numérique.** L'agent a
+transformé la formule H7 (ajustée contre `r3` mesuré) en un vrai point
+fixe à 3 variables :
+```
+r4 = sigmoid( (1/beta)*((1+delta)*s4-(1-delta)*s3) )
+(1-s3)/s3 = K*exp(-(1-delta)*r3/beta)
+(1-s4)/s4 = K*exp(-(1+delta)*r4/beta)
+```
+Résolu par Newton + Jacobienne aux différences finies, continuation en
+`delta`. `det(J)` décroît de façon monotone et lisse vers zéro en
+approchant `delta_c(K=26)` (`0,354` à `delta=0,01332` jusqu'à échec de
+Newton à `delta=0,01344`) — **un vrai nœud-col dans les équations
+réduites, pas un artefact de pas de continuation.** Bistabilité
+confirmée directement (pas juste inférée) : à tout `delta` sous
+`delta_c`, une résolution partant d'un état effondré (`s3=1/27`)
+converge vers `0,037037`, une résolution partant d'un état gradué
+converge vers `s3≈1` — deux équilibres coexistants, cohérent avec la
+lecture H11 (crise de bord) plutôt qu'un simple pli.
+Script permanent : `verifier_meanfield_fold_toy_k.py`,
+`verifier_meanfield_fold_diag_toy_k.py`.
+
+**DÉCOUVERTE NON CHERCHÉE, la plus intéressante du fil — asymétrie
+plat/ralentissement qui va dans le mauvais sens.** Test de
+ralentissement critique (même protocole que celui déjà utilisé sur le
+vrai système, §7.63, qui avait trouvé PLAT) rejoué sur ce jouet à K=26
+et K=1 (contrôle) — **VÉRIFIÉ INDÉPENDAMMENT PAR MOI, reproduit
+chiffre pour chiffre :**
+```
+K=26 (colle au vrai systeme)  :  40, 60, 60 pas   -- PLAT, pas de ralentissement
+K=1  (controle)                :  80, 300, 340 pas -- ralentit x4,25, vrai ralentissement
+```
+**K=26 reproduit la signature plate du vrai système MALGRÉ un vrai
+pli d'équilibre juste dessous (`det(J)→0` confirmé ci-dessus) — et
+K=1 montre un vrai ralentissement malgré un pli 12× PLUS LOIN de son
+propre `delta_c` que celui de K=26.** Si la proximité du pli pilotait
+le ralentissement, K=1 (pli loin) devrait être plus plat que K=26
+(pli collé au seuil) — c'est l'inverse. La proximité du pli
+d'équilibre et la signature dynamique (plat vs ralentit) sont
+DÉCOUPLÉES, dans le mauvais sens pour les deux K déjà validés — un
+vrai puzzle non résolu, pas encore une hypothèse fermée dessus.
+Scripts permanents : `verifier_ralentissement_toy_k26.py`,
+`verifier_ralentissement_toy_k1_controle.py`.
+
+**Amorce du test `k(R_init)` — protocole validé, conversion en `k`
+pas encore faite.** Piège du 17/09 évité (R_init choisi relatif au
+point selle DU JOUET, pas importé du vrai système) : le pli
+d'équilibre donne `r4_saddle(K=26)≈0,81`, `R_init` choisis autour de
+ce point plutôt qu'autour de la valeur du vrai système. Courbe de
+bascule `flip_s3_init(R_init)` (bissection sur `s3_init`, budget
+`pas=40000`, protocole complet, pas le raccourci à petit budget qui
+avait échoué en première tentative) :
+```
+agent (delta=0,013)   : R_init=0,70->flip=0,987274  0,75->0,989528  0,80->0,991599  0,85->0,993853  0,90->0,996411
+moi, indépendant (delta=0,0134) : R_init=0,50->flip=0,987187   0,75->flip=0,993354
+```
+**Monotone croissant dans les deux jeux de mesures (deltas
+différents, donc pas directement comparables chiffre à chiffre, mais
+la FORME — croissance monotone lisse, pas de région dégénérée —
+confirmée deux fois indépendamment).** **PAS encore fait** : convertir
+cette courbe en un vrai `k_fit` comparable à celui du vrai système —
+l'inversion ODE de `fit_k` (dans `verifier_derive_k.py`) a été dérivée
+pour les coordonnées du col du VRAI système (`d3_saddle=5,70024e-3`),
+pas pour celles de ce jouet — à refaire avant de pouvoir dire si `K`
+module la PENTE de `k(R_init)`, pas seulement observer que la courbe
+de bascule elle-même bouge avec `R_init`.
+
+**Test précommis, PAS encore exécuté** (posé par l'agent avant de
+connaître le résultat) : à K=8 ou K=20 (strictement entre le K=26 plat
+et le K=1 qui ralentit), le temps de convergence sort-il plat,
+ralenti, ou intermédiaire ? Ce résultat tranchera si "plat" est le cas
+générique (vrai système + K=26 sans rien de spécial, K=1 l'exception)
+ou si K=1 et K=26 encadrent déjà une vraie transition non localisée.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `delta_c(K=26)` matche le vrai système à ≈0,03% | 20/09 (moi) | **corrigée** le 20/09 par agent-dipankar — le vrai écart est 0,006%, cinq fois plus petit ; erreur d'arithmétique de ma part, pas de méthode |
+| le match `delta_c(K=26)` vs vrai système est une coïncidence de deux courbes lisses, pas un signal K-spécifique | 20/09 (moi, implicite) | **réfutée** le 20/09 par agent-dipankar — la pente locale `delta_c(K)` implique un `ΔK` effectif de 0,015 pour expliquer l'écart résiduel, bien trop précis pour une coïncidence |
+| le pli d'équilibre (Newton, non-Adam) à `delta_c(K=26)` est un artefact numérique de continuation, pas un vrai nœud-col | 20/09 (agent-dipankar, testée par elle-même) | **réfutée** — `det(J)→0` monotone et lisse, bistabilité confirmée directement par résolution depuis deux points de départ différents |
+| la proximité du pli d'équilibre prédit la présence de ralentissement critique dynamique | 20/09 (moi, implicite) | **réfutée** le 20/09 par agent-dipankar, **vérifiée indépendamment par moi (chiffres identiques)** — K=26 (pli collé au seuil) est plat, K=1 (pli 12× plus loin) ralentit ×4,25 ; sens inverse de ce qu'une proximité de pli prédirait |
+
+---
+
 ## 8. Vingt questions inconfortables
 
 Règle que je m'impose ici : pas de question dont je connais déjà la réponse, pas

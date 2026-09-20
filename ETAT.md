@@ -88,12 +88,28 @@ dans `git log`.*
    — signature exacte du mélange. **Reste ouvert** : test précommis à
    `beta2=0,985` (n≥40 kicks) pas encore exécuté ; le coefficient `a`
    du col H6-direct (item 4 plus bas) n'a pas avancé.
-   **NOUVEAU fil ouvert ce tour** : jouet à K variable côté émetteur
-   (`verifier_jouet_k_emetteur_variable.py`, généralise le "26" de H7)
-   — validé structurellement (collapse exact à `1/(K+1)`, `delta_c(K=26)`
-   bracket autour du vrai `0,0134372`), test `k(R_init)` en cours.
+   **Jouet à K variable côté émetteur** (`verifier_jouet_k_emetteur_variable.py`,
+   généralise le "26" de H7) — **validation forte, revue par
+   agent-dipankar, une erreur trouvée et corrigée** : collapse exact à
+   `1/(K+1)` pour K=1,8,26 ; `delta_c(K=1)=0,018699` (reproduit le
+   bracket H13) ; `delta_c(K=26)=0,013438` contre le vrai système
+   `0,0134372` — écart réel **0,006%** (j'avais écrit ~0,03%, faux
+   d'un facteur 5, corrigé). Pli d'équilibre confirmé indépendamment
+   (Newton, `det(J)→0`, bistabilité directe). **Puzzle non résolu
+   trouvé et vérifié indépendamment par moi (chiffres identiques)** :
+   K=26 (pli collé au seuil) montre un ralentissement critique PLAT
+   (40/60/60 pas), K=1 (pli 12× plus loin) ralentit ×4,25 (80/300/340)
+   — la proximité du pli ne prédit PAS la signature dynamique, sens
+   inverse de l'attendu. Courbe `flip_s3(R_init)` mesurée (monotone,
+   confirmée deux fois), conversion en `k_fit` comparable au vrai
+   système pas encore faite. Test précommis à K=8/K=20 pas encore
+   exécuté. Scripts permanents : `verifier_meanfield_fold_toy_k.py`,
+   `verifier_meanfield_fold_diag_toy_k.py`,
+   `verifier_ralentissement_toy_k26.py`,
+   `verifier_ralentissement_toy_k1_controle.py`.
    Détail complet, chiffres exacts, statut de vérification de chaque
-   affirmation : `CARNET.md` fin de §7.65/8ter.
+   affirmation : `CARNET.md`, section « Piste émetteur (le « 26 » de
+   H7) — jouet à K variable ».
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
    par un agent-dipankar puis un test précommis rejoué moi-même.** Ma
