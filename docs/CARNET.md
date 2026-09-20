@@ -10810,6 +10810,36 @@ zéro contredite.** Scripts permanents : `verifier_kicks_adam_grille_fine.py`
 `verifier_eps_supprime_kicks.py`. Conformément à la règle « les scripts vont
 dans le dépôt ».
 
+**SYNTHÈSE FINALE, le même jour — boucle bouclée avec le tout premier
+point de ce tour (l'« excursion à pas=60000 » citée depuis le début de
+l'échange avec dipankar dans `REPONSE_ORDRE54.md`).** Rejeu à grille 1
+jusqu'à `pas=62000` (même système, même config exacte que la trace
+originale) : plusieurs kicks tombent DIRECTEMENT autour de ce point de
+contrôle —
+```
+pas=59087  dev=+0,00371   pas=59540  dev=+0,00367   pas=59989  dev=-0,00363
+pas=60432  dev=-0,00359   pas=60871  dev=+0,00360   pas=61312  dev=+0,00372
+```
+espacés de ~440-450 pas, cohérent avec la fréquence déjà établie.
+**L'« excursion à pas=60000 » qui a motivé TOUT ce tour (le test
+précommis de dipankar, la question sur `s3` vs `R`, l'hypothèse
+standard n°1, la piste non-standard n°3) n'est pas un événement rare
+et spécial — c'est simplement le kick le plus proche de ce point de
+contrôle particulier dans la trace grossière à 20000 pas.** Le
+mécanisme universel (kicks de `v_r` toutes les ~460-500 pas) explique
+directement pourquoi une grille à 20000 pas voit TOUJOURS quelque
+chose près de n'importe quel point qu'elle échantillonne — il y a
+presque toujours un kick à proximité. **Ceci ne change pas la
+conclusion de l'hypothèse standard n°1 (le déplacement en espace logit
+est comparable, comp¹ pas comp²) — cette mesure-là portait sur la
+géométrie INSTANTANÉE d'un kick, toujours valide — mais donne
+maintenant le mécanisme TEMPOREL complet qui sous-tend cette
+géométrie : chaque kick individuel obéit à comp¹, et les kicks
+eux-mêmes obéissent au cycle plancher-de-`v`.** Les deux résultats
+sont complémentaires, pas concurrents — l'un explique COMMENT un kick
+se répartit entre `s3` et `R`, l'autre explique QUAND et POURQUOI un
+kick se produit.
+
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |

@@ -61,6 +61,17 @@ dans `git log`.*
    convergentes (décroissance, déclenchement, regonflement,
    amortissement, frontière beta2 ×2, suppression eps, spécificité
    Adam-récepteur), zéro contredite.
+   **SYNTHÈSE : boucle bouclée avec le point de départ de tout ce
+   tour.** Rejeu à grille 1 jusqu'à `pas=62000` (même config exacte que
+   la trace originale de `REPONSE_ORDRE54.md`) : plusieurs kicks
+   tombent directement autour de `pas=60000` (`59087, 59540, 59989,
+   60432, 60871, 61312`). **L'« excursion à pas=60000 » qui a motivé
+   tout l'échange (test précommis de dipankar, hypothèse n°1, piste
+   n°3) n'était pas un événement rare — c'est juste le kick le plus
+   proche de ce point de contrôle dans la trace grossière à 20000 pas.**
+   Les deux résultats de ce tour (comp¹ : géométrie instantanée d'un
+   kick ; plancher-de-`v` : pourquoi/quand un kick se produit) sont
+   complémentaires, pas concurrents.
    **Reste ouvert (autres fils)** : pourquoi la loi `beta2` casse
    précisément entre `0,995` et `0,99` (pas encore dérivé) ; la piste
    émetteur (H7) et le coefficient `a` du col H6-direct (items 3-4 plus
