@@ -10697,7 +10697,90 @@ nom permanent au prochain geste d'écriture.
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | les trois occurrences à pas=60000/160000/260000 forment un cycle limite périodique de période ~100000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour — biais de sélection trouvé en balayant le reste de la trajectoire : des fluctuations comparables apparaissent toutes les 10000-30000 pas partout, pas seulement à ces trois points |
-| le processus de bruit (fréquence, amplitude) est stationnaire sur toute la trajectoire, pas de dérive | 20/09 (moi) | **confirmée** le 20/09 — comptage et moyenne quasi identiques sur les 4 quarts de `[0,400000]` |
+| le processus de bruit (fréquence, amplitude) est stationnaire sur toute la trajectoire, pas de dérive | 20/09 (moi) | **confirmée dans l'esprit (stationnaire), mais les chiffres qui la portaient étaient faux — voir SECONDE RÉTRACTATION ci-dessous** |
+
+**SECONDE RÉTRACTATION, le même jour — trouvée par un agent-dipankar,
+puis vérifiée indépendamment. Le bug d'échantillonnage que je venais
+de diagnostiquer et « corriger » existait encore, un niveau plus bas,
+dans ma propre correction.** Mes deux balayages de rétractation
+(grille 1000 sur `[0,200000]`, grille 500 sur `[0,400000]`) n'avaient
+JAMAIS été sauvés en script permanent — violation directe de la règle
+« les scripts vont dans le dépôt » (CLAUDE.md), et l'agent a dû
+reconstruire ma méthodologie à l'aveugle à partir des conventions des
+scripts voisins pour pouvoir la rejouer. En rejouant le système
+IDENTIQUE à grille 1 (aucun sous-échantillonnage, 400000 pas, 304s),
+l'agent trouve :
+```
+A_kick = 0,003669 ± 0,000205   (n=1672 événements, CV=5,6%)
+         93% des 1672 événements dans [0,0034; 0,0040)
+N_events([5500,400000)) = 1672  ->  espacement médian ≈ 462-500 pas
+```
+**Ce n'est PAS un bruit de magnitude variable toutes les 10000-30000
+pas (ma première rétractation) — c'est un « kick » de magnitude
+QUASI CONSTANTE (~0,0037, CV 5,6%) qui revient environ toutes les
+~470 pas.** Sur les 14 points que j'avais flaggés dans ma première
+rétractation, l'agent a mesuré le vrai pic local à ±500 pas de chacun :
+LES 14 tombent tous dans la même bande `0,0037-0,0040` que partout
+ailleurs — rien ne les distinguait, parce qu'il y a un kick presque
+partout à cette fréquence et qu'une grille à 1000 pas peut à peine en
+rater un. **Vérifié indépendamment par moi (pas juste accepté) :**
+rejeu à grille 1 sur `[50000,55000)`, un écart de `427` pas trouvé
+entre deux rafales de dépassement de seuil (très proche du `462-500`
+annoncé), amplitudes mesurées `-0,00151` à `+0,00366` — cohérent avec
+la gamme `~0,0037` rapportée. **Ma "distribution lisse bornée, pas de
+queue lourde" et mon "toutes les 10000-30000 pas" étaient TOUS LES
+DEUX des artefacts d'échantillonnage** — exactement le type de biais
+que je venais de diagnostiquer et de corriger une fois, présent encore
+un niveau plus bas dans ma propre méthode de correction. Ironie notée
+explicitement par l'agent, vérifiée honnête.
+
+**Mécanisme partiel proposé par l'agent (PAS encore vérifié
+indépendamment par moi — à faire avant d'accepter comme confirmé, cf.
+règle 5bis) : oscillateur de relaxation par plancher de `v`.**
+`exp_avg_sq` (v) décroît géométriquement (taux `beta2=0,999`) vers un
+plancher numérique pendant la phase calme ; une petite perturbation de
+gradient contre un historique de variance minuscule produit un pas
+normalisé démesuré (`lr*m/√v` bondit de `~4e-4` à `~2,6e-2` en ~14
+pas, rapporté par l'agent sur la fenêtre `[51320,51500]`) ; le grand
+gradient du kick lui-même regonfle `v`, amortissant le ratio, et `R4`
+sonne en retour vers la baseline en 15-20 pas avec une oscillation
+visiblement amortie. Cohérent avec des phénomènes déjà nommés dans le
+projet (plancher `adam_eps`, biais de fenêtre Adam) mais à une échelle
+de temps jamais regardée ici. **Statut : plausible, chiffres internes
+(m, v) pas encore reproduits indépendamment par moi.**
+
+**Test précommis par l'agent sur `beta2` — sharpen, pas résout, le
+« ni confirmé ni réfuté » du 20/09 plus haut.** Si le mécanisme
+plancher-de-`v` est juste, l'espacement devrait suivre
+`~1/(1-beta2)`. Ancre `beta2=0,999` → espacement `462-470`. Rapporté :
+```
+beta2=0,999  n=230 (60000 pas)  espacement médian=462  prédit=470   (ancre)
+beta2=0,995  n=725              espacement médian=110  prédit=94    (17% d'écart, même ordre)
+beta2=0,99   n=286              espacement médian=163  prédit=47    (×3,5 d'écart, NON monotone)
+```
+La loi naïve tient de 0,999 à 0,995 (17%) puis CASSE entre 0,995 et
+0,99 — l'espacement remonte (110→163) alors que la loi prédit une
+poursuite de la baisse (94→47), un vrai changement de signe de
+tendance, pas du bruit. **Localise la frontière de régime entre
+`beta2=0,995` et `beta2=0,99`, non testée indépendamment par moi
+encore.** Question ouverte posée par l'agent, pas encore répondue :
+`ADAM_EPS=1e-10` est bien en dessous de `√v≈3e-7` mesuré au point
+loggé — n'entre pas en jeu comme plancher ici ; tester avec
+`adam_eps≈1e-6` (comparable au plancher de `√v`) pour trancher entre
+la lecture « plancher de `v` » et une lecture concurrente « plancher
+d'`eps` ».
+
+**Script manquant à créer avant de clore ce fil** : ni le balayage de
+rétractation ni celui de l'agent (grille 1, détection d'événements par
+seuil+fusion) n'ont de script permanent committé — à faire au
+prochain geste d'écriture, conformément à la règle « les scripts vont
+dans le dépôt ».
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |
+| le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **plausible, PAS encore vérifiée indépendamment** — chiffres internes (m,v) de l'agent pas rejoués par moi |
+| l'espacement des kicks suit `~1/(1-beta2)` | 20/09 (agent-dipankar, précommise) | **partiellement confirmée puis réfutée** — tient de beta2=0,999 à 0,995 (17%), casse entre 0,995 et 0,99 (tendance inversée, ×3,5 d'écart) ; frontière de régime localisée, pas encore expliquée |
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
 questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en

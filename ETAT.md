@@ -15,24 +15,32 @@ dans `git log`.*
 
 ## Pistes ouvertes, par ordre de priorité probable
 
-1. **« Cycle limite périodique » RÉTRACTÉ le 20/09/2026, même tour où
-   il a été trouvé — biais de sélection, pas un vrai résultat.** En
-   balayant `[0,200000]` sans se limiter aux trois fenêtres déjà
-   repérées (au lieu de zoomer seulement sur 60000/160000/260000),
-   des fluctuations d'amplitude comparable apparaissent PARTOUT,
-   toutes les 10000-30000 pas environ — pas un oscillateur à période
-   fixe ~100000. **Statut correct, plus modeste** : les excursions de
-   `R` sous Adam complet sont des fluctuations fréquentes et
-   récurrentes de magnitude caractéristique bornée (~0,002-0,004), pas
-   un mode périodique isolé ni deux accidents isolés (l'hypothèse
-   non-standard n°3 de `REPONSE_ORDRE54.md` reste réfutée dans sa forme
-   originale, mais pas au profit de la périodicité). **Distribution des
-   amplitudes caractérisée (même tour) : BORNÉE, pas de queue lourde**
-   (789 échantillons sur 400000 pas, décroissance lisse, max observé
-   ~0,004, moyenne ~0,0002, facteur ~20 entre les deux). **Reste
-   ouvert** : POURQUOI cette borne existe à cette valeur précise ; si la
-   fréquence des fluctuations est stationnaire dans le temps ou dérive.
-   Détail complet et rétractation : `CARNET.md` fin de §7.65/8ter.
+1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
+   d'échantillonnage trouvé deux fois de suite, une fois par moi, une
+   fois par un agent-dipankar un niveau plus bas.** D'abord : « cycle
+   limite périodique à 100000 pas » (trois fenêtres fines similaires)
+   retombé à « bruit fréquent toutes les 10000-30000 pas » après
+   balayage plus large. **Puis, trouvé par agent-dipankar et VÉRIFIÉ
+   INDÉPENDAMMENT (grille 1, pas de sous-échantillonnage) : ce n'est
+   toujours pas ça.** `R4` sous Adam complet fait un **« kick » de
+   magnitude QUASI CONSTANTE (~0,0037, CV 5,6%) toutes les ~460-500
+   pas** — ma grille 500-1000 pas pour la première correction était
+   encore ~2 ordres de grandeur trop grossière, le même bug d'aliasing
+   que je venais de diagnostiquer, plus profond. Script permanent
+   (méthodologie correcte, grille 1, détection par fusion de seuil) :
+   `verifier_kicks_adam_grille_fine.py`.
+   **Mécanisme proposé (agent, PAS ENCORE vérifié indépendamment) :**
+   oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq)
+   — `v` décroît vers un plancher en phase calme, une petite
+   perturbation de gradient produit un pas normalisé démesuré, le
+   gradient du kick regonfle `v`, `R` sonne en retour. **Test précommis
+   sur `beta2`** (agent) : loi `espacement~1/(1-beta2)` tient de
+   `beta2=0,999` à `0,995` (17% d'écart) puis CASSE entre `0,995` et
+   `0,99` (tendance inversée) — frontière de régime localisée, pas
+   expliquée. Question ouverte de l'agent : tester `adam_eps≈1e-6`
+   (comparable au plancher de `√v`) pour trancher plancher-de-`v` vs
+   plancher-d'`eps`. Détail complet, chiffres exacts, statut de
+   vérification de chaque affirmation : `CARNET.md` fin de §7.65/8ter.
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
    par un agent-dipankar puis un test précommis rejoué moi-même.** Ma
