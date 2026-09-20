@@ -11305,6 +11305,92 @@ récompense asymétrique, pas une preuve pour l'un ou l'autre camp.
 | la conclusion qualitative de dipankar (déficit de R côté récepteur) | 20/09 (dipankarsarkar) | **confirmée, mécanisme différent** — `R` est structurellement `r[10,4]` ici (émetteur pinné à la construction), pas via un canal de saturation partielle comme sa formule le supposait |
 | H3 (deux excursions distinctes à pas=60000/160000) doit être abandonnée | 20/09 (dipankarsarkar) | **confirmée, en plus fort** — cohérent avec notre propre mécanisme plancher-de-`v` (kicks récurrents, pas deux accidents isolés), déjà établi indépendamment ce tour |
 
+**Ses trois tests précommis pour le prochain tour — exécutés le même
+jour, pas laissés en attente.**
+
+**Test 1 (grille-1 sur `[59000,61000)`, centré sur le kick de
+pas=60000).** Son critère de réouverture : `1-s[4,10]>5e-12`
+n'importe où dans la fenêtre ferait revivre sa défense
+"mauvais instant d'échantillonnage".
+```
+1-s[4,10] range = [4,663e-15 ; 4,885e-15]
+```
+**Trois ordres de grandeur SOUS son propre seuil.** Sa défense est
+définitivement close, pas juste affaiblie — vérifiée à son propre
+critère, pas au mien. Script : `verifier_precommis_dipankar_grille1_s410.py`.
+
+**Test 2 (facteur de correction de biais d'Adam aligné avec
+`s3`/`r4`).** Calcul direct (déterministe en `t` seul, pas besoin de
+rejeu) :
+```
+t=60000 : 1-beta1^t = 1,000000000000000   1-beta2^t = 1,000000000000000
+```
+**Saturés à la précision machine.** Le battement partagé ne peut PAS
+venir du planning brut de correction de biais d'Adam — il est déjà
+plat, des dizaines de milliers de pas plus tôt. Écarte nettement
+l'option (a) de la disjonction posée par l'agent-dipankar ; la
+périodicité `~460-500` pas vient du cycle de relaxation plancher-de-`v`
+lui-même (un processus dynamique auto-entretenu), pas d'un artefact du
+planning de warm-up.
+
+**Test 3 (`delta=0`, même fenêtre) — le plus riche des trois,
+raffine sa dichotomie en une troisième réponse.**
+```
+baseline s3=0,99999990  R4=0,99856537
+max|ds3| sur la fenêtre = 1,426e-10   (parfaitement plat)
+max|dR4| sur la fenêtre = 1,738e-05   (un vrai événement à pas=59600, dR4=+3,720e-06,
+                                        ~2 ordres au-dessus du bruit de fond ~1e-8)
+```
+**Le kick de `R` SURVIT à `delta=0`** — même mécanisme, intrinsèque à
+l'optimiseur, exactement ce que son test prédisait s'il s'agit d'un
+vrai artefact indépendant de l'asymétrie de récompense. **Mais le
+co-timing avec `s3` ne survit PAS** — `s3` reste parfaitement plat
+pendant que `R4` kicke au même moment. **Ni "battement partagé" ni
+"coïncidence" — l'asymétrie de récompense est le CANAL DE
+TRANSMISSION, nécessaire à la corrélation sans en être la source.**
+Mécanisme : à `delta≠0`, un kick de `r[10,4]` force `r[10,3]` dans le
+sens opposé (même softmax partagé), et c'est le poids ASYMÉTRIQUE de
+la récompense qui transforme ce mouvement récepteur en poussée
+différentielle sur le gradient de `s3`. À `delta=0`, le même kick
+récepteur se produit mais rien en aval ne distingue le sens de
+`r[10,3]` vs `r[10,4]`, donc `s3` ne le voit jamais. Script :
+`verifier_precommis_dipankar_delta0_controle.py`.
+
+**Réponse complète à sa mise en garde sur la quantification et à sa
+question de clôture — trace en espace logit à 10 décimales, pas
+promise puis oubliée.**
+```
+pas=58000  logit_s3=4,3094661807  logit_s4=32,9623739824  logit_r4=7,2225388720
+pas=59000  logit_s3=4,3094897407  logit_s4=32,9689159854  logit_r4=7,2225707917
+pas=59989  logit_s3=4,3001332727  logit_s4=32,9753383652  logit_r4=7,2115356960
+pas=60432  logit_s3=4,2999653705  logit_s4=32,9781996290  logit_r4=7,2116842146
+pas=61000  logit_s3=4,3095375845  logit_s4=32,9818553984  logit_r4=7,2226254917
+pas=61999  logit_s3=4,3095662029  logit_s4=32,9882475232  logit_r4=7,2226644158
+```
+`logit_s4` monte de façon parfaitement lisse et monotone sur toute la
+fenêtre, aucun accroc aux pas du dip (59989, 60432). `logit_s3` ET
+`logit_r4` plongent ensemble aux mêmes pas puis récupèrent ensemble à
+pas=61000. Confirme directement en espace logit (donc sans souci de
+quantification à cette précision) le couplage `s3`↔`r4`, `s4`
+spectateur — le même résultat structurel que l'argument de
+séparabilité algébrique, maintenant montré sur la trace, pas
+seulement déduit. Script : `verifier_logits_s3_s4_r4_60000.py`.
+
+**Écart trouvé et corrigé dans ma propre première version de la
+lettre, avant envoi (règle 5bis appliquée à mon propre travail, pas
+seulement à celui de dipankar) : j'avais promis "offering it below"
+pour les données logit haute précision puis ne les avais jamais
+incluses, et n'avais pas répondu directement à sa question de clôture
+("do you still have the trace?"). Théo a demandé "tu as répondu à
+toutes ses questions ?" — relecture complète de la lettre a trouvé ces
+deux trous, corrigés avant de considérer la réponse close.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| test 1 précommis : `1-s[4,10]` dépasse `5e-12` quelque part dans la fenêtre grille-1 | 20/09 (dipankarsarkar, précommise) | **réfutée** le 20/09 — trois ordres de grandeur sous son seuil |
+| test 2 précommis : le battement partagé vient du planning brut de correction de biais d'Adam | 20/09 (dipankarsarkar, précommise) | **réfutée** le 20/09 — facteur déjà saturé à la précision machine à pas=60000 |
+| test 3 précommis : le co-dip persiste à `delta=0` (artefact d'optimiseur pur) | 20/09 (dipankarsarkar, précommise) | **réfutée en partie, confirmée en partie** — le KICK de R survit à delta=0 (optimiseur pur), mais le CO-TIMING avec s3 ne survit pas (nécessite l'asymétrie comme canal de transmission) |
+
 Répondu dans `docs/REPONSE_ORDRE55.md`.
 
 ---
