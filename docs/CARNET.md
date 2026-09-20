@@ -10672,9 +10672,32 @@ facteur ~20 entre les deux — répartition continue, pas bimodale.
 POURQUOI cette borne existe précisément à cette valeur : toujours
 ouvert.
 
+**Stationnarité testée le 20/09/2026 (même tour) — CONFIRMÉE, sur les
+quatre quarts de la trajectoire complète.** Le processus est-il
+stationnaire dans le temps (fréquence/amplitude constantes) ou
+dérive-t-il ? Découpage `[0,400000]` en 4 segments de 100000 pas,
+comptage des fluctuations `>0,0008` par segment :
+```
+segment [0,100000)     : n=10  mean|dev|=0,000152  max|dev|=0,003319
+segment [100000,200000): n=10  mean|dev|=0,000172  max|dev|=0,003570
+segment [200000,300000): n=9   mean|dev|=0,000148  max|dev|=0,003147
+segment [300000,400000): n=11  mean|dev|=0,000148  max|dev|=0,002491
+```
+**Compte quasi identique (9-11) sur les quatre segments, moyenne quasi
+identique (`0,000148-0,000172`), maximum dans la même gamme
+(`0,0025-0,0036`, sans tendance monotone claire).** Pas de dérive, pas
+de croissance ni de décroissance sur 400000 pas. Le processus de bruit
+borné est stationnaire — DEPUIS QUAND répondu implicitement : il ne
+« démarre » pas à un moment particulier, il est présent avec la même
+statistique dès le début du régime post-transitoire (`pas>5000`)
+jusqu'à la fin de la trajectoire mesurée. Script à sauvegarder :
+la version courante tournait encore en `python -c`, à committer sous
+nom permanent au prochain geste d'écriture.
+
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | les trois occurrences à pas=60000/160000/260000 forment un cycle limite périodique de période ~100000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour — biais de sélection trouvé en balayant le reste de la trajectoire : des fluctuations comparables apparaissent toutes les 10000-30000 pas partout, pas seulement à ces trois points |
+| le processus de bruit (fréquence, amplitude) est stationnaire sur toute la trajectoire, pas de dérive | 20/09 (moi) | **confirmée** le 20/09 — comptage et moyenne quasi identiques sur les 4 quarts de `[0,400000]` |
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
 questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en
