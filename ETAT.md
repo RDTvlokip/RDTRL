@@ -65,6 +65,23 @@ dans `git log`.*
    mieux le plateau/falaise que K lui-même. Scripts permanents :
    `verifier_probe_k8_delta_sweep.py`, `verifier_k8_adam_internals.py`,
    `verifier_k2_k4_k6_boundary.py`.
+   **Localisation poussée puis CORRIGÉE deux fois de suite le
+   20/09/2026 :** d'abord resserrée à « entre K=10 et K=14 »
+   (`verifier_localisation_falaise_k10_k14.py`), puis un agent-dipankar
+   a trouvé que K=13 (rapporté "plateau", `premier=300`) était un
+   artefact de bissection insuffisamment précise — **vérifié
+   indépendamment, bit pour bit** : bracket large donne
+   `delta_c=0,014388123`/`premier=300`, bracket étroit à `tol=1e-7`
+   donne `delta_c=0,014387859`/`premier=60`. **La vraie falaise est
+   entre K=12 et K=13.** Trouvaille en prime : la FRACTION d'écart où
+   la transition se produit saute elle-même d'une décennie entre K=12
+   et K=13 (pas juste `premier` à un point fixe) ; forme fermée
+   `delta_c(K)=a+b/(K+1)` testée et réfutée (résidu 4,9%). Script :
+   `verifier_k13_bissection_instable.py`. **Reste ouvert** : bissecter
+   directement `frac*(K)` (pas un point fixe) pour K=10-14 à
+   `tol≤1e-7` ; revérifier K=11 (jamais rebissecté fin) ; tester un K
+   NON ENTIER entre 12-13 (le jouet le permet mathématiquement) pour
+   trancher coin vs transition lisse.
 
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une

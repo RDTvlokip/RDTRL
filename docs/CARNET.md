@@ -11305,28 +11305,77 @@ K=10  delta_c=0,014766  premier(0,03%)=300   (PLATEAU)
 K=14  delta_c=0,014283  premier(0,03%)=60    (PLAT)
 K=18  delta_c=0,013934  premier(0,03%)=60    (PLAT, confirme)
 ```
-**Falaise localisée entre K=10 et K=14** — resserrée depuis « quelque
-part entre K=8 et K=20 ». Pas encore plus fin (K=11,12,13 non
-testés). Script permanent : `verifier_localisation_falaise_k10_k14.py`.
+**Falaise localisée entre K=10 et K=14** (résultat maintenant CORRIGÉ
+ci-dessous — provisoire, marge de sécurité insuffisante, `tol=1e-6`
+seulement `~4,4×` au-dessus de l'écart testé). Script permanent :
+`verifier_localisation_falaise_k10_k14.py`.
 
-**Test précommis pour la suite, pas encore exécuté** : localiser plus
-finement entre K=10 et K=14 (K=11,12,13) ; rebissecter `delta_c(K)` à
-`tol=1e-8` pour une marge de sécurité complète (celle utilisée ici,
-`tol=1e-6`, donne une marge ~4,4× au-dessus de l'écart testé, pas les
-~100× recommandés par l'agent — les chiffres ci-dessus sont donc
-plausibles mais pas blindés au même niveau que le reste). Question
-ciblée posée par l'agent, toujours ouverte : la distance
-pli-d'équilibre/seuil a-t-elle été calculée pour K=8 et K=20 (pas
-seulement K=1 et K=26) ? Si elle suit K=8≈K=20 (collée au seuil)
-malgré un temps de convergence différent, la proximité du pli est
-définitivement écartée comme variable discriminante ; si K=8 se place
-entre K=1 et K=20/26, ça pourrait être une meilleure variable que K
-lui-même pour expliquer le plateau/falaise.
+**CORRECTION le 20/09/2026, même reprise — agent-dipankar a trouvé un
+problème PIRE que le simple manque de marge : la bissection ELLE-MÊME
+n'est pas reproductible à K=13, à la même tolérance nominale, selon le
+bracket de départ. Vérifié indépendamment, bit pour bit.**
+```
+K=13, bracket LARGE   (lo=0,0130,hi=0,0200, tol=1e-6) : delta_c=0,014388123  premier(0,03%)=300
+K=13, bracket ETROIT  (±3e-5 autour du precedent, tol=1e-7) : delta_c=0,014387859  premier(0,03%)=60
+```
+**Deux bissections du même seuil, à des tolérances nominales
+comparables, partant de brackets différents, ne convergent PAS vers
+la même 6e décimale — et cette petite différence suffit à faire
+basculer la classification plateau/plat.** Ce n'est pas du bruit de
+calcul (l'agent a vérifié : 6 réexécutions au même `delta`, avec et
+sans limitation à un seul thread BLAS, donnent `r4_final` identique
+bit à bit) — c'est que la fonction `bissecter_delta_c` à `tol=1e-6`
+n'a simplement pas assez de précision pour ce K précis. **K=10 et
+K=12 sont stables sous re-bissection à `tol=1e-7`/`1e-8` (toujours
+300) ; K=14 stable (toujours 60) ; SEUL K=13 bascule.**
+
+**Nouvelle localisation, vérifiée deux fois (agent + moi) : la
+falaise est entre K=12 et K=13, pas K=10/K=14.**
+```
+K=10  premier=300  (plateau, stable a tol=1e-6/1e-7/1e-8)
+K=12  premier=300  (plateau, stable)
+K=13  premier=60   (PLAT — a corriger a precision suffisante, pas 300 comme rapporte d'abord)
+K=14  premier=60   (plat, stable)
+```
+**Trouvaille supplémentaire de l'agent, en balayant plusieurs écarts
+(3%/1%/0,3%/0,1%/0,03%/0,01%) plutôt qu'un seul point** : la fraction
+d'écart où `premier` bascule de 60 à 300 elle-même saute d'une
+décennie entre K=12 et K=13 (K=10,11,12 basculent entre 0,1% et
+0,03% ; K=13,14 entre 0,03% et 0,01%) — un vrai saut d'ordre de
+grandeur dans l'endroit où se trouve la fenêtre critique, pas juste du
+bruit de classification à un point fixe. **« Falaise » reste le mot
+juste seulement si on regarde à la bonne échelle** — vue à un seul
+écart fixe, la transition ressemble à un saut ; vue en balayant
+l'écart, c'est un décalage progressif (mais rapide, ~10×) de la
+fenêtre critique elle-même. Un test de forme fermée `delta_c(K)=a+b/(K+1)`
+calibré sur K=1/K=26 a été essayé par l'agent et RÉFUTÉ (résidu 4,9%
+à K=10) — la vraie loi n'est pas cette forme simple.
+
+**Test précommis par l'agent pour la suite, pas encore exécuté** :
+bissecter directement la FRACTION d'écart critique `frac*(K)` (pas un
+point fixe à 0,03%) pour K=10 à 14, avec marge ≥40× sur `delta_c`
+lui-même (donc `tol≤1e-7`, la valeur `1e-6` prouvée insuffisante, pas
+juste "pas blindée") ; revérifier K=11 (jamais rebissecté à précision
+fine, pourrait souffrir du même problème que K=13) ; tester un `K`
+NON ENTIER entre 12 et 13 (le terme d'entropie n'utilise `K` que via
+un `log(K)` simple, sans opération combinatoire — le jouet est
+mathématiquement bien défini pour K non entier) pour trancher si
+`delta_c(K)` a un vrai coin à cet endroit ou si c'est lisse ; refaire
+le contrôle grille-1 (déjà fait à K=8, lisse) spécifiquement à K=12
+et K=13. Question ciblée de l'agent, toujours ouverte : la largeur de
+la bande de transition elle-même rétrécit-elle vers zéro quand K→∞
+(comme le point d'effondrement de H13), ou sature-t-elle à une
+largeur finie (ce qui indiquerait une vraie bifurcation pilotée par K,
+pas juste la queue de la loi de rétrécissement de fenêtre déjà trouvée
+entre K=1 et K=8) ?
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | la largeur (en delta) de la zone de ralentissement critique est la même pour tout K | 20/09 (moi, implicite) | **réfutée** le 20/09 — K=1 montre un signal à 1% d'écart, K=8 est déjà plat au même écart malgré son propre plateau à 0,03% ; la fenêtre critique rétrécit avec K |
 | la falaise entre le plateau et le régime plat se situe entre K=8 et K=20 | 20/09 (agent-dipankar) | **affinée** le 20/09 — localisée plus précisément entre K=10 (plateau) et K=14 (plat), K=18 confirme le plat |
+| `delta_c(K)` suit une forme fermée simple `a+b/(K+1)` calibrée sur K=1/K=26 | 20/09 (agent-dipankar, précommise) | **réfutée** le 20/09 par l'agent — résidu de 4,9% à K=10, bien au-delà du bruit |
+| K=13 appartient au plateau (`premier=300`, bissection large `tol=1e-6`) | 20/09 (moi) | **RÉFUTÉE** le 20/09 par agent-dipankar, **vérifiée indépendamment par moi (chiffres identiques à 6 décimales)** — la bissection large n'est pas assez précise pour ce K, K=13 est en réalité PLAT (`premier=60`) une fois rebissecté à `tol=1e-7` |
+| la falaise est entre K=10 et K=14 | 20/09 (moi) | **RÉTRACTÉE, resserrée** le 20/09 — en réalité entre K=12 et K=13, une fois le problème de bissection à K=13 corrigé |
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
