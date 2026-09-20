@@ -11377,6 +11377,38 @@ entre K=1 et K=8) ?
 | K=13 appartient au plateau (`premier=300`, bissection large `tol=1e-6`) | 20/09 (moi) | **RÉFUTÉE** le 20/09 par agent-dipankar, **vérifiée indépendamment par moi (chiffres identiques à 6 décimales)** — la bissection large n'est pas assez précise pour ce K, K=13 est en réalité PLAT (`premier=60`) une fois rebissecté à `tol=1e-7` |
 | la falaise est entre K=10 et K=14 | 20/09 (moi) | **RÉTRACTÉE, resserrée** le 20/09 — en réalité entre K=12 et K=13, une fois le problème de bissection à K=13 corrigé |
 
+**Localisation poussée jusqu'au bout le 21/09/2026 (reprise, sans
+agent cette fois) — réponse nette à la question COIN vs TRANSITION
+LISSE.** Le jouet à K variable est mathématiquement bien défini pour
+K non entier (le terme d'entropie n'utilise `K` que via un `log(K)`
+simple, aucune opération combinatoire) — testé directement, pas une
+extrapolation :
+```
+K=12,00  premier=300  (plateau, deja etabli)
+K=12,50  delta_c=0,014443638  premier(0,03%)=300  (plateau)
+K=12,80  delta_c=0,014409885  premier(0,03%)=300  (plateau)
+K=12,95  delta_c=0,014393330  premier(0,03%)=60   (PLAT)
+K=13,00  delta_c=0,014387859  premier(0,03%)=60   (plat, corrige)
+```
+**La transition est localisée entre K=12,80 et K=12,95 — une fenêtre
+de seulement 0,15 en K, sur un intervalle testé de 1,0 (K=12 à
+K=13).** Ce n'est pas une pente lisse étalée sur tout l'intervalle :
+trois points consécutifs (12 ; 12,5 ; 12,8) restent fermement dans le
+plateau, puis le signal disparaît complètement entre 12,8 et 12,95.
+**Réponse à la question posée par l'agent (la bande de transition
+sature-t-elle à une largeur finie, ou rétrécit-elle vers zéro) : à
+cette résolution (0,15 en K), la bande est déjà étroite — cohérent
+avec une vraie transition serrée (proche d'un coin) plutôt qu'un
+dégradé continu sur l'échelle de K entière.** Reste ouvert : resserrer
+encore (K=12,85 à 12,93) pour voir si la bande continue de rétrécir
+sans limite (coin mathématique au sens strict) ou se stabilise à une
+largeur non nulle (transition lisse mais raide). Script permanent :
+`verifier_localisation_fine_k_non_entier.py`.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la transition plateau/plat est un coin net (bande étroite), pas une pente lisse sur toute l'échelle K=12-13 | 21/09 (moi) | **confirmée à la résolution testée** — bande resserrée à `[12,80 ; 12,95]`, 0,15 de large sur un intervalle de 1,0 ; pas encore poussé plus loin pour voir si ça continue de rétrécir |
+
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | « plat » est le cas générique (K=20/26 comme le vrai système), K=1 est l'exception isolée, décroissance progressive K=1→K=8 | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même reprise — défaut méthodologique trouvé (écart testé plus petit que la tolérance de bissection de `delta_c`) ; le vrai motif à écart comparable est un PLATEAU (K=1-8, 300-340 pas) suivi d'une falaise non localisée entre K=8 et K=20 |
