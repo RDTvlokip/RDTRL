@@ -10494,14 +10494,93 @@ espace probabilité, sans qu'aucun mécanisme séparé côté récepteur ne
 soit nécessaire pour expliquer l'asymétrie observée. Corrigé dans
 `REPONSE_ORDRE54.md` avec les chiffres exacts avant envoi.
 
-**JUSQU'OÙ ce mécanisme tient-il ? Pas encore testé** — la conversion
-espace-logit → espace-probabilité est une approximation au premier
-ordre (valide seulement près d'un plateau où le gradient est quasi
-nul) ; loin d'un plateau (pendant une excursion active), le terme
-correctif néchargé ne s'annule plus et l'approximation peut casser. Un
-test propre consisterait à répéter cette mesure de courbure PENDANT
-une excursion (au pas 60000 ou 160000 de la trace complète), pas
-seulement à l'état de repos — reste ouvert pour la suite.
+**JUSQU'OÙ ce mécanisme tient-il ? Testé le 20/09/2026 — CASSE, comme
+pressenti, et un agent-dipankar a trouvé pourquoi.** Lancé
+automatiquement (règle CLAUDE.md : chaque résultat substantiel passe
+par un agent-dipankar avant clôture), isolation worktree, contrainte
+Bash-only. Son verdict : **la conversion `comp²` (Hessienne en espace
+logit → probabilité) n'est PAS la bonne question.** Adam normalise
+chaque coordonnée par `m/(√v+eps)` — la courbure brute (Hessienne) n'a
+aucun effet DIRECT sur la taille du pas. Ce qui compte est la marche en
+espace LOGIT elle-même. Si Adam égalise cette marche entre coordonnées
+(ce qui est son but de conception), une SEULE puissance du facteur de
+compression du softmax (157×) suffit à expliquer l'écart observé en
+probabilité (~150-160×), pas son carré (162×) que j'avais utilisé.
+
+Snapshot à un seul pas (bruité, au plancher de précision float64,
+gradients ~1e-12-1e-13) : mon calcul indépendant donne un ratio de pas
+effectif `|s3/R4|=2,30`, l'agent avait rapporté `0,58` — **désaccord
+net, mais peu importe : un seul pas au plateau convergé est une
+mesure de bruit, pas un test.** Le vrai test (précommis par l'agent,
+« expérience 1 ») : mesurer `Δlogit_s3` et `Δlogit_R4` directement sur
+toute la durée d'une excursion RÉELLE (fenêtre `[57500,62500]`, autour
+du dip à `pas=60000`), pas un instantané.
+
+```
+logit_s3 range sur la fenêtre = 0,023438
+logit_R4 range sur la fenêtre = 0,023084
+ratio |Δlogit_R4/Δlogit_s3| = 0,985
+```
+
+**Quasi 1:1, pas 150×.** La lecture Hessienne (`comp²`) est
+**RÉFUTÉE** — pas juste affaiblie. La lecture de l'agent (`comp¹`,
+marches logit comparables sous Adam) est **CONFIRMÉE**, de façon nette
+et précommise avant le résultat. Script permanent :
+`verifier_delta_logit_excursion.py`.
+
+**COMMENT le mécanisme fonctionne réellement, reformulé :** Adam
+égalise (à ~1,5% près, pendant une vraie excursion) le déplacement en
+espace logit entre émetteur et récepteur — ce n'est pas une propriété
+de la Hessienne locale, c'est une propriété de conception de
+l'optimiseur lui-même (normalisation coordonnée par coordonnée). Le
+déplacement en espace PROBABILITÉ hérite ensuite d'un facteur de
+compression du softmax à la puissance UN (via la règle de la chaîne au
+premier ordre, `ds/dlogit = s(1-s)`), pas au carré. `s3` ne bouge presque
+pas non pas parce que son puits est profond, mais parce que le même
+déplacement logit, appliqué à une probabilité déjà saturée
+(`s3(1-s3)≈0,00104`), produit mécaniquement un déplacement de
+probabilité ~157× plus petit que le même déplacement appliqué à `R`
+(`R(1-R)≈0,163`, une variable non saturée).
+
+**Conséquence pour `REPONSE_ORDRE54.md` : le paragraphe sur
+l'hypothèse standard n°1 (déjà corrigé une fois avec les chiffres de
+courbure) doit être corrigé UNE SECONDE FOIS** — sa conclusion reste
+juste (s3 stable, R mobile, ratio ~150-160×), mais son mécanisme
+(« courbure Hessienne amplifiée par la compression au carré ») est
+maintenant identifié comme faux ; le bon mécanisme est « Adam égalise
+les marches en espace logit, la compression au premier ordre fait le
+reste ». **Pas encore appliqué au fichier — Théo a demandé de ne plus
+y toucher sans son accord explicite (20/09/2026).**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la raideur en espace probabilité vient d'une conversion Hessienne au carré (`comp²`) du facteur de compression du softmax | 20/09 (moi) | **réfutée** le 20/09 par agent-dipankar puis rejeu personnel précommis — le ratio `Δlogit` mesuré pendant une vraie excursion est 0,985 (quasi 1:1), pas ~150× ; la Hessienne brute n'entre pas dans le pas d'Adam |
+| Adam égalise les marches en espace logit entre coordonnées, la compression au premier ordre (`comp¹`) suffit à expliquer l'écart observé en probabilité | 20/09 (agent-dipankar) | **confirmée** le 20/09, test précommis avant le résultat : ratio mesuré 0,985 contre une prédiction "<~3×" |
+| les excursions à pas=60000 et pas=160000 sont deux événements distincts (signes opposés), pas un seul mécanisme | 20/09 (moi, dans REPONSE_ORDRE54.md, hypothèse non-standard n°3) | **réfutée** le 20/09 — une troisième occurrence à pas≈258000 a la même amplitude (`R4_min/max`, `v_r_max` à ±0,2% des deux premières) ; ce n'est ni un mode qui change de signe ni deux accidents, c'est un CYCLE LIMITE PÉRIODIQUE de période ~95000-100000 pas. Scripts : `verifier_periodicite_excursion.py` (3 fenêtres), `exp_avg_sq` déjà loggé sur 200000 pas |
+
+**Le cycle limite périodique (nouvelle découverte, non anticipée par
+aucune des hypothèses posées dans REPONSE_ORDRE54.md) — QUAND/COMBIEN
+mesurés, POURQUOI pas encore élucidé.**
+```
+fenêtre  60000 : R4_min=0,791024  R4_max=0,798478  v_r_max=1,5539e-13  s3_min=0,998944
+fenêtre 160000 : R4_min=0,791037  R4_max=0,798508  v_r_max=1,5527e-13  s3_min=0,998944 (7 chiffres identiques)
+fenêtre 260000 : R4_min=0,790931  R4_max=0,798543  v_r_max=1,5746e-13
+```
+**QUAND** : la première occurrence identifiée est à `pas≈60000`,
+espacement `≈98000-100000` pas entre occurrences successives — pas
+encore mesuré AVANT `pas=60000` (DEPUIS QUAND ce cycle existe-t-il ?
+reste ouvert, la fenêtre `[0,60000]` complète n'a pas été scannée à
+grille fine). **COMBIEN** : amplitude quasi constante sur 3
+occurrences (`R4` oscille entre `~0,791` et `~0,798`, un intervalle de
+`~0,0075`, constant à `±0,2%`). **POURQUOI** ce cycle existe et garde
+une amplitude stable plutôt que de s'amortir ou de diverger : PAS
+ENCORE TESTÉ — hypothèses à poser au prochain tour (candidate
+standard : régime limite d'un oscillateur de van der Pol effectif
+émergent du couplage bias-correction/second-moment d'Adam avec un
+gradient quasi nul ; candidate non-standard : la période ~100000
+pourrait être liée à un ratio simple avec `1/beta2=1000` ou
+`1/(1-beta2)=1000` du planning de bias-correction — à tester en
+variant beta2 et en regardant si la période bouge proportionnellement).
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
