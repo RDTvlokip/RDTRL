@@ -10582,6 +10582,36 @@ pourrait être liée à un ratio simple avec `1/beta2=1000` ou
 `1/(1-beta2)=1000` du planning de bias-correction — à tester en
 variant beta2 et en regardant si la période bouge proportionnellement).
 
+**Candidate non-standard testée le 20/09/2026 — résultat NI CONFIRMÉ
+NI RÉFUTÉ, méthode de détection inadaptée, honnêtement rapporté plutôt
+que forcé.** Rejoué avec `beta2=0,99` (`1/(1-beta2)=100` au lieu de
+`1000`) sur les premiers 40000 pas, en cherchant si la première
+occurrence apparaît ~10× plus tôt (`~6000` au lieu de `~60000`).
+**Deux bugs de méthode trouvés et corrigés en route** (bonne pratique
+à retenir) : (1) première tentative avec `baseline` fixée à `pas=0`
+(avant convergence, `R4=0,525`) — tout ressortait comme "excursion"
+par construction, corrigé en fixant la baseline après convergence
+(`pas=2000`) ; (2) même corrigée, la valeur à `pas=2000` elle-même
+(`R4=0,796172`) s'est révélée être encore dans le transitoire, pas le
+vrai plateau — **résultat** : à `beta2=0,99`, `R4` n'a PAS de plateau
+stable ponctué d'excursions discrètes comme à `beta2=0,999` ; il
+montre une **agitation continue** (`R4` oscille en permanence dans
+`[0,7933; 0,7956]`, jamais immobile plus de quelques dizaines de pas)
+— **le comportement change de NATURE, pas seulement de période.** La
+détection par seuil de déviation (utile à `beta2=0,999` où le signal
+est un plateau ponctué de pics nets) ne peut pas isoler un « premier
+événement » à `beta2=0,99` puisqu'il n'y a plus de plateau de repos
+identifiable. **Ni confirmé ni réfuté** : la prédiction `1/(1-beta2)`
+n'a pas pu être testée proprement avec cette méthode — il faudrait une
+détection par autocorrélation ou FFT sur la série `R4(t)` complète,
+pas un seuil de déviation par rapport à une baseline qui n'existe plus
+clairement à ce réglage. **Reste ouvert, méthode à changer avant de
+retenter.** Ce résultat est lui-même informatif : `beta2` module la
+FORME de la dynamique (impulsions discrètes vs bruit continu), pas
+seulement une échelle de temps — cohérent avec `1/(1-beta2)` étant la
+fenêtre effective de mémoire de `v`, mais pas une preuve du lien
+period∝`1/(1-beta2)` spécifiquement.
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
