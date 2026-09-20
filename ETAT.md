@@ -7,11 +7,12 @@ une SECONDE fois (tour 54, sur `REPONSE_ORDRE54.md`). Répondu dans
 en bas du fichier). Ses trois points : H1 (courbure→Jacobien) et H3
 (abandonner, un seul mécanisme) convergent avec ce qu'on avait déjà
 trouvé nous-mêmes ce tour, avant sa lettre. H2 (sa prédiction chiffrée
-sur `s[4,10]`) est RÉFUTÉE par 7 ordres de grandeur — testé,
-vérifié deux fois (moi + agent-dipankar) — mais sa conclusion
-qualitative (déficit côté récepteur) survit via un mécanisme plus
-simple que sa formule. Trois tests précommis par lui pour le prochain
-tour, pas encore exécutés. **En attente de sa prochaine réponse.**
+sur `s[4,10]`) est RÉFUTÉE par 7 ordres de grandeur. **Ses trois tests
+précommis ont TOUS été exécutés le même jour** (voir piste 0) — sa
+défense "mauvais instant" est close, le battement partagé n'est pas le
+planning de biais d'Adam, et le contrôle `delta=0` a donné une
+troisième réponse plus fine que sa dichotomie. **En attente de sa
+prochaine réponse.**
 
 Ce fichier n'est pas un article, c'est un pense-bête pour reprendre le
 travail dans une nouvelle conversation sans tout re-raconter — l'historique
@@ -20,18 +21,27 @@ dans `git log`.*
 
 ## Pistes ouvertes, par ordre de priorité probable
 
-0. **Tour 54 de dipankar — trois tests précommis par LUI, pas encore
-   exécutés (priorité la plus haute pour la prochaine session)** :
-   (1) grille-1 sur 2000 pas centrés sur pas=60000 — si `1-s[4,10]`
-   dépasse `5e-12` dans cette fenêtre, sa défense "mauvais instant
-   d'échantillonnage" reprend vie ; (2) loguer le facteur de
-   correction de biais d'Adam à côté de `s3`/`r4` pour voir si les
-   co-dips s'alignent sur la période déjà connue (~460-500 pas) du
-   mécanisme plancher-de-`v` ; (3) `delta=0` (symétrie complète), même
-   fenêtre — si le co-dip persiste, c'est un artefact d'optimiseur
-   indépendant du mécanisme de récompense asymétrique. Script à
-   sauvegarder : `verifier_split_s4_r4_hybride.py` (déjà committé,
-   trace complète du split `s[4,10]`/`r[10,4]`) sert de base.
+0. **Tour 54 de dipankar — ses trois tests précommis, TOUS exécutés le
+   20/09/2026 (plus deux trous trouvés et corrigés dans la lettre
+   après que Théo a demandé "tu as répondu à toutes ses questions ?").**
+   Test 1 (grille-1 sur pas=60000) : `1-s[4,10]∈[4,66e-15;4,89e-15]`,
+   trois ordres de grandeur sous son seuil de réouverture (`5e-12`) —
+   sa défense "mauvais instant" est close. Test 2 (facteur de
+   correction de biais d'Adam) : saturé à la précision machine dès
+   pas=60000 (calcul direct) — écarte le "battement partagé = planning
+   Adam brut". Test 3 (`delta=0`) : le kick de `R` survit (optimiseur
+   pur, confirmé), mais le co-timing avec `s3` ne survit PAS —
+   troisième réponse : le kick est indépendant de `delta`, sa
+   TRANSMISSION vers `s3` nécessite l'asymétrie de récompense comme
+   canal. Plus la trace logit 10 décimales qu'il avait implicitement
+   demandée (`verifier_logits_s3_s4_r4_60000.py`) : `logit_s4` lisse,
+   aucun accroc ; `logit_s3`/`logit_r4` plongent et récupèrent
+   ensemble. **Scripts permanents** :
+   `verifier_precommis_dipankar_grille1_s410.py`,
+   `verifier_precommis_dipankar_delta0_controle.py`,
+   `verifier_logits_s3_s4_r4_60000.py`,
+   `verifier_split_s4_r4_hybride.py`. Détail complet : `CARNET.md`,
+   section « VRAIE CRITIQUE DE DIPANKARSARKAR, tour 54 ».
 
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une
