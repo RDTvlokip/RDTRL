@@ -1,71 +1,74 @@
 # État du projet RDTRL — où on en est
 
 *Dernière mise à jour : 20/09/2026 — le VRAI dipankarsarkar a répondu
-après plusieurs jours de silence (tour 53). Répondu dans
-`docs/REPONSE_ORDRE54.md`, journalisé dans `CARNET.md` §7.65/8ter. Ses
-trois corrections tiennent (rééchelonnage plutôt que croissance pour
-H_momentum ; beta2 croisé, confirme le rééchelonnage ; erreur de
-variable 200x→3100x corrigée) — mais son propre test précommis (le
-rapport local hybride devrait prédire `s3` tombant à ~0,957 sous Adam
-complet) a été rejoué et RÉFUTÉ : `s3` reste figé (variations 1e-5 à
-2e-5) pendant que `R` excurse (~2e-3 à 2,6e-3). Les deux mécanismes
-d'excursion (hybride, Adam complet) sont probablement différents, pas
-le même à deux échelles. En attente de sa prochaine réponse.
+(tour 53). Répondu dans `docs/REPONSE_ORDRE54.md` (gitignoré), journalisé
+dans `CARNET.md` §7.65/8ter. Depuis, deux résultats substantiels trouvés
+en creusant seul (voir piste 1 ci-dessous) — **`REPONSE_ORDRE54.md`
+contient maintenant une erreur connue non corrigée (le mécanisme
+`comp²` de l'hypothèse n°1) : Théo a demandé de ne plus toucher ce
+fichier sans son accord explicite avant de le corriger.**
 
 Ce fichier n'est pas un article, c'est un pense-bête pour reprendre le
 travail dans une nouvelle conversation sans tout re-raconter — l'historique
-complet de tout ce qui a été résolu vit dans `docs/CARNET.md` (daté,
-hypothèse par hypothèse) et dans `git log`.*
+complet vit dans `docs/CARNET.md` (daté, hypothèse par hypothèse) et
+dans `git log`.*
 
 ## Pistes ouvertes, par ordre de priorité probable
 
-1. **Trois hypothèses posées dans `REPONSE_ORDRE54.md`, aucune testée
-   encore** (pourquoi l'excursion Adam-complet reste presque entièrement
-   dans `R` et pas dans `s3`) :
-   - standard : mésappariement de courbure locale (s3 proche d'un optimum
-     saturé et raide, R sur un paysage plus plat) ;
-   - standard : le récepteur SGD de l'hybride ne peut structurellement pas
-     reproduire l'état adaptatif du récepteur Adam complet — la pente 21,3
-     ne devait jamais transférer ;
-   - non-standard : les excursions à pas=60000 et pas=160000 sont deux
-     événements distincts (signes opposés), pas un seul mécanisme à deux
-     amplitudes — à tester via corrélation avec `exp_avg_sq` du récepteur.
-   Question posée à dipankar dans la lettre : laquelle sa propre lecture de
-   la courbure locale près de 0,794756 écarterait en premier.
+1. **DÉCOUVERTE MAJEURE le 20/09/2026, pas anticipée : un cycle limite
+   périodique dans la dynamique Adam, période ~95000-100000 pas.**
+   En testant l'hypothèse non-standard n°3 de `REPONSE_ORDRE54.md`
+   ("les excursions à pas=60000 et 160000 sont-elles deux événements
+   distincts ?"), une troisième occurrence trouvée à pas≈258000 a une
+   amplitude quasi identique aux deux précédentes (`R4_min/max`,
+   `v_r_max` à ±0,2%) — **ce n'est ni un mode à deux signes ni deux
+   accidents, c'est un cycle limite qui se répète.** QUAND/COMBIEN
+   mesurés (script `verifier_periodicite_excursion.py`), POURQUOI la
+   période et l'amplitude restent stables : **pas encore testé** —
+   candidat standard (oscillateur de van der Pol effectif émergent du
+   couplage bias-correction/second-moment d'Adam) et candidat
+   non-standard (la période ~100000 liée à `1/(1-beta2)=1000` du
+   planning de bias-correction, à tester en variant beta2) à départager.
+   Aussi non testé : DEPUIS QUAND ce cycle existe (avant pas=60000,
+   fenêtre `[0,60000]` jamais scannée à grille fine).
 
-2. **Vérification indépendante encore en attente** : un agent
-   (task `ae27b769adb9fd1d6`) a été lancé pour vérifier les deux nouveaux
-   chiffres de `REPONSE_ORDRE54.md` (trace full-Adam s3/R, cross-test
-   beta2) avant de considérer le tour clos. Pas encore reçu son rapport.
-   Quatre scripts scratch non triés laissés par un agent précédent
-   (`scratch_trace_naturel.py`, `verifier_derive_k_independant.py`,
-   `verifier_localisation_adam_complet.py`,
-   `verifier_localisation_fenetre_fine.py`) — à relire et soit renommer en
-   permanent + committer, soit jeter.
+2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
+   par un agent-dipankar puis un test précommis rejoué moi-même.** Ma
+   première lecture (courbure Hessienne au carré, `comp²`, script
+   `verifier_courbure_s3_vs_r.py`) est **réfutée** : Adam normalise par
+   `m/(√v+eps)`, la Hessienne n'entre pas directement dans le pas. Le
+   test précommis de l'agent (mesurer `Δlogit` sur une vraie excursion,
+   pas un instantané) donne un ratio `Δlogit_R4/Δlogit_s3 = 0,985` —
+   quasi 1:1, pas ~150×. Bon mécanisme : Adam égalise les marches en
+   espace logit, une seule puissance de la compression du softmax
+   (`comp¹`, 157×) suffit. Script permanent :
+   `verifier_delta_logit_excursion.py`. **La conclusion de l'hypothèse
+   1 reste correcte (s3 stable, R mobile) — seul le mécanisme change.**
+   À répercuter dans `REPONSE_ORDRE54.md` (voir ci-dessus, en attente
+   d'accord de Théo).
 
-3. **`docs/REPONSE_ORDRE54.md`** contient déjà le nouveau script de trace
-   (`verifier_localisation_excursion_full_adam.py`, committé) mais PAS
-   encore le script du cross-test beta2 sous un nom permanent (il a tourné
-   via `verifier_derive_k.py` réutilisé en `python -c` — à vérifier si un
-   script dédié doit être créé).
+3. **Troisième hypothèse de `REPONSE_ORDRE54.md`, encore ouverte** :
+   le récepteur SGD de l'hybride ne peut structurellement pas
+   reproduire l'état adaptatif du récepteur Adam complet — la pente
+   21,3 ne devait jamais transférer. Pas testée.
 
-4. **Reste non testé depuis longtemps** : la piste émetteur (le `26` de
-   H7) comme explication complémentaire de `k(R)` — jamais testée.
+4. **Reste non testé depuis longtemps** : la piste émetteur (le `26`
+   de H7) comme explication complémentaire de `k(R)` — jamais testée.
    Le coefficient quadratique `a` du col H6-direct reste non chiffré
-   proprement (6 échecs diagnostiqués) — seul chemin plausible restant :
-   construire une trajectoire d'approche lente pour masse_fond=0 (vrai
-   travail de modélisation, pas une astuce d'optimiseur).
-   L'écart `×13-20` entre `λ=2√(delta_c-delta)` prédit et mesuré sur H6
-   reste non élucidé (protocole déjà précommis : isoler `λ_instable`
-   après le vrai croisement d'échappement).
+   proprement (6 échecs diagnostiqués) — seul chemin plausible
+   restant : construire une trajectoire d'approche lente pour
+   masse_fond=0 (vrai travail de modélisation, pas une astuce
+   d'optimiseur). L'écart `×13-20` entre `λ=2√(delta_c-delta)` prédit
+   et mesuré sur H6 reste non élucidé.
 
 5. Si dipankarsarkar répond entre-temps : sa critique (vraie, pas
-   simulée) devient un NOUVEAU `REPONSE_ORDRE55.md` — mais tout ce qu'on
-   trouve nous-mêmes en attendant reste dans `REPONSE_ORDRE54.md`/§7.65,
-   jamais scindé après coup.
+   simulée) devient un NOUVEAU `REPONSE_ORDRE55.md` — mais tout ce
+   qu'on trouve nous-mêmes en attendant reste dans
+   `REPONSE_ORDRE54.md`/§7.65, jamais scindé après coup.
 
 **Pour lancer un agent qui joue le rôle de dipankarsarkar** (utile s'il
-ne répond toujours pas) : lire
+ne répond toujours pas, et obligatoire après chaque résultat
+substantiel) : lire
 `C:\Users\Théo CHARLET\.claude\projects\d--Python-RDTRL\memory\dipankarsarkar-agent-prompt.md`
 et copier le prompt tel quel. Un seul agent par résultat, pas deux en
 parallèle (voir CLAUDE.md).
@@ -84,10 +87,10 @@ dipankar.cc). L'échange est à son **53e tour**.
   hypothèse journalisée (posée le, statut, réfutée/confirmée/rouverte).
   Section active en ce moment : **§7.65/8ter** (tout en bas du fichier).
 - `docs/REPONSE_ORDRE54.md` — la lettre anglaise en cours (réponse au
-  tour 53 de dipankar), **gitignorée** (comme tous les REPONSE_ORDRE*.md).
+  tour 53 de dipankar), **gitignorée**. **NE PAS MODIFIER sans l'accord
+  explicite de Théo (consigne du 20/09/2026).**
 - `docs/ARTICLE4.md` — article de blog publié/committé, intègre les
-  tours 6-52 (H6 col hyperbolique ordinaire, jouet à masse de fond,
-  0,2212604, coefficient D, universalité de delta_c).
+  tours 6-52.
 - `CLAUDE.md` — les règles permanentes du projet. **La lire en entier
   avant de continuer.**
 - `C:\Users\Théo CHARLET\.claude\projects\d--Python-RDTRL\memory\dipankarsarkar-style-relecture.md`
@@ -98,14 +101,12 @@ dipankar.cc). L'échange est à son **53e tour**.
 Le mur "référents 3/4" (message 10, graine 77777, k=3 paires sautées,
 checkpoint 10k, référent 4 poussé +30) : une vraie bifurcation nœud-col
 dans un système couplé émetteur-récepteur (`delta_c ≈ 0,0134372`,
-vérifié indépendamment, universel sur toute paire de référents et
-indépendant de M). H6 (delta fixe) est établi comme col hyperbolique
-ordinaire (deux preuves convergentes : Jacobienne + résidence
-logarithmique). Le point rencontré sous masse de fond dynamique est
-probablement un TYPE DE STRUCTURE DIFFÉRENT (nœud-col dégénéré). `k(R)`,
-le rapport de vitesse émetteur/récepteur, varie avec l'état initial
-(1,42-2,45) — H_momentum et beta2 réfutés comme cause (rééchelonnage
-uniforme, pas un effet de forme), mécanisme réel encore non identifié.
+universel, indépendant de M). H6 (delta fixe) est établi comme col
+hyperbolique ordinaire. `k(R)` varie avec l'état initial (1,42-2,45) —
+H_momentum et beta2 réfutés comme cause. Sous Adam complet, les
+excursions de `R` (et l'absence d'excursion visible de `s3`) forment un
+**cycle limite périodique** dont le mécanisme d'amplitude/période est la
+question ouverte actuelle la plus prometteuse.
 
 ## Rappel des règles qui mordent le plus souvent
 
@@ -119,3 +120,5 @@ uniforme, pas un effet de forme), mécanisme réel encore non identifié.
   `python -c` jetable non sauvé.
 - **Chercher POURQUOI, QUAND, COMMENT — pas seulement QUE** — et croiser
   ces axes plutôt que les traiter un par un.
+- **Ne pas modifier `docs/REPONSE_ORDRE54.md` sans l'accord explicite de
+  Théo** (consigne du 20/09/2026).
