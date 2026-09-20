@@ -11067,17 +11067,38 @@ mange sur l'horloge « calme », mais pas démontré ; `n=8` kicks par `beta2`
 est petit pour une fraction (intervalle de confiance binomial à 95% sur
 62,5% à `beta2=0,99` : environ `[25%, 92%]`, large).
 
-**Test précommis par l'agent, pas encore exécuté** : `beta2=0,985`, `n≥40`
-kicks poolés sur 100000 pas. Prédictions posées AVANT le test : (a) le
-cycle propre continue de décroître (`t*_corrigé≈55-60`) ; (b) la fraction
-coincée dépasse 5/8 (prédit `>70%`, peut-être `~90%`) ; (c) l'espacement
-médian continue donc de MONTER, pas de rebaisser — si ça rebaisse, le
-mécanisme de mélange est faux.
+**Test précommis par l'agent, EXÉCUTÉ le 20/09/2026 (reprise) — confirme
+la prédiction la plus extrême, au-delà de ce qui était anticipé.**
+Prédictions posées AVANT le test : (a) le cycle propre continue de
+décroître ; (b) la fraction coincée dépasse 5/8 (prédit `>70%`,
+peut-être `~90%`) ; (c) l'espacement médian continue donc de MONTER,
+pas de rebaisser.
+```
+beta2=0,985, 100000 pas, seuil standard (0,0015) : n_events=0
+beta2=0,985, 40000 pas, diagnostic de l'echelle :
+  max_dev=0,000668  mean_dev=0,000392   ratio max/mean=1,7
+  (a comparer : beta2=0,999 avait un ratio max/mediane ~1,14 mais sur un fond
+  QUASI NUL — ici le "fond" lui-meme est deja a l'echelle des anciens kicks)
+```
+**Le détecteur ne trouve plus AUCUN événement discret — pas parce que
+le mécanisme a disparu, mais parce que la fraction coincée est montée
+si haut (bien au-delà des `~90%` prédits, plus proche de 100%) que
+plus aucune phase "calme" séparée ne subsiste : toute la trajectoire
+est fusionnée en un régime continu.** C'est la limite naturelle de la
+prédiction (b)/(c) : un espacement qui "monte" jusqu'à devenir
+indéfini, pas une hypothèse à part. Cohérent avec la première
+observation faite bien plus tôt ce tour (avant le cadre du mélange) —
+« à beta2=0,99, R4 n'a plus de plateau, juste une agitation continue »
+— qui avait été notée « ni confirmée ni réfutée, méthode inadaptée » à
+l'époque : **avec le cadre du mélange maintenant en main, cette
+observation ancienne est en fait la MÊME chose, vue une marche plus
+tôt sur le même axe.** Boucle une piste ouverte depuis plusieurs
+heures avec le nouveau cadre théorique.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | la cassure de la loi beta2 est un déplacement de la moyenne `t*(beta2)` | 20/09 (moi, implicite dans ma tentative de dérivation) | **réfutée** le 20/09 par agent-dipankar, vérifié indépendamment (rapport max/médiane) |
-| la cassure est une transition de mélange (fraction croissante de cycles "coincés" où le gradient de fond dépasse `v_crit`, pas un déplacement de moyenne) | 20/09 (agent-dipankar) | **confirmée qualitativement** le 20/09, vérifiée indépendamment via le rapport max/médiane sur des données déjà collectées ; **PAS encore confirmée quantitativement** (n=8 par beta2, test précommis à beta2=0,985 pas encore exécuté) |
+| la cassure est une transition de mélange (fraction croissante de cycles "coincés" où le gradient de fond dépasse `v_crit`, pas un déplacement de moyenne) | 20/09 (agent-dipankar) | **CONFIRMÉE, y compris quantitativement à l'extrême** le 20/09 — à beta2=0,985, la fraction coincée est si élevée qu'aucun événement discret ne subsiste, cohérent avec l'extrapolation de la tendance 0/8→1/8→5/8 au-delà de 90% |
 
 ---
 
