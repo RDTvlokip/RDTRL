@@ -1,12 +1,23 @@
 # État du projet RDTRL — où on en est
 
-*Dernière mise à jour : 18/09/2026 (piste 3a/3b construites et
-refermées jusqu'au bout : le pli du jouet à masse de fond est
-M-indépendant en position ET en courbure, et Adam converge vers
-exactement le même point fixe que le flot de gradient réel, vérifié
-à 7 chiffres significatifs — voir piste 3a. `ARTICLE4.md` intègre
-maintenant toute cette suite. Toutes les pistes concrètes de ce
-fichier sont closes à ce stade.)
+*Dernière mise à jour : 20/09/2026 — le VRAI dipankarsarkar a répondu
+après plusieurs jours de silence (tour 53, sur le k(R)/beta1/beta2/test
+hybride du tour précédent). Répondu dans `docs/REPONSE_ORDRE54.md`,
+journalisé dans `CARNET.md` §7.65/8ter. Ses trois corrections tiennent
+(rééchelonnage plutôt que croissance pour H_momentum ; beta2 croisé,
+confirme le rééchelonnage ; erreur de variable 200x→3100x corrigée) —
+mais son propre test précommis (le rapport local hybride devrait
+prédire `s3` tombant à ~0,957 sous Adam complet) a été rejoué et
+RÉFUTÉ : `s3` reste figé pendant que `R` excurse. Les deux mécanismes
+d'excursion (hybride, Adam complet) sont probablement différents, pas
+le même à deux échelles. En attente de sa prochaine réponse.
+
+(18/09/2026 : piste 3a/3b construites et refermées jusqu'au bout : le
+pli du jouet à masse de fond est M-indépendant en position ET en
+courbure, et Adam converge vers exactement le même point fixe que le
+flot de gradient réel, vérifié à 7 chiffres significatifs. `ARTICLE4.md`
+intègre cette suite, ainsi que la percée sur l'identité du point selle
+H6 — col hyperbolique ordinaire confirmé par deux preuves convergentes.)
 Ce fichier n'est pas un article, c'est un pense-bête pour reprendre le
 travail dans une nouvelle conversation sans tout re-raconter.*
 
