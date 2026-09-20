@@ -11192,15 +11192,26 @@ pas pour celles de ce jouet — à refaire avant de pouvoir dire si `K`
 module la PENTE de `k(R_init)`, pas seulement observer que la courbe
 de bascule elle-même bouge avec `R_init`.
 
-**Test précommis, PAS encore exécuté** (posé par l'agent avant de
-connaître le résultat) : à K=8 ou K=20 (strictement entre le K=26 plat
-et le K=1 qui ralentit), le temps de convergence sort-il plat,
-ralenti, ou intermédiaire ? Ce résultat tranchera si "plat" est le cas
-générique (vrai système + K=26 sans rien de spécial, K=1 l'exception)
-ou si K=1 et K=26 encadrent déjà une vraie transition non localisée.
+**Test précommis EXÉCUTÉ le 20/09/2026 (reprise après la clôture du
+tour 54).** À K=8 ou K=20, le temps de convergence sort-il plat,
+ralenti, ou intermédiaire ?
+```
+K=8   (delta_c~0,015098)  : 60, 60, 320 pas   (3%, 0,3%, 0,03% sous delta_c)
+K=20  (delta_c~0,01378)   : 40, 60, 60 pas
+```
+**K=20 est PLAT** (même signature que K=26 : 40/60/60). **K=8 montre
+un signal faible** — hausse seulement au point le plus proche du
+seuil (0,03%), pas la progression lisse et lourde de K=1
+(80,300,340). **Tranche la question : « plat » est bien le cas
+générique** (vrai système, K=20, K=26 tous plats), **K=1 est
+l'exception, pas une transition cachée qui encadrerait K=26.** Le
+signal faible à K=8 suggère une décroissance progressive de l'effet
+entre K=1 et K=8, complètement éteinte dès K=20 — pas encore de
+mesure fine de où exactement ça s'éteint (K=2 à K=7 non testés).
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
+| « plat » est le cas générique (K=20/26 comme le vrai système), K=1 est l'exception isolée | 20/09 (agent-dipankar, précommise) | **confirmée** le 20/09 — K=20 plat (40/60/60), K=8 signal faible seulement au point le plus proche du seuil, aucun des deux ne montre la divergence lisse de K=1 |
 | `delta_c(K=26)` matche le vrai système à ≈0,03% | 20/09 (moi) | **corrigée** le 20/09 par agent-dipankar — le vrai écart est 0,006%, cinq fois plus petit ; erreur d'arithmétique de ma part, pas de méthode |
 | le match `delta_c(K=26)` vs vrai système est une coïncidence de deux courbes lisses, pas un signal K-spécifique | 20/09 (moi, implicite) | **réfutée** le 20/09 par agent-dipankar — la pente locale `delta_c(K)` implique un `ΔK` effectif de 0,015 pour expliquer l'écart résiduel, bien trop précis pour une coïncidence |
 | le pli d'équilibre (Newton, non-Adam) à `delta_c(K=26)` est un artefact numérique de continuation, pas un vrai nœud-col | 20/09 (agent-dipankar, testée par elle-même) | **réfutée** — `det(J)→0` monotone et lisse, bistabilité confirmée directement par résolution depuis deux points de départ différents |
