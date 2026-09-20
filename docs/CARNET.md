@@ -10770,6 +10770,21 @@ loggé — n'entre pas en jeu comme plancher ici ; tester avec
 la lecture « plancher de `v` » et une lecture concurrente « plancher
 d'`eps` ».
 
+**RÉPONDU le 20/09/2026, même tour — DÉCISIF, confirme nettement le
+plancher de `v`.**
+```
+adam_eps=1e-10 (défaut)  n_events=29 sur 20000 pas  espacement médian=456  amplitude moyenne=0,00342
+adam_eps=1e-6            n_events=0  sur 20000 pas  (AUCUN kick détecté)
+```
+Quand `eps` domine le dénominateur (`1e-6 >> √v_plancher≈3e-7`), le
+pas effectif `lr*m/(√v+eps)` est borné par `lr*m/eps` — `v` ne peut
+plus jamais devenir assez petit relativement à `eps` pour produire un
+pas démesuré, et le mécanisme disparaît ENTIÈREMENT, pas juste
+atténué. **Confirme le plancher de `v` comme cause réelle, pas une
+lecture concurrente plancher-d'`eps`** — `eps`, au contraire, agit
+comme le REMÈDE (un plancher protecteur suffisamment grand supprime
+l'instabilité), pas comme une explication alternative du phénomène.
+
 **Script manquant à créer avant de clore ce fil** : ni le balayage de
 rétractation ni celui de l'agent (grille 1, détection d'événements par
 seuil+fusion) n'ont de script permanent committé — à faire au
@@ -10780,6 +10795,7 @@ dans le dépôt ».
 |---|---|---|---|
 | l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |
 | le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **CONFIRMÉE de bout en bout par moi** — décroissance lisse pré-kick (~380 pas), déclenchement AVANT la remontée de `v`, regonflement, amortissement, tous observés dans l'ordre sur une fenêtre continue `[9700,10219]` |
+| relever `adam_eps` à `~1e-6` (comparable au plancher de `√v`) supprime les kicks si le mécanisme est bien piloté par `v`, pas par `eps` | 20/09 (moi) | **CONFIRMÉE** le 20/09 — 0 événement sur 20000 pas à `adam_eps=1e-6` contre 29 (espacement médian 456) à `1e-10` ; disparition complète, pas une simple atténuation |
 
 **Vérification partielle du mécanisme, le même jour.** Instrumenté
 `m_r`, `v_r`, `eff_step=lr*m/(√v+eps)` sur une fenêtre `[pas-20,pas+30]`
