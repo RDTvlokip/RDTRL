@@ -11281,18 +11281,52 @@ monotone (« bosse », décélère puis réaccélère) — signature ambiguë,
 compatible avec un vrai ralentissement OU une simple relaxation
 ordinaire vers un point fixe quelconque ; pas tranché.
 
-**Test précommis pour la suite, pas encore exécuté** : rebissecter
-`delta_c(K)` à `tol=1e-8` (au lieu de `1e-5`/`1e-6`) pour K∈{1,8,10,
-12,14,16,18,20,26}, puis retester avec des écarts ≥100× cette
-tolérance (par ex. 0,01%/0,1%/1% plutôt que 3%/0,3%/0,03%) pour
-garantir que chaque point reste bien dans un seul bassin. Question
-ciblée posée par l'agent : la distance pli-d'équilibre/seuil a-t-elle
-été calculée pour K=8 et K=20 (pas seulement K=1 et K=26) ? Si elle
-suit K=8≈K=20 (collée au seuil) malgré un temps de convergence
-différent, la proximité du pli est définitivement écartée comme
-variable discriminante ; si K=8 se place entre K=1 et K=20/26, ça
-pourrait être une meilleure variable que K lui-même pour expliquer le
-plateau/falaise.
+**Localisation de la falaise poursuivie le 20/09/2026 (même reprise,
+sans agent cette fois, avant de solliciter le prochain).**
+
+**Contrôle important trouvé en premier, pas évident au départ : la
+LARGEUR (en delta) de la zone de ralentissement critique rétrécit
+avec K.** Testé à un écart fixe de 1% (largement au-dessus de toute
+tolérance de bissection, donc fiable) :
+```
+K=1  premier(1%)=260   (signal fort, encore visible loin du seuil)
+K=8  premier(1%)=60    (DEJA plat a cet ecart, alors qu'il faisait
+                          partie du "plateau" a 0,03%)
+```
+**Un test à écart grossier (1%) pour localiser la falaise aurait donc
+été non informatif** — mon premier essai à K=10/14/18 à cet écart
+donnait `60,60,60` partout, ce qui aurait semblé confirmer « la
+falaise est déjà avant K=10 », un résultat FAUX simplement dû à un
+écart trop grossier pour voir le signal de N'IMPORTE QUEL K, y compris
+ceux du plateau déjà établi. Retesté au bon écart (0,03%, celui qui
+avait révélé le plateau K=1-8) :
+```
+K=10  delta_c=0,014766  premier(0,03%)=300   (PLATEAU)
+K=14  delta_c=0,014283  premier(0,03%)=60    (PLAT)
+K=18  delta_c=0,013934  premier(0,03%)=60    (PLAT, confirme)
+```
+**Falaise localisée entre K=10 et K=14** — resserrée depuis « quelque
+part entre K=8 et K=20 ». Pas encore plus fin (K=11,12,13 non
+testés). Script permanent : `verifier_localisation_falaise_k10_k14.py`.
+
+**Test précommis pour la suite, pas encore exécuté** : localiser plus
+finement entre K=10 et K=14 (K=11,12,13) ; rebissecter `delta_c(K)` à
+`tol=1e-8` pour une marge de sécurité complète (celle utilisée ici,
+`tol=1e-6`, donne une marge ~4,4× au-dessus de l'écart testé, pas les
+~100× recommandés par l'agent — les chiffres ci-dessus sont donc
+plausibles mais pas blindés au même niveau que le reste). Question
+ciblée posée par l'agent, toujours ouverte : la distance
+pli-d'équilibre/seuil a-t-elle été calculée pour K=8 et K=20 (pas
+seulement K=1 et K=26) ? Si elle suit K=8≈K=20 (collée au seuil)
+malgré un temps de convergence différent, la proximité du pli est
+définitivement écartée comme variable discriminante ; si K=8 se place
+entre K=1 et K=20/26, ça pourrait être une meilleure variable que K
+lui-même pour expliquer le plateau/falaise.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la largeur (en delta) de la zone de ralentissement critique est la même pour tout K | 20/09 (moi, implicite) | **réfutée** le 20/09 — K=1 montre un signal à 1% d'écart, K=8 est déjà plat au même écart malgré son propre plateau à 0,03% ; la fenêtre critique rétrécit avec K |
+| la falaise entre le plateau et le régime plat se situe entre K=8 et K=20 | 20/09 (agent-dipankar) | **affinée** le 20/09 — localisée plus précisément entre K=10 (plateau) et K=14 (plat), K=18 confirme le plat |
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
