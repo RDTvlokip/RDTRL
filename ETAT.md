@@ -15,22 +15,21 @@ dans `git log`.*
 
 ## Pistes ouvertes, par ordre de priorité probable
 
-1. **DÉCOUVERTE MAJEURE le 20/09/2026, pas anticipée : un cycle limite
-   périodique dans la dynamique Adam, période ~95000-100000 pas.**
-   En testant l'hypothèse non-standard n°3 de `REPONSE_ORDRE54.md`
-   ("les excursions à pas=60000 et 160000 sont-elles deux événements
-   distincts ?"), une troisième occurrence trouvée à pas≈258000 a une
-   amplitude quasi identique aux deux précédentes (`R4_min/max`,
-   `v_r_max` à ±0,2%) — **ce n'est ni un mode à deux signes ni deux
-   accidents, c'est un cycle limite qui se répète.** QUAND/COMBIEN
-   mesurés (script `verifier_periodicite_excursion.py`), POURQUOI la
-   période et l'amplitude restent stables : **pas encore testé** —
-   candidat standard (oscillateur de van der Pol effectif émergent du
-   couplage bias-correction/second-moment d'Adam) et candidat
-   non-standard (la période ~100000 liée à `1/(1-beta2)=1000` du
-   planning de bias-correction, à tester en variant beta2) à départager.
-   Aussi non testé : DEPUIS QUAND ce cycle existe (avant pas=60000,
-   fenêtre `[0,60000]` jamais scannée à grille fine).
+1. **« Cycle limite périodique » RÉTRACTÉ le 20/09/2026, même tour où
+   il a été trouvé — biais de sélection, pas un vrai résultat.** En
+   balayant `[0,200000]` sans se limiter aux trois fenêtres déjà
+   repérées (au lieu de zoomer seulement sur 60000/160000/260000),
+   des fluctuations d'amplitude comparable apparaissent PARTOUT,
+   toutes les 10000-30000 pas environ — pas un oscillateur à période
+   fixe ~100000. **Statut correct, plus modeste** : les excursions de
+   `R` sous Adam complet sont des fluctuations fréquentes et
+   récurrentes de magnitude caractéristique bornée (~0,002-0,004), pas
+   un mode périodique isolé ni deux accidents isolés (l'hypothèse
+   non-standard n°3 de `REPONSE_ORDRE54.md` reste réfutée dans sa forme
+   originale, mais pas au profit de la périodicité). **Reste ouvert** :
+   la distribution complète des amplitudes (bornée ou à queue lourde ?),
+   et si la fréquence des fluctuations est stationnaire dans le temps.
+   Détail complet et rétractation : `CARNET.md` fin de §7.65/8ter.
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
    par un agent-dipankar puis un test précommis rejoué moi-même.** Ma

@@ -10612,7 +10612,48 @@ seulement une échelle de temps — cohérent avec `1/(1-beta2)` étant la
 fenêtre effective de mémoire de `v`, mais pas une preuve du lien
 period∝`1/(1-beta2)` spécifiquement.
 
-## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
+**RÉTRACTATION le 20/09/2026 — « cycle limite périodique, période
+~100000 » était un biais de sélection, pas un vrai résultat. Trouvé en
+cherchant DEPUIS QUAND (méfiance appliquée à mon propre résultat qui
+venait de confirmer une hypothèse, cf. règle CLAUDE.md).** En balayant
+`[0,60000]` (grille 200 pas) puis `[0,200000]` (grille 1000 pas) sans
+se limiter aux trois fenêtres déjà repérées par la grille grossière à
+20000 pas, des fluctuations d'amplitude COMPARABLE apparaissent
+PARTOUT, pas seulement près de `pas=60000/160000/260000` :
+```
+pas=22000  dev=+0,00185   pas=33000  dev=+0,00195   pas=50000  dev=+0,00130
+pas=60000  dev=+0,00105   pas=69000  dev=-0,00092   pas=84000  dev=+0,00165
+pas=85000  dev=-0,00069   pas=108000 dev=-0,00269   pas=112000 dev=+0,00051
+pas=118000 dev=-0,00050   pas=142000 dev=-0,00065   pas=160000 dev=-0,00212
+pas=194000 dev=+0,00120   pas=195000 dev=-0,00224
+```
+**Ce ne sont PAS trois occurrences isolées d'un même cycle espacé de
+~100000 pas — ce sont des fluctuations FRÉQUENTES (au moins une
+notable toutes les 10000-30000 pas), de magnitude comparable, sur toute
+la trajectoire.** Mon repérage initial des « trois occurrences
+identiques » souffrait d'un biais de sélection méthodologique clair :
+je n'avais fait un balayage FIN que sur les trois fenêtres DÉJÀ
+repérées par la grille grossière à 20000 pas de la trace originale —
+bien sûr qu'elles se ressemblaient, aucune comparaison avec le reste
+de la trajectoire n'avait été faite. **Le vrai phénomène est plus
+proche d'un bruit/jitter quasi continu de magnitude caractéristique
+`~0,002-0,004` (sous-échantillonné à toute grille plus grossière que
+~200 pas), pas un oscillateur périodique à période fixe.** La
+« hypothèse non-standard n°3 » de `REPONSE_ORDRE54.md » (deux
+événements distincts vs un seul mécanisme) reste réfutée dans sa forme
+originale (pas juste deux événements — il y en a beaucoup plus), mais
+ma propre reformulation en « cycle limite périodique » ne tient pas
+non plus. **Statut correct, plus modeste : les excursions de `R` sous
+Adam complet sont des fluctuations fréquentes et récurrentes de
+magnitude caractéristique bornée (~0,002-0,004), pas un mode
+périodique isolé ni deux accidents isolés.** Reste à tester : la
+distribution complète des amplitudes (est-elle bornée par une valeur
+max stable, ou a-t-elle une queue lourde ?), et si leur fréquence
+elle-même est stationnaire dans le temps ou dérive.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| les trois occurrences à pas=60000/160000/260000 forment un cycle limite périodique de période ~100000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour — biais de sélection trouvé en balayant le reste de la trajectoire : des fluctuations comparables apparaissent toutes les 10000-30000 pas partout, pas seulement à ces trois points |
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
 questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en
