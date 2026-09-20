@@ -10411,6 +10411,58 @@ Scripts : `verifier_derive_k.py` (croisement beta2),
 `verifier_localisation_excursion_full_adam.py` (trace Adam complet
 s3+R ensemble, nouvelle, permanente).
 
+**Vérification indépendante des deux résultats numériques ci-dessus
+(agent, 20/09/2026, avant envoi de `REPONSE_ORDRE54.md`), puis rejeu
+personnel du point 2 incomplet par l'agent — deux issues opposées.**
+
+- **Résultat 3 (trace Adam complet) : CONFIRMÉ, à grille plus fine
+  encore.** L'agent a réécrit son propre script (pas copié), 100 000
+  pas, log tous les 2000 pas (10× plus fin que les 20000 d'origine).
+  Trajectoire identique à la mienne au pas près (reproductibilité
+  seed/config confirmée, pas supposée). Beaucoup plus d'excursions
+  trouvées à cette résolution (7 au lieu de 2), mais **aucune
+  n'atteint `s3≈0,957`** — `s3` reste borné à des variations `~1e-5`
+  sur toute la fenêtre pendant que `R` dip jusqu'à `~3,1e-3`. La
+  lecture "réfuté nettement, pas la même direction d'espace d'état"
+  tient à grille fine aussi.
+- **Résultat 2 (croisement beta2) : l'écart de 0,94% N'EST PAS
+  fiable à ce niveau de précision — REJOUÉ moi-même, corrigé.**
+  L'agent n'a pas pu boucler son propre rejeu dans le temps imparti
+  (bissection à budget original trop coûteuse, ~37s/appel ×
+  ~10-12 appels/point). J'ai rejoué moi-même avec un budget réduit
+  (`pas=15000, tol=2e-4` contre `pas=40000, tol=1e-5` d'origine, pour
+  rester dans un temps raisonnable) :
+  ```
+  flip75 = 0,989717   (original : 0,989714)
+  flip50 = 0,972154   (original : 0,972195)
+  k75 = 2,4373          (original : 2,4357)
+  k50 = 1,3953          (original : 1,3971)
+  ratio = 1,7468          (original : 1,7434)
+  écart vs référence 1,7271 : 1,14%   (original annoncé : 0,94%)
+  ```
+  Les points de bascule (`flip`) reproduisent à 4-5 chiffres
+  significatifs — pas de doute sur la trajectoire elle-même. Mais
+  **l'écart lui-même bouge de 0,94% à 1,14% (+0,2 point, ~20%
+  relatif) rien qu'en changeant le budget de bissection.** C'est
+  précisément la question laissée ouverte par l'agent ("l'écart est-il
+  sous la barre du rééchelonnage seul, ou comparable au bruit de
+  bissection ?") — la réponse est que **le bruit de bissection à lui
+  seul produit une variation du même ordre de grandeur que l'effet
+  rapporté.** Le verdict qualitatif (rééchelonnage dominant, pas un
+  effet de forme) tient probablement toujours, mais le chiffre précis
+  "0,94%" ne doit pas être cité dans `REPONSE_ORDRE54.md` comme une
+  mesure de précision inférieure au point, sans requalification.
+  **À faire avant l'envoi : soit refaire au budget original pour une
+  vraie comparaison à isoconfiguration, soit reformuler la conclusion
+  en "écart de l'ordre de 1%, dans la même gamme que le bruit de
+  bissection à cette résolution — cohérent avec un rééchelonnage, pas
+  une preuve à la décimale près".**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'écart de 0,94% (croisement beta2) est net, sous la barre du rééchelonnage seul | 20/09 (moi, dans REPONSE_ORDRE54.md) | **affaiblie** le 20/09, rejeu à budget réduit donne 1,14% — le bruit de bissection à budget différent est du même ordre que l'effet rapporté ; conclusion qualitative probablement OK, le chiffre précis non |
+| la trace Adam complet (s3 figé, R excurse) résiste à une grille de mesure plus fine | 20/09 (moi) | **confirmée** le 20/09 par agent, grille 10× plus fine (2000 vs 20000 pas), 7 excursions trouvées au lieu de 2, aucune n'approche s3≈0,957 |
+
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
