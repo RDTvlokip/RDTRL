@@ -151,9 +151,13 @@ dans un système couplé émetteur-récepteur (`delta_c ≈ 0,0134372`,
 universel, indépendant de M). H6 (delta fixe) est établi comme col
 hyperbolique ordinaire. `k(R)` varie avec l'état initial (1,42-2,45) —
 H_momentum et beta2 réfutés comme cause. Sous Adam complet, les
-excursions de `R` (et l'absence d'excursion visible de `s3`) forment un
-**cycle limite périodique** dont le mécanisme d'amplitude/période est la
-question ouverte actuelle la plus prometteuse.
+excursions de `R` (et l'absence d'excursion visible de `s3`) sont des
+**« kicks » d'un oscillateur de relaxation par plancher numérique de
+`v` (exp_avg_sq)**, confirmé de bout en bout (six vérifications
+indépendantes, piste 1 de `ETAT.md`) — pas un cycle périodique à
+période fixe, un processus récurrent d'amplitude quasi constante
+(~0,0037) toutes les ~460-500 pas dont la loi de dépendance à `beta2`
+reste partiellement non élucidée entre `0,995` et `0,99`.
 
 ## Rappel des règles qui mordent le plus souvent
 

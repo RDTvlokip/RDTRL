@@ -10840,8 +10840,44 @@ sont complémentaires, pas concurrents — l'un explique COMMENT un kick
 se répartit entre `s3` et `R`, l'autre explique QUAND et POURQUOI un
 kick se produit.
 
+**Tentative de dérivation de la cassure de la loi `beta2` (20/09/2026,
+reprise après 18h) — PARTIELLE, pas concluante, journalisée
+honnêtement.** Hypothèse fermée testée : le temps de déclenchement
+`t*` suit `t*≈ln(v_pic/v_crit)/(1-beta2)` (décroissance géométrique
+depuis le pic post-kick jusqu'au seuil de déclenchement) ; si
+`ln(v_pic/v_crit)` était constant en `beta2`, la loi naïve
+`~1/(1-beta2)` tiendrait partout. Mesuré `v_crit`/`v_pic` sur le
+PREMIER kick trouvé à chaque `beta2` (un seul échantillon par valeur,
+fenêtre `[0,15000)`) :
+```
+beta2=0,999  v_crit=1,234e-13  v_pic=1,359e-13  ln(v_pic/v_crit)=0,096
+beta2=0,995  v_crit=1,014e-13  v_pic=1,625e-13  ln(v_pic/v_crit)=0,471
+beta2=0,99   v_crit=0,980e-13  v_pic=1,882e-13  ln(v_pic/v_crit)=0,652
+```
+**`ln(v_pic/v_crit)` N'EST PAS constant** — il croît nettement quand
+`beta2` diminue, contredisant l'hypothèse implicite de la loi naïve.
+Mais en le combinant avec `1/(1-beta2)`, la prédiction résultante
+(`t*≈96, 94, 65`) NE REPRODUIT PAS les espacements médians réellement
+mesurés ailleurs (`~456-470, 110, 165`) — même ordre de grandeur
+seulement à `beta2=0,995`. **Deux limites honnêtes à cette tentative** :
+(1) un seul kick mesuré par `beta2`, donc `v_crit`/`v_pic` peuvent être
+bruités (méthode de détection du "crit" — minimum de `v` sur les 15
+pas avant le franchissement de seuil — pas rigoureusement le même
+concept que le vrai plancher asymptotique) ; (2) la formule elle-même
+ignore la contribution du gradient de fond pendant la phase calme
+(déjà mesurée à ~8% d'effet à `beta2=0,999` dans `verifier_mecanisme_plancher_v.py`
+— cette contribution grandit avec `1-beta2`, donc devient probablement
+dominante, pas négligeable, à `beta2=0,99`). **Statut : piste
+plausible (le rapport `v_pic/v_crit` bouge bien avec `beta2`, dans le
+bon sens qualitatif) mais PAS encore une dérivation fermée qui
+explique la cassure précise entre `0,995` et `0,99` — reste ouvert,
+nécessiterait soit plus d'échantillons par `beta2` (moyenner sur
+plusieurs kicks, pas un seul), soit une vraie résolution de l'équation
+de récurrence de `v` incluant le terme de gradient de fond.**
+
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
+| `ln(v_pic/v_crit)` est constant en `beta2`, la loi naïve `1/(1-beta2)` devrait donc tenir partout | 20/09 (moi) | **réfutée** — le rapport croît nettement avec `beta2` décroissant (0,096→0,471→0,652), mais la prédiction combinée ne reproduit pas les espacements mesurés, donc ne clôt pas la question |
 | l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |
 | le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **CONFIRMÉE de bout en bout par moi** — décroissance lisse pré-kick (~380 pas), déclenchement AVANT la remontée de `v`, regonflement, amortissement, tous observés dans l'ordre sur une fenêtre continue `[9700,10219]` |
 | relever `adam_eps` à `~1e-6` (comparable au plancher de `√v`) supprime les kicks si le mécanisme est bien piloté par `v`, pas par `eps` | 20/09 (moi) | **CONFIRMÉE** le 20/09 — 0 événement sur 20000 pas à `adam_eps=1e-6` contre 29 (espacement médian 456) à `1e-10` ; disparition complète, pas une simple atténuation |
