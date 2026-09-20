@@ -82,16 +82,22 @@ dans `git log`.*
    `tol≤1e-7` ; revérifier K=11 (jamais rebissecté fin) ; tester un K
    NON ENTIER entre 12-13 (le jouet le permet mathématiquement) pour
    trancher coin vs transition lisse.
-   **RÉPONDU le 21/09/2026 : coin net, pas transition lisse.** Testé
-   K=12,5/12,8/12,95 (mathématiquement bien défini, `log(K)` simple
-   dans l'entropie) : `12 ; 12,5 ; 12,8` restent fermement dans le
-   plateau (`premier=300`), puis le signal disparaît complètement
-   entre `12,8` et `12,95` (`premier=60`) — bande de transition
-   resserrée à `[12,80 ; 12,95]`, `0,15` de large sur un intervalle
-   testé de `1,0`. Cohérent avec une vraie transition serrée, pas un
-   dégradé continu. **Reste ouvert** : resserrer encore (`K=12,85` à
-   `12,93`) pour voir si la bande continue de rétrécir sans limite ou
-   se stabilise. Script : `verifier_localisation_fine_k_non_entier.py`.
+   **RÉPONDU le 21/09/2026 puis contesté par un agent, discordance NON
+   RÉSOLUE.** Testé K=12,5/12,8/12,95 : `12 ; 12,5 ; 12,8` dans le
+   plateau (`premier=300`), signal disparaît entre `12,8` et `12,95`
+   — bande resserrée à `[12,80 ; 12,95]`. **Un agent-dipankar a ensuite
+   affirmé que K=12,80 bascule lui-même sous bracket étroit (même
+   défaut que K=13) — ma vérification indépendante, avec le `delta_c`
+   EXACTEMENT identique à celui de l'agent (`0,014409856`, 9 chiffres),
+   donne `premier=300` dans les deux cas (large ET étroit), PAS `60`
+   comme l'agent l'affirme.** Discordance non résolue entre deux
+   calculs indépendants du même point exact — ni acceptée ni rejetée,
+   nécessite une troisième vérification (idéalement avec le script
+   exact des deux côtés comparé ligne à ligne). **Ce qui reste solide
+   malgré ça** : le défaut de bissection à K=13 lui-même (confirmé deux
+   fois, par moi et par un agent différent, en accord total). Scripts :
+   `verifier_localisation_fine_k_non_entier.py`,
+   `verifier_k1280_discordance_agent.py`.
 
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une

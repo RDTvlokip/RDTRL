@@ -11409,6 +11409,51 @@ largeur non nulle (transition lisse mais raide). Script permanent :
 |---|---|---|---|
 | la transition plateau/plat est un coin net (bande étroite), pas une pente lisse sur toute l'échelle K=12-13 | 21/09 (moi) | **confirmée à la résolution testée** — bande resserrée à `[12,80 ; 12,95]`, 0,15 de large sur un intervalle de 1,0 ; pas encore poussé plus loin pour voir si ça continue de rétrécir |
 
+**DISCORDANCE NON RÉSOLUE, 21/09/2026 — un agent-dipankar conteste le
+« coin net » ci-dessus, mais SA propre affirmation ne survit PAS à ma
+vérification indépendante. Journalisé tel quel, sans trancher
+artificiellement, exactement la méfiance que la règle 5bis demande
+envers N'IMPORTE QUELLE source, agent y compris.**
+
+L'agent affirme que K=12,80 lui-même bascule sous bracket étroit (de
+`300` à `60`), le même défaut que K=13 mais avec une perturbation
+encore plus fine (`2,93e-08` contre `2,6e-07`), et que la séquence
+corrigée est non-monotone (`12,80=plat, 12,85=plateau, 12,90=plat,
+12,95=plat`) — donc du bruit de bissection, pas un vrai coin.
+
+**Rejoué indépendamment (bracket large ET étroit pour K=12,80) :**
+```
+bracket large  : delta_c=0,014409885  premier(0,03%)=300
+bracket etroit : delta_c=0,014409856  premier(0,03%)=300   <- PAS 60
+```
+**Le `delta_c` du bracket étroit correspond EXACTEMENT à celui
+rapporté par l'agent (`0,014409856`, 9 chiffres significatifs
+identiques) — mais je trouve `premier=300`, pas `60` comme l'agent
+l'affirme, pour la MÊME paire (K, delta_c) sur un système entièrement
+déterministe (aucun aléa nulle part dans `construire_toy`/
+`objectif_toy`).** Deux calculs indépendants du même point exact ne
+peuvent diverger que si l'un des deux scripts diffère quelque part en
+aval (formule de `delta` à partir de `delta_c`, `pas_max`,
+`check_tous`, seuil de cible) — je n'ai pas accès au script exact de
+l'agent pour trouver où. **Ni acceptée ni rejetée : le "coin net"
+`[12,80;12,95]` N'EST PLUS considéré comme établi, mais sa
+rétractation par l'agent ne l'est pas non plus.** Statut correct :
+**INDÉTERMINÉ, nécessite une troisième vérification indépendante**
+(idéalement en publiant le script exact de test de classification
+utilisé par les DEUX côtés, pour éliminer une différence de
+protocole plutôt qu'une différence de résultat).
+
+Ce qui reste solide malgré cette discordance : le défaut de
+reproductibilité de la bissection à K=13 lui-même (vérifié deux fois,
+par moi ET par un agent différent, avec un accord total sur les
+chiffres) — ce n'est PAS remis en cause. Ce qui est remis en cause,
+c'est seulement l'EXTENSION de ce défaut au reste de la bande
+`[12,80;12,95]`, affirmée par cet agent mais non reproduite par moi.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| K=12,80 bascule de plateau à plat sous bracket de bissection étroit (même défaut que K=13) | 21/09 (agent-dipankar) | **NI CONFIRMÉE NI RÉFUTÉE** — ma vérification indépendante, avec le `delta_c` EXACTEMENT identique rapporté par l'agent, donne `premier=300` (plateau) dans les deux cas, pas `60` comme l'agent l'affirme ; discordance non résolue, à revérifier une troisième fois |
+
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | « plat » est le cas générique (K=20/26 comme le vrai système), K=1 est l'exception isolée, décroissance progressive K=1→K=8 | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même reprise — défaut méthodologique trouvé (écart testé plus petit que la tolérance de bissection de `delta_c`) ; le vrai motif à écart comparable est un PLATEAU (K=1-8, 300-340 pas) suivi d'une falaise non localisée entre K=8 et K=20 |
