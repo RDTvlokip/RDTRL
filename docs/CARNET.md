@@ -10780,7 +10780,27 @@ dans le dépôt ».
 |---|---|---|---|
 | l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |
 | le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **plausible, PAS encore vérifiée indépendamment** — chiffres internes (m,v) de l'agent pas rejoués par moi |
-| l'espacement des kicks suit `~1/(1-beta2)` | 20/09 (agent-dipankar, précommise) | **partiellement confirmée puis réfutée** — tient de beta2=0,999 à 0,995 (17%), casse entre 0,995 et 0,99 (tendance inversée, ×3,5 d'écart) ; frontière de régime localisée, pas encore expliquée |
+| l'espacement des kicks suit `~1/(1-beta2)` | 20/09 (agent-dipankar, précommise) | **partiellement confirmée puis réfutée, ET revérifiée indépendamment par moi** — tient de beta2=0,999 à 0,995 (17%), casse entre 0,995 et 0,99 (tendance inversée) ; frontière de régime localisée, pas encore expliquée |
+
+**Revérification indépendante du point le plus décisif, le même jour
+(règle 5bis).** Rejoué moi-même avec `verifier_kicks_adam_grille_fine.py`
+(30000 pas, mêmes betas) :
+```
+beta2=0,995  n_events=161  espacement médian=110  (agent : 110, IDENTIQUE)
+beta2=0,99   n_events=81   espacement médian=165  (agent : 163, à 1,2% près)
+```
+**Confirme précisément l'inversion de tendance** (0,995→0,99 fait
+MONTER l'espacement, pas descendre comme prédit par `1/(1-beta2)`) —
+ce n'est plus une seule mesure de l'agent, c'est reproduit
+indépendamment au chiffre près. **Détail supplémentaire trouvé en
+vérifiant, non noté par l'agent** : l'amplitude des kicks chute aussi
+à ces réglages (`~0,00175-0,00177` à beta2=0,995/0,99, contre `~0,0037`
+à beta2=0,999) — `beta2` ne module donc pas seulement l'espacement,
+mais AUSSI l'amplitude du kick, d'un facteur ~2× dans cette plage.
+Cohérent avec le mécanisme plancher-de-`v` proposé (un `beta2` plus
+petit maintient `v` plus haut en permanence — moins de temps passé
+près du plancher — donc des kicks à la fois plus rapprochés en moyenne
+ET plus petits), mais reste à dériver, pas juste observé.
 
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
 questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en
