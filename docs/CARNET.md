@@ -10779,7 +10779,33 @@ dans le dépôt ».
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |
-| le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **plausible, PAS encore vérifiée indépendamment** — chiffres internes (m,v) de l'agent pas rejoués par moi |
+| le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **partiellement vérifiée par moi, incomplète** — la phase de ringing/décroissance est confirmée, la phase de montée pré-kick (v vers son plancher) n'a pas été capturée dans ma fenêtre d'instrumentation |
+
+**Vérification partielle du mécanisme, le même jour.** Instrumenté
+`m_r`, `v_r`, `eff_step=lr*m/(√v+eps)` sur une fenêtre `[pas-20,pas+30]`
+autour d'un kick détecté par seuil simple (`|R4-baseline|>0,0015`,
+`pas=10185`) :
+```
+pas=10186  v_r=1,078e-13  eff_step=+1,32e-02
+pas=10189  v_r=1,237e-13  eff_step=-2,03e-02  (pic)
+pas=10199  v_r=1,427e-13  eff_step=-1,05e-02
+pas=10215  v_r=1,483e-13  eff_step=-2,57e-03
+```
+**Ce que ça confirme** : `eff_step` alterne de signe à chaque pas
+avec une magnitude qui décroît nettement sur la fenêtre (`~2e-2` à
+`~2,5e-3`, facteur ~8) — une oscillation amortie, cohérente avec « R
+sonne en retour vers la baseline en 15-20 pas ». `v_r` monte de façon
+régulière tout au long de la fenêtre (+40%) — cohérent avec « le
+gradient du kick regonfle v ». **Ce que ça NE confirme PAS encore** :
+la détection par simple seuil a capturé le kick DÉJÀ EN COURS
+(première déviation détectée à `pas=10185`, déjà à `dev>0,0015`), pas
+son tout début — la phase PRÉ-kick où `v` serait censé décroître vers
+un plancher pendant une phase calme n'apparaît pas dans cette fenêtre.
+**Statut honnête : mécanisme partiellement vérifié (phase de
+relaxation/ringing oui), phase causale de déclenchement (montée vers
+le plancher AVANT le kick) pas encore capturée — nécessite une
+détection d'onset plus précoce (ex: sur la dérivée de `v_r` plutôt
+que sur `R4`) pour trancher complètement.**
 | l'espacement des kicks suit `~1/(1-beta2)` | 20/09 (agent-dipankar, précommise) | **partiellement confirmée puis réfutée, ET revérifiée indépendamment par moi** — tient de beta2=0,999 à 0,995 (17%), casse entre 0,995 et 0,99 (tendance inversée) ; frontière de régime localisée, pas encore expliquée |
 
 **Revérification indépendante du point le plus décisif, le même jour
