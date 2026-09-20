@@ -72,12 +72,28 @@ dans `git log`.*
    Les deux résultats de ce tour (comp¹ : géométrie instantanée d'un
    kick ; plancher-de-`v` : pourquoi/quand un kick se produit) sont
    complémentaires, pas concurrents.
-   **Reste ouvert (autres fils)** : pourquoi la loi `beta2` casse
-   précisément entre `0,995` et `0,99` (pas encore dérivé) ; la piste
-   émetteur (H7) et le coefficient `a` du col H6-direct (items 3-4 plus
-   bas) n'ont pas avancé ce tour. Détail complet, chiffres exacts,
-   statut de vérification de chaque affirmation : `CARNET.md` fin de
-   §7.65/8ter.
+   **Cassure `beta2` ÉLUCIDÉE (reprise après 18h) : ce n'est pas un
+   déplacement de moyenne, c'est un mélange de deux populations de
+   cycles.** Agent-dipankar a dérivé la vraie récurrence de `v` avec
+   terme de gradient de fond `G`, s'est lui-même corrigé d'un biais de
+   sélection (transitoire de démarrage donnant un faux "match parfait"
+   au premier passage), puis a montré sur les kicks stationnaires
+   (15-23, n=8/beta2) que le cycle "propre" continue de décroître
+   monotonement (`t*≈437→84→68`), mais qu'une fraction croissante des
+   intervalles devient "coincée" (`0/8→1/8→5/8`) — une fois cette
+   fraction >50%, la MÉDIANE bascule sur la population coincée.
+   **Vérifié indépendamment sans nouveau calcul** : le rapport
+   max/médiane de l'espacement (déjà mesuré ce tour) passe de `1,14×`
+   (beta2=0,999, spread étroit) à `8-10×` (0,995/0,99, spread massif)
+   — signature exacte du mélange. **Reste ouvert** : test précommis à
+   `beta2=0,985` (n≥40 kicks) pas encore exécuté ; le coefficient `a`
+   du col H6-direct (item 4 plus bas) n'a pas avancé.
+   **NOUVEAU fil ouvert ce tour** : jouet à K variable côté émetteur
+   (`verifier_jouet_k_emetteur_variable.py`, généralise le "26" de H7)
+   — validé structurellement (collapse exact à `1/(K+1)`, `delta_c(K=26)`
+   bracket autour du vrai `0,0134372`), test `k(R_init)` en cours.
+   Détail complet, chiffres exacts, statut de vérification de chaque
+   affirmation : `CARNET.md` fin de §7.65/8ter.
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
    par un agent-dipankar puis un test précommis rejoué moi-même.** Ma

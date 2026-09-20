@@ -11005,6 +11005,82 @@ prochain run, où le second est encore écrivable.
 
 ---
 
+**CASSURE BETA2 ÉLUCIDÉE le 20/09/2026 (reprise après 18h) — agent-dipankar,
+puis vérifié indépendamment avec des données déjà en main. Ce n'est PAS un
+déplacement de moyenne, c'est un MÉLANGE de deux populations de cycles.**
+
+Ma tentative de dérivation (`t*≈ln(v_pic/v_crit)/(1-beta2)`, ci-dessus,
+laissée inconclusive) manquait un terme : le gradient de fond `G` (non nul
+pendant la phase calme) n'est PAS négligeable. L'agent a dérivé la vraie
+récurrence :
+```
+v_{t+1} = beta2*v_t + (1-beta2)*g_t^2     (recurrence exacte d'Adam)
+v_t = G + (v_pic - G)*beta2^t              (champ moyen, G=E[g_t^2] constant)
+t* = ln[(v_pic-G)/(v_crit-G)] / (-ln(beta2))     (defini seulement si v_crit>G)
+```
+**Piège méthodologique que l'agent a lui-même repéré et corrigé avant de
+conclure** — exactement la discipline que ce projet exige : son premier
+passage (moyenne sur les 5 premiers kicks après `pas_min=2000`) donnait un
+« match quasi parfait » avec la cassure observée — puis il a réalisé que ces
+5 premiers kicks sont encore dans le régime transitoire de démarrage, pas le
+régime stationnaire, et a tout rejoué sur les kicks 15-23 (stationnaire,
+n=8 par beta2, un par un, pas en moyenne) :
+
+```
+beta2   population        dt_reel        t*_corrige     dt/t*_corrige   fraction "coincee"
+0,999   8/8 propres       456-520        408-470        C≈1,11          0/8
+0,995   7/8 propres,1coince 100-130      73-98           C≈1,35          1/8 (dt=418, G>v_crit)
+0,99    3/8 propres,5coince clean:85-93  clean:65-71     C≈1,31          5/8
+```
+
+**Mécanisme réel** : le temps de cycle « propre » (`t*_corrigé`) continue de
+DÉCROÎTRE de façon monotone avec `beta2` (moyenne propre : `437→84→68`),
+exactement comme le prédit le taux `-ln(beta2)` — ce n'est PAS le mécanisme
+qui casse. Ce qui casse, c'est qu'une fraction croissante des intervalles
+devient « coincée » (le gradient de fond `G` dépasse `v_crit`, la formule
+déterministe ne définit plus de franchissement, l'espacement réel explose à
+des multiples du cycle de base). Une fois cette fraction au-dessus de ~50%,
+**la MÉDIANE est fixée par la population coincée, pas par le cycle propre**
+— une transition de mélange, pas une dérive de moyenne.
+
+**Vérifié indépendamment, avec des données DÉJÀ collectées ce même tour (pas
+un nouveau calcul, juste relu sous le bon angle) :** le rapport max/médiane
+de l'espacement, déjà mesuré précédemment :
+```
+beta2=0,999  median=456  min=196  max=520   ratio max/median=1,14  (spread etroit)
+beta2=0,995  median=110  min=90   max=1064  ratio max/median=9,7   (spread massif)
+beta2=0,99   median=165  min=78   max=1385  ratio max/median=8,4   (spread massif)
+```
+**Le passage d'un spread étroit (1,14×) à un spread massif (8-10×) entre
+`beta2=0,999` et `0,995/0,99` est exactement la signature attendue d'un
+mélange propre/coincé** — pas de calcul supplémentaire nécessaire, juste
+relire des chiffres déjà en main sous l'angle proposé par l'agent. C'est
+une confirmation croisée forte (donnée indépendante du raisonnement qui l'a
+motivée) plutôt qu'une simple relecture de ses propres chiffres.
+
+**Limites honnêtes, notées par l'agent et non contestées** : `P(coincé)`
+n'est pas dérivé depuis les premiers principes (nécessiterait un argument
+de courbure/Hessienne sur le bruit de gradient, jamais fait) ; le
+multiplicateur `C(beta2)` (1,11 / 1,35 / 1,31, non monotone) n'est pas
+expliqué — plausible que ce soit la traîne de regonflement (~15-25 pas) qui
+mange sur l'horloge « calme », mais pas démontré ; `n=8` kicks par `beta2`
+est petit pour une fraction (intervalle de confiance binomial à 95% sur
+62,5% à `beta2=0,99` : environ `[25%, 92%]`, large).
+
+**Test précommis par l'agent, pas encore exécuté** : `beta2=0,985`, `n≥40`
+kicks poolés sur 100000 pas. Prédictions posées AVANT le test : (a) le
+cycle propre continue de décroître (`t*_corrigé≈55-60`) ; (b) la fraction
+coincée dépasse 5/8 (prédit `>70%`, peut-être `~90%`) ; (c) l'espacement
+médian continue donc de MONTER, pas de rebaisser — si ça rebaisse, le
+mécanisme de mélange est faux.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la cassure de la loi beta2 est un déplacement de la moyenne `t*(beta2)` | 20/09 (moi, implicite dans ma tentative de dérivation) | **réfutée** le 20/09 par agent-dipankar, vérifié indépendamment (rapport max/médiane) |
+| la cassure est une transition de mélange (fraction croissante de cycles "coincés" où le gradient de fond dépasse `v_crit`, pas un déplacement de moyenne) | 20/09 (agent-dipankar) | **confirmée qualitativement** le 20/09, vérifiée indépendamment via le rapport max/médiane sur des données déjà collectées ; **PAS encore confirmée quantitativement** (n=8 par beta2, test précommis à beta2=0,985 pas encore exécuté) |
+
+---
+
 ## 8. Vingt questions inconfortables
 
 Règle que je m'impose ici : pas de question dont je connais déjà la réponse, pas
