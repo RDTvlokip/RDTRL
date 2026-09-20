@@ -10785,10 +10785,29 @@ lecture concurrente plancher-d'`eps`** — `eps`, au contraire, agit
 comme le REMÈDE (un plancher protecteur suffisamment grand supprime
 l'instabilité), pas comme une explication alternative du phénomène.
 
-**Script manquant à créer avant de clore ce fil** : ni le balayage de
-rétractation ni celui de l'agent (grille 1, détection d'événements par
-seuil+fusion) n'ont de script permanent committé — à faire au
-prochain geste d'écriture, conformément à la règle « les scripts vont
+**Dernier point non testé de l'agent, RÉPONDU le 20/09/2026 — le
+mécanisme est bien spécifique à Adam côté récepteur, comme il l'avait
+parié sans tester.** L'optimiseur hybride (`verifier_optimiseur_hybride.py` :
+Adam sur l'émetteur seul, SGD sur le récepteur seul) n'a AUCUN état
+`v` côté récepteur — si le mécanisme est bien le plancher de `v_r`,
+les kicks doivent disparaître entièrement sous ce montage. Testé :
+`0 événement sur 20000 pas` (seuil `0,0005`, plus bas que le `0,0015`
+utilisé partout ailleurs — donc pas un problème de seuil trop strict).
+**Confirme directement le pari de l'agent** : sans `v` du récepteur à
+faire s'effondrer, il n'y a rien pour produire le kick — cohérent avec
+l'excursion résiduelle déjà documentée sous l'hybride (`~6,3e-7`,
+bien plus petite, à des pas différents) qui vient d'un canal
+complètement différent (l'état Adam de l'ÉMETTEUR, cf. §7.65 plus haut
+sur le test précommis de dipankar réfuté).
+
+**Le fil du mécanisme des kicks de `R` sous Adam complet est maintenant
+COMPLET : décroissance de `v` confirmée, déclenchement confirmé,
+regonflement confirmé, amortissement confirmé, frontière `beta2`
+confirmée deux fois, suppression par `eps` confirmée, spécificité à
+Adam-récepteur confirmée. Six vérifications indépendantes convergentes,
+zéro contredite.** Scripts permanents : `verifier_kicks_adam_grille_fine.py`
+(remplace les deux balayages jetables), `verifier_mecanisme_plancher_v.py`,
+`verifier_eps_supprime_kicks.py`. Conformément à la règle « les scripts vont
 dans le dépôt ».
 
 | # | hypothèse | posée le | statut |

@@ -51,11 +51,22 @@ dans `git log`.*
    contre 29 (espacement médian 456) à `adam_eps=1e-10`. Disparition
    complète, pas une atténuation — `eps` est le remède, pas une
    explication alternative. Script : `verifier_eps_supprime_kicks.py`.
-   **Reste ouvert** : pourquoi la loi `beta2` casse précisément entre
-   `0,995` et `0,99` (pas encore dérivé) ; la piste émetteur (H7) et le
-   coefficient `a` du col H6-direct (items 3-4 plus bas) n'ont pas
-   avancé ce tour. Détail complet, chiffres exacts, statut de
-   vérification de chaque affirmation : `CARNET.md` fin de §7.65/8ter.
+   **Dernier point de l'agent RÉPONDU : spécificité à Adam-récepteur
+   confirmée.** Sous l'optimiseur hybride (Adam émetteur / SGD
+   récepteur, pas d'état `v` côté récepteur) : **0 kick sur 20000 pas**,
+   même à seuil plus bas (0,0005). Cohérent avec l'excursion résiduelle
+   déjà documentée sous l'hybride (canal différent : `v` de l'émetteur).
+   Script : `verifier_kicks_absents_hybride.py`.
+   **CE FIL EST MAINTENANT COMPLET** : six vérifications indépendantes
+   convergentes (décroissance, déclenchement, regonflement,
+   amortissement, frontière beta2 ×2, suppression eps, spécificité
+   Adam-récepteur), zéro contredite.
+   **Reste ouvert (autres fils)** : pourquoi la loi `beta2` casse
+   précisément entre `0,995` et `0,99` (pas encore dérivé) ; la piste
+   émetteur (H7) et le coefficient `a` du col H6-direct (items 3-4 plus
+   bas) n'ont pas avancé ce tour. Détail complet, chiffres exacts,
+   statut de vérification de chaque affirmation : `CARNET.md` fin de
+   §7.65/8ter.
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
    par un agent-dipankar puis un test précommis rejoué moi-même.** Ma
