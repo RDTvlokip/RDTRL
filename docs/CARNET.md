@@ -10779,7 +10779,7 @@ dans le dépôt ».
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | l'amplitude des excursions est distribuée en continu (bornée, sans queue lourde), la fréquence est de l'ordre de 10000-30000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour, par agent-dipankar puis vérification indépendante — c'est un kick de magnitude quasi constante (~0,0037, CV 5,6%) toutes les ~470 pas, pas une distribution ni un espacement de cet ordre |
-| le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **partiellement vérifiée par moi, incomplète** — la phase de ringing/décroissance est confirmée, la phase de montée pré-kick (v vers son plancher) n'a pas été capturée dans ma fenêtre d'instrumentation |
+| le mécanisme est un oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq) | 20/09 (agent-dipankar) | **CONFIRMÉE de bout en bout par moi** — décroissance lisse pré-kick (~380 pas), déclenchement AVANT la remontée de `v`, regonflement, amortissement, tous observés dans l'ordre sur une fenêtre continue `[9700,10219]` |
 
 **Vérification partielle du mécanisme, le même jour.** Instrumenté
 `m_r`, `v_r`, `eff_step=lr*m/(√v+eps)` sur une fenêtre `[pas-20,pas+30]`
@@ -10801,11 +10801,40 @@ la détection par simple seuil a capturé le kick DÉJÀ EN COURS
 (première déviation détectée à `pas=10185`, déjà à `dev>0,0015`), pas
 son tout début — la phase PRÉ-kick où `v` serait censé décroître vers
 un plancher pendant une phase calme n'apparaît pas dans cette fenêtre.
-**Statut honnête : mécanisme partiellement vérifié (phase de
-relaxation/ringing oui), phase causale de déclenchement (montée vers
-le plancher AVANT le kick) pas encore capturée — nécessite une
-détection d'onset plus précoce (ex: sur la dérivée de `v_r` plutôt
-que sur `R4`) pour trancher complètement.**
+
+**COMPLÉTÉ le même jour — la fenêtre PRÉ-kick a été capturée, le
+mécanisme est maintenant vérifié de bout en bout.** Log dense de
+`v_r`/`R4` sur `[9700,10219]` (couvre le kick précédent, la phase
+calme, et le déclenchement de celui à `pas=10185`) :
+```
+pas=9800   v_r=1,40313e-13  (juste après le kick précédent, pic)
+pas=10000  v_r=1,24323e-13
+pas=10160  v_r=1,05933e-13
+pas=10180  v_r=1,03935e-13  (minimum de la fenêtre — le plancher)
+pas=10185  v_r=1,05794e-13  (le kick démarre)
+pas=10209  v_r=1,48001e-13  (regonflé, nouveau pic)
+```
+**Décroissance lisse et monotone de `v_r` sur ~380 pas** (`1,403e-13
+→ 1,039e-13`), pendant que `R4` reste quasi immobile (`0,794756`
+inchangé à 5-6 décimales de `pas=9700` à `pas=10160`) — exactement la
+phase « calme » prédite. **Le déclenchement précède la remontée de
+`v_r` : l'oscillation de `R4` grossit visiblement DÈS `pas≈10176-10184`
+(`0,794648→0,795036→0,794370→0,795289→0,794020→0,795771→0,793368`)
+alors que `v_r` est encore proche de son minimum** (`1,040e-13` à
+`1,058e-13`) — la séquence causale complète est là : `v` décroît vers
+un plancher, le pas normalisé devient hypersensible au bruit de
+gradient résiduel, l'oscillation démarre AVANT que `v` ne remonte, le
+gradient du kick regonfle ensuite `v`, ce qui amortit l'oscillation.
+**Vérification quantitative supplémentaire** : la décroissance de `v_r`
+sur `[9800,10160]` (360 pas) est 8,2% plus lente qu'une pure
+décroissance géométrique à `beta2=0,999` (`1,059e-13` observé contre
+`0,979e-13` prédit par `v0·beta2^n`) — cohérent avec un gradient de
+fond non strictement nul pendant la phase calme (`R4` bouge bien, très
+légèrement, pas parfaitement gelé), pas une anomalie.
+**Statut : mécanisme plancher-de-`v` CONFIRMÉ de bout en bout** (pas
+seulement la phase de ringing) — décroissance, déclenchement précoce,
+regonflement, amortissement, tous observés dans l'ordre attendu sur
+une seule fenêtre continue.
 | l'espacement des kicks suit `~1/(1-beta2)` | 20/09 (agent-dipankar, précommise) | **partiellement confirmée puis réfutée, ET revérifiée indépendamment par moi** — tient de beta2=0,999 à 0,995 (17%), casse entre 0,995 et 0,99 (tendance inversée) ; frontière de régime localisée, pas encore expliquée |
 
 **Revérification indépendante du point le plus décisif, le même jour

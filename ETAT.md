@@ -29,18 +29,27 @@ dans `git log`.*
    que je venais de diagnostiquer, plus profond. Script permanent
    (méthodologie correcte, grille 1, détection par fusion de seuil) :
    `verifier_kicks_adam_grille_fine.py`.
-   **Mécanisme proposé (agent, PAS ENCORE vérifié indépendamment) :**
-   oscillateur de relaxation par plancher numérique de `v` (exp_avg_sq)
-   — `v` décroît vers un plancher en phase calme, une petite
-   perturbation de gradient produit un pas normalisé démesuré, le
-   gradient du kick regonfle `v`, `R` sonne en retour. **Test précommis
-   sur `beta2`** (agent) : loi `espacement~1/(1-beta2)` tient de
-   `beta2=0,999` à `0,995` (17% d'écart) puis CASSE entre `0,995` et
-   `0,99` (tendance inversée) — frontière de régime localisée, pas
-   expliquée. Question ouverte de l'agent : tester `adam_eps≈1e-6`
+   **Mécanisme CONFIRMÉ de bout en bout (vérifié indépendamment le même
+   jour, pas juste accepté) :** oscillateur de relaxation par plancher
+   numérique de `v` (exp_avg_sq). Fenêtre continue `[9700,10219]`
+   (grille 1) : `v` décroît lissement pendant ~380 pas (`1,403e-13→
+   1,039e-13`, `R4` quasi immobile), l'oscillation de `R4` DÉMARRE
+   avant que `v` ne remonte (déclenchement précoce confirmé, pas
+   supposé), puis `v` regonfle rapidement (`→1,48e-13`) pendant que
+   l'oscillation s'amortit. Script permanent :
+   `verifier_mecanisme_plancher_v.py`.
+   **Frontière de régime `beta2` confirmée au chiffre près (rejeu
+   indépendant : espacement médian 110 à `beta2=0,995` contre 110 chez
+   l'agent ; 165 à `beta2=0,99` contre 163) :** loi `espacement~
+   1/(1-beta2)` tient de `0,999` à `0,995` (17%) puis CASSE entre
+   `0,995` et `0,99` (tendance inversée) — l'amplitude du kick chute
+   aussi dans cette plage (`~0,0037→~0,0018`), détail non noté par
+   l'agent. **Reste ouvert** : pourquoi la loi casse précisément entre
+   ces deux valeurs (pas encore dérivé) ; tester `adam_eps≈1e-6`
    (comparable au plancher de `√v`) pour trancher plancher-de-`v` vs
-   plancher-d'`eps`. Détail complet, chiffres exacts, statut de
-   vérification de chaque affirmation : `CARNET.md` fin de §7.65/8ter.
+   plancher-d'`eps` (question posée par l'agent, pas encore testée).
+   Détail complet, chiffres exacts, statut de vérification de chaque
+   affirmation : `CARNET.md` fin de §7.65/8ter.
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
    par un agent-dipankar puis un test précommis rejoué moi-même.** Ma
