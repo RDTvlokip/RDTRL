@@ -10651,6 +10651,27 @@ distribution complète des amplitudes (est-elle bornée par une valeur
 max stable, ou a-t-elle une queue lourde ?), et si leur fréquence
 elle-même est stationnaire dans le temps ou dérive.
 
+**Distribution des amplitudes caractérisée le 20/09/2026 (même tour) —
+BORNÉE, pas de queue lourde.** Balayage complet `[0,400000]`, grille
+500 pas (789 échantillons après retrait du transitoire initial) :
+```
+mean |dev| = 0,000155
+top 20 |dev| (décroissant) : 0,00357  0,00332  0,00315  0,00285  0,00271
+                              0,00260  0,00249  0,00249  0,00247  0,00240
+                              0,00215  0,00212  0,00206  0,00204  0,00202
+                              0,00192  0,00185  0,00170  0,00168  0,00161
+top1/top10moyenne = 1,27      top10moyenne/top50moyenne = 1,82
+```
+**Décroissance lisse, pas de saut brutal entre le plus grand écart et
+les suivants** — cohérent avec un processus de bruit borné (amplitude
+caractéristique max ~0,0035-0,004 observée sur 400000 pas), pas une
+distribution à queue lourde ni un événement catastrophique rare.
+COMBIEN est maintenant répondu : l'amplitude typique est `~0,0002`
+(moyenne), le maximum observé sur toute la trajectoire `~0,004`, un
+facteur ~20 entre les deux — répartition continue, pas bimodale.
+POURQUOI cette borne existe précisément à cette valeur : toujours
+ouvert.
+
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | les trois occurrences à pas=60000/160000/260000 forment un cycle limite périodique de période ~100000 pas | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même tour — biais de sélection trouvé en balayant le reste de la trajectoire : des fluctuations comparables apparaissent toutes les 10000-30000 pas partout, pas seulement à ces trois points |

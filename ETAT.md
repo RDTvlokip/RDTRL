@@ -26,9 +26,12 @@ dans `git log`.*
    récurrentes de magnitude caractéristique bornée (~0,002-0,004), pas
    un mode périodique isolé ni deux accidents isolés (l'hypothèse
    non-standard n°3 de `REPONSE_ORDRE54.md` reste réfutée dans sa forme
-   originale, mais pas au profit de la périodicité). **Reste ouvert** :
-   la distribution complète des amplitudes (bornée ou à queue lourde ?),
-   et si la fréquence des fluctuations est stationnaire dans le temps.
+   originale, mais pas au profit de la périodicité). **Distribution des
+   amplitudes caractérisée (même tour) : BORNÉE, pas de queue lourde**
+   (789 échantillons sur 400000 pas, décroissance lisse, max observé
+   ~0,004, moyenne ~0,0002, facteur ~20 entre les deux). **Reste
+   ouvert** : POURQUOI cette borne existe à cette valeur précise ; si la
+   fréquence des fluctuations est stationnaire dans le temps ou dérive.
    Détail complet et rétractation : `CARNET.md` fin de §7.65/8ter.
 
 2. **Mécanisme de l'hypothèse standard n°1 corrigé une seconde fois,
