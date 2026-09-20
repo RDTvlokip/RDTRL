@@ -10360,6 +10360,59 @@ Scripts (permanents) : `verifier_temps_residence_traj_naturelle_180926.py`,
 `verifier_lambda_local_traj_naturelle_180926.py` (produits par l'agent,
 pas encore rapatriés sous un nom permanent).
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 20/09/2026 (tour 53, pas une critique simulée)
+
+**Le vrai relecteur externe a répondu, après plusieurs jours de
+silence.** Trois corrections sur le tour précédent (k(R), beta1/beta2,
+test hybride Adam/SGD) — réponse complète dans
+`docs/REPONSE_ORDRE54.md`. Résumé ici pour le journal, daté.
+
+**1. H_momentum : sa lecture en rééchelonnage est meilleure que la
+mienne.** Vérifié : `beta1=0` agit comme un rééchelonnage quasi
+uniforme de `k` (facteur `c≈1,4389`, résidus 1,5-3,3%), pas comme un
+vrai changement de forme. Les statistiques invariantes d'échelle
+(`k(0,75)/k(0,50)`, `spread/k(0,50)`) RÉTRÉCISSENT légèrement
+(-5,2%, -12,3%) au lieu de grossir. **H_momentum reste réfutée, mais
+pour la bonne raison cette fois** — la forme de `k(R)` survit à un
+rééchelonnage de 1,44× de l'horloge, un argument plus fort pour
+"intrinsèque à l'état" que l'ancien "l'écart a grossi".
+
+**2. beta2 : un seul point ne peut pas parler de dépendance à
+l'état — corrigé.** Le balayage beta2 d'origine était fait à
+`R_init=0,60` SEUL. Testé son croisement précommis (`beta2=0,99` à
+`R_init=0,50` ET `0,75`) :
+```
+R_init=0.75  beta2=0.99  flip=0.989714  k_fit=2.4357
+R_init=0.50  beta2=0.99  flip=0.972195  k_fit=1.3971
+```
+`k(0,75)/k(0,50)=1,7434` contre la référence `1,7271` — écart
+**0,94%**, sous la barre du simple rééchelonnage. Sa prédiction
+tient.
+
+**3. Le "200x" comparait `s3` (hybride) à `R` (Adam complet) — vraie
+erreur, corrigée à ~3100x en comparant `R` à `R`.** Mais son propre
+test précommis (le rapport local `s3_dip/R_dip=21,3` de l'hybride
+devrait prédire un `s3` tombant vers ~0,957 sous Adam complet, si
+c'est le même mécanisme) — REJOUÉ et RÉFUTÉ : `s3` reste quasi figé
+(`~1e-5` à `2e-5`) pendant que `R` fait des excursions de `~2e-3` à
+`2,6e-3` sous Adam complet. **Les deux optimiseurs n'excursent PAS
+dans la même direction de l'espace d'état** — les excursions
+hybride et Adam-complet sont probablement deux mécanismes
+différents, pas le même à deux amplitudes.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'écart absolu de k entre beta1=0,9 et beta1=0 (1,326 contre 1,031) est le bon test de H_momentum | tour précédent (moi) | **réfutée/affinée** le 20/09 par dipankarsarkar — l'écart absolu n'est pas invariant à un rééchelonnage ; les statistiques invariantes d'échelle rétrécissent au lieu de grossir |
+| le sweep beta2 à un seul R_init suffit pour juger de sa dépendance à l'état | tour précédent (moi) | **réfutée** le 20/09 par dipankarsarkar, confirmé par le croisement (0,94% d'écart, cohérent avec un simple rééchelonnage) |
+| l'amplitude de l'excursion hybride (s3) et Adam complet (R) sont directement comparables ("~200x") | tour précédent (moi) | **réfutée** le 20/09 par dipankarsarkar — mauvaise variable comparée ; en comparant R à R, l'écart réel est ~3100x |
+| si le rapport local s3_dip/R_dip=21,3 de l'hybride tient sous Adam complet, R dip=1,957e-3 devrait donner s3 tombant vers ~0,957 | 20/09 (dipankarsarkar, précommise) | **réfutée** le 20/09, rejouée moi-même — s3 reste figé (~1e-5) pendant que R excurse de ~2e-3, aucun signe de la chute prédite |
+
+Scripts : `verifier_derive_k.py` (croisement beta2),
+`verifier_localisation_excursion_full_adam.py` (trace Adam complet
+s3+R ensemble, nouvelle, permanente).
+
+## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
+
 Écrites le 15/08/2026, à la demande de Théo, en transformant les critiques reçues en
 questions plutôt qu'en corrections. Onze tours, et les corrections gagnaient en
 précision **en restant au même étage**.
