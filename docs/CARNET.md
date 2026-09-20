@@ -10462,6 +10462,46 @@ personnel du point 2 incomplet par l'agent — deux issues opposées.**
 |---|---|---|---|
 | l'écart de 0,94% (croisement beta2) est net, sous la barre du rééchelonnage seul | 20/09 (moi, dans REPONSE_ORDRE54.md) | **affaiblie** le 20/09, rejeu à budget réduit donne 1,14% — le bruit de bissection à budget différent est du même ordre que l'effet rapporté ; conclusion qualitative probablement OK, le chiffre précis non |
 | la trace Adam complet (s3 figé, R excurse) résiste à une grille de mesure plus fine | 20/09 (moi) | **confirmée** le 20/09 par agent, grille 10× plus fine (2000 vs 20000 pas), 7 excursions trouvées au lieu de 2, aucune n'approche s3≈0,957 |
+| hypothèse standard n°1 de REPONSE_ORDRE54.md : la sensibilité locale du récepteur en R est plus grande que celle de l'émetteur en s3, expliquant pourquoi R excurse et pas s3 | 20/09 (moi) | **confirmée en conclusion, réfutée dans son mécanisme initial** — mesurée directement (différences finies) le 20/09 : en espace LOGIT (celui où Adam agit), l'émetteur est ~150× PLUS PLAT que le récepteur (pas plus raide comme je l'avais écrit) ; c'est la compression de saturation du softmax (`s3(1-s3)=1,04e-3` contre `R(1-R)=0,163`, facteur 157×) qui inverse tout en espace probabilité, où l'émetteur redevient ~160× plus raide. Script permanent : `verifier_courbure_s3_vs_r.py` |
+
+**Hypothèse standard n°1 (courbure `s3` vs `R`) testée directement le
+20/09/2026, script `verifier_courbure_s3_vs_r.py`.** Au plateau convergé
+(`s3=0,998963`, `R=0,794756`), différences finies de `d²J/dlogit²` :
+```
+d2J/dlogit_s3^2  = -7,9e-7
+d2J/dlogit_R4^2  = -1,21e-4     (ratio |emetteur/recepteur| = 0,0065)
+```
+**En espace logit — celui où Adam applique réellement ses pas —
+l'émetteur est ~150× PLUS PLAT, pas plus raide.** Ma phrase initiale
+dans `REPONSE_ORDRE54.md` ("s3 sits near a saturated optimum where its
+own second derivative is large and stiff") était fausse dans son
+mécanisme, bien que sa conclusion finale (s3 stable, R mobile) reste
+correcte. Ce qui inverse le signe de l'argument : la compression de
+saturation du softmax, `ds3/dlogit = s3(1-s3) ≈ 1,04e-3` contre
+`dR/dlogit = R(1-R) ≈ 0,163` (facteur 157×). En convertissant via la
+règle de la chaîne (valide ici : gradient quasi nul au plateau, donc le
+terme correctif habituel s'annule) :
+```
+d2J/ds3^2  (approx) ≈ -0,734
+d2J/dR4^2  (approx) ≈ -0,0045    (ratio |emetteur/recepteur| ≈ 162)
+```
+**La raideur visible en espace `(s3,R)` est réelle et ~160× plus
+grande pour `s3`, mais ce n'est pas une raideur intrinsèque — c'est la
+compression au carré d'un paysage en fait plus mou côté émetteur.**
+Une fluctuation du second moment d'Adam de taille comparable en espace
+logit est donc amortie de ~3 ordres de grandeur côté émetteur en
+espace probabilité, sans qu'aucun mécanisme séparé côté récepteur ne
+soit nécessaire pour expliquer l'asymétrie observée. Corrigé dans
+`REPONSE_ORDRE54.md` avec les chiffres exacts avant envoi.
+
+**JUSQU'OÙ ce mécanisme tient-il ? Pas encore testé** — la conversion
+espace-logit → espace-probabilité est une approximation au premier
+ordre (valide seulement près d'un plateau où le gradient est quasi
+nul) ; loin d'un plateau (pendant une excursion active), le terme
+correctif néchargé ne s'annule plus et l'approximation peut casser. Un
+test propre consisterait à répéter cette mesure de courbure PENDANT
+une excursion (au pas 60000 ou 160000 de la trace complète), pas
+seulement à l'état de repos — reste ouvert pour la suite.
 
 ## 8ter. Cinq questions de fond, dessinées par onze tours de relecture
 
