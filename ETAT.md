@@ -43,6 +43,29 @@ dans `git log`.*
    `verifier_split_s4_r4_hybride.py`. Détail complet : `CARNET.md`,
    section « VRAIE CRITIQUE DE DIPANKARSARKAR, tour 54 ».
 
+0bis. **RÉTRACTATION le 20/09/2026 (même reprise) — jouet à K variable,
+   défaut méthodologique trouvé par un agent-dipankar : l'écart de
+   delta testé (0,03%) était plus petit que la tolérance de bissection
+   de `delta_c` lui-même (`4,53e-6 < 1e-5` pour K=8 ; même problème pour
+   le contrôle K=1).** Ma conclusion précédente (« plat est le cas
+   générique, K=1 l'exception, décroissance progressive K=1→K=8 »)
+   était fausse. **Le vrai motif, à écart réellement comparable entre
+   7 valeurs de K :** `K=1,2,4,6,8` forment un PLATEAU (300-340 pas),
+   `K=20,26` sont plats (60 pas) — une falaise brutale (>5×) existe
+   quelque part entre K=8 et K=20, **jamais localisée** (K=9-19 non
+   testés). Motif de bug reproductible trouvé en prime : dès que
+   l'écart testé descend sous ~un ordre de grandeur de la tolérance de
+   bissection, une fausse « explosion » apparaît (K=8 à 0,01%, K=4 à
+   0,0003%), sans rapport avec un vrai ralentissement critique — leçon
+   méthodologique générale pour tout futur test de ce type. **Reste
+   ouvert, priorité pour la prochaine session** : rebissecter
+   `delta_c(K)` à `tol=1e-8` pour K∈{1,8,10,...,20,26}, retester à des
+   écarts ≥100× cette tolérance ; calculer la distance pli-d'équilibre
+   pour K=8/K=20 (pas seulement K=1/K=26) pour voir si elle discrimine
+   mieux le plateau/falaise que K lui-même. Scripts permanents :
+   `verifier_probe_k8_delta_sweep.py`, `verifier_k8_adam_internals.py`,
+   `verifier_k2_k4_k6_boundary.py`.
+
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une
    fois par un agent-dipankar un niveau plus bas.** D'abord : « cycle

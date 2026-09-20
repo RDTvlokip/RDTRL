@@ -11223,16 +11223,80 @@ K=20  (delta_c~0,01378)   : 40, 60, 60 pas
 **K=20 est PLAT** (même signature que K=26 : 40/60/60). **K=8 montre
 un signal faible** — hausse seulement au point le plus proche du
 seuil (0,03%), pas la progression lisse et lourde de K=1
-(80,300,340). **Tranche la question : « plat » est bien le cas
-générique** (vrai système, K=20, K=26 tous plats), **K=1 est
-l'exception, pas une transition cachée qui encadrerait K=26.** Le
-signal faible à K=8 suggère une décroissance progressive de l'effet
-entre K=1 et K=8, complètement éteinte dès K=20 — pas encore de
-mesure fine de où exactement ça s'éteint (K=2 à K=7 non testés).
+(80,300,340). Ma lecture initiale (ci-dessous, RÉTRACTÉE) : « plat »
+est le cas générique, K=1 l'exception, décroissance progressive entre
+K=1 et K=8.
+
+**RÉTRACTATION le 20/09/2026, même reprise — un agent-dipankar a
+trouvé un vrai défaut méthodologique dans le protocole lui-même, pas
+juste creusé plus loin.** Vérifié indépendamment par calcul direct
+avant d'accepter :
+```
+offset 0,03% de delta_c(K=8) = 0,015098*0,0003 = 4,53e-6
+tolerance de bissection par defaut (bissecter_delta_c) = 1e-5
+4,53e-6 < 1e-5  -> l'ecart teste est PLUS PETIT que l'incertitude sur delta_c lui-meme
+
+offset 0,03% de delta_c(K=1) = 0,018699*0,0003 = 5,61e-6
+largeur du bracket H13 = 0,018711-0,018688 = 2,3e-5
+5,61e-6 < 2,3e-5  -> meme probleme pour le point de controle K=1
+```
+**Le point « 0,03% sous delta_c » n'est PAS résolu de façon fiable —
+on ne sait pas, à ce niveau de précision, de quel côté du VRAI seuil
+ce point se trouve.** Confirmé par un balayage fin autour de ce point
+à K=8 : à un écart encore 3× plus proche (0,01%), le système
+s'effondre COMPLÈTEMENT (`r4_final=1,000000`, `premier=2760`) — un
+saut discontinu, pas un ralentissement progressif. **Motif
+reproductible, pas un accident isolé** : la même explosion se produit
+à K=4 (`0,0003%`, `premier=3520`) — chaque fois que l'écart testé
+descend sous ~un ordre de grandeur de la tolérance de bissection, un
+artefact de franchissement de seuil apparaît, sans rapport avec un
+vrai ralentissement critique.
+
+**Rejoué à un écart réellement comparable entre les 7 valeurs de K
+(0,03% sous CHAQUE `delta_c(K)` propre, le point le plus fin
+commun à tous) :**
+```
+K=1   : premier=340
+K=2   : premier=320   (delta_c=0,017369)
+K=4   : premier=320   (delta_c=0,016180)
+K=6   : premier=300   (delta_c=0,015534)
+K=8   : premier=320
+K=20  : premier=60
+K=26  : premier=60
+```
+**Pas de décroissance progressive entre K=1 et K=8 — c'est un PLATEAU**
+(300-340 pas, un intervalle de seulement 40 pas, dans la résolution de
+la grille de mesure elle-même) **suivi d'une falaise brutale (>5×)
+quelque part entre K=8 et K=20, jamais localisée précisément (K=9 à
+K=19 non testés).** K=1 n'est PAS « l'exception isolée » — c'est un
+point parmi cinq (K=1,2,4,6,8) dans le même groupe.
+
+**Autres pistes testées et écartées par le même agent, avant de
+conclure quoi que ce soit** : le mécanisme plancher-de-`v` (déjà
+confirmé ailleurs ce tour) n'explique PAS le signal à K=8 — trace
+brute à grille 1 autour du point 0,03% parfaitement lisse et
+monotone, aucune oscillation. Le pas normalisé d'Adam n'est pas saturé
+(magnitude `0,005-0,010`, loin de `±1`) mais montre une forme non
+monotone (« bosse », décélère puis réaccélère) — signature ambiguë,
+compatible avec un vrai ralentissement OU une simple relaxation
+ordinaire vers un point fixe quelconque ; pas tranché.
+
+**Test précommis pour la suite, pas encore exécuté** : rebissecter
+`delta_c(K)` à `tol=1e-8` (au lieu de `1e-5`/`1e-6`) pour K∈{1,8,10,
+12,14,16,18,20,26}, puis retester avec des écarts ≥100× cette
+tolérance (par ex. 0,01%/0,1%/1% plutôt que 3%/0,3%/0,03%) pour
+garantir que chaque point reste bien dans un seul bassin. Question
+ciblée posée par l'agent : la distance pli-d'équilibre/seuil a-t-elle
+été calculée pour K=8 et K=20 (pas seulement K=1 et K=26) ? Si elle
+suit K=8≈K=20 (collée au seuil) malgré un temps de convergence
+différent, la proximité du pli est définitivement écartée comme
+variable discriminante ; si K=8 se place entre K=1 et K=20/26, ça
+pourrait être une meilleure variable que K lui-même pour expliquer le
+plateau/falaise.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| « plat » est le cas générique (K=20/26 comme le vrai système), K=1 est l'exception isolée | 20/09 (agent-dipankar, précommise) | **confirmée** le 20/09 — K=20 plat (40/60/60), K=8 signal faible seulement au point le plus proche du seuil, aucun des deux ne montre la divergence lisse de K=1 |
+| « plat » est le cas générique (K=20/26 comme le vrai système), K=1 est l'exception isolée, décroissance progressive K=1→K=8 | 20/09 (moi) | **RÉTRACTÉE** le 20/09, même reprise — défaut méthodologique trouvé (écart testé plus petit que la tolérance de bissection de `delta_c`) ; le vrai motif à écart comparable est un PLATEAU (K=1-8, 300-340 pas) suivi d'une falaise non localisée entre K=8 et K=20 |
 | `delta_c(K=26)` matche le vrai système à ≈0,03% | 20/09 (moi) | **corrigée** le 20/09 par agent-dipankar — le vrai écart est 0,006%, cinq fois plus petit ; erreur d'arithmétique de ma part, pas de méthode |
 | le match `delta_c(K=26)` vs vrai système est une coïncidence de deux courbes lisses, pas un signal K-spécifique | 20/09 (moi, implicite) | **réfutée** le 20/09 par agent-dipankar — la pente locale `delta_c(K)` implique un `ΔK` effectif de 0,015 pour expliquer l'écart résiduel, bien trop précis pour une coïncidence |
 | le pli d'équilibre (Newton, non-Adam) à `delta_c(K=26)` est un artefact numérique de continuation, pas un vrai nœud-col | 20/09 (agent-dipankar, testée par elle-même) | **réfutée** — `det(J)→0` monotone et lisse, bistabilité confirmée directement par résolution depuis deux points de départ différents |
