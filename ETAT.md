@@ -1,12 +1,17 @@
 # État du projet RDTRL — où on en est
 
 *Dernière mise à jour : 20/09/2026 — le VRAI dipankarsarkar a répondu
-(tour 53). Répondu dans `docs/REPONSE_ORDRE54.md` (gitignoré), journalisé
-dans `CARNET.md` §7.65/8ter. Depuis, deux résultats substantiels trouvés
-en creusant seul (voir piste 1 ci-dessous) — **`REPONSE_ORDRE54.md`
-contient maintenant une erreur connue non corrigée (le mécanisme
-`comp²` de l'hypothèse n°1) : Théo a demandé de ne plus toucher ce
-fichier sans son accord explicite avant de le corriger.**
+une SECONDE fois (tour 54, sur `REPONSE_ORDRE54.md`). Répondu dans
+`docs/REPONSE_ORDRE55.md` (gitignoré), journalisé dans `CARNET.md`
+(nouvelle section « VRAIE CRITIQUE DE DIPANKARSARKAR, tour 54 », tout
+en bas du fichier). Ses trois points : H1 (courbure→Jacobien) et H3
+(abandonner, un seul mécanisme) convergent avec ce qu'on avait déjà
+trouvé nous-mêmes ce tour, avant sa lettre. H2 (sa prédiction chiffrée
+sur `s[4,10]`) est RÉFUTÉE par 7 ordres de grandeur — testé,
+vérifié deux fois (moi + agent-dipankar) — mais sa conclusion
+qualitative (déficit côté récepteur) survit via un mécanisme plus
+simple que sa formule. Trois tests précommis par lui pour le prochain
+tour, pas encore exécutés. **En attente de sa prochaine réponse.**
 
 Ce fichier n'est pas un article, c'est un pense-bête pour reprendre le
 travail dans une nouvelle conversation sans tout re-raconter — l'historique
@@ -14,6 +19,19 @@ complet vit dans `docs/CARNET.md` (daté, hypothèse par hypothèse) et
 dans `git log`.*
 
 ## Pistes ouvertes, par ordre de priorité probable
+
+0. **Tour 54 de dipankar — trois tests précommis par LUI, pas encore
+   exécutés (priorité la plus haute pour la prochaine session)** :
+   (1) grille-1 sur 2000 pas centrés sur pas=60000 — si `1-s[4,10]`
+   dépasse `5e-12` dans cette fenêtre, sa défense "mauvais instant
+   d'échantillonnage" reprend vie ; (2) loguer le facteur de
+   correction de biais d'Adam à côté de `s3`/`r4` pour voir si les
+   co-dips s'alignent sur la période déjà connue (~460-500 pas) du
+   mécanisme plancher-de-`v` ; (3) `delta=0` (symétrie complète), même
+   fenêtre — si le co-dip persiste, c'est un artefact d'optimiseur
+   indépendant du mécanisme de récompense asymétrique. Script à
+   sauvegarder : `verifier_split_s4_r4_hybride.py` (déjà committé,
+   trace complète du split `s[4,10]`/`r[10,4]`) sert de base.
 
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une

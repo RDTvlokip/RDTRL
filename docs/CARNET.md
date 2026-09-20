@@ -11208,6 +11208,107 @@ ou si K=1 et K=26 encadrent déjà une vraie transition non localisée.
 
 ---
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 20/09/2026 (tour 54, pas simulée)
+
+**Le vrai relecteur a répondu à `REPONSE_ORDRE54.md`.** Trois points :
+(1) mon hypothèse standard n°1 (H1) était bien orientée mais formulée
+comme un argument de courbure (second ordre) alors que c'est un
+argument de premier ordre (Jacobien du softmax, `p(1-p)`) — **exactement
+la correction que nous avions déjà trouvée nous-mêmes ce tour**
+(comp¹ vs comp², agent-dipankar + `verifier_delta_logit_excursion.py`,
+ratio `Δlogit=0,985`), avant même de recevoir sa lettre. (2) recommande
+d'abandonner H3 (deux événements distincts) — les deux ratios
+`|dR|/|ds3|` qu'il calcule sur mes propres points cités
+(`147,7` et `145,6`, à 1,4% l'un de l'autre) suggèrent UN mécanisme
+avec inversion de signe, pas deux accidents — **cohérent, en plus
+fort, avec notre propre réfutation de H3 ce tour** (le mécanisme
+plancher-de-`v`, kicks récurrents toutes les ~460-500 pas, pas deux
+événements isolés). (3) H2 survit selon lui, avec une prédiction
+chiffrée précise et falsifiable sur le split `s[4,10]`/`r[10,4]` de
+l'hybride.
+
+**Vérifié point par point, avant d'écrire quoi que ce soit.**
+
+**Sa dérivation du bracket softmax (`(1-s)+(1-r)` borné par `s·r=R`
+fixé, donnant `|dR|/|ds3|∈[157,5;166,5]`) — vérifiée indépendamment,
+exacte.**
+```
+J(s3) = s3(1-s3) = 1,035925e-03
+bracket range = [0,205244 ; 0,217018]
+predicted |dR|/|ds3| range = [157,46 ; 166,50]
+ses ratios sur mes points : step60000=147,69  step160000=145,56
+```
+Tout recalculé indépendamment, correspond exactement à ce qu'il a
+écrit. Le résidu de ~6-7% (ratios mesurés sous le plancher prédit) est
+réel, pas une erreur d'arithmétique de sa part.
+
+**Sa prédiction falsifiable sur H2 — TESTÉE ET RÉFUTÉE par 7 ordres de
+grandeur, PUIS vérifiée une seconde fois par un agent-dipankar qui a
+remonté jusqu'à la cause.** Il prédisait `1-s[4,10]≈6,12e-05` au point
+stabilisé de l'hybride. Rejeu complet du montage hybride
+(400000 pas, `s[4,10]` et `r[10,4]` loggés séparément) :
+```
+pas=300000 (le dip exact qu'il cite, R:0,7947556089->0,7947549760) : s[4,10]=1,0000000000
+FINAL : s[4,10]=1,0000000000  r[10,4]=0,7947556073  1-s[4,10]=5,624390e-13
+```
+**`1-s[4,10]` reste dans la gamme `1e-12` à `3e-12` sur TOUTE la
+trajectoire, y compris exactement au moment du dip qu'il cite — sept
+ordres de grandeur plus saturé que sa prédiction, et plus extrême
+encore que son scénario de rejet alternatif (`~0,89`). Ni l'une ni
+l'autre de ses deux hypothèses ne matche.**
+
+**Agent-dipankar a ensuite remonté à la cause et à la bonne
+mécanique — vérifié, pas juste accepté.** `s[4,10]` est saturé DÈS
+`construire_mur23()`, avant même que l'optimiseur hybride ne fasse un
+seul pas : la perturbation `+30` sur le logit donne
+`1-s[4,10]≈26·exp(-30)≈3e-11` par construction — jamais dans la
+gamme prédite. Conséquence vérifiée par la règle du produit
+(`dR=r·ds4+s4·dr`, avec `s4≈1` fixe) : `dR≈dr[10,4]` à 12 chiffres
+significatifs sur un vrai événement de dip (`dr=-2,141e-7`,
+`dR=-2,141e-7`, identiques). **Son hypothèse `dr[10,4]=0` était
+inversée — c'est `d(s[4,10])≈0` qui tient, pas `dr=0`.** Sa conclusion
+qualitative (déficit côté récepteur) survit, mais par un mécanisme
+plus simple que sa formule : `R` EST `r[10,4]` ici, structurellement,
+pas asymptotiquement.
+
+**Point structurel supplémentaire trouvé par l'agent, à intégrer dans
+la réponse** : les lignes 3 et 4 de l'émetteur (`s[3,10]`, `s[4,10]`)
+n'apparaissent JAMAIS dans le même terme de `objectif_pondere`
+(récompense additivement séparable par référent, `Σpoids[i]·s[i,:]·r[:,i]`)
+— aucun canal mécanique ne relie un changement de `s[4,10]` à un
+changement de `s3`. La seule vraie coupure structurelle passe par la
+ligne 10 du RÉCEPTEUR (`r[10,3]` et `r[10,4]` partagent une seule
+normalisation softmax). La corrélation de timing entre les dips de
+`s3` et de `R` vient donc soit d'un battement partagé (le facteur de
+correction de biais d'Adam, `(1-β1^t)/(1-β2^t)`, commun à TOUS les
+paramètres quelle que soit leur ligne), soit d'une coïncidence de
+résolution d'échantillonnage — **candidat naturel pour le battement
+partagé : notre propre mécanisme plancher-de-`v` déjà confirmé ce
+tour, pas une invention nouvelle.**
+
+**Test précommis par l'agent pour le prochain tour, pas encore
+exécuté** : (1) grille-1 sur une fenêtre de 2000 pas centrée sur un
+des 9 co-dips qu'il a localisés (à commencer par pas=60000) —
+si `1-s[4,10]` dépasse `5e-12` dans cette fenêtre, la défense
+"mauvais instant d'échantillonnage" reprend vie, sinon elle est
+définitivement close ; (2) loguer le facteur de correction de biais
+d'Adam à côté de `s3`/`r4` pour voir si les co-dips s'alignent sur un
+multiple rationnel de la période déjà connue (~460-500 pas) ; (3)
+`delta=0` (symétrie complète) sur la même fenêtre — si le co-dip
+persiste, c'est un artefact d'optimiseur indépendant du mécanisme de
+récompense asymétrique, pas une preuve pour l'un ou l'autre camp.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `1-s[4,10]≈6,12e-05` au point stabilisé de l'hybride (prédiction falsifiable de dipankar, H2) | 20/09 (dipankarsarkar) | **réfutée** le 20/09, écart de 7 ordres de grandeur, vérifiée deux fois (moi + agent-dipankar) |
+| l'hypothèse `dr[10,4]=0` de dipankar (récepteur figé pendant le nudge commun de l'émetteur) | 20/09 (dipankarsarkar, implicite dans sa formule) | **réfutée** le 20/09 par agent-dipankar — c'est `d(s[4,10])≈0` qui tient, l'inverse ; `dR≈dr[10,4]` à 12 chiffres significatifs |
+| la conclusion qualitative de dipankar (déficit de R côté récepteur) | 20/09 (dipankarsarkar) | **confirmée, mécanisme différent** — `R` est structurellement `r[10,4]` ici (émetteur pinné à la construction), pas via un canal de saturation partielle comme sa formule le supposait |
+| H3 (deux excursions distinctes à pas=60000/160000) doit être abandonnée | 20/09 (dipankarsarkar) | **confirmée, en plus fort** — cohérent avec notre propre mécanisme plancher-de-`v` (kicks récurrents, pas deux accidents isolés), déjà établi indépendamment ce tour |
+
+Répondu dans `docs/REPONSE_ORDRE55.md`.
+
+---
+
 ## 8. Vingt questions inconfortables
 
 Règle que je m'impose ici : pas de question dont je connais déjà la réponse, pas
