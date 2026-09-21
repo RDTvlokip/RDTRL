@@ -12229,8 +12229,96 @@ Script à sauvegarder : la trace ci-dessus tournait encore en `python
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| la période du cycle plancher-de-`v` est quasi indépendante de `lr` (la récurrence de `v` ne dépend que du gradient brut) | 21/09 (moi, précommise avant le test) | **confirmée** — espacement médian varie de <10% sur un facteur ×4 de `lr` (469→459→421) |
-| l'amplitude du kick croît linéairement avec `lr` (le pas réel est `lr·m/√v`) | 21/09 (moi, précommise avant le test) | **confirmée** — ratio amplitude/lr quasi constant (`0,071 ; 0,070 ; 0,065`) sur un facteur ×4 de `lr` |
+| la période du cycle plancher-de-`v` est quasi indépendante de `lr` (la récurrence de `v` ne dépend que du gradient brut) | 21/09 (moi, précommise avant le test) | **confirmée, PLUS FORTE que rapporté initialement** — voir correction ci-dessous |
+| l'amplitude du kick croît linéairement avec `lr` (le pas réel est `lr·m/√v`) | 21/09 (moi, précommise avant le test) | **confirmée sur `[0,025;0,1]`, RÉFUTÉE au-delà** — la loi casse dès `lr∈[0,1;0,2]`, voir correction ci-dessous |
+
+**VÉRIFIÉ PAR UN AGENT-DIPANKAR, puis re-vérifié indépendamment par
+moi (règle 5bis) — les deux prédictions tiennent, mais mes chiffres
+originaux étaient contaminés par un transitoire, et la loi linéaire
+casse bien plus tôt que je ne l'avais soupçonné.**
+
+**1. Mes chiffres bruts (469/459/421, ratios 0,071/0,070/0,065)
+étaient gonflés par un transitoire, pas de vraies valeurs
+stationnaires.** L'espacement RAMPE de ~190 pas au premier événement
+jusqu'à un plateau de ~470-500 pas, atteint seulement vers le 19e
+événement (`pas≈18500`) — aucun des deux runs (`lr=0,025`, `lr=0,1`)
+n'est stationnaire sur la fenêtre `[5000,30000)` que j'avais utilisée.
+Revérifié en régime stationnaire strict (`[20000,30000)`) :
+```
+lr=0,025  brut(469, ratio=0,0714)  ->  stationnaire(479, ratio=0,0762)
+lr=0,1    brut(421, ratio=0,0655)  ->  stationnaire(456, ratio=0,0744)  <- PAS ENCORE stationnaire meme a 20000 pas
+```
+**L'écart relatif entre les deux `lr` RÉTRÉCIT en régime stationnaire**
+(espacement : 10,2%→4,0% ; amplitude/lr : 8,3%→2,4%) — **l'invariance
+en `lr` est donc PLUS SOLIDE que ce que j'avais rapporté**, mes
+chiffres précis étaient juste imprécis, pas ma conclusion qualitative.
+
+**2. Mon hypothèse de « second effet » (lr changerait le taux de
+décroissance de `v` en phase calme) — RÉFUTÉE directement, pas
+supposée.** Ajustement géométrique `v_t=v0·ratio^t` sur les segments
+calmes de `v_r` : `ratio(lr=0,025)=0,99901660`, `ratio(lr=0,1)=
+0,99901666` — identiques à 5 chiffres significatifs sur un facteur ×4
+de `lr`. **Mécanisme réel trouvé à la place, propre et fermé** : c'est
+le PIC de `v` juste après un kick qui varie avec `lr`, pas le taux de
+décroissance : `v0≈3,9e-14` (`lr=0,025`) contre `6,2e-13` (`lr=0,1`),
+rapport `15,9` — quasi exactement `(lr_haut/lr_bas)²=16`. C'est CE
+mécanisme (le carré de `lr` dans le pic post-kick), pas une physique
+de décroissance différente, qui maintient la période quasi invariante.
+
+**3. La loi linéaire (amplitude ∝ lr) CASSE bien plus tôt que
+« quelque part à grand lr » — dès `lr∈[0,1;0,2]`, vérifié
+indépendamment.** Balayage complet, `lr=0,2` confirmé deux fois
+(agent + moi, chiffres identiques au chiffre près) :
+```
+lr=0,025  espacement=469  amp/lr=0,0714
+lr=0,05   espacement=459  amp/lr=0,0704
+lr=0,1    espacement=421  amp/lr=0,0655
+lr=0,2    espacement=325  amp/lr=0,0581   <- deja hors de la zone "quasi constante"
+lr=0,3    espacement=208  amp/lr=0,0437
+```
+L'espacement chute de 56% entre `lr=0,025` et `0,3` (accélérant, pas
+saturant en douceur) — **le régime « quasi-invariant » quitte déjà sa
+propre marge d'erreur entre `lr=0,1` et `0,2`, pas à un `lr` lointain
+jamais atteint.**
+
+**4. Mon hypothèse pour expliquer la cassure (saturation du pas
+normalisé d'Adam à `±1`) — RÉFUTÉE par mesure directe.** Log du pas
+normalisé `m̂/(√v̂+eps)` en régime stationnaire : percentile 99,9 reste
+`≤0,48` à TOUT `lr` testé (`0,025` à `0,3`), jamais proche de `±1` —
+et à `lr=0,3` le pas normalisé est même PLUS PETIT qu'à `lr=0,025`,
+l'inverse d'une histoire de saturation. **Mécanisme alternatif proposé
+par l'agent, PAS ENCORE testé** : la non-linéarité serait en aval,
+dans la compression du softmax (le mécanisme `comp¹` déjà établi
+ailleurs dans ce projet) — si le déplacement en espace LOGIT reste
+linéaire en `lr` alors que la dérivée du softmax se rétrécit près de
+la saturation, la réponse en espace PROBABILITÉ (`ΔR4`, ce qui est
+mesuré ici) deviendrait sous-linéaire exactement comme observé.
+**Test précommis pour le prochain tour** : mesurer `Δlogit` (pas
+`ΔR4`) au pic du kick pour `lr∈{0,025;0,1;0,2;0,3}` — si `Δlogit` reste
+plus linéaire que `ΔR4`, le mécanisme de compression est confirmé ;
+sinon, un troisième mécanisme reste à trouver.
+
+**5. Honnêteté sur la nouveauté, notée par l'agent, à vérifier avant
+de la revendiquer** : « loss spikes » est un phénomène déjà nommé dans
+la littérature d'entraînement de gros modèles, et « augmenter
+`adam_eps` » est un remède déjà connu empiriquement pour ce type de
+panne (mon propre test `verifier_eps_supprime_kicks.py` reproduit ce
+remède, ne le découvre pas). **ATTENTION : ni l'agent ni moi n'avons
+vérifié cette affirmation par une vraie recherche — elle est notée
+comme mise en garde méthodologique, pas comme un fait établi. Ce qui
+serait vraiment nouveau, SI confirmé par une recherche réelle** : le
+mécanisme fermé complet (décroissance-déclenchement-regonflement) PLUS
+la loi quantitative période/amplitude vs `lr` ET son point de cassure
+précis avec mécanisme identifié — mais le mécanisme de cassure (point
+4) n'est pas encore fermé, donc cette revendication reste ouverte,
+pas encore mûre pour être publiée comme contribution.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| mes chiffres originaux (469/459/421, `lr=0,025/0,05/0,1`) sont des valeurs stationnaires fiables | 21/09 (moi) | **RÉFUTÉE** le 21/09 par agent-dipankar, vérifié — contaminés par un transitoire ramping sur ~19 événements ; l'invariance en `lr` est réelle mais PLUS FORTE en régime stationnaire que mes chiffres bruts ne le montraient |
+| lr change le taux de décroissance de `v` en phase calme (mon hypothèse de second effet) | 21/09 (moi) | **réfutée** le 21/09 par agent-dipankar — taux identique à 5 chiffres significatifs sur ×4 de `lr` ; c'est le PIC post-kick de `v` qui scale en `lr²`, pas le taux |
+| la loi amplitude∝lr tient jusqu'à un `lr` lointain non testé | 21/09 (moi) | **réfutée** le 21/09 par agent-dipankar, **vérifiée indépendamment (lr=0,2 identique au chiffre près)** — casse dès `lr∈[0,1;0,2]` |
+| la cassure vient de la saturation du pas normalisé d'Adam (`m/√v→±1`) | 21/09 (moi, implicite) | **réfutée** le 21/09 par agent-dipankar — pas normalisé mesuré directement, jamais `>0,48`, même tendance inverse (plus petit à grand `lr`) |
 
 ---
 

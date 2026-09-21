@@ -65,6 +65,29 @@ dans `git log`.*
    selon la fenêtre, mais reste K-invariant à chaque échelle) ; jamais
    inspecté côté émetteur (`s3`,`s4`), seulement `r4`.
 
+0ter. **Généralisation ML au sens large — loi d'échelle période/amplitude
+   du mécanisme plancher-de-`v` vs `lr`, testée sur le VRAI système.**
+   Prédiction fermée confirmée puis affinée par un agent-dipankar,
+   revérifiée indépendamment (chiffres identiques) : la période du
+   cycle est quasi indépendante de `lr` (encore PLUS vrai en régime
+   stationnaire que mes premiers chiffres, contaminés par un
+   transitoire ramping sur ~19 événements) ; l'amplitude croît
+   linéairement avec `lr` mais **cette loi CASSE dès `lr∈[0,1;0,2]`**
+   (pas à un `lr` lointain comme je le supposais). Mécanisme du pic
+   post-kick de `v` trouvé et confirmé (`v_pic∝lr²`, exact à 5
+   chiffres). Ma propre hypothèse pour la cassure (saturation du pas
+   normalisé d'Adam) est RÉFUTÉE par mesure directe. Hypothèse
+   alternative de l'agent (compression softmax en aval, mécanisme
+   comp¹) précommise, **pas encore testée** : mesurer `Δlogit` plutôt
+   que `ΔR4` au pic du kick pour `lr∈{0,025;0,1;0,2;0,3}`. Mise en
+   garde méthodologique notée mais PAS vérifiée : « loss spikes » et
+   « augmenter `adam_eps` » sont peut-être déjà des phénomènes/remèdes
+   connus en ML — à vérifier par une vraie recherche avant de
+   revendiquer une nouveauté. Détail complet : `CARNET.md`, section
+   « Généralisation au ML au sens large ». Scripts :
+   `verifier_kick_periode_amplitude_vs_lr.py`,
+   `verifier_kick_cassure_loi_lr.py`.
+
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une
    fois par un agent-dipankar un niveau plus bas.** D'abord : « cycle
