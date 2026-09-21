@@ -154,12 +154,21 @@ clos.** Ne pas oublier cette étape finale.
     causes dans la littérature atteinte. Limite assumée : vérification
     arrêtée au niveau abstract, pas de lecture complète de la section
     « Why Does Temperature Scaling Work? ».
-12. **Suppose-t-on toujours que « l'effet rétrécit à plus haute
-    précision » signifie « c'était du bruit » — alors que ça peut
-    vouloir dire, comme ici (la sensibilité à `1e-15` près de K=12,80),
-    qu'on est authentiquement SUR une frontière mathématique où la
-    distinction bruit/signal classique s'effondre (du vrai chaos, pas
-    une erreur de mesure) ?**
+12. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 12
+    des 20 ». Quatrième angle potentiellement non couvert — voir aussi
+    question 15, traitée avec la même recherche.] « L'effet rétrécit à
+    plus haute précision » signifie-t-il toujours « c'était du bruit »,
+    ou peut-on être sur une vraie frontière chaotique ?** Réponse : le
+    chaos formel en entraînement ML est déjà bien établi (Wang et al.,
+    NeurIPS 2023, arXiv:2310.15418, existence vérifiée directement par
+    moi — Lyapunov/Hölder sur l'objectif, pas directement sur la
+    trajectoire, correction mineure au rapport agent) — PAS original en
+    soi. Mais la mise en garde méthodologique précise (« plus de
+    précision peut ne pas résoudre un désaccord sur une vraie
+    frontière ») ne semble pas formulée explicitement dans la
+    littérature ML d'entraînement — 5 requêtes agent sans résultat,
+    seul un lemme classique de dynamique générale (shadowing lemma) s'en
+    approche.
 13. **L'arrêt anticipé sur « la perte n'a pas progressé depuis N pas »
     est-il vulnérable au même hasard de timing qu'un cycle
     plancher-de-`v` (~500 pas ici) — un run arrêté trop tôt ou trop
@@ -168,12 +177,14 @@ clos.** Ne pas oublier cette étape finale.
     vérifie-t-on si c'est un vrai apprentissage différent, ou
     simplement de quel côté d'une séparatrice précoce chaque bruit
     d'initialisation est tombé ?**
-15. **Le réflexe « augmente la précision pour trancher un désaccord »
+15. **[RÉPONDUE le 21/09/2026 avec la question 12 (même recherche,
+    quasi-doublon), voir `CARNET.md` section « Question 12 des 20 ».]
+    Le réflexe « augmente la précision pour trancher un désaccord »
     suppose une convergence monotone vers une « vraie » réponse —
-    alors qu'augmenter la précision peut révéler qu'il n'existe PAS de
-    réponse stable à ce point d'opération (un vrai régime chaotique,
-    trouvé ici), rendant « prends juste plus de décimales » un conseil
-    activement trompeur dans certains cas ?**
+    conseil parfois trompeur ?** Réponse : identique à la question 12
+    — mise en garde méthodologique précise non trouvée formulée
+    explicitement pour l'entraînement ML, seul un lemme classique de
+    dynamique générale (shadowing lemma) s'en approche formellement.
 16. **Y a-t-il une différence sous-estimée entre « l'optimiseur a
     convergé » (les paramètres ont arrêté de bouger visiblement) et
     « le système a atteint son vrai point fixe » — étant donné qu'ici,

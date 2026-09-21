@@ -13176,6 +13176,80 @@ limite explicitement documentée plutôt que dissimulée derrière un
 
 ---
 
+## Question 12 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## quatrième angle potentiellement non couvert (la mise en garde
+## méthodologique elle-même, pas le chaos en ML en général qui EST
+## déjà bien établi)
+
+**Question posée (ETAT.md, #12)** : suppose-t-on toujours que « l'effet
+rétrécit à plus haute précision » signifie « c'était du bruit » —
+alors que ça peut vouloir dire, comme ici (K=12,80), qu'on est
+authentiquement sur une frontière mathématique où la distinction
+bruit/signal classique s'effondre (du vrai chaos, pas une erreur de
+mesure) ?
+
+**Distinction importante à poser avant le résultat** : cette question
+NE porte PAS sur « existe-t-il du chaos en ML » (théorie du chaos
+générale, connue depuis Lorenz 1963) — elle porte sur la MISE EN GARDE
+MÉTHODOLOGIQUE spécifique (le réflexe « plus de précision résout le
+désaccord » est parfois trompeur). Recherche ciblée sur cet axe précis,
+avec la question 15 (quasi-doublon, traitée ensemble pour éviter une
+recherche redondante).
+
+**Recherche effectuée, un point vérifié directement par moi, une
+correction mineure trouvée** :
+
+1. **Le chaos formel (Lyapunov positif) dans l'entraînement de réseaux
+   est déjà bien établi, ligne active 2023-2025** : Wang et al.
+   (« Fractal Landscapes in Policy Optimization », NeurIPS 2023,
+   arXiv:2310.15418) — existence et sujet vérifiés directement par moi
+   (`WebFetch`). **Correction mineure au rapport de l'agent** : l'agent
+   avait écrit « exposant de Lyapunov de la trajectoire de politique » ;
+   la vérification directe montre plus précisément « maximal Lyapunov
+   exponents and Hölder exponents of the policy optimization
+   objectives » — c'est l'objectif/le paysage qui est caractérisé comme
+   fractal, pas directement la trajectoire des paramètres. Nuance,
+   pas une réfutation, mais à ne pas confondre. Altintas et al.
+   (« The Butterfly Effect: NN Training Trajectories Are Highly
+   Sensitive to Initial Conditions », ICML 2025, arXiv:2506.13234,
+   déjà rencontré à la question 4) — **nuance importante notée par
+   l'agent** : leur effet papillon est concentré en DÉBUT
+   d'entraînement et décroît ensuite (transitoire), alors que notre
+   K=12,80 est une frontière FIXE dans l'espace des paramètres du
+   jouet, pas une phase temporelle — les deux formes de chaos ne sont
+   pas identiques.
+2. **La mise en garde méthodologique précise (« plus de précision peut
+   ne PAS résoudre un désaccord si on est sur une vraie frontière
+   chaotique ») ne semble PAS formulée explicitement dans la
+   littérature ML d'entraînement de réseaux** — 5 requêtes distinctes
+   de l'agent, aucune ne l'a trouvée formulée ainsi pour ce domaine.
+   Le résultat le plus proche vient de la théorie dynamique générale
+   (lemme de shadowing : une pseudo-orbite bruitée reste `ε`-proche
+   d'une VRAIE orbite, argument formel pour pourquoi la sensibilité
+   est intrinsèque et ne se résorbe pas avec la précision) — non
+   revérifié directement par moi, mais ce lemme est un résultat
+   mathématique classique et bien établi, pas une affirmation
+   spéculative de l'agent.
+3. **Papier proche mais hors-cible (inférence, pas entraînement)** :
+   arXiv:2604.13206 (« Numerical Instability and Chaos: Quantifying
+   Unpredictability of LLMs ») distingue 3 régimes (stable/chaotique/
+   dominé-signal) pour l'INFÉRENCE des LLM, pas leur entraînement —
+   proche en esprit, pas le même objet.
+
+**Réponse à la question 12** : quatrième angle potentiellement non
+couvert — le CHAOS lui-même en ML est bien établi (pas original), mais
+la mise en garde méthodologique précise contre le réflexe
+« plus de précision = ça devait être du bruit » ne semble pas
+formulée explicitement pour l'entraînement de réseaux dans la
+littérature atteinte. Confiance modérée (5 requêtes d'un seul agent,
+pas une revue systématique).
+
+**Statut** : question 12 des 20 (ETAT.md) considérée close — recherche
+littérature, un point vérifié directement par moi avec une correction
+mineure apportée au rapport de l'agent, verdict prudent.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
