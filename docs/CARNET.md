@@ -14119,6 +14119,72 @@ précommis complet, bug d'unités trouvé et corrigé en cours de route).
 
 ---
 
+## Suite tour 56, 21/09/2026 — précommis résolu : `s3` n'a PAS un
+## partenaire miroir unique comme `r3`/`r4`, mais une redistribution
+## quasi-uniforme sur les 26 autres messages, et ça résout le facteur
+## ~1,9x en un coup
+
+**Consigne de Théo (« continue à chercher dans notre espace de 27 »)**
+appliquée au précommis laissé ouvert dans `REPONSE_ORDRE56.md` :
+mesurer la ligne 3 complète de l'émetteur (27 messages) pour trouver le
+partenaire anti-corrélé de `logit_s[3,10]`, supposé analogue au miroir
+`r[10,3]↔r[10,4]` trouvé côté récepteur.
+
+**Ce n'est PAS un miroir à 2 entrées — structure qualitativement
+différente** (`verifier_partenaire_miroir_s3.py`) :
+
+```
+pas=59989  d_logit_s[3,10]=-9,380127e-03
+  top6 autres messages : {19,1,23,21,0,20}, chacun a +0,0083007334206...
+  (identiques a 10 chiffres significatifs pres)
+  ratio d_s[3,19]/d_s[3,10] = -0,884928
+```
+
+**Au moins 6 des 26 autres messages bougent par la MÊME quantité, à
+10 chiffres près** — pas un partenaire dominant comme `r3` pour `r4`,
+une redistribution quasi UNIFORME sur les alternatives. Cohérent avec
+`s[3,10]≈0,9989` écrasant les 26 autres (qui se partagent ~0,0011 de
+masse, quasi à égalité) — contrairement à la ligne 10 du récepteur où
+`r3` et `r4` sont tous deux substantiels (pas de dominance écrasante),
+d'où le vrai miroir binaire là-bas. **Rappelle directement le "26" de
+H7** (le jouet à K variable généralisant ce même nombre) — la même
+signature structurelle (K=26 alternatives quasi-dégénérées) refait
+surface ici, dans un contexte différent.
+
+**Formule complète du Jacobien softmax (somme sur les 27 entrées de la
+ligne, pas seulement message 10), testée directement** :
+
+```
+ds3 = s3 * (dlogit_s3 - somme_j[s_j * dlogit_j])   (somme sur les 27 messages)
+
+pas=59989 : ds3 mesure = -1,847767e-05
+            formule complete (27 entrees) = -1,831514e-05   ecart = 0,88%
+            approximation naive (2 sorties, s3(1-s3)*dlogit_s3) = -9,716625e-06   ecart = 47,41%
+pas=60432 : ds3 mesure = -1,881122e-05
+            formule complete (27 entrees) = -1,864280e-05   ecart = 0,90%
+            approximation naive = -9,901553e-06   ecart = 47,36%
+```
+
+**Le facteur ~1,9x signalé comme ouvert dans `REPONSE_ORDRE56.md` est
+RÉSOLU** : l'approximation naïve à 2 sorties était fausse de 47%, pas
+d'un facteur "~1,9" au sens d'un terme correctif manquant simple — la
+vraie formule (Jacobien softmax complet sur les 27 entrées de la ligne,
+pas juste message 10 vs "le reste") ferme le résidu à moins de 1%.
+Contrairement à la ligne 10 (où le Jacobien à 2 entrées `{3,4}` était
+DÉJÀ une bonne approximation, le facteur venait du bruit de fond des
+25 autres entrées), ici c'est le Jacobien à 2 SORTIES lui-même qui
+était insuffisant — il fallait la somme complète, pas un terme
+correctif localisé.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `s3` a un partenaire miroir unique analogue à `r3↔r4` | 21/09 (moi, implicite en posant le précommis) | **réfutée** le 21/09 — au moins 6 messages bougent par la même quantité, redistribution uniforme pas binaire |
+| le Jacobien softmax complet (27 entrées) ferme le résidu `ds3` | 21/09 (moi) | **confirmée** le 21/09 — écart 0,88-0,90%, contre 47% pour l'approximation à 2 sorties |
+
+**Script permanent** : `verifier_partenaire_miroir_s3.py`.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
