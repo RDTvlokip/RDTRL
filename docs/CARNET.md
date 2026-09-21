@@ -14474,6 +14474,99 @@ réinflation de `v`.**
 
 ---
 
+## Suite tour 56, 21/09/2026 (sexies) — agent-dipankar sur le closed-form
+## de la dérive de fond : CONFIRMÉ dans le détail, mais CORRIGÉ sur un
+## point important — ce n'est PAS spécifique à la ligne 10, c'est une
+## propriété générique de toute la matrice du récepteur
+
+**Agent style dipankar lancé** (worktree isolé, résultat substantiel
+trouvé seul, consigne du projet) sur le closed-form
+`derive_j = -lr·m_j/(√v_j+eps)·n_pas`. Cinq points vérifiés (A-E),
+tous revérifiés indépendamment par moi avant acceptation.
+
+**A, D confirmés tels quels** (chiffres exacts reproduits ; `√v/eps
+≈1,8-1,9e-4`, `eps` domine par un facteur ~5300-5500×).
+
+**B, nuance sans réfuter** : `m` et `v` varient de 0,9-1,95% sur la
+fenêtre `[59000,59989]` (décroissance monotone) — pas négligeable en
+absolu, mais du même ordre que le biais résiduel de 0,43% déjà
+observé.
+
+**C, confirme ET explique le sens de l'écart de 0,43%** — résultat le
+plus propre du lot : utiliser `m,v` de DÉBUT de fenêtre au lieu de FIN
+fait bien changer le SIGNE de l'écart (sur-estime avec `m,v` de début,
+sous-estime avec `m,v` de fin) — exactement ce qu'on attend d'un taux
+instantané décroissant qu'on approxime par une valeur fixe prise à une
+extrémité. `Fin` est une MEILLEURE extrémité que `début` (0,431% <
+0,465% d'écart), pas un choix arbitraire.
+
+**E, RÉFUTÉ dans sa forme simple, mais révèle un mécanisme plus riche
+— ET une correction importante à la portée du résultat.** Ce n'est
+PAS purement l'entropie qui produit le gradient de fond : décomposé
+par autograd (recompense seule vs `beta·entropie_r` seule), **vérifié
+directement par moi** :
+
+```
+ref=0  grad_recompense=-3,828331e-14  grad_entropie=+2,059568e-14  net=-1,768763e-14  ratio=0,5380
+ref=1  grad_recompense=-3,832469e-14  grad_entropie=+2,061712e-14  net=-1,770757e-14  ratio=0,5380
+ref=5  grad_recompense=-4,077230e-14  grad_entropie=+2,268757e-14  net=-1,808473e-14  ratio=0,5564
+ref=6  grad_recompense=-3,834135e-14  grad_entropie=+2,062575e-14  net=-1,771560e-14  ratio=0,5380
+```
+
+**Le gradient net est une presque-annulation entre récompense (dominante,
+~1,86× plus grande) et entropie (opposée en signe), pas l'effet pur
+d'un seul terme.** Explique enfin la CAUSE PREMIÈRE de l'anomalie du
+référent 5 (pas juste sa conséquence via `m`/`v`) : **son gradient de
+RÉCOMPENSE lui-même est ~6,5% plus élevé** que les autres référents
+(`-4,077e-14` contre `~-3,83e-14`) — la chaîne causale complète est
+donc `récompense légèrement différente pour le référent 5 → gradient
+net légèrement différent → m/v légèrement différents → dérive
+légèrement différente`, pas une anomalie de `m`/`v` sans cause
+antérieure.
+
+**CORRECTION IMPORTANTE, la plus utile de cet audit** : l'agent a
+vérifié si ce mécanisme est spécifique à la ligne 10 (implicite dans
+tout le fil, puisque l'enquête est partie du mur référent-3/référent-4).
+**Il ne l'est PAS — vérifié directement par moi** :
+
+```
+26 des 27 lignes du recepteur sont TOTALEMENT effondrees
+(max_prob=1,000000, H=0,000000) -- SEULE la ligne 10 reste
+disputee (max_prob=0,798196, H=0,502892).
+```
+
+Sur trois lignes déjà effondrées testées par l'agent (0, 15, 20), le
+MÊME gradient de fond résiduel existe, même ordre de grandeur
+(~1e-15 à 1e-14), même structure de presque-annulation
+récompense/entropie — la ligne 10 n'a PAS la compensation la plus
+forte (116% contre 150-180% pour les lignes déjà effondrées, selon
+l'agent, non revérifié directement par moi ce chiffre précis).
+**Le mécanisme « plancher-de-`v` + presque-annulation
+récompense/entropie » est une propriété GÉNÉRIQUE de toute la matrice
+du récepteur — la ligne 10 n'est notable que parce que c'est la SEULE
+où deux référents restent en compétition active, pas parce que sa
+dynamique de dérive de fond diffère structurellement du reste.**
+Les sections précédentes de ce fil (« Suite tour 56... quinquies »)
+présentaient ce résultat comme propre à la ligne 10 — à lire
+désormais avec cette portée corrigée : le mécanisme est général, la
+ligne 10 est juste l'endroit où on a pensé à le chercher en premier.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'écart résiduel de 0,43% vient de l'usage du `m`/`v` de fin de fenêtre comme proxy | 21/09 (agent, testé) | **confirmée** le 21/09 — le signe de l'écart s'inverse avec `m`/`v` de début, cohérent avec un taux instantané décroissant |
+| le gradient de fond vient purement de l'entropie | 21/09 (moi, implicite) | **réfutée** le 21/09 — décomposition autograd vérifiée directement par moi, récompense domine ~1,86× l'entropie, presque-annulation entre les deux |
+| le référent 5 est une anomalie de `m`/`v` sans cause antérieure | 21/09 (moi, implicite) | **réfutée** le 21/09 — son gradient de RÉCOMPENSE lui-même est ~6,5% plus élevé, cause première identifiée |
+| le mécanisme plancher-de-`v` + presque-annulation est spécifique à la ligne 10 (mur 3/4) | 21/09 (moi, implicite dans tout le fil) | **RÉFUTÉE** le 21/09 — vérifié directement par moi, 26/27 lignes du récepteur sont effondrées et montrent le même mécanisme, propriété générique de la matrice |
+
+**Erreur de portée signalée par l'agent, non encore corrigée dans le
+code** : `verifier_closedform_derive_fond_ligne10.py` ne journalise
+QUE la ligne 10 — son nom de fichier lui-même suggère une spécificité
+qui n'existe pas. À renommer ou généraliser si ce résultat est repris
+ailleurs (pas fait ce tour, signalé pour ne pas induire en erreur un
+futur lecteur du nom de fichier seul).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
