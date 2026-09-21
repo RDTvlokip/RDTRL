@@ -57,9 +57,11 @@ clos.** Ne pas oublier cette étape finale.
    place : le clip supprime le TRANSITOIRE de rampe initial (~19
    événements avant stabilisation dans le baseline) en empêchant `v`
    de s'inflater tôt — le régime stationnaire s'installe ~2700 pas
-   plus tôt (premier kick à 5153 au lieu de 7869), d'où le nombre
-   d'événements 29→33 sur une fenêtre fixe, pas 4 nouveaux kicks
-   stationnaires.
+   plus tôt (premier kick à **2881** au lieu de 7869, chiffres
+   **corrigés** le 21/09 par l'audit interne — mon `pas_min=5000`
+   d'origine cachait 5 événements réels, vrais chiffres `+9`
+   événements et `~4988` pas d'accélération, pas `+4`/`~2700` comme
+   d'abord publié ; mécanisme qualitatif inchangé, même renforcé).
 4. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 4 des
    20 »] Le « reward hacking » en RLHF est-il parfois un franchissement
    de séparatrice avec sensibilité aux conditions initiales (comme
@@ -76,9 +78,12 @@ clos.** Ne pas oublier cette étape finale.
    expliquer l'instabilité de début d'entraînement, et le folklore
    « warmup aide » masque-t-il le régime plancher-de-`v` ?** Réponse en
    deux parties : OUI, saturation confirmée analytiquement (`bias1` en
-   `t≈342` pas à la précision machine, `bias2` en `t≈36026`, déjà <1%
-   d'effet dès `t≈4600` — hors-jeu bien avant la fin d'un entraînement
-   typique). NON pour la seconde partie au sens direct : la référence
+   `t≈356`, `bias2` en `t≈37412` pas à la précision machine — chiffres
+   **corrigés** le 21/09 par l'audit interne, ma première version
+   utilisait le mauvais seuil d'arrondi float64 (`2^-52` au lieu de
+   `2^-54`), sous-estimant les deux de ~4% ; déjà <1% d'effet dès
+   `t≈4600` — hors-jeu bien avant la fin d'un entraînement typique,
+   argument inchangé). NON pour la seconde partie au sens direct : la référence
    standard sur le warmup (RAdam, arXiv:1908.03265, vérifié directement
    à l'abstract) n'invoque déjà pas la correction de biais stricte,
    mais la variance de `v` — un concept proche mais distinct de notre
@@ -132,8 +137,11 @@ clos.** Ne pas oublier cette étape finale.
    avec la réserve que deux sources pertinentes n'ont pas été lues en
    détail par l'agent (limite signalée, pas un vide confirmé).
 10. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 10
-    des 20 ». INCIDENT : confabulation moteur de recherche détectée et
-    écartée (agent + moi).] Le bruit fédéré est-il un kick
+    des 20 ». Troisième angle potentiellement non couvert (numérotation
+    corrigée le 21/09 par l'audit interne — ce label manquait,
+    décalant tous les suivants d'un cran). INCIDENT : confabulation
+    moteur de recherche détectée et écartée (agent + moi).] Le bruit
+    fédéré est-il un kick
     plancher-de-`v` amplifié par des syncs peu fréquentes ?** Réponse :
     angle non couvert dans la littérature atteinte (FedAdam, FedAdamW,
     DES-LOC, Q-LocalAdam — textes vérifiés par l'agent, un point
@@ -144,7 +152,7 @@ clos.** Ne pas oublier cette étape finale.
     l'hypothèse posée, présentée comme publiée — vérifiée fausse
     (absente du texte source) avant d'être acceptée.
 11. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 11
-    des 20 ». Troisième angle potentiellement non couvert.] Le
+    des 20 ». Quatrième angle potentiellement non couvert.] Le
     temperature scaling corrige-t-il l'artefact `comp¹` plutôt qu'un
     vrai mécalibrage ?** Réponse : Guo et al. (ICML 2017,
     arXiv:1706.04599, abstract vérifié directement par moi) cadre la
@@ -155,7 +163,7 @@ clos.** Ne pas oublier cette étape finale.
     arrêtée au niveau abstract, pas de lecture complète de la section
     « Why Does Temperature Scaling Work? ».
 12. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 12
-    des 20 ». Quatrième angle potentiellement non couvert — voir aussi
+    des 20 ». Cinquième angle potentiellement non couvert — voir aussi
     question 15, traitée avec la même recherche.] « L'effet rétrécit à
     plus haute précision » signifie-t-il toujours « c'était du bruit »,
     ou peut-on être sur une vraie frontière chaotique ?** Réponse : le
@@ -182,7 +190,7 @@ clos.** Ne pas oublier cette étape finale.
     inverse de l'intuition). Bug de calibration initial trouvé et
     corrigé (seuil 4 ordres de grandeur trop grand, test vide).
 14. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 14
-    des 20 ». Cinquième angle potentiellement non couvert.] Compare-t-on
+    des 20 ». Sixième angle potentiellement non couvert.] Compare-t-on
     graines-qui-généralisent-mieux en testant si c'est une séparatrice
     précoce plutôt qu'un vrai apprentissage différent ?** Réponse :
     l'outil existe déjà (Frankle et al., ICML 2020, arXiv:1912.05671,
@@ -218,7 +226,7 @@ clos.** Ne pas oublier cette étape finale.
     accord à 7 chiffres est vraisemblablement un cas spécial de notre
     système, pas une propriété générale à sur-généraliser.
 17. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 17
-    des 20 ». Sixième angle potentiellement non couvert.] Le reward
+    des 20 ». Septième angle potentiellement non couvert.] Le reward
     hacking par quasi-égalités est-il prévisible à l'avance depuis la
     structure de récompense (comme H7) ?** Réponse : le bris de
     symétrie prédictif existe (Soudry et al., arXiv:1710.10345,
@@ -232,7 +240,7 @@ clos.** Ne pas oublier cette étape finale.
     source proche (DPO, biais structurel) vient d'un domaine déjà
     signalé comme moins fiable (question 5) — traitée avec méfiance.
 18. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 18
-    des 20 ». Septième angle potentiellement non couvert — la
+    des 20 ». Huitième angle potentiellement non couvert — la
     synthèse, pas les pièces individuelles.] Les ablations
     d'hyperparamètres sont-elles structurellement aveugles aux
     sensibilités proches d'un seuil ?** Réponse : chaque pièce existe
@@ -244,7 +252,7 @@ clos.** Ne pas oublier cette étape finale.
     trois instances d'un même problème générique. Confiance
     moyenne-haute sur l'absence de synthèse, recherche web seule.
 19. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 19
-    des 20 ». Huitième angle potentiellement non couvert, confiance
+    des 20 ». Neuvième angle potentiellement non couvert, confiance
     faible explicitement assumée. DEUXIÈME incident de confabulation
     détecté (par l'agent lui-même cette fois).] Combien de résultats
     « d'équité émergente » en RL multi-agents sont en fait un point

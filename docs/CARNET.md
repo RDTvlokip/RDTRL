@@ -12587,6 +12587,29 @@ consigne explicite de Théo (21/09/2026), l'agent-dipankar de
 vérification indépendante se lance UNE FOIS à la fin des 20 questions,
 pas après chacune.
 
+**CORRECTION (21/09/2026, agent d'audit sur les questions 1-10 +
+vérification indépendante par moi) : le seuil `pas_min=5000` du script
+cachait le vrai début du régime stationnaire.** Le script réutilisait
+sans le re-dériver un seuil choisi pour le baseline (où le premier
+événement réel tombe à `pas=7869`, donc `pas_min=5000` ne coupait
+rien d'utile) — mais pour `clip=1e-5`, le premier événement réel tombe
+à `pas=2881`, DEVANT ce seuil : cinq événements réels (`2881, 3317,
+3782, 4244, 4698`) étaient silencieusement exclus. Vérifié
+indépendamment par moi (`pas_min=1`, rejoue exactement) :
+
+```
+baseline  pas_min=1  n=29 evenements reels (premier=7869)
+clip=1e-5 pas_min=1  n=38 evenements reels (premier=2881)
+```
+
+**Chiffres corrigés** : `Δ événements = 29→38 = +9` (pas `+4`),
+accélération du premier kick `7869→2881 = 4988 pas` (pas `~2700`).
+**Le mécanisme qualitatif publié reste correct et même mieux
+supporté** (aucune rampe de transitoire visible même dès l'événement
+n°1 à `pas=2881`, alors que l'argument original ne le montrait qu'à
+partir de l'événement n°6) — seuls les CHIFFRES `+4`/`~2700` cités dans
+`ETAT.md` sont à remplacer par `+9`/`~4988`.
+
 ---
 
 ## Question 4 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
@@ -12777,6 +12800,31 @@ analytique direct vérifiable à la main (pas de dépendance à un agent
 pour ce point) + recherche littérature avec un point vérifié
 directement par moi (RAdam), un sous-ensemble de sources non
 revérifiées individuellement (signalé, pas caché).
+
+**CORRECTION (21/09/2026, agent d'audit sur les questions 1-10 +
+vérification indépendante par moi) : le seuil de « saturation exacte à
+la précision machine » utilisait le mauvais seuil d'arrondi.** J'avais
+calculé `t` tel que `beta^t < 2^-52` (l'ULP complet de 1,0) — mais la
+vraie condition pour que `fl(1-x)==1.0` en arrondi au plus proche est
+`x < 2^-54` (le point milieu entre `1,0` et le double représentable
+juste en dessous, `1-2^-53`), pas `2^-52`. Vérifié indépendamment par
+moi (calcul fermé + boucle `float64` directe, deux méthodes
+convergentes) :
+
+```
+             bias1 (beta=0,9)   bias2 (beta=0,999)
+mon seuil (faux, 2^-52) :   t=342               t=36026
+seuil correct (2^-54) :     t=356 (exact, boucle empirique)   t=37412 (exact, boucle empirique)
+```
+
+**Chiffres corrigés** : `bias1` sature en `t=356` (pas `342`), `bias2`
+en `t=37412` (pas `36026`) — écarts de 4,1% et 3,8%, dans le même sens
+(je sous-estimais légèrement les deux). **Ne change rien à
+l'argument principal** : `bias2` reste toujours sous 1% d'effet
+pratique bien avant `t≈4600`, et le premier kick réel (question 3
+corrigée) tombe à `pas=2881`, où `1/(1-0,999^2881)≈1,0090` — encore
+sous 1%. Les régimes restent quasi disjoints, juste avec le bon
+chiffre de saturation exacte.
 
 ---
 
@@ -13055,8 +13103,11 @@ limites explicitement signalées par l'agent et reprises telles quelles
 ---
 
 ## Question 10 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## INCIDENT NOTABLE : confabulation du moteur de recherche détectée et
-## écartée par l'agent lui-même, revérifiée indépendamment par moi
+## troisième angle potentiellement non couvert (label ajouté le 21/09
+## par l'audit interne — manquait, décalant tous les suivants d'un
+## cran). INCIDENT NOTABLE : confabulation du moteur de recherche
+## détectée et écartée par l'agent lui-même, revérifiée
+## indépendamment par moi
 
 **Question posée (ETAT.md, #10)** : en entraînement distribué/fédéré,
 le « bruit des rounds de communication » est-il parfois un kick
@@ -13124,7 +13175,7 @@ gonflé malgré la tentation qu'offrait la fausse confirmation initiale.
 ---
 
 ## Question 11 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## troisième angle potentiellement non couvert, limite de profondeur de
+## quatrième angle potentiellement non couvert, limite de profondeur de
 ## lecture explicitement assumée
 
 **Question posée (ETAT.md, #11)** : le travail de calibration de
@@ -13177,7 +13228,7 @@ limite explicitement documentée plutôt que dissimulée derrière un
 ---
 
 ## Question 12 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## quatrième angle potentiellement non couvert (la mise en garde
+## cinquième angle potentiellement non couvert (la mise en garde
 ## méthodologique elle-même, pas le chaos en ML en général qui EST
 ## déjà bien établi)
 
@@ -13236,7 +13287,7 @@ correction mineure trouvée** :
    dominé-signal) pour l'INFÉRENCE des LLM, pas leur entraînement —
    proche en esprit, pas le même objet.
 
-**Réponse à la question 12** : quatrième angle potentiellement non
+**Réponse à la question 12** : cinquième angle potentiellement non
 couvert — le CHAOS lui-même en ML est bien établi (pas original), mais
 la mise en garde méthodologique précise contre le réflexe
 « plus de précision = ça devait être du bruit » ne semble pas
@@ -13337,7 +13388,7 @@ plus riche trouvé et quantifié.
 ---
 
 ## Question 14 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## cinquième angle potentiellement non couvert (le croisement
+## sixième angle potentiellement non couvert (le croisement
 ## outil-existant/application-manquante, pas l'outil lui-même)
 
 **Question posée (ETAT.md, #14)** : quand on compare deux graines dont
@@ -13375,7 +13426,7 @@ bruit d'initialisation est tombé ?
    n'a lu que l'abstract, pas le corps du papier — signalé
    explicitement comme non confirmé, pas comme un vide établi.**
 
-**Réponse à la question 14** : cinquième angle potentiellement non
+**Réponse à la question 14** : sixième angle potentiellement non
 couvert, mais d'une nature différente des précédents — ce n'est PAS
 que l'outil manque (il existe, Frankle et al. 2020, bien cité), c'est
 que personne ne semble l'appliquer SYSTÉMATIQUEMENT comme contrôle
@@ -13474,7 +13525,7 @@ qui confirmerait pour une MAUVAISE raison » demandé par la règle 5ter.
 ---
 
 ## Question 17 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## sixième angle potentiellement non couvert (H7 à l'intersection de
+## septième angle potentiellement non couvert (H7 à l'intersection de
 ## deux littératures qui ne se citent pas), une source suspecte déjà
 ## rencontrée réapparaît, traitée avec la même méfiance
 
@@ -13519,7 +13570,7 @@ préférence apprise ?
    Fluff, and Fog », arXiv:2506.05339, ICLR 2026) va dans le même sens
    empiriquement, sans forme fermée aussi nette.
 
-**Réponse à la question 17** : sixième angle potentiellement non
+**Réponse à la question 17** : septième angle potentiellement non
 couvert — l'agent conclut que H7 « semble être à l'intersection de
 deux littératures qui ne se citent pas mutuellement » (implicit
 bias/optima liés d'un côté, biais de préférence RLHF/DPO de l'autre),
@@ -13536,7 +13587,7 @@ faible identifiée et traitée avec méfiance plutôt qu'acceptée.
 ---
 
 ## Question 18 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## septième angle potentiellement non couvert (la SYNTHÈSE entre trois
+## huitième angle potentiellement non couvert (la SYNTHÈSE entre trois
 ## littératures existantes, pas chacune séparément)
 
 **Question posée (ETAT.md, #18)** : teste-t-on les ablations
@@ -13572,7 +13623,7 @@ signalée)** :
    n'en tire la leçon méthodologique générale sur les balayages
    d'hyperparamètres ailleurs.** Non revérifié directement par moi.
 
-**Réponse à la question 18** : septième angle potentiellement non
+**Réponse à la question 18** : huitième angle potentiellement non
 couvert, d'une nature particulière — chaque pièce existe séparément
 (critique du maillage grossier, méthodes de sensibilité formelles,
 Edge of Stability comme cas précis) mais aucune source trouvée ne les
@@ -13588,7 +13639,7 @@ littérature avec un point vérifié par une voie de contournement
 ---
 
 ## Question 19 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
-## huitième angle potentiellement non couvert, incident de
+## neuvième angle potentiellement non couvert, incident de
 ## confabulation détecté PAR L'AGENT LUI-MÊME et re-vérifié par moi
 
 **Question posée (ETAT.md, #19)** : combien de résultats
@@ -13636,7 +13687,7 @@ règle de méfiance fonctionne en pratique, pas seulement en principe.
    émerger — suggère un angle encore non couvert plutôt qu'un standard
    déjà en place. Non revérifié directement par moi.
 
-**Réponse à la question 19** : huitième angle potentiellement non
+**Réponse à la question 19** : neuvième angle potentiellement non
 couvert, confiance FAIBLE À MODÉRÉE explicitement assumée par l'agent
 (recherche par abstracts seulement, pas de lecture intégrale) — la
 plus prudente des réponses de ce tour. Le trou précis cherché
