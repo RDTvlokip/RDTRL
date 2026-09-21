@@ -13900,16 +13900,33 @@ NOMBRES bruts (rho passe de 1,18 à -247,65) mais c'est un artefact du
 ratio choisi, pas un vrai changement de régime — corrigé en substance
 par le ratio `d_r3/d_r4`, qui LUI reste stable comme il l'espérait.
 
-**Point non résolu, à signaler honnêtement, pas caché** : la somme
-`Σ|d_logit_r[10,j]|` pour les 25 autres entrées de la ligne 10 vaut
-`0,222` (pas=59989, config réelle) — **20x PLUS GRAND** que
-`|d_logit_r3|` ou `|d_logit_r4|` individuellement (~0,011 chacun).
-Complique l'hypothèse (la sienne et la mienne) que la ligne 10 se
-réduit effectivement à `{3,4}`. Pas encore distingué si c'est du
-bruit de dérive Adam ordinaire sur 989 pas (25 petites entrées qui
-dérivent chacune un peu, sans rapport avec le kick) ou un signal réel.
-**Précommis pour le prochain tour** : mesurer ce même agrégat sur une
-fenêtre équivalente SANS kick, pour établir un niveau de fond.
+**Point d'abord signalé « non résolu », puis RÉSOLU dans le même tour
+par un agent de vérification (worktree isolé, lancé pour challenger
+ce résultat avant envoi, consigne de Théo) — vérifié indépendamment
+par moi ensuite.** La somme `Σ|d_logit_r[10,j]|` pour les 25 autres
+entrées de la ligne 10 vaut `0,2221` (pas=59989, config réelle) —
+**20x PLUS GRAND** que `|d_logit_r3|` ou `|d_logit_r4|`
+individuellement (~0,011 chacun). Complique l'hypothèse (la sienne et
+la mienne) que la ligne 10 se réduit effectivement à `{3,4}`. Testé —
+l'agent a étendu le script pour imprimer le détail par référent, puis
+comparé à `delta=0` (aucun kick) : **mêmes référents dominants
+`{9,5,18,22,8,10}`, dans le MÊME ordre, aux DEUX configurations, avec
+des valeurs LÉGÈREMENT PLUS GRANDES à `delta=0` qu'à `delta` réel**
+(~0,0097-0,0102 contre ~0,0089-0,0093). **Vérifié indépendamment par
+moi** (recalcul direct du top-6, chiffres identiques à 6 décimales).
+**Conclusion : c'est du bruit de dérive Adam de fond, pas un signal
+lié au kick** — si ces 25 entrées répondaient au kick, elles
+bougeraient différemment avec/sans lui ; elles ne le font pas.
+Hypothèse mécanistique de l'agent (non testée) : ces paramètres
+partagent le même compteur de pas Adam global (même correction de
+biais, même `eps`), un gradient résiduel non nul sur des entrées
+« inactives » produirait exactement ce type de dérive cohérente et
+delta-indépendante. Complément notable : la moyenne par entrée sur les
+25 autres (~0,0089) est du MÊME ORDRE DE GRANDEUR que `|d_r3|`/`|d_r4|`
+individuellement — pas 25 contributions négligeables qui s'additionnent,
+chaque entrée bouge presque autant que la paire suivie. Complique
+encore plus l'hypothèse « ligne 10 = {3,4} », intégré dans
+`REPONSE_ORDRE56.md` plutôt que laissé en suspens pour un tour futur.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
@@ -13919,7 +13936,7 @@ fenêtre équivalente SANS kick, pour établir un niveau de fond.
 | `dR ≈ R(1-R)*(dlogit_r4-dlogit_r3)` (numérateur seul, sans passer par `ds3`) | 21/09 (moi) | **confirmée** le 21/09 — écart 0,65%, le plus proche obtenu ce tour |
 | `ds3(prob) ≈ s3(1-s3)*dlogit_s3` (approximation sigmoïde standard pour `s3`) | 21/09 (moi, implicite) | **réfutée** le 21/09 — facteur ~1,9x d'écart, `s3` a probablement un partenaire anti-corrélé non identifié dans sa propre ligne |
 | le miroir `r3↔r4` est delta-indépendant (survit à `delta=0`) | 21/09 (moi, en résolvant son contrôle) | **confirmée** le 21/09 — ratio `d_r3/d_r4` stable (-1,00007 vs -0,99982) malgré magnitude ÷7,3 |
-| la ligne 10 se réduit effectivement à `{3,4}` (son hypothèse simplificatrice) | 21/09 (dipankarsarkar, implicite) | **toujours ouverte** — les 25 autres entrées bougent 20x plus en agrégat que r3/r4 individuellement, pas encore distingué bruit de fond vs signal |
+| la ligne 10 se réduit effectivement à `{3,4}` (son hypothèse simplificatrice) | 21/09 (dipankarsarkar, implicite) | **réfutée en tant que réduction propre** le 21/09 (agent, vérifié indépendamment par moi) — les 25 autres entrées bougent 20x plus en agrégat, MAIS c'est du bruit Adam de fond delta-indépendant (mêmes référents, mêmes magnitudes avec/sans kick), pas un signal lié au mécanisme sigma lui-même |
 
 **Scripts** : `verifier_precommis_dipankar_sigma_row10.py` (test
 précommis complet, bug d'unités trouvé et corrigé en cours de route).
