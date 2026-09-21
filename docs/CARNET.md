@@ -12077,6 +12077,93 @@ endroit où l'humain fait quelque chose qu'on ne sait pas répliquer.
 
 ---
 
+## SYNTHÈSE FINALE, jouet à K variable, 21/09/2026 — le mécanisme réel
+trouvé, et pourquoi tout le tableau discret était fragile depuis le début
+
+**Un agent-dipankar a proposé et vérifié le vrai mécanisme sous-jacent
+à TOUT le tableau « plateau vs plat » construit ce tour-ci.** Chaque
+trajectoire (tout K confondu) monte vite, dépasse un pic vers
+`t≈50-60`, redescend légèrement, puis remonte lentement vers son
+équilibre. Défini `ratio(K) = r4(pic)/r4_eq` : ce ratio croît de façon
+LISSE et MONOTONE avec K (`0,9808` à K=1 jusqu'à `0,9940` à K=26,
+aucun saut nulle part). **`premier_pas_1pct` ne mesure PAS un taux de
+relaxation — il mesure si le PREMIER pic dépasse déjà 99% de la
+valeur finale.** Si oui, seuil franchi tôt (`~45-60` pas, "plat"). Si
+non, il faut attendre la lente remontée après le creux (`~290-330`
+pas, "plateau"). **`ratio(K)` traverse `0,99` quelque part entre K=10
+et K=12,5 — exactement là où `premier` s'effondre.**
+
+**Conséquence directe : ma localisation « coin net entre K=12,80 et
+K=12,95 » (section précédente) était probablement construite sur ce
+MÊME artefact de seuil discret, pas une vraie transition physique.**
+Vérifié en reprenant K=12,5 précisément : `cible=0,99·r4_final=
+0,820482`, mon propre pic mesuré (grille 20) `=0,820414` — **en
+dessous de la cible de seulement `0,000068` (0,033% relatif).** Un
+cas limite exact, pas une coïncidence : `ratio(12,5)≈0,990` est quasi
+PILE au seuil `0,99` que le mécanisme de l'agent identifie comme le
+vrai point de bascule. C'est pourquoi ma propre reprise (grille 20)
+donne `premier=300` alors qu'une grille plus fine (utilisée par
+l'agent) peut capter un pic légèrement plus haut et basculer à `~54`
+— **les deux mesures sont correctes sur leurs propres données, le
+système est juste réellement à cheval sur le seuil à cet endroit
+précis.**
+
+**Ce qui est maintenant établi, avec un mécanisme complet (COMMENT
+identifié, POURQUOI expliqué, OÙ localisé) :**
+- **COMMENT** : `premier_pas_1pct` est fondamentalement un mauvais
+  instrument près de `ratio(K)=0,99` — il transforme une quantité
+  lisse et continue (`ratio(K)`) en un saut discret amplifié par le
+  logarithme du temps de relaxation, exactement comme prédit par la
+  leçon méthodologique tirée de la séparatrice à K=12,80.
+- **POURQUOI** : la forme de la trajectoire (montée, dépassement,
+  creux, remontée lente) est UNIVERSELLE — présente à tout K testé —
+  mais l'AMPLITUDE du dépassement relatif à l'équilibre final varie
+  continûment avec K. Aucune transition dynamique nouvelle n'est
+  nécessaire pour l'expliquer.
+- **OÙ** : `ratio(K)` traverse `0,99` autour de K≈12,5 (pas K=12,8 à
+  12,95 comme la localisation par seuil discret l'avait suggéré) —
+  cette localisation par ratio continu est probablement plus fiable
+  que celle par seuil discret, mais n'a pas encore été resserrée
+  finement (seul un balayage grossier de `ratio(K)` a été fait par
+  l'agent, budget `pas_max=1000` pour la plupart des points, pas
+  toujours revérifié au budget complet `20000`).
+
+**Ce qui reste ouvert, honnêtement** : le taux de relaxation
+lui-même n'est PAS purement exponentiel (l'agent a montré qu'il
+change d'une fenêtre à l'autre — `[100,600)`, `[600,1500)`,
+`[1500,2000)` donnent des pentes différentes — mais reste
+K-INVARIANT à chaque échelle testée, ce qui soutient quand même la
+conclusion « pas de transition dynamique réelle en K », juste avec
+« taux de relaxation asymptotique identique » à retirer du
+vocabulaire). Le balayage `ratio(K)` complet n'a pas été refait au
+budget `pas_max=20000` pour tous les points (seulement K=10, 12,5, 14
+revérifiés à ce budget) — K=1 à K=8 pourraient cacher le même genre de
+cas limite que K=12,5 si leur propre `ratio(K)` passe near `0,99` à un
+budget différent (peu probable vu leur `ratio` mesuré loin de `0,99`,
+mais pas vérifié rigoureusement). Le côté émetteur (`s3`, `s4`) n'a
+jamais été inspecté pour ce mécanisme — tout ce travail porte
+uniquement sur `r4` (récepteur).
+
+**Bilan complet du fil « plateau/falaise/coin » de ce tour, du début à
+la fin :** (1) un artefact de calibration (écart de test plus petit
+que la tolérance de bissection) a d'abord produit un faux « K=1 est
+l'exception isolée » ; (2) corrigé en un « plateau K=1-8, falaise
+quelque part entre K=8 et K=20 » ; (3) resserré à « entre K=10 et
+K=14 » puis « entre K=12 et K=13 » (K=13 lui-même s'est révélé être un
+défaut de bissection, corrigé) ; (4) resserré encore à « coin net
+entre K=12,80 et K=12,95 » via des K non entiers ; (5) ce « coin » a
+lui-même révélé une vraie sensibilité chaotique de type séparatrice à
+K=12,80 (aucune précision ne stabilise la classification) ; (6)
+**la leçon tirée de (5) — utiliser un taux continu plutôt qu'un seuil
+— a permis de trouver le VRAI mécanisme sous-jacent (le ratio
+pic/équilibre franchissant 0,99), qui explique TOUT le fil depuis le
+début, y compris pourquoi K=12,5 lui-même est un second cas limite,
+distinct de K=12,80 mais du même type.** Six couches de correction,
+chacune trouvée en creusant plus loin que la précédente sans s'arrêter
+à une réponse qui avait la forme d'une réponse complète.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

@@ -43,76 +43,27 @@ dans `git log`.*
    `verifier_split_s4_r4_hybride.py`. Détail complet : `CARNET.md`,
    section « VRAIE CRITIQUE DE DIPANKARSARKAR, tour 54 ».
 
-0bis. **RÉTRACTATION le 20/09/2026 (même reprise) — jouet à K variable,
-   défaut méthodologique trouvé par un agent-dipankar : l'écart de
-   delta testé (0,03%) était plus petit que la tolérance de bissection
-   de `delta_c` lui-même (`4,53e-6 < 1e-5` pour K=8 ; même problème pour
-   le contrôle K=1).** Ma conclusion précédente (« plat est le cas
-   générique, K=1 l'exception, décroissance progressive K=1→K=8 »)
-   était fausse. **Le vrai motif, à écart réellement comparable entre
-   7 valeurs de K :** `K=1,2,4,6,8` forment un PLATEAU (300-340 pas),
-   `K=20,26` sont plats (60 pas) — une falaise brutale (>5×) existe
-   quelque part entre K=8 et K=20, **jamais localisée** (K=9-19 non
-   testés). Motif de bug reproductible trouvé en prime : dès que
-   l'écart testé descend sous ~un ordre de grandeur de la tolérance de
-   bissection, une fausse « explosion » apparaît (K=8 à 0,01%, K=4 à
-   0,0003%), sans rapport avec un vrai ralentissement critique — leçon
-   méthodologique générale pour tout futur test de ce type. **Reste
-   ouvert, priorité pour la prochaine session** : rebissecter
-   `delta_c(K)` à `tol=1e-8` pour K∈{1,8,10,...,20,26}, retester à des
-   écarts ≥100× cette tolérance ; calculer la distance pli-d'équilibre
-   pour K=8/K=20 (pas seulement K=1/K=26) pour voir si elle discrimine
-   mieux le plateau/falaise que K lui-même. Scripts permanents :
-   `verifier_probe_k8_delta_sweep.py`, `verifier_k8_adam_internals.py`,
-   `verifier_k2_k4_k6_boundary.py`.
-   **Localisation poussée puis CORRIGÉE deux fois de suite le
-   20/09/2026 :** d'abord resserrée à « entre K=10 et K=14 »
-   (`verifier_localisation_falaise_k10_k14.py`), puis un agent-dipankar
-   a trouvé que K=13 (rapporté "plateau", `premier=300`) était un
-   artefact de bissection insuffisamment précise — **vérifié
-   indépendamment, bit pour bit** : bracket large donne
-   `delta_c=0,014388123`/`premier=300`, bracket étroit à `tol=1e-7`
-   donne `delta_c=0,014387859`/`premier=60`. **La vraie falaise est
-   entre K=12 et K=13.** Trouvaille en prime : la FRACTION d'écart où
-   la transition se produit saute elle-même d'une décennie entre K=12
-   et K=13 (pas juste `premier` à un point fixe) ; forme fermée
-   `delta_c(K)=a+b/(K+1)` testée et réfutée (résidu 4,9%). Script :
-   `verifier_k13_bissection_instable.py`. **Reste ouvert** : bissecter
-   directement `frac*(K)` (pas un point fixe) pour K=10-14 à
-   `tol≤1e-7` ; revérifier K=11 (jamais rebissecté fin) ; tester un K
-   NON ENTIER entre 12-13 (le jouet le permet mathématiquement) pour
-   trancher coin vs transition lisse.
-   **RÉPONDU le 21/09/2026, contesté par un agent, puis RÉSOLU
-   proprement (COMMENT/POURQUOI/QUAND identifiés) — pas un bug, une
-   vraie sensibilité chaotique.** Testé K=12,5/12,8/12,95 : bande de
-   transition resserrée à `[12,80 ; 12,95]`. Un agent a contesté K=12,80
-   (bascule sous bracket étroit) ; ma première vérification ne
-   reproduisait pas son résultat — discordance. **Résolue** en
-   testant la classification `premier` sur `delta_c(K=12,80)` (bracket
-   étroit, pleine précision `0,014409856109619139`) tronqué à
-   différentes précisions (7 à 14 décimales) :
-   ```
-   ndec=7,9,10,12,14 : premier=60   ndec=8 : premier=300
-   pleine precision (aucune troncature) : premier=300
-   ```
-   **La classification REBONDIT de façon non monotone même pour des
-   perturbations de `1e-15`** — aucune précision ne la stabilise.
-   **COMMENT** : pas un manque de décimales. **POURQUOI** : à
-   K≈12,80, écart 0,03%, la trajectoire est posée quasi exactement SUR
-   une séparatrice de la dynamique continue — dépendance sensible aux
-   conditions initiales, signature du chaos près d'un point critique,
-   qualitativement différent du problème de K=13 (qui LUI se résolvait
-   avec plus de précision). **QUAND** : précisément à cette
-   combinaison (K≈12,80, écart≈0,03%) — ni l'agent ni moi n'étions
-   faux, chacun est tombé d'un côté différent de cette frontière selon
-   son propre chemin flottant. **Conséquence méthodologique** : le
-   protocole `premier_pas_1pct` (seuil discret) est inadapté tout près
-   d'une séparatrice — il faudrait un temps de résidence continu ou un
-   taux de relaxation linéarisé (déjà utilisé ailleurs ce tour pour
-   H6/mécanisme plancher-de-`v`), pas un seuil binaire. Scripts :
-   `verifier_localisation_fine_k_non_entier.py`,
-   `verifier_k1280_discordance_agent.py`,
-   `verifier_chaos_separatrice_k1280.py`.
+0bis. **JOUET À K VARIABLE — fil clos avec un mécanisme complet le
+   21/09/2026, après six couches de correction successives.** Le vrai
+   mécanisme (trouvé par un agent-dipankar, vérifié indépendamment) :
+   chaque trajectoire dépasse un pic vers `t≈50-60` puis redescend et
+   remonte lentement ; `ratio(K)=pic/équilibre` croît de façon LISSE
+   et MONOTONE avec K (`0,9808` à K=1 → `0,9940` à K=26) — le seuil
+   discret `premier_pas_1pct` ne mesure pas un taux de relaxation, il
+   mesure si ce ratio dépasse `0,99`, ce qui se produit quelque part
+   entre K=10 et K=12,5. **Toute la série de localisations
+   successives (« falaise entre K=8/K=20 » → « K=10/K=14 » →
+   « K=12/K=13 » → « coin net K=12,80/K=12,95 ») était construite sur
+   ce même artefact de seuil discret** — pas une vraie transition
+   dynamique nouvelle. Détail complet des six couches de correction et
+   du mécanisme final : `CARNET.md`, section « SYNTHÈSE FINALE, jouet
+   à K variable, 21/09/2026 » (tout en bas du fichier). Script :
+   `verifier_ratio_pic_equilibre_mecanisme.py`. **Reste ouvert** :
+   `ratio(K)` n'a pas été resserré finement autour de sa traversée de
+   `0,99` (K=10-12,5 seulement, pas de balayage fin) ; le taux de
+   relaxation lui-même n'est pas purement exponentiel (change de pente
+   selon la fenêtre, mais reste K-invariant à chaque échelle) ; jamais
+   inspecté côté émetteur (`s3`,`s4`), seulement `r4`.
 
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une
