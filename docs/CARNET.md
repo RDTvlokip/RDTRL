@@ -13250,6 +13250,92 @@ mineure apportée au rapport de l'agent, verdict prudent.
 
 ---
 
+## Question 13 des 20 (ETAT.md), 21/09/2026 — test empirique direct sur
+## le vrai système (mur 23), bug de calibration trouvé et corrigé (même
+## famille d'erreur que la question 3), vulnérabilité CONFIRMÉE avec
+## un mécanisme différent de ma prédiction initiale
+
+**Question posée (ETAT.md, #13)** : l'arrêt anticipé sur « la perte n'a
+pas progressé depuis N pas » est-il vulnérable au même hasard de timing
+qu'un cycle plancher-de-`v` (~456-500 pas mesurés ici) — un run arrêté
+trop tôt ou trop tard selon où dans le cycle la fenêtre de patience est
+tombée ?
+
+**Test empirique direct** (script
+`verifier_arret_anticipe_vs_phase_kick.py`) : trajectoire de
+l'objectif `j` réel (pas `R4` — `j` est ce qu'un early-stopping
+surveillerait), simulation d'un critère « stopper si aucune
+amélioration de plus de `EPS` pendant `PATIENCE` pas », en faisant
+varier le pas de DÉPART du compteur sur ~25 points couvrant un plein
+cycle de kick (`[9700,10660]`, pas de 40).
+
+**Premier essai (`EPS=0,0005`) : test entièrement VIDE, bug de
+calibration trouvé et corrigé (même famille d'erreur que la question
+3).** Inspection directe : `j` varie seulement entre `0,930055330` et
+`0,930055350` sur toute la fenêtre — une plage totale de ~2e-8, quatre
+ordres de grandeur SOUS le seuil `EPS=0,0005` choisi initialement.
+Aucune « amélioration » ne pouvait jamais être détectée — les 75
+résultats (3 patiences × 25 départs) montraient tous `duree=patience`
+exactement, un artefact de seuil absurde, pas une absence réelle de
+vulnérabilité. Recalibré à `EPS∈{1e-8, 3e-9, 1e-9}`, comparable à la
+plage réelle de `j`.
+
+**Résultat recalibré, vulnérabilité CONFIRMÉE, avec un mécanisme
+différent de ma prédiction initiale** :
+
+| `EPS` | patience | rapport max/min durée jusqu'à arrêt |
+|---|---|---|
+| 1e-8 | 200 | 1,14 |
+| 1e-8 | 400 | 1,07 |
+| 1e-8 | 600 | 1,04 |
+| 3e-9 | 200 | 1,06 |
+| 3e-9 | 400 | 1,03 |
+| 3e-9 | 600 | 1,02 |
+| 1e-9 | 200 | 1,67 |
+| 1e-9 | 400 | 1,72 |
+| 1e-9 | 600 | **1,89** |
+
+**Ma prédiction précommise (sauts quasi-discontinus par cycle entier,
+selon qu'un kick tombe ou non dans la fenêtre de patience) est
+RÉFUTÉE** — la variation observée est continue/graduelle, pas un
+saut binaire. **Mécanisme réel, deux régimes distincts selon `EPS`
+relatif à l'amplitude du bruit de ringing (le COMMENT, pas seulement
+le QUE)** :
+- À `EPS` comparable à la variation totale de `j` (`1e-8`) : le
+  rapport max/min DÉCROÎT quand la patience augmente (1,14→1,04) — un
+  effet de dilution attendu, le décalage de phase (au plus ~1 période
+  de kick) devient une fraction de plus en plus petite d'une fenêtre
+  de patience de plus en plus longue.
+- À `EPS` très petit (`1e-9`, sensible au bruit de ringing sous-kick,
+  pas seulement au kick lui-même) : le rapport max/min CROÎT avec la
+  patience (1,67→1,89) — effet INVERSE, contre-intuitif. Un seuil très
+  fin capte des micro-oscillations de ringing qui réinitialisent le
+  compteur de façon quasi aléatoire selon la phase, et cet effet
+  COMPOSE sur une fenêtre plus longue au lieu de se diluer.
+
+**Réponse à la question 13** : OUI, confirmé empiriquement sur le vrai
+système, avec un mécanisme plus riche que l'hypothèse initiale. La
+vulnérabilité existe et sa magnitude dépend de façon non triviale du
+rapport entre le seuil d'amélioration choisi et l'amplitude du bruit
+de ringing du cycle plancher-de-`v` — pas un simple « on rate un kick
+ou pas », mais un vrai continuum où un seuil trop fin peut RENDRE LA
+SITUATION PIRE avec une patience plus longue, contrairement à
+l'intuition qu'une patience plus longue « moyenne » le bruit.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la vulnérabilité produit des sauts quasi-discontinus par cycle de kick complet | 21/09 (moi, précommise) | **réfutée** le 21/09 — variation continue, pas un saut binaire |
+| la vulnérabilité existe et est mesurable directement sur le vrai système | 21/09 (Théo, implicite dans la question) | **confirmée** le 21/09 — rapport max/min jusqu'à 1,89× selon la phase et le seuil |
+| une patience plus longue réduit toujours la vulnérabilité (dilution) | 21/09 (moi, implicite en écrivant le script) | **réfutée à `EPS` fin** — inversée à `EPS=1e-9`, la vulnérabilité CROÎT avec la patience |
+
+**Statut** : question 13 des 20 (ETAT.md) considérée close — test
+empirique direct sur le vrai système, un bug de calibration trouvé et
+corrigé avant tout résultat exploitable (même vigilance que la
+question 3), prédiction précommise réfutée, mécanisme de remplacement
+plus riche trouvé et quantifié.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

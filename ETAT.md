@@ -169,10 +169,18 @@ clos.** Ne pas oublier cette étape finale.
     littérature ML d'entraînement — 5 requêtes agent sans résultat,
     seul un lemme classique de dynamique générale (shadowing lemma) s'en
     approche.
-13. **L'arrêt anticipé sur « la perte n'a pas progressé depuis N pas »
-    est-il vulnérable au même hasard de timing qu'un cycle
-    plancher-de-`v` (~500 pas ici) — un run arrêté trop tôt ou trop
-    tard selon where dans le cycle la fenêtre de patience est tombée ?**
+13. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 13
+    des 20 ».] L'arrêt anticipé est-il vulnérable au hasard de timing
+    d'un cycle plancher-de-`v` ?** Réponse : OUI, confirmé
+    empiriquement sur le vrai système
+    (`verifier_arret_anticipe_vs_phase_kick.py`) — rapport max/min de
+    la durée jusqu'à arrêt jusqu'à 1,89× selon la phase de départ.
+    Prédiction précommise (sauts discontinus par cycle) réfutée —
+    variation continue. Mécanisme plus riche que prévu : à seuil
+    d'amélioration fin (sensible au bruit de ringing sous-kick), la
+    vulnérabilité CROÎT avec la patience au lieu de se diluer (effet
+    inverse de l'intuition). Bug de calibration initial trouvé et
+    corrigé (seuil 4 ordres de grandeur trop grand, test vide).
 14. **Quand on compare deux graines dont une « généralise mieux »,
     vérifie-t-on si c'est un vrai apprentissage différent, ou
     simplement de quel côté d'une séparatrice précoce chaque bruit
