@@ -14320,6 +14320,62 @@ kick fini), pas un terme manquant identifiable.
 
 ---
 
+## Suite tour 56, 21/09/2026 (quater) — pourquoi CES référents-là dérivent
+## le plus dans la ligne 10 : corrélation quasi parfaite avec la
+## probabilité de base, pas du bruit (contraste net avec la ligne 3)
+
+**Question posée** (« continue à chercher dans l'espace de 27ˆ2 ») : le
+classement des 25 « autres » entrées de la ligne 10 par magnitude de
+dérive (`{9,5,18,22,8,10,23,13,2,15,26,25,...}`, identique à `delta`
+réel et `delta=0`) est-il un vrai signal, ou — comme le « top-6 » de la
+ligne 3 qui s'est révélé être du bruit flottant — un artefact ?
+
+**D'abord vérifié : ce N'EST PAS du bruit, contrairement à la ligne
+3.** `CV≈0,0113` (config réelle) et `≈0,0099` (delta=0) — un vrai
+spread de ~5,5% entre le référent qui dérive le plus (9) et celui qui
+dérive le moins (24), pas `~1e-11` comme la ligne 3. Le classement est
+IDENTIQUE aux deux configs `delta` — un signal reproductible, pas du
+bruit d'échantillonnage.
+
+**Corrélation testée : la magnitude de dérive suit (quasiment
+exactement) la probabilité de base `r[10,j]` de chaque référent** :
+
+```
+ordre par derive (mesure) :      9, 5,18,22, 8,10,23,13, 2,15,26,25,6,7,11,21,14,1,16,19,20,17,0,12,24
+ordre par probabilite decroissante : 5, 9,18,22, 8,10,23,13, 2,15,26,25,6,7,11,21,14,1,16,19,20,17,0,12,24
+```
+
+**24 des 25 positions identiques — seules les deux premières
+(référents 9 et 5) sont interverties.** Les probabilités de base
+elles-mêmes sont très proches (`1,097297e-12` pour le référent 9 contre
+`1,151846e-12` pour le référent 5 — le référent 5 a en fait la
+probabilité la plus haute, mais c'est le référent 9 qui dérive le
+plus) — l'inversion au sommet est cohérente avec un écart de
+probabilité de base plus petit que la marge de bruit à ce niveau,
+pas une réfutation de la corrélation.
+
+**Mécanisme plausible (cohérent avec l'hypothèse de l'agent de
+vérification précédent — un gradient résiduel de fond partagé par
+toute la ligne, même compteur de pas Adam, même correction de biais,
+même `eps`)** : si chaque entrée `r[10,j]` reçoit une pression de
+gradient de fond à peu près COMMUNE (indépendante de `j`), alors via
+le Jacobien softmax standard (`dr_j = r_j·(dlogit_j - Σ...)`), une
+entrée avec une probabilité `r_j` légèrement plus grande devrait
+montrer une réponse en LOGIT légèrement plus grande pour un même
+gradient de fond — exactement le sens de corrélation observé (plus de
+probabilité → plus de dérive). **Non dérivé formellement ici, juste
+une corrélation empirique quasi parfaite, cohérente avec ce mécanisme
+sans le prouver.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le classement de dérive de fond de la ligne 10 est un artefact de bruit comme le « top-6 » de la ligne 3 | 21/09 (moi, avant de tester) | **réfutée** le 21/09 — CV~0,01, spread réel de 5,5%, classement reproductible entre deux configs `delta` |
+| la magnitude de dérive corrèle avec la probabilité de base de chaque référent | 21/09 (moi) | **confirmée** le 21/09 — 24/25 positions identiques entre les deux classements |
+
+**Script** : test ponctuel, pas encore promu en fichier permanent.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
