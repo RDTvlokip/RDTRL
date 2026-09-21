@@ -85,10 +85,18 @@ clos.** Ne pas oublier cette étape finale.
    plancher-de-`v`. Confusion bias-correction/fiabilité-de-v confirmée
    dans la littérature (arXiv:2511.20516), mais pas avec NOTRE
    mécanisme spécifique.
-6. **Confond-on systématiquement « le modèle peut représenter la
-   solution optimale » avec « le modèle peut l'ATTEINDRE depuis son
-   init typique par descente de gradient » — un problème de bassin
-   d'attraction habillé en problème de capacité ?**
+6. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 6 des
+   20 »] Confond-on « représentable » avec « atteignable par
+   descente de gradient » ?** Réponse : question PAS originale — cette
+   distinction est déjà bien établie et nommée (« expressivity vs
+   trainability », Zhang et al. NeurIPS 2021 arXiv:2210.12001, Nguyen
+   ICML 2018), avec un cas canonique documenté (apprentissage de la
+   parité, Shalev-Shwartz et al. ICML 2017). Un écart trouvé et
+   corrigé : l'agent a mal attribué à un papier sur le grokking
+   (arXiv:2606.17120) le vocabulaire « bifurcation nœud-col » —
+   vérifié directement, le papier utilise en fait un cadre
+   thermodynamique (transition de phase, hystérésis, échappement
+   Arrhenius), distinct de notre H6 (bifurcation déterministe).
 7. **Compare-t-on l'importance de coordonnées dans un modèle
    softmax/sigmoïde SANS corriger par le Jacobien de la saturation
    (le mécanisme `comp¹` établi ici) — créditant systématiquement trop

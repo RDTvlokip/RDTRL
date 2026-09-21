@@ -12780,6 +12780,74 @@ revérifiées individuellement (signalé, pas caché).
 
 ---
 
+## Question 6 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## question NON originale (assumé honnêtement), un écart agent/source
+## trouvé et corrigé
+
+**Question posée (ETAT.md, #6)** : confond-on systématiquement « le
+modèle peut représenter la solution optimale » avec « le modèle peut
+l'ATTEINDRE depuis son init typique par descente de gradient » — un
+problème de bassin d'attraction habillé en problème de capacité ?
+
+**Recherche effectuée (agent, un point vérifié directement par moi via
+`WebFetch`, écart trouvé et corrigé)** :
+
+1. **La distinction elle-même est déjà bien établie et NOMMÉE dans la
+   littérature — PAS une question originale, à assumer honnêtement.**
+   « Expressivity vs trainability » est un cadre standard : Zhang et
+   al. (NeurIPS 2021, arXiv:2210.12001, titre même de l'article),
+   Nguyen (ICML 2018), et un blog très cité (Eric Jang, 2017)
+   popularisent cette trichotomie. Non revérifié directement par moi
+   (accepté du rapport de l'agent, risque signalé), mais cohérent avec
+   ma propre connaissance du domaine — pas de raison de douter que ce
+   cadre existe et est enseigné.
+2. **Cas concret documenté où représentabilité ≠ atteignabilité** :
+   apprentissage de la parité — Shalev-Shwartz, Shamir, Shammah (ICML
+   2017, « Failures of Gradient-Based Deep Learning »), et un papier
+   2025 (arXiv:2501.00817) : un petit réseau ReLU peut REPRÉSENTER
+   exactement une fonction de parité, mais le gradient est
+   exponentiellement petit à l'initialisation — la descente de
+   gradient échoue provablement. Cité par l'agent comme démonstration
+   de la distinction, PAS comme cas historique où quelqu'un s'est
+   explicitement trompé en confondant les deux (l'agent lui-même est
+   honnête sur cette limite : pas de débat nommé trouvé).
+3. **Lien avec les bifurcations nœud-col spécifiquement : ÉCART TROUVÉ
+   ET CORRIGÉ.** L'agent a rapporté qu'un papier récent
+   (arXiv:2606.17120, sur le grokking) « nomme explicitement une
+   bifurcation nœud-col ». **Vérification directe par moi
+   (`WebFetch` sur l'abstract) : FAUX tel que rapporté.** Citation
+   réelle de l'abstract : « grokking is consistent with hysteresis in
+   first-order L2 phase transitions... noise-driven escape ». Le
+   papier utilise le cadre TRANSITION DE PHASE DU PREMIER
+   ORDRE/hystérésis/échappement de type Arrhenius — PAS le vocabulaire
+   « bifurcation nœud-col »/« saddle-node »/« fold » que l'agent a
+   employé. Les deux cadres (transition de phase vs bifurcation
+   nœud-col) décrivent des phénomènes apparentés mais ne sont PAS la
+   même formulation mathématique — un vrai bassin métastable séparé
+   par une barrière d'énergie franchie par le bruit (Arrhenius) est un
+   cadre THERMODYNAMIQUE, alors que notre H6 (fold bifurcation,
+   `det(J)→0`) est un cadre purement DÉTERMINISTE/géométrique
+   (disparition d'un point stationnaire). **Corrigé avant d'accepter —
+   exactement le genre d'erreur que la règle 5bis demande de traquer.**
+
+**Réponse honnête à la question 6** : la distinction elle-même
+(représentabilité/expressivité vs atteignabilité/trainabilité) est
+DÉJÀ bien connue et nommée — cette partie de la question n'est PAS
+originale, à ne pas revendiquer comme telle. Ce qui reste
+potentiellement moins couvert : le lien SPÉCIFIQUE avec une vraie
+bifurcation nœud-col déterministe (par opposition au cadre
+thermodynamique/transition de phase plus répandu pour le grokking) —
+mais cette nuance n'a pas été confirmée comme un vide de la littérature,
+seulement comme une distinction de cadre que l'agent a faite à tort en
+citant une source qui utilise un cadre différent.
+
+**Statut** : question 6 des 20 (ETAT.md) considérée close — recherche
+littérature, verdict « déjà bien connu, pas une découverte de ce
+projet », avec un écart agent/source réel trouvé et corrigé (règle
+5bis appliquée avec succès, pas juste en principe).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
