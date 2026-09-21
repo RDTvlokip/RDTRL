@@ -356,10 +356,15 @@ dipankar.cc). L'échange est à son **53e tour**.
 
 - `docs/CARNET.md` — le notebook complet, en français, daté, avec CHAQUE
   hypothèse journalisée (posée le, statut, réfutée/confirmée/rouverte).
-  Section active en ce moment : **§7.65/8ter** (tout en bas du fichier).
-- `docs/REPONSE_ORDRE54.md` — la lettre anglaise en cours (réponse au
-  tour 53 de dipankar), **gitignorée**. **NE PAS MODIFIER sans l'accord
-  explicite de Théo (consigne du 20/09/2026).**
+  Sections actives en ce moment (tout en bas du fichier, dans l'ordre) :
+  « VRAIE CRITIQUE DE DIPANKARSARKAR, tour 54 », « Piste émetteur (le
+  « 26 » de H7) — jouet à K variable », « SYNTHÈSE FINALE, jouet à K
+  variable », « Généralisation au ML au sens large ».
+- `docs/REPONSE_ORDRE55.md` — la lettre anglaise en cours (réponse au
+  tour 54 de dipankar), **gitignorée**. **NE PAS MODIFIER sans l'accord
+  explicite de Théo (consigne du 20/09/2026).** (`REPONSE_ORDRE54.md`
+  a déjà été envoyée et a reçu sa réponse — c'est de l'historique,
+  plus la lettre active.)
 - `docs/ARTICLE4.md` — article de blog publié/committé, intègre les
   tours 6-52.
 - `CLAUDE.md` — les règles permanentes du projet. **La lire en entier
