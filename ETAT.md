@@ -13,6 +13,11 @@ individuellement — ne pas répondre en bloc, une réponse = un commit,
 avec le cycle habituel (hypothèse, test si possible, agent-dipankar
 si le résultat est substantiel, journal daté dans `CARNET.md`).
 
+**Consigne explicite de Théo (21/09/2026) : une fois les 20 questions
+toutes répondues, lancer un agent style dipankar (worktree isolé) pour
+tout vérifier/challenger indépendamment avant de considérer ce fil
+clos.** Ne pas oublier cette étape finale.
+
 1. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 1 des
    20 »] Les « loss spikes » périodiques des gros entraînements ont-ils
    une période caractéristique gouvernée par la décroissance de `v` —
