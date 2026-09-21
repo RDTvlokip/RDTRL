@@ -13587,6 +13587,71 @@ littérature avec un point vérifié par une voie de contournement
 
 ---
 
+## Question 19 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## huitième angle potentiellement non couvert, incident de
+## confabulation détecté PAR L'AGENT LUI-MÊME et re-vérifié par moi
+
+**Question posée (ETAT.md, #19)** : combien de résultats
+« d'équité/coopération émergente » en RL multi-agents sont en fait le
+même genre de point fixe forcé par la symétrie (comme `R=1/2` à
+`delta=0` ici, une numérologie indépendante de `N`, pas un
+apprentissage) habillé en comportement social appris ?
+
+**Incident méthodologique à noter en premier** : l'agent rapporte
+qu'un premier `WebFetch` sur le PDF d'arXiv:2602.15407 a produit une
+paraphrase avec des citations qui collaient EXACTEMENT à l'hypothèse
+posée — il l'a lui-même re-vérifiée en demandant l'abstract verbatim
+et a trouvé un texte réel plus étroit que la première paraphrase.
+**Deuxième incident de ce type détecté par un agent sur ses propres
+17 questions (le premier était à la question 10)** — signe que la
+règle de méfiance fonctionne en pratique, pas seulement en principe.
+
+**Recherche effectuée, un point vérifié mot pour mot par moi** :
+
+1. **(a) Aucun papier trouvé revendiquant une « équité/coopération
+   émergente » dans un cadre symétrique SANS vérifier si la symétrie
+   force déjà le résultat.** Deux papiers sur le « Minority Game »
+   (ScienceDirect, PMC) présentent la préservation de symétrie comme LE
+   résultat, sans tester si un système non entraîné donnerait déjà le
+   même résultat par pure combinatoire — le trou exact que la question
+   cherche, mais non nommé comme biais méthodologique dans la
+   littérature trouvée. Non revérifié directement par moi.
+2. **(b) Pas de critique publiée trouvée démontrant qu'un résultat
+   d'équité émergente RAPPORTÉ AILLEURS était un artefact de symétrie.**
+   Le plus proche, arXiv:2602.15407 (« Fairness over Equality:
+   Correcting Social Incentives in Asymmetric SSDs », 2026) — citation
+   vérifiée mot pour mot par moi (`WebFetch`, après l'incident de
+   confabulation de l'agent) : « most existing methods assume that
+   agents face identical incentives... existing fairness-based methods
+   struggle to adapt under asymmetric conditions by enforcing raw
+   equality that wrongfully incentivize defection ». **Adjacent, pas
+   identique** : la critique porte sur l'échec du MÉCANISME (aversion à
+   l'inéquité, Hughes et al. 2018) sous asymétrie, pas sur le fait que
+   les évaluations symétriques antérieures n'avaient rien à « apprendre »
+   puisque l'égalité était déjà un point fixe structurel — nuance
+   importante, pas la même critique que celle posée en question 19.
+3. **(c) Pas de preuve que « tester en asymétrique » soit une pratique
+   standard/checklist établie.** arXiv:2602.15407 (2026, très récent)
+   serait le signal le plus net que ce contrôle commence tout juste à
+   émerger — suggère un angle encore non couvert plutôt qu'un standard
+   déjà en place. Non revérifié directement par moi.
+
+**Réponse à la question 19** : huitième angle potentiellement non
+couvert, confiance FAIBLE À MODÉRÉE explicitement assumée par l'agent
+(recherche par abstracts seulement, pas de lecture intégrale) — la
+plus prudente des réponses de ce tour. Le trou précis cherché
+(vérifier qu'une « équité émergente » symétrique n'est pas déjà un
+point fixe combinatoire avant de la publier comme apprentissage social)
+ne semble pas nommé dans la littérature trouvée, mais la recherche
+elle-même est plus fragile que les précédentes.
+
+**Statut** : question 19 des 20 (ETAT.md) considérée close — recherche
+littérature, DEUXIÈME incident de confabulation détecté (cette fois
+par l'agent lui-même, pas seulement par moi), un point revérifié mot
+pour mot, confiance globale explicitement basse.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

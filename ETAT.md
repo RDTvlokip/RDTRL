@@ -243,11 +243,22 @@ clos.** Ne pas oublier cette étape finale.
     du même phénomène — mais aucune source trouvée ne les relie comme
     trois instances d'un même problème générique. Confiance
     moyenne-haute sur l'absence de synthèse, recherche web seule.
-19. **Combien de résultats « d'équité/coopération émergente » en RL
-    multi-agents sont en fait le même genre de point fixe forcé par la
-    symétrie (comme `R=1/2` à `delta=0` ici, une numérologie
-    indépendante de N, pas un apprentissage) habillé en comportement
-    social appris ?**
+19. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 19
+    des 20 ». Huitième angle potentiellement non couvert, confiance
+    faible explicitement assumée. DEUXIÈME incident de confabulation
+    détecté (par l'agent lui-même cette fois).] Combien de résultats
+    « d'équité émergente » en RL multi-agents sont en fait un point
+    fixe forcé par symétrie (comme `R=1/2` ici) ?** Réponse : aucun
+    papier trouvé qui revendique une équité/coopération émergente en
+    cadre symétrique SANS vérifier si la symétrie force déjà le
+    résultat (deux papiers Minority Game présentent la symétrie comme
+    LE résultat sans ce contrôle). La critique la plus proche trouvée
+    (arXiv:2602.15407, citation vérifiée mot pour mot par moi après
+    que l'agent a lui-même détecté et corrigé une confabulation sur ce
+    même papier) est adjacente, pas identique — porte sur l'échec du
+    mécanisme d'aversion à l'inéquité sous asymétrie, pas sur le point
+    fixe combinatoire lui-même. Confiance globale FAIBLE, explicitement
+    signalée.
 20. **« Ablater un composant ne change pas beaucoup le comportement »
     (utilisé pour argumenter qu'un composant n'a pas d'importance, ex.
     élagage de têtes d'attention) reflète-t-il parfois une
