@@ -43,9 +43,23 @@ clos.** Ne pas oublier cette étape finale.
    aval (citer un chiffre unique de « batch size critique » sans
    rappeler le seuil de lecture choisi) — pas de recherche dédiée faite
    sur ce point.
-3. **Le clipping de gradient déplace-t-il les kicks du plancher-de-`v`
-   au lieu de les éliminer, puisqu'il ne change rien à la récurrence
-   de `v` elle-même (seulement au pas final appliqué) ?**
+3. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 3 des
+   20 »] Le clipping de gradient déplace-t-il les kicks du
+   plancher-de-`v` au lieu de les éliminer, puisqu'il ne change rien à
+   la récurrence de `v` elle-même ?** Réponse, testée directement sur
+   le vrai système (`verifier_clip_gradient_deplace_kicks.py`) : ni
+   l'un ni l'autre. Le régime stationnaire de kicks est intact (même
+   période ~456-473, même amplitude ~0,0034-0,0037) — ma prédiction
+   précommise (écrêtage du regonflement, période raccourcie) est
+   réfutée : le clip (à seuil réaliste) n'engage QUE dans les 40
+   premiers pas d'entraînement (gradients initiaux plus grands),
+   jamais pendant le régime stationnaire. Effet réel trouvé à la
+   place : le clip supprime le TRANSITOIRE de rampe initial (~19
+   événements avant stabilisation dans le baseline) en empêchant `v`
+   de s'inflater tôt — le régime stationnaire s'installe ~2700 pas
+   plus tôt (premier kick à 5153 au lieu de 7869), d'où le nombre
+   d'événements 29→33 sur une fenêtre fixe, pas 4 nouveaux kicks
+   stationnaires.
 4. **Le « reward hacking » en RLHF est-il parfois un franchissement de
    séparatrice avec sensibilité aux conditions initiales (comme K=12,80
    ici) — deux graines identiques en hyperparamètres tombant de part et

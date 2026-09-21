@@ -12479,6 +12479,116 @@ une lecture de définition déjà publiée, vérifiée par moi directement).
 
 ---
 
+## Question 3 des 20 (ETAT.md), 21/09/2026 — test empirique direct sur
+## le VRAI système (mur 23), prédiction fermée POSÉE AVANT le test,
+## réfutée par le test lui-même, mécanisme réel trouvé à sa place
+
+**Question posée (ETAT.md, #3)** : le clipping de gradient déplace-t-il
+les kicks du plancher-de-`v` au lieu de les éliminer, puisqu'il ne
+change rien à la récurrence de `v` elle-même (seulement au pas final
+appliqué) ?
+
+**Analyse POSÉE avant le test (script
+`verifier_clip_gradient_deplace_kicks.py`, docstring)** : la prémisse
+de la question est fausse en général pour PyTorch —
+`clip_grad_norm_` modifie `.grad` EN PLACE avant `optimizer.step()`,
+donc Adam calcule `v_t` à partir du gradient DÉJÀ clippé, pas du
+gradient brut. Prédiction fermée précommise : un clip serré devrait
+écrêter le REGONFLEMENT post-kick de `v`, raccourcissant la période du
+cycle stationnaire (kicks plus fréquents), pas la déplacer au sens
+neutre.
+
+**Premier bug de calibration, trouvé et corrigé avant tout résultat
+exploitable** : mes premiers seuils de clip (10 → 0,01) étaient ~30×
+AU-DESSUS du gradient max réel mesuré sur toute la trajectoire
+(`max=0,000341`, `p99=0,000006`) — aucun clip n'engageait jamais (`0/20000`
+pas clippés à chaque seuil). Reseuillé à `(0,0003; 0,0001; 3e-5; 1e-5)`,
+comparables au max réel.
+
+**Résultat du test recalibré** : le nombre d'événements passe de 29
+(sans clip) à 33 (clip ≤ 1e-4), STABLE sur trois seuils différents
+(1e-4, 3e-5, 1e-5) malgré des taux de clip très différents (9, 19, 35
+pas sur 20000). **Ma prédiction précommise (période stationnaire
+raccourcie par écrêtage du regonflement) est RÉFUTÉE** : l'espacement
+médian en régime stationnaire reste dans la même plage que le baseline
+(451-473 contre 456), et l'amplitude moyenne aussi (0,0035-0,0037
+contre 0,0034) — aucune différence significative sur ~30 événements.
+
+**Mécanisme réel, trouvé en creusant le POURQUOI de l'écart 29→33
+(pas accepté sans expliquer, cf. règle 4bis)** : comparaison directe
+des positions d'événements, baseline vs `clip=1e-5` :
+- Baseline : premier événement à `pas=7869`, puis un vrai TRANSITOIRE
+  de rampe (espacements 196, 215, 243, 272, 300, 334, 363, 396, 415,
+  460, ... se stabilisant vers 450-500 seulement après ~10 événements)
+  — cohérent avec le transitoire déjà documenté pour la loi `lr`
+  (`ETAT.md` piste 0ter).
+- Sous clip : premier événement dès `pas=5153`, et l'espacement est
+  IMMÉDIATEMENT proche du régime stationnaire dès le premier intervalle
+  (448, 446, 473, 465, ...) — **aucune rampe de transitoire visible**.
+- Le surplus de 4 événements (29→33) n'est donc PAS 4 nouveaux kicks
+  insérés dans le régime stationnaire — c'est la disparition de la
+  phase de rampe initiale qui fait apparaître ~4 kicks de plus dans la
+  même fenêtre de 20000 pas.
+- **Vérifié où (OÙ, pas seulement QUAND) le clip engage réellement** :
+  les 35 pas clippés à `clip=1e-5` sont TOUS dans `[0,40]` — aucun clip
+  après le pas 40, donc aucun clip pendant le régime stationnaire ni
+  pendant les kicks eux-mêmes (contredit ma prédiction initiale
+  d'écrêtage du regonflement post-kick — le gradient au pic d'un kick
+  stationnaire, ~0,0003, ne dépasse JAMAIS `1e-5`... en fait si, le
+  calibrage montre `max=0,000341` sur toute la trajectoire, mais ce max
+  arrive dans les tout premiers pas, pas aux kicks stationnaires).
+- **Explication mécaniste (le COMMENT)** : `v` (exp_avg_sq) est
+  initialisé à 0 par Adam. Les tout premiers pas (avant `pas=40`) ont
+  des gradients bruts plus grands (le réseau est loin de toute
+  structure acquise) qui, non clippés, inflateraient `v` plus fort dès
+  le départ — retardant d'autant le moment où `v` atteint son plancher
+  numérique pour la première fois. En clippant ces ~35 tout premiers
+  pas, `v` part plus bas, atteint son plancher plus vite, et le premier
+  kick survient ~2700 pas plus tôt (5153 contre 7869) — le régime
+  stationnaire s'installe immédiatement au lieu d'après une rampe de
+  ~19 événements.
+
+**Réponse honnête à la question 3** : NI éliminé NI déplacé au sens où
+la question le suggérait. Le clipping de gradient (à un seuil qui
+n'engage qu'aux tout premiers pas de l'entraînement) **laisse le cycle
+stationnaire de kicks totalement intact** (même période, même
+amplitude, à l'incertitude statistique près sur ~30 événements) — la
+prémisse selon laquelle « ça ne change rien à la récurrence de `v` »
+est en fait VRAIE en pratique dans ce régime, mais pour une raison
+différente de celle énoncée (pas parce que le clip ne touche jamais
+`v`, mais parce qu'à un seuil raisonnable il n'engage jamais pendant la
+phase calme qui pilote la décroissance de `v`). Le VRAI effet du clip
+ici porte sur le TRANSITOIRE de démarrage, pas sur le cycle
+lui-même — un axe (QUAND commence le régime stationnaire) que la
+question ne posait pas.
+
+**Limite non testée** : un clip encore plus serré (sous le gradient
+typique en régime stationnaire lui-même, pas seulement sous le pic des
+tout premiers pas) engagerait probablement pendant les kicks
+stationnaires aussi et pourrait valider ma prédiction initiale — pas
+testé ici, la plage `[1e-5, 3e-5, 1e-4]` s'est révélée insensible car
+toutes situées au-dessus du gradient stationnaire typique sauf pendant
+le tout début. À creuser si utile plus tard, pas prioritaire (la
+question portait sur le clip « usuel », pas sur un clip pathologiquement
+serré).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le clip ne change rien à la récurrence de `v` (prémisse de la question) | 21/09 (Théo, implicite dans la question) | **partiellement vraie, pour une raison différente** — vrai en régime stationnaire (clip n'engage jamais), faux en toute généralité (clip modifie bien `v` quand il engage) |
+| un clip serré écrête le regonflement post-kick, raccourcit la période stationnaire | 21/09 (moi, précommise avant le test) | **RÉFUTÉE** le 21/09 — espacement/amplitude stationnaires statistiquement inchangés sur 3 seuils |
+| le surplus d'événements (29→33) vient de kicks stationnaires supplémentaires | 21/09 (moi, avant d'inspecter les positions) | **réfutée** le 21/09, remplacée par : le surplus vient de la disparition du transitoire de rampe initial, vérifié par comparaison directe des positions d'événements et des pas effectivement clippés (tous dans `[0,40]`) |
+
+**Script permanent** : `verifier_clip_gradient_deplace_kicks.py`.
+**Statut** : question 3 des 20 (ETAT.md) considérée close — test
+empirique direct sur le vrai système, prédiction précommise réfutée,
+mécanisme de remplacement trouvé et vérifié (positions d'événements +
+positions des pas clippés). Pas d'agent-dipankar individuel ici — par
+consigne explicite de Théo (21/09/2026), l'agent-dipankar de
+vérification indépendante se lance UNE FOIS à la fin des 20 questions,
+pas après chacune.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
