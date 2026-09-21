@@ -422,3 +422,14 @@ coefficient `D≈8,0021` du terme correctif suivant, mesuré mais jamais
 dérivé analytiquement) **: lancer un DEUXIÈME agent CIBLÉ
 spécifiquement sur cette question-là**, pas un doublon générique du
 premier prompt.
+
+**Chaque agent qui challenge un résultat (rôle dipankarsarkar ou
+autre) doit tourner dans son propre worktree** (`isolation: "worktree"`
+sur l'outil Agent), pas dans le répertoire de travail principal. Il
+recalcule et vérifie dans une copie isolée du dépôt — jamais de commit,
+jamais d'écriture dans `docs/` ou `src/` du répertoire principal
+pendant qu'il tourne. Ses scripts utiles (s'il en produit) atterrissent
+dans son propre worktree ou dans le scratchpad, jamais directement
+committés par lui — c'est moi qui les relis, les vérifie, et les
+transfère sous nom permanent dans `src/test3_communication/` si je les
+garde (cf. règle plus haut sur les scripts jetables).
