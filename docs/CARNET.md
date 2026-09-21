@@ -14402,6 +14402,78 @@ tour.
 
 ---
 
+## Suite tour 56, 21/09/2026 (quinquies) — le mécanisme RÉEL de la
+## dérive de fond fermé : ce n'est pas « proportionnel à la
+## probabilité » (un proxy), c'est le pas Adam normalisé standard —
+## et c'est le MÊME mécanisme plancher-de-`v` que les gros kicks,
+## en régime permanent
+
+**Poursuite de l'anomalie du référent 5** (consigne : « continue et
+continue à creuser »). D'abord vérifié que l'anomalie est
+reproductible (pas un accident ponctuel) : même écart au ratio,
+même sens, à `pas=59989` ET `pas=60432`, sur les mêmes deux
+mesures indépendantes.
+
+**Puis inspecté l'état interne d'Adam directement** (`opt.state[p_r]`,
+`exp_avg`/`exp_avg_sq`) plutôt que de continuer à deviner depuis
+l'extérieur. Le référent 5 a un `m` élevé (`1,838e-14`) — mais PAS le
+plus élevé (le référent 9 a `1,898e-14`, plus grand). Or c'est le
+référent 9, pas 5, qui a la PLUS GRANDE dérive brute — alors que le
+référent 5 a la probabilité de base la plus haute des deux
+(`1,152e-12` contre `1,097e-12` pour le référent 9). **Contradiction
+directe avec le modèle « dérive ∝ probabilité seule » — le vrai
+signal doit passer par `m`, pas par la probabilité.**
+
+**Closed-form testé et confirmé, à <0,5% près sur les 25 référents,
+y compris les deux « anomalies »** :
+
+```
+derive_j = -lr * m_j / (sqrt(v_j) + eps) * n_pas     (pas Adam normalise standard)
+```
+
+```
+referent   ecart mesure vs predit
+0-26 (23 referents "normaux")   0,431-0,432%  (bande tres etroite)
+5 (anomalie du classement)      0,443%   (a peine au-dessus de la bande commune)
+9 (derive brute maximale)       0,456%   (idem)
+```
+
+**L'écart résiduel (~0,43%) est le MÊME pour TOUS les référents,
+anomalies comprises** — un biais systématique constant (probablement
+l'usage de l'état `m`/`v` final de la fenêtre comme proxy pour toute
+la fenêtre de 989 pas, `m`/`v` évoluant légèrement pendant ce temps),
+pas une divergence spécifique au référent 5/9. **L'« anomalie » du
+référent 5 est donc complètement résolue** : ce n'était pas une vraie
+anomalie du mécanisme, c'était l'artefact d'un modèle proxy
+(probabilité) qui n'était qu'une approximation du vrai moteur (`m`).
+
+**Pourquoi `m` prédit si bien, mécanisme identifié — c'est LE MÊME
+plancher-de-`v` que les gros kicks (`verifier_mecanisme_plancher_v.py`),
+en régime permanent plutôt que périodique** : pour ces entrées « au
+repos » de la ligne 10, `sqrt(v)≈1,8e-14`, très en dessous de
+`adam_eps=1e-10` — `eps` domine totalement le dénominateur. Le pas
+Adam normalisé se réduit donc en permanence à `m/eps`, une quantité
+qui NE dépend QUE du moment `m` accumulé sur cette entrée précise, pas
+de sa probabilité. Contrairement aux gros kicks (où `v` finit par se
+regonfler après un pas démesuré, produisant un événement PÉRIODIQUE),
+ici le gradient résiduel sur ces entrées « idle » ne redevient JAMAIS
+assez grand pour regonfler `v` — donc le régime plancher-de-`v` est
+permanent, pas cyclique, et se traduit par une DÉRIVE LINÉAIRE
+constante au lieu d'un kick discret. **Même mécanisme causal, deux
+signatures dynamiques différentes selon que le gradient résiduel
+finisse ou non par redevenir assez grand pour déclencher une
+réinflation de `v`.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la dérive de fond est proportionnelle à la probabilité de base (mécanisme causal) | 21/09 (moi) | **réfutée en tant que mécanisme** le 21/09 — n'était qu'un proxy, corrélé à `m` mais pas causal |
+| la dérive de fond suit le pas Adam normalisé standard `-lr·m/(√v+eps)·n_pas` | 21/09 (moi) | **confirmée** le 21/09 — écart <0,5% sur les 25 référents, y compris les deux « anomalies » qui se résolvent complètement |
+| la dérive de fond est le même mécanisme plancher-de-`v` que les gros kicks, en régime permanent | 21/09 (moi) | **confirmée** le 21/09 par construction du closed-form (`√v≪eps` en permanence pour ces entrées, jamais de réinflation) |
+
+**Script permanent** : `verifier_closedform_derive_fond_ligne10.py`.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
