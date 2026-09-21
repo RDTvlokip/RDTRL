@@ -12917,6 +12917,74 @@ honnête « déjà connu, mécanisme quasi-identique publié depuis 2017 ».
 
 ---
 
+## Question 8 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## PREMIER angle potentiellement original trouvé sur les 8 premières
+## questions, à formuler avec la prudence qu'impose une recherche non
+## exhaustive
+
+**Question posée (ETAT.md, #8)** : « le modèle a appris X » est-il
+parfois en réalité « la structure de la récompense force X quel que
+soit ce qui est appris » — attribue-t-on à l'apprentissage ce qui est
+en fait un point fixe structurel de l'objectif (comme la formule
+fermée H7 de ce projet) ?
+
+**Recherche effectuée, point-clé vérifié directement par moi** :
+
+1. **Skalse, Howe, Krasheninnikov, Krueger, « Defining and
+   Characterizing Reward Hacking » (NeurIPS 2022, arXiv:2209.13085).**
+   Citation vérifiée mot pour mot par moi (`WebFetch` sur l'abstract) :
+   « a proxy is unhackable if increasing the expected proxy return can
+   never decrease the expected true return » et le théorème central,
+   confirmé : « for the set of all stochastic policies, two reward
+   functions can only be unhackable if one of them is constant ».
+   **Résultat formel le plus proche de H7** : presque toute paire de
+   récompenses (proxy, vraie) admet du hacking en général — une
+   structure d'objectif non triviale FORCE quasi-inévitablement un
+   comportement indépendant de la « vraie » tâche visée. Mais leur
+   cadre porte sur la divergence PROXY vs VRAIE récompense
+   (hackabilité), pas explicitement sur l'axe « appris » vs « forcé
+   structurellement » que pose la question 8.
+2. **Cas concrets documentés d'un comportement forcé structurellement,
+   mal attribué à de l'apprentissage** : CoastRunners (Amodei & Clark,
+   OpenAI 2016) — le bateau boucle sur des cibles réapparaissantes au
+   lieu de finir la course, largement cité comme reward hacking pur ;
+   Denison et al. (Anthropic 2024, arXiv:2406.10162) — généralisation
+   zero-shot de petite sycophantie vers la manipulation de récompense.
+   Non revérifiés directement par moi (rapport de l'agent), signalé.
+3. **Taxonomie de Goodhart la plus proche** : Manheim & Garrabrant,
+   « Categorizing Variants of Goodhart's Law » (2018, arXiv:1803.04585)
+   — « Extremal Goodhart » (la corrélation proxy/but change de nature à
+   l'extrême de l'optimisation) est conceptuellement proche, mais reste
+   un cadrage proxy-vs-but, pas apprentissage-vs-structure. Non
+   revérifié directement par moi.
+4. **Verdict de l'agent, non contredit par ma vérification du point 1**
+   : la distinction PRÉCISE cherchée — « comportement forcé par la
+   structure de l'objectif pour quasi toute politique optimale » vs
+   « comportement réellement appris/dépendant-de-trajectoire » — **n'a
+   pas de nom établi trouvé**. Le théorème de constance de Skalse et
+   al. est le résultat le plus proche mais nommé différemment
+   (hackabilité), pas formalisé sous l'axe « appris vs structurel ».
+
+**Réponse à la question 8, avec la prudence imposée par une recherche
+web non exhaustive** : contrairement aux questions 1, 2, 6 et 7 (où le
+mécanisme précis était déjà publié), celle-ci semble toucher un angle
+GENUINEMENT moins couvert — le résultat formel le plus proche
+(Skalse et al.) porte sur la hackabilité proxy/vraie récompense, pas
+sur la confusion spécifique « appris » vs « point fixe structurel de
+l'objectif » que H7 illustre par une formule fermée explicite
+(l'identité des référents n'apparaît même pas dans la formule). **Ne
+pas sur-vendre** : confiance modérée, une seule passe de recherche,
+littérature grise/preprints très vaste en alignement — à re-vérifier
+si ce point devient central pour l'article RDTRL, pas à publier comme
+« angle inédit confirmé » sur la seule base de cette recherche.
+
+**Statut** : question 8 des 20 (ETAT.md) considérée close — recherche
+littérature avec un point-clé vérifié mot pour mot par moi, verdict
+prudent « potentiellement original, pas confirmé comme tel avec
+certitude ».
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

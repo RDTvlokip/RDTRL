@@ -107,11 +107,19 @@ clos.** Ne pas oublier cette étape finale.
    `comp¹` (`f(x)=1-ReLU(1-x)`, gradient nul malgré effet réel). Reste
    une pratique répandue hors du sous-domaine attribution formel, mais
    non quantifiée par la recherche faite.
-8. **« Le modèle a appris X » est-il parfois en réalité « la structure
-   de la récompense force X quel que soit ce qui est appris » —
-   attribue-t-on à l'apprentissage ce qui est en fait un point fixe
-   structurel de l'objectif (comme la formule fermée H7 de ce
-   projet) ?**
+8. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 8 des
+   20 ». PREMIER ANGLE POTENTIELLEMENT ORIGINAL trouvé sur les 8
+   premières questions.] « Le modèle a appris X » est-il parfois
+   « la structure de la récompense force X » (point fixe structurel,
+   comme H7) ?** Réponse, prudente : le résultat formel le plus proche
+   (Skalse et al., NeurIPS 2022, arXiv:2209.13085, théorème de
+   constance vérifié mot pour mot par moi : « two reward functions can
+   only be unhackable if one of them is constant ») porte sur la
+   hackabilité proxy/vraie récompense, PAS sur l'axe précis
+   « appris vs forcé structurellement » que H7 illustre. Aucun nom
+   établi trouvé pour cette distinction précise — angle
+   potentiellement original, mais confiance modérée seulement (une
+   seule passe de recherche), à ne pas sur-vendre.
 9. **Les preuves de « ralentissement critique » utilisées pour
    diagnostiquer des transitions de phase dans l'entraînement (grokking
    compris) sont-elles vérifiées comme un vrai ralentissement
