@@ -201,13 +201,22 @@ clos.** Ne pas oublier cette étape finale.
     — mise en garde méthodologique précise non trouvée formulée
     explicitement pour l'entraînement ML, seul un lemme classique de
     dynamique générale (shadowing lemma) s'en approche formellement.
-16. **Y a-t-il une différence sous-estimée entre « l'optimiseur a
-    convergé » (les paramètres ont arrêté de bouger visiblement) et
-    « le système a atteint son vrai point fixe » — étant donné qu'ici,
-    Adam et le flot de gradient réel n'ont convergé vers EXACTEMENT le
-    même point fixe qu'une fois `lr` assez grand, ce qui suggère que
-    beaucoup de runs « convergés » à `lr` typique pourraient être
-    bloqués sur un plateau d'artefact, pas le vrai optimum ?**
+16. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 16
+    des 20 ». Tension réelle trouvée avec notre propre résultat, pas
+    une simple confirmation.] Différence sous-estimée entre
+    « convergence apparente » et « vrai point fixe » ?** Réponse :
+    le risque est réel (base interne du 18/09 : le flot de gradient
+    pur avait besoin de `lr=5,0`, pas `0,02`, pour matcher Adam à 7
+    chiffres — un test précommis avait d'abord « échoué » à cause d'un
+    budget insuffisant, pas d'un mécanisme manquant), et partiellement
+    documenté (formellement en calcul évolutionnaire, arXiv:2505.01036 ;
+    informellement en DL). MAIS une théorie récente (arXiv:2511.04622,
+    citation vérifiée mot pour mot par moi : « if Adam converges, the
+    limit must be a zero of the Adam vector field, rather than a local
+    minimizer or critical point ») montre que le point fixe d'Adam
+    n'est PAS garanti d'être celui de l'objectif en général — notre
+    accord à 7 chiffres est vraisemblablement un cas spécial de notre
+    système, pas une propriété générale à sur-généraliser.
 17. **Le « reward hacking par quasi-égalités » en RL est-il parfois
     prévisible à l'AVANCE depuis la seule structure de la récompense
     (comme la formule H7 de ce projet, où l'identité des référents

@@ -13392,6 +13392,87 @@ limite explicitement signalée sur la source la plus proche
 
 ---
 
+## Question 16 des 20 (ETAT.md), 21/09/2026 — s'appuie sur un résultat
+## interne déjà établi (18/09), recherche littérature qui NUANCE plutôt
+## que confirme simplement, tension réelle trouvée et vérifiée
+## directement
+
+**Question posée (ETAT.md, #16)** : y a-t-il une différence
+sous-estimée entre « l'optimiseur a convergé » (paramètres stables
+visuellement) et « le système a atteint son vrai point fixe » — étant
+donné qu'ici, Adam et le flot de gradient réel n'ont convergé vers
+EXACTEMENT le même point fixe qu'une fois `lr` assez grand, ce qui
+suggère que beaucoup de runs « convergés » à `lr` typique pourraient
+être bloqués sur un plateau d'artefact ?
+
+**Base interne (déjà établie le 18/09/2026, `CARNET.md` fil « Adam vs
+flot de gradient réel »)** : à `lr=0,02`, le flot de gradient pur
+(sans adaptivité) était encore à `0,187` de sa cible analytique après
+20000 pas — test précommis d'un agent « ÉCHOUÉ » au premier essai. À
+`lr=5,0`, convergence quasi parfaite (écart `1,845e-7`), `s3` matchant
+le plateau Adam à 7 chiffres significatifs. **Le "facteur 500×" qui
+semblait séparer Adam du gradient naturel n'était pas un mécanisme
+manquant — juste un `lr` insuffisant dans la première tentative.**
+C'est un exemple interne DÉJÀ VÉRIFIÉ du risque exact que pose la
+question 16 (un `lr`/budget insuffisant peut faire croire à un point
+fixe différent ou à un système « bloqué »).
+
+**Recherche littérature, un point vérifié directement par moi, TENSION
+RÉELLE trouvée avec notre propre résultat (pas juste une confirmation
+confortable — exactement ce que la règle 5ter méfiance demande de
+chercher)** :
+
+1. **(a) Plateaux/slow manifolds bien formalisés, mais pas dans ce sens
+   précis.** La stagnation observée dans la dynamique « saddle-to-saddle »
+   (arXiv:2402.05626, rapport agent) est cadrée comme propriété
+   intrinsèque du système (échelles de temps séparées), pas comme
+   artefact du choix `lr`/budget — angle proche mais causalement
+   différent.
+2. **(b) « Fausse convergence » a un nom formel, côté calcul
+   évolutionnaire, pas deep learning.** arXiv:2505.01036 prouve
+   formellement que « convergence de la séquence de fitness » et
+   « convergence vers l'optimum global » sont des propriétés
+   mutuellement exclusives dans certains régimes — exactement notre
+   distinction, mais transposée aux algorithmes évolutionnaires. En DL,
+   le diagnostic resterait informel (augmenter le budget/lr et regarder
+   si ça bouge) — pas de test formalisé trouvé. Non revérifié
+   directement par moi.
+3. **(c) TENSION RÉELLE, vérifiée directement par moi** :
+   arXiv:2511.04622 (« ODE approximation for the Adam algorithm »).
+   Citation vérifiée mot pour mot (`WebFetch`) : « if the Adam
+   algorithm converges, then the limit must be a zero of the Adam
+   vector field, rather than a local minimizer or critical point » —
+   **dans un cadre général, Adam N'EST PAS garanti de converger vers un
+   point critique de l'objectif lui-même.** Exception notée dans
+   l'abstract : en optimisation de risque empirique surparamétrée,
+   l'objectif sert de fonction de Lyapunov et Adam trouve localement
+   les minima globaux. **Notre propre résultat (accord à 7 chiffres
+   entre Adam et le flot de gradient pur) n'est donc probablement PAS
+   une propriété générale — c'est vraisemblablement un cas spécial dû à
+   la structure de notre jouet** (peut-être une Hessienne
+   localement proche de diagonale/isotrope, hypothèse de l'agent, pas
+   testée ici). **À nuancer dans toute généralisation de ce résultat
+   interne à d'autres systèmes.**
+
+**Réponse à la question 16, avec la nuance trouvée** : le RISQUE
+(confondre convergence apparente et vrai point fixe) est réel et
+partiellement documenté (formellement en EA, informellement en DL) —
+mais notre propre démonstration interne (Adam = flot de gradient pur à
+`lr` suffisant) ne doit PAS être présentée comme une preuve générale
+que « beaucoup de runs convergés sont bloqués sur un artefact » — la
+littérature théorique récente (2511.04622) montre que le POINT FIXE
+lui-même d'Adam peut différer de celui de l'objectif en général,
+rendant notre observation (mêmes points fixes) un cas particulier de
+notre système, pas une garantie transposable.
+
+**Statut** : question 16 des 20 (ETAT.md) considérée close — s'appuie
+sur un résultat interne déjà établi + recherche littérature qui
+NUANCE le résultat au lieu de le confirmer simplement, un point vérifié
+mot pour mot par moi, exactement le type de vérification « chercher ce
+qui confirmerait pour une MAUVAISE raison » demandé par la règle 5ter.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
