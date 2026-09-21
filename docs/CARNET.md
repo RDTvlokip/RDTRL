@@ -14267,6 +14267,57 @@ projet à ce stade) repose sur une seule configuration (`77777, k=3`).
 trompeur remplacé par les 26 + CV), `verifier_cv_decroissance_ligne3.py`
 (nouveau, trajectoire CV reconciliée depuis la perturbation).
 
+**NOTE : à partir d'ici, consigne explicite de Théo — je peux LIRE
+`REPONSE_ORDRE56.md` mais plus le MODIFIER. Toute nouvelle trouvaille
+va uniquement dans `CARNET.md` jusqu'à nouvel ordre.**
+
+---
+
+## Suite tour 56, 21/09/2026 (ter) — la question que je venais de poser
+## à dipankar dans la lettre (« la ligne 10 a-t-elle besoin de la somme
+## complète comme la ligne 3 ? »), testée moi-même avant sa réponse —
+## RÉPONSE : NON, et ça confirme que `(d4-d3)` était déjà la bonne
+## réduction pour cette ligne-là
+
+**Test direct** (même méthode que pour `s3`/ligne 3, appliquée à
+`r4`/ligne 10) :
+
+```
+pas=59989 : dr4 mesuré = -3,632578e-03
+            formule complète (somme sur les 27 entrées de la ligne 10) = -3,609037e-03  (0,65%)
+            approx 2-entrées (d4-d3), déjà publiée dans REPONSE_ORDRE56.md = -3,609037e-03  (0,65%)
+pas=60432 : dr4 mesuré = -3,587504e-03
+            formule complète = -3,564540e-03  (0,64%)
+            approx 2-entrées = -3,564540e-03  (0,64%)
+```
+
+**Les deux formules donnent EXACTEMENT le même résultat** (identiques
+à la précision affichée). Contrairement à la ligne 3 (où passer de
+l'approximation naïve à la somme complète a fait chuter l'écart de
+47% à 0,9%), la ligne 10 n'a RIEN à gagner de la somme complète — le
+résidu de 0,65% n'est pas caché dans les 25 autres entrées.
+
+**Pourquoi la différence entre les deux lignes (réponse à ma propre
+question posée à dipankar)** : la réduction à 2 entrées `(d4-d3)`
+fonctionne pour la ligne 10 parce que `r3` et `r4` sont TOUS LES DEUX
+des probabilités substantielles (contrairement à la ligne 3, où
+`s[3,10]≈0,999` écrase à lui seul les 26 autres) — la somme pondérée
+`Σ_j r_j·dlogit_j` du Jacobien softmax est déjà presque entièrement
+capturée par les deux termes `r3·dlogit_r3 + r4·dlogit_r4` quand ces
+deux probabilités dominent la ligne, même si les 25 autres entrées
+bougent beaucoup en LOGIT (`Σ|d_logit_r[10,j]|=0,222`, question 56
+bis) — leurs PROBABILITÉS individuelles restent trop petites pour
+peser dans la somme PONDÉRÉE, malgré leur mouvement brut important.
+Le résidu de 0,65% est donc probablement le vrai plancher de précision
+de cette approximation locale (linéarisation au premier ordre d'un
+kick fini), pas un terme manquant identifiable.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la ligne 10 a aussi besoin de la somme complète à 27 entrées pour fermer son résidu | 21/09 (moi, question posée à dipankar) | **réfutée** le 21/09 — formule à 2 entrées et somme complète donnent le même résultat, résidu de 0,65% inchangé |
+
+**Script permanent** : `verifier_jacobien_complet_ligne10.py`.
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
