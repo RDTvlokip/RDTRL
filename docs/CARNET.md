@@ -14642,6 +14642,116 @@ d'autres graines aussi.
 
 ---
 
+## Audit de la découverte des murs supplémentaires, 21/09/2026 —
+## CONFIRMÉ dans le détail, avec UNE CORRECTION STRUCTURELLE
+## IMPORTANTE : les référents 8/12 ne sont PAS des murs référentiels
+## comme le mur 23
+
+**Agent style dipankar lancé** (worktree isolé, résultat majeur,
+consigne du projet). Cinq points vérifiés (A-E), le point D revérifié
+directement par moi avant d'écrire cette correction.
+
+**A confirmé bit pour bit** (rejoué intégralement, 109989 pas au
+total : 10000 replay + 40000 post-perturbation + 59989 objectif
+pondéré — chiffres identiques).
+
+**B, nuancé** : les référents 5/8/12 comme tels sont bien inédits
+(recherche dans les 14000+ lignes de `CARNET.md` avant cette
+découverte, aucune mention antérieure), mais le vocabulaire
+« 27 voies »/« 26 alternatives » existait déjà depuis le 14/09
+(H9/H13) — pour une question structurellement différente (où atterrit
+le référent 3 APRÈS effondrement), pas « une ligne entière reste
+uniforme pendant 50000+ pas ».
+
+**C, confirmé STABLE, pas une convergence lente** — poursuivi
+20000 pas au-delà (jusqu'à 79989), `H` reste dans
+`[3,295834; 3,295837]` (à <3e-6 de `ln(27)`), `CV` oscille SANS
+tendance directionnelle. **Mécanisme trouvé par l'agent, non
+revérifié directement par moi** : les logits de la ligne 5 montent
+TOUS ENSEMBLE (mode commun invisible au softmax) — écart-type ENTRE
+les 27 entrées ~2e-6 contre ~3,67 pour une ligne effondrée typique au
+même pas (facteur ~1,8 million). **Cet état existe déjà après les
+10000 premiers pas du replay standard, AVANT la perturbation +30 et
+avant l'objectif pondéré** — le référent 5 est un artefact de la
+configuration de BASE (graine 77777, k=3), pas créé par la
+construction du mur 23. Test `adam_eps` (précommis par l'agent) :
+tendance faible (~4× sur 6 ordres de grandeur), PAS la signature forte
+déjà établie pour les gros kicks plancher-de-`v` — **mécanisme du
+référent 5 encore NON élucidé, question ouverte**.
+
+**D, CONFIRMÉ PAR MOI DIRECTEMENT — CORRECTION STRUCTURELLE
+IMPORTANTE, à appliquer au cadrage précédent.** Vérifié moi-même
+(`WebFetch`... non, calcul direct) :
+
+```
+message=23  max_prob=0,9999999996  H=0,000000  referent_devine=8
+message=19  max_prob=0,9999999996  H=0,000000  referent_devine=8
+message= 1  max_prob=0,9999999996  H=0,000000  referent_devine=12
+message=21  max_prob=0,9999999996  H=0,000000  referent_devine=12
+```
+
+**Le récepteur est TOTALEMENT effondré et D'ACCORD pour les
+référents 8 et 12** — chacun des deux messages ambigus décode SANS
+ERREUR vers le MÊME référent. **Contrairement au mur 23**, où le
+récepteur lui-même est en désaccord (`79,5%/20,5%` entre référents
+3/4). **Les référents 8/12 ne sont PAS des murs référentiels — ce
+sont des paires de messages SYNONYMES pour un seul référent, sans
+AUCUNE ambiguïté communicative réelle.** Le mur 23 est une vraie
+collision de référents (2 référents se partagent 1 message, confusion
+du récepteur) ; 8/12 sont une indifférence de l'ÉMETTEUR entre deux
+encodages équivalents, sans conséquence sur la communication.
+
+**Conséquence directe sur le précommis posé dans la section
+précédente** : la phrase « ils devraient s'appliquer aux référents 8
+et 12 aussi » (test H7/H6/comp1) est une ERREUR DE CATÉGORIE — H6/H7/
+comp1 ont été dérivés pour une COLLISION DE RÉFÉRENTS (2 référents, 1
+message, désaccord du récepteur), pas pour une indifférence de
+l'émetteur entre deux messages synonymes. Il n'y a structurellement
+RIEN à prédire pour 8/12 avec ces formules — ce ne sont pas le même
+type d'objet mathématique. **Seul le référent 5 (non-convergence à 27
+voies) reste un candidat légitime** pour tester si un mécanisme
+apparenté à H6/H7 s'applique, ou s'il faut un cadre différent.
+
+**E, confirmé GÉNÉRIQUE, pas un hasard de graine** — testé par
+l'agent sur trois configurations alternatives (non revérifié
+directement par moi, mais cohérent avec le reste) :
+
+```
+graine=77777, k=1 : 1 mur supplementaire (tie a 2 voies)
+graine=77777, k=5 : 2 murs supplementaires, DONT UN SECOND CAS
+                     H≈ln(27) (non-convergence totale, comme le
+                     referent 5 mais sur une autre ligne)
+graine=12345, k=3 : 4 murs supplementaires (dont un tie quasi-exact
+                     a la precision machine)
+```
+
+**Chaque configuration alternative testée produit PLUSIEURS murs
+simultanés, y compris un second cas de non-convergence totale** — la
+structure « un référent quasi-uniforme + plusieurs égalités à 2
+voies » n'est pas propre à la graine étudiée depuis le début du
+projet, c'est une propriété récurrente de l'entraînement sur ce
+système.
+
+**Erreur trouvée par l'agent en cherchant plus loin, au-delà des
+points demandés** : ma phrase de synthèse précédente traitait 8/12
+comme structurellement analogues au mur 23 (« comme le mur 23 ») —
+directement contredite par le point D ci-dessus, corrigée ici.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| les référents 8 et 12 sont des murs référentiels analogues au mur 23 | 21/09 (moi, cadrage initial) | **RÉFUTÉE** le 21/09, vérifiée directement par moi — récepteur totalement effondré et d'accord pour les deux, aucune ambiguïté communicative |
+| le référent 5 est un vrai plateau stable, pas une convergence lente | 21/09 (moi, hypothèse) | **confirmée** le 21/09 par l'agent — `H` stable sur 20000 pas supplémentaires, aucune tendance |
+| le référent 5 est un artefact de la configuration de base, pas créé par la construction du mur 23 | 21/09 (agent, trouvé en creusant) | **trouvée** le 21/09, non revérifiée directement par moi — état déjà présent après les 10000 premiers pas du replay standard |
+| H6/H7/comp1 devraient s'appliquer directement aux référents 8/12 | 21/09 (moi, précommis erroné) | **RÉFUTÉE comme erreur de catégorie** le 21/09 — ces formules portent sur les collisions de référents, pas les synonymies de messages |
+| la coexistence de plusieurs murs est un hasard de la graine 77777/k=3 | 21/09 (moi, implicite) | **réfutée** le 21/09 par l'agent — générique sur 3 configurations alternatives testées |
+
+**Scripts produits par l'agent dans son worktree, non encore
+rapatriés sous nom permanent** (à faire si ce fil est repris) :
+scripts de test amont-référent-5, échelle des logits (mode commun),
+sweep `adam_eps`, et généricité multi-graines.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
