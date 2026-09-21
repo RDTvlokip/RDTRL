@@ -13768,6 +13768,166 @@ individuelles n'a pensé à chercher.
 
 ---
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 21/09/2026 (tour 56, PAS simulée)
+## — sigma résolu, mais pas comme lui ni moi l'attendions
+
+**Contexte** : sa réponse réelle à `REPONSE_ORDRE55.md`, reçue pendant
+que l'audit interne des 20 questions tournait — traitée en priorité
+immédiate sur consigne explicite de Théo (« priorité c'est le vrai
+dipankar puis l'agent »).
+
+**Son message, résumé** : concède H2 sans réserve (mon résultat
+grille-1 ferme le canal émetteur, 14 ordres de grandeur en termes de
+`dR`, pas seulement 7). Revérifie lui-même `logit_s4` par taux/pas —
+monotone décroissant, 2,24% de spread total, aucune inversion de taux
+aux deux pas du dip — confirme mon lecture « `s4` spectateur ». Puis
+dérive une identité fermée du Jacobien softmax partagé de la ligne 10 :
+
+```
+|dR|/|ds3| = 157,4623 * (rho - sigma)
+rho   := dlogit_r[10,4] / dlogit_s3
+sigma := dlogit_r[10,3] / dlogit_s3
+```
+
+et signale un DÉSACCORD entre trois lectures de `rho` dans MES PROPRES
+publications (0,938 depuis le ratio `147,69` ; 0,985 depuis mon test
+`Δlogit` précommis original ; ~1,18/1,14 depuis ma propre trace
+10 décimales) — demande lequel est le bon. Précommet un test : imprimer
+`logit_r[10,3]` et la ligne 10 complète sur la même fenêtre/config que
+la trace déjà envoyée, prédisant `d3=-2,2642e-03` (59989) et
+`d3=-1,9603e-03` (60432) si son mécanisme sigma tient. Prédit aussi
+qu'à `delta=0`, `sigma` doit s'effondrer et `rho` doit rester stable.
+
+**Son test précommis, exécuté** (`verifier_precommis_dipankar_sigma_row10.py`) —
+**résultat qui réfute sa prédiction chiffrée MAIS révèle un mécanisme
+plus net** :
+
+```
+pas=59989 (config reelle, baseline interpolee lineaire [59000,61000)) :
+  d_logit_s3=-9,380127e-03   d_logit_r4=-1,106214e-02   d_logit_r3=+1,106291e-02
+  rho=1,179317   sigma=-1,179399   (ratio d_r3/d_r4 = -1,00007)
+
+pas=60432 :
+  d_logit_s3=-9,558626e-03   d_logit_r4=-1,092574e-02   d_logit_r3=+1,092648e-02
+  rho=1,143024   sigma=-1,143101   (ratio d_r3/d_r4 = -1,00007)
+```
+
+**`d3` mesuré (+1,106e-02) est à l'opposé de sa prédiction
+(-2,2642e-03) EN SIGNE ET en grandeur (~5x plus grand)** — sa
+back-solution `sigma≈0,24` est réfutée. Mais ce qui remplace sa
+prédiction est plus propre que ce qu'aucun de nous deux avait
+anticipé : **`d_logit_r[10,3] ≈ -d_logit_r[10,4]` à ~0,007% près, aux
+DEUX pas testés.** Pas un petit terme correctif — un quasi-miroir
+exact. `sigma ≈ -rho`, pas `sigma ≈ 0,24`.
+
+**Premier bug trouvé et corrigé dans MON PROPRE script avant tout
+résultat exploitable** : première version du test mesurait
+`|dR|/|ds3|` en divisant `dR` (probabilité) par `d_logit_s3` (espace
+LOGIT) — incohérence d'unités, donnait des ratios absurdes (0,39,
+6e11). Corrigé pour utiliser `ds3` en PROBABILITÉ (cohérent avec sa
+propre formule, qui utilise `R(1-R)/s3(1-s3)` pour convertir
+`rho`/`sigma` de l'espace logit vers l'espace probabilité). Une fois
+corrigé :
+
+```
+|dR|/|ds3| MESURE directement (dR et ds3 en probabilite), pas=59989 : 196,59
+prediction 157,4623*rho (sigma=0, lecture naive)        : 185,70   (-5,6%)
+prediction 157,4623*(rho-sigma) (sa formule complete)   : 371,41   (+88,9%)
+```
+
+**Sa formule complète, testée avec les VRAIES valeurs de `rho` et
+`sigma` mesurées, SUR-ESTIME de 89% — pire que la lecture naïve
+`rho` seul (qui ne sous-estime que de 5,6%).** Inclure `sigma` tel
+qu'il l'a dérivé aggrave l'écart au lieu de le combler. Ce n'est pas
+que son identité de Jacobien softmax soit fausse en elle-même — c'est
+que `|dR|/|ds3| = 157,4623*(rho-sigma)` n'est pas la bonne façon de
+la combiner ici.
+
+**Le vrai closed-form, trouvé en creusant pourquoi sa combinaison
+échoue** : `dR ≈ R(1-R)*(dlogit_r4 - dlogit_r3)`, PAS
+`R(1-R)/s3(1-s3)*(rho-sigma)*ds3` :
+
+```
+R(1-R)*(d_logit_r4 - d_logit_r3) = 0,163126*(-1,106214e-02 - 1,106291e-02)
+                                  = 0,163126*(-2,212505e-02) = -3,6086e-03
+dR mesure directement             = -3,632578e-03
+ecart                              = 0,65%
+```
+
+**0,65% d'écart, contre 5,6% (rho seul) et 89% (sa combinaison
+complète).** `(d4-d3)` EST la bonne quantité — exactement ce que sa
+question de clôture demandait — mais elle doit remplacer `rho` dans
+le NUMÉRATEUR (`R(1-R)*(d4-d3)`), pas être combinée via `(rho-sigma)`
+sur tout le ratio en passant par `ds3`. Testé séparément : l'approximation
+côté dénominateur `ds3(prob)≈s3(1-s3)*dlogit_s3` échoue, elle-même —
+`s3(1-s3)*d_logit_s3 = -9,7171e-06` contre `ds3` mesuré directement
+`=-1,847767e-05`, un facteur ~1,9x. **`s3` ne se comporte probablement
+pas non plus comme un sigmoïde à 2 issues propre** — suggère que
+`logit_s3` (ligne 3 de l'émetteur, sur les MESSAGES, pas les
+référents) a elle aussi un partenaire anti-corrélé parmi les 26 autres
+messages, jamais mesuré. **Précommis pour le prochain tour** : logger
+la ligne 3 complète de l'émetteur sur la même fenêtre pour l'identifier.
+
+**Le contrôle `delta=0` : sa prédiction (sigma collapse, rho stable)
+n'est pas testable telle quelle — division par un dénominateur qui
+s'effondre lui-même, pas une réfutation du mécanisme** :
+
+```
+delta=0, pas=59989 : d_logit_s3=-6,07e-06 (quasi-nul, deja etabli tour 54:
+                       "max |ds3| over window: 1,426e-10, flat")
+                      d_logit_r4=+1,504e-03   d_logit_r3=-1,504e-03
+                      rho=-247,65   sigma=+247,61   (explosent, denominateur -> 0)
+```
+
+`rho` et `sigma` explosent numériquement PARCE QUE `ds3` s'effondre à
+`delta=0` (déjà établi tour 54 : `s3` reste plat pendant le kick) — pas
+parce que le mécanisme change de nature. **Ratio bien conditionné
+utilisé à la place** : `d_logit_r3/d_logit_r4` (évite le dénominateur
+qui s'effondre) :
+
+```
+                delta reel      delta=0
+ratio d_r3/d_r4   -1,00007       -0,99982
+magnitude |d_r4|   1,106e-02      1,504e-03   (x7,3 plus petit a delta=0)
+```
+
+**Le miroir `r3↔r4` (ratio ≈ -1,000) est DELTA-INDÉPENDANT** —
+survit à `delta=0` avec la même précision qu'à `delta≠0`, cohérent
+avec « le kick est optimiseur-intrinsèque » (tour 54, test 3) — mais sa
+MAGNITUDE chute d'un facteur 7,3 sans asymétrie de récompense. Sa
+prédiction qualitative (rho stable) échoue littéralement sur les
+NOMBRES bruts (rho passe de 1,18 à -247,65) mais c'est un artefact du
+ratio choisi, pas un vrai changement de régime — corrigé en substance
+par le ratio `d_r3/d_r4`, qui LUI reste stable comme il l'espérait.
+
+**Point non résolu, à signaler honnêtement, pas caché** : la somme
+`Σ|d_logit_r[10,j]|` pour les 25 autres entrées de la ligne 10 vaut
+`0,222` (pas=59989, config réelle) — **20x PLUS GRAND** que
+`|d_logit_r3|` ou `|d_logit_r4|` individuellement (~0,011 chacun).
+Complique l'hypothèse (la sienne et la mienne) que la ligne 10 se
+réduit effectivement à `{3,4}`. Pas encore distingué si c'est du
+bruit de dérive Adam ordinaire sur 989 pas (25 petites entrées qui
+dérivent chacune un peu, sans rapport avec le kick) ou un signal réel.
+**Précommis pour le prochain tour** : mesurer ce même agrégat sur une
+fenêtre équivalente SANS kick, pour établir un niveau de fond.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| sa back-solution `sigma≈0,24138/0,20508` (d3 prédit) | 21/09 (dipankarsarkar) | **RÉFUTÉE** le 21/09 par mesure directe — signe opposé, magnitude ~5x sous-estimée |
+| `d_logit_r[10,3] ≈ -d_logit_r[10,4]` (miroir quasi-exact) | 21/09 (moi, trouvé en creusant l'écart) | **confirmée** le 21/09 — ratio -1,00007 et -1,00007 aux deux pas testés, config réelle |
+| sa formule complète `157,4623*(rho-sigma)` ferme le résidu | 21/09 (dipankarsarkar) | **RÉFUTÉE** le 21/09 — sur-estime de 89%, pire que `rho` seul (-5,6%) |
+| `dR ≈ R(1-R)*(dlogit_r4-dlogit_r3)` (numérateur seul, sans passer par `ds3`) | 21/09 (moi) | **confirmée** le 21/09 — écart 0,65%, le plus proche obtenu ce tour |
+| `ds3(prob) ≈ s3(1-s3)*dlogit_s3` (approximation sigmoïde standard pour `s3`) | 21/09 (moi, implicite) | **réfutée** le 21/09 — facteur ~1,9x d'écart, `s3` a probablement un partenaire anti-corrélé non identifié dans sa propre ligne |
+| le miroir `r3↔r4` est delta-indépendant (survit à `delta=0`) | 21/09 (moi, en résolvant son contrôle) | **confirmée** le 21/09 — ratio `d_r3/d_r4` stable (-1,00007 vs -0,99982) malgré magnitude ÷7,3 |
+| la ligne 10 se réduit effectivement à `{3,4}` (son hypothèse simplificatrice) | 21/09 (dipankarsarkar, implicite) | **toujours ouverte** — les 25 autres entrées bougent 20x plus en agrégat que r3/r4 individuellement, pas encore distingué bruit de fond vs signal |
+
+**Scripts** : `verifier_precommis_dipankar_sigma_row10.py` (test
+précommis complet, bug d'unités trouvé et corrigé en cours de route).
+
+**Réponse complète envoyée dans `docs/REPONSE_ORDRE56.md`.**
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
