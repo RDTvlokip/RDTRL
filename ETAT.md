@@ -259,14 +259,29 @@ clos.** Ne pas oublier cette étape finale.
     mécanisme d'aversion à l'inéquité sous asymétrie, pas sur le point
     fixe combinatoire lui-même. Confiance globale FAIBLE, explicitement
     signalée.
-20. **« Ablater un composant ne change pas beaucoup le comportement »
-    (utilisé pour argumenter qu'un composant n'a pas d'importance, ex.
-    élagage de têtes d'attention) reflète-t-il parfois une
-    redistribution de masse vers une route alternative (le mécanisme
-    masse_fond de ce projet, où retirer 25 lignes ne fait que
-    déplacer où va la masse, pas si elle bouge) — c'est-à-dire que
-    l'ablation teste l'ATTEIGNABILITÉ d'une route de secours, pas
-    l'importance de la route d'origine ?**
+20. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 20
+    des 20 ». DERNIÈRE des 20, résultat le plus net.] L'ablation qui
+    « ne change pas grand-chose » teste-t-elle l'atteignabilité d'une
+    route de secours plutôt que l'importance d'origine (mécanisme
+    `masse_fond`) ?** Réponse : le mécanisme EXACT existe déjà publié
+    sous un autre nom — McGrath et al., « The Hydra Effect: Emergent
+    Self-repair in Language Model Computations » (arXiv:2307.15771,
+    2023), citation vérifiée mot pour mot par moi : « ablations of one
+    attention layer... cause another layer to compensate (which we
+    term the Hydra effect) ». Retrouvé indépendamment sur un système
+    jouet complètement différent. Ce qui reste non couvert : la
+    littérature d'élagage classique (Michel et al. 2019, cadrage
+    « redondance » statique) et celle de l'effet Hydra/backup-heads
+    restent largement séparées, sans principe méthodologique général
+    explicite reliant les deux.
+
+## LES 20 QUESTIONS SONT TOUTES RÉPONDUES (21/09/2026)
+
+Chacune avec son commit dédié (`git log`), détail complet dans
+`CARNET.md`. Prochaine étape obligatoire (consigne de Théo,
+21/09/2026) : lancer un agent style dipankarsarkar (worktree isolé)
+pour un audit global des 20 réponses avant de clore définitivement ce
+fil.
 
 ---
 

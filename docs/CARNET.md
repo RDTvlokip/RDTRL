@@ -13652,6 +13652,122 @@ pour mot, confiance globale explicitement basse.
 
 ---
 
+## Question 20 des 20 (ETAT.md), 21/09/2026 — LA DERNIÈRE des 20,
+## recherche littérature, résultat le plus net de tout le lot : le
+## mécanisme EXACT existe déjà publié sous un autre nom (« effet Hydra »)
+
+**Question posée (ETAT.md, #20)** : « ablater un composant ne change
+pas beaucoup le comportement » (utilisé pour argumenter qu'un
+composant n'a pas d'importance, ex. élagage de têtes d'attention)
+reflète-t-il parfois une redistribution de masse vers une route
+alternative (le mécanisme `masse_fond` de ce projet, où retirer 25
+lignes ne fait que déplacer où va la masse, pas si elle bouge) —
+l'ablation testant l'ATTEIGNABILITÉ d'une route de secours, pas
+l'importance de la route d'origine ?
+
+**Recherche effectuée, le point central vérifié mot pour mot par
+moi** :
+
+1. **(a) Le papier fondateur de l'élagage de têtes d'attention (Michel,
+   Levy & Neubig, « Are Sixteen Heads Really Better than One? »,
+   NeurIPS 2019, arXiv:1905.10650) cadre son résultat comme
+   REDONDANCE** (« a large percentage of attention heads can be removed
+   at test time without significantly impacting performance ») — une
+   affirmation STATIQUE (plusieurs têtes peuvent faire le travail), pas
+   DYNAMIQUE (retirer la tête X cause SPÉCIFIQUEMENT la tête Y à
+   prendre le relais). Non revérifié directement par moi.
+2. **(b) LE MÉCANISME EXACT de la question 20 existe déjà publié, sous
+   un autre nom, dans une littérature différente (interprétabilité
+   mécaniste, pas élagage classique).** McGrath et al., « The Hydra
+   Effect: Emergent Self-repair in Language Model Computations »
+   (arXiv:2307.15771, 2023) — **citation vérifiée mot pour mot par moi**
+   (`WebFetch`) : « a form of adaptive computation where ablations of
+   one attention layer of a language model cause another layer to
+   compensate (which we term the Hydra effect) ». **C'est exactement le
+   mécanisme `masse_fond` de ce projet**, retrouvé indépendamment sur
+   des transformers réels, avec un nom déjà établi depuis 2023 (~70% de
+   la réduction de logit restaurée par l'effet Hydra + contrepoids MLP,
+   selon l'agent, non revérifié par moi). Egalement : « Backup Name
+   Mover Heads » dans la littérature du circuit IOI (Wang et al. et
+   suites, ex. arXiv:2607.01940) — des têtes dormantes qui s'activent
+   SEULEMENT quand les têtes primaires sont neutralisées, explicitement
+   distinguées d'« important » vs « redondant ». Non revérifié
+   directement par moi.
+3. **(c) Une critique méthodologique proche existe** : Li & Janson,
+   « Optimal ablation for interpretability » (NeurIPS 2024,
+   arXiv:2409.09951) — pas de définition rigoureuse de « importance »
+   via ablation, artefacts hors-distribution du zero-ablation,
+   complication par l'existence de routes alternatives — mais ne va pas
+   jusqu'au cadrage précis de la question 20 (atteignabilité d'une route
+   déjà disponible, pas importance d'origine). Non revérifié
+   directement par moi.
+
+**Réponse à la question 20, la plus nette de tout le lot** : le
+mécanisme lui-même N'EST PAS original — publié depuis 2023 sous le nom
+« effet Hydra », retrouvé indépendamment par ce projet sur un système
+jouet complètement différent (jeu référentiel à 27 options, pas un
+transformer de langage). **Ce qui semble rester non couvert** : la
+littérature d'élagage CLASSIQUE (Michel et al. et les papiers qui la
+citent pour argumenter la non-importance de têtes) et la littérature
+d'interprétabilité mécaniste (effet Hydra, backup heads) restent
+largement séparées — personne ne semble avoir explicitement relié les
+deux pour nommer « redistribution vs importance » comme un principe
+méthodologique général à appliquer À CHAQUE étude d'ablation classique.
+
+**Statut** : question 20 des 20 (ETAT.md) considérée close — DERNIÈRE
+des 20 questions, recherche littérature avec le point central vérifié
+mot pour mot par moi, résultat le plus net de la série (mécanisme
+publié, mais sous un nom et dans une littérature différents de ce que
+la formulation naïve de la question suggérait).
+
+---
+
+## LES 20 QUESTIONS SONT TOUTES RÉPONDUES (21/09/2026) — synthèse avant
+## l'agent-dipankar final obligatoire
+
+Bilan des 20 réponses (chacune avec son commit dédié, `git log` fait
+foi) :
+- **3 réponses avec test empirique direct sur le vrai système** :
+  question 3 (clipping de gradient), question 13 (arrêt anticipé vs
+  phase de kick) — toutes deux avec un bug de calibration trouvé et
+  corrigé avant résultat exploitable ; question 5 (calcul analytique
+  fermé de saturation bias1/bias2).
+- **1 réponse s'appuyant sur un résultat interne déjà établi** :
+  question 16 (Adam vs flot de gradient), avec une tension réelle
+  trouvée dans la littérature qui nuance plutôt que confirme.
+- **16 réponses par recherche littérature**, avec au moins un point
+  vérifié DIRECTEMENT par moi (pas seulement accepté du rapport de
+  l'agent) dans chacune, sauf déclaration explicite du contraire.
+- **Trois angles jugés déjà bien connus, PAS originaux** (questions 1,
+  2, 6, 7 — assumé honnêtement plutôt que sur-vendu).
+- **Plusieurs angles jugés potentiellement non couverts par la
+  littérature atteinte** (questions 4, 8, 9, 10, 11, 12/15, 14, 17, 18,
+  19, 20) — TOUS avec une réserve de confiance explicite (recherche web
+  non exhaustive, pas une revue systématique), jamais présentés comme
+  une garantie de nouveauté.
+- **TROIS incidents de confabulation du moteur de recherche/couche de
+  résumé détectés et écartés avant d'être rapportés** : question 10
+  (détecté par l'agent), question 19 (détecté par l'agent), plus
+  plusieurs écarts trouvés par MA PROPRE vérification directe (question
+  6 : mauvaise attribution d'un cadre théorique à un papier ; question
+  16 : tension réelle avec notre propre résultat, assumée plutôt que
+  cachée).
+- **Deux questions (12 et 15) traitées ensemble** car quasi-doublons,
+  pour éviter une recherche redondante — signalé explicitement, pas
+  caché.
+
+**Prochaine étape obligatoire, consigne explicite de Théo (21/09/2026,
+notée aussi dans `ETAT.md`)** : lancer un agent style dipankarsarkar
+(prompt dans la mémoire `dipankarsarkar-agent-prompt`, `isolation:
+"worktree"` obligatoire) pour challenger l'ENSEMBLE des 20 réponses
+avant de considérer ce fil définitivement clos — pas une vérification
+question par question comme fait jusqu'ici pendant la recherche, mais
+un audit global : cohérence entre les réponses, chiffres/citations à
+recontrôler, angles de critique qu'aucune des 20 recherches
+individuelles n'a pensé à chercher.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
