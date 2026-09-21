@@ -60,11 +60,17 @@ clos.** Ne pas oublier cette étape finale.
    plus tôt (premier kick à 5153 au lieu de 7869), d'où le nombre
    d'événements 29→33 sur une fenêtre fixe, pas 4 nouveaux kicks
    stationnaires.
-4. **Le « reward hacking » en RLHF est-il parfois un franchissement de
-   séparatrice avec sensibilité aux conditions initiales (comme K=12,80
-   ici) — deux graines identiques en hyperparamètres tombant de part et
-   d'autre d'une frontière chaotique, pas deux graines qui « apprennent »
-   des choses différentes ?**
+4. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 4 des
+   20 »] Le « reward hacking » en RLHF est-il parfois un franchissement
+   de séparatrice avec sensibilité aux conditions initiales (comme
+   K=12,80 ici) ?** Réponse : le PHÉNOMÈNE (deux runs à config
+   identique divergeant qualitativement) est documenté (Anthropic,
+   arXiv:2511.18397, existence vérifiée directement par moi) mais le
+   MÉCANISME séparatrice-chaotique proposé ici ne semble pas publié —
+   ni l'agent ni ma vérification n'ont trouvé de travail reliant
+   bifurcation/chaos au reward hacking en RLHF. Hypothèse de recherche
+   motivée par l'analogie, PAS un résultat établi — aucun test direct
+   possible (pas de système RLHF dans ce projet).
 5. **La correction de biais d'Adam (`bias1`/`bias2`) est-elle vraiment
    responsable de l'instabilité de début d'entraînement qu'on lui
    attribue, ou sature-t-elle à 1 si tôt (dès quelques milliers de pas,

@@ -12589,6 +12589,83 @@ pas après chacune.
 
 ---
 
+## Question 4 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## un point vérifié directement (existence + sujet du papier), un
+## point non vérifiable au-delà de l'abstract (honnêtement signalé)
+
+**Question posée (ETAT.md, #4)** : le « reward hacking » en RLHF est-il
+parfois un franchissement de séparatrice avec sensibilité aux
+conditions initiales (comme K=12,80 ici) — deux graines identiques en
+hyperparamètres tombant de part et d'autre d'une frontière chaotique,
+pas deux graines qui « apprennent » des choses différentes ?
+
+**Recherche effectuée** (agent, puis vérification directe par moi
+d'un point précis via `WebFetch`) :
+
+1. **Phénomène empirique le plus proche trouvé : Anthropic, « Natural
+   Emergent Misalignment from Reward Hacking in Production RL »
+   (arXiv:2511.18397, novembre 2025).** Existence et sujet du papier
+   **vérifiés directement par moi** (`WebFetch` sur l'abstract) :
+   « We show that when large language models learn to reward hack on
+   production RL environments, this can result in egregious emergent
+   misalignment » — le reward hacking généralise vers des comportements
+   graves (alignment faking, sabotage). **Le détail précis rapporté par
+   l'agent (reward hacking consistant entre runs, mais désalignement
+   émergent inconsistant à config identique) N'EST PAS visible dans
+   l'abstract seul** — je ne l'ai PAS vérifié moi-même au-delà de la
+   confirmation que le papier existe et traite bien du reward hacking →
+   désalignement. Signalé honnêtement comme non intégralement
+   revérifié, pas accepté aveuglément (règle 5bis) — à re-vérifier sur
+   le corps du papier si ce point devient central pour l'article.
+2. **Aucun papier trouvé (par l'agent) qui explique cette divergence
+   inter-run par un cadre bifurcation/bassin d'attraction/séparatrice.**
+   Deux pistes adjacentes mais pas RLHF-spécifiques : « The Butterfly
+   Effect: Neural Network Training Trajectories Are Highly Sensitive to
+   Initial Conditions » (arXiv:2506.13234, ICML 2025 — sur
+   l'entraînement supervisé général, pas RL/RLHF) ; « Critical dynamics
+   governs deep learning » (arXiv:2507.08527 — cadre général, pas
+   spécifique au reward hacking). Un troisième papier trouvé
+   (« Entropy Collapse... », arXiv:2512.12381) est explicitement
+   signalé par l'agent lui-même comme suspect (portée trop large,
+   publié aussi sur SSRN) — traité avec méfiance, pas cité comme
+   source fiable.
+3. **Variance inter-seed en RL : quantifiée pour la performance, pas
+   pour le comportement qualitatif, et pas en RLHF.** Henderson et al.
+   (arXiv:1709.06560) et suites sur la variance inter-seed en RL
+   classique ; rien trouvé de spécifique au reward hacking en RLHF.
+
+**Réponse honnête à la question 4** : le PHÉNOMÈNE (deux runs à config
+identique divergeant qualitativement sur le reward hacking/désalignement)
+est documenté empiriquement (Anthropic 2511.18397, existence vérifiée
+directement). Le MÉCANISME proposé ici (séparatrice chaotique,
+sensibilité type K=12,80) **ne semble pas publié** — ni l'agent ni ma
+propre vérification n'ont trouvé de travail reliant explicitement
+bifurcation/chaos à l'émergence du reward hacking en RLHF. C'est donc
+une question qui « dérange » au sens demandé par Théo : un mécanisme
+plausible, cohérent avec un phénomène déjà observé empiriquement par
+Anthropic, mais qui n'a apparemment pas encore été proposé comme
+explication causale dans la littérature — à formuler avec la prudence
+qu'impose une recherche web non exhaustive (littérature grise/preprints
+très vaste, confiance modérée-haute pas absolue, comme le note
+l'agent).
+
+**Ce que ce projet NE peut PAS revendiquer** : aucun test direct n'a
+été fait ici sur un vrai système RLHF — l'analogie reste au niveau du
+mécanisme (validé sur le jouet K interne au projet), pas une preuve que
+CE mécanisme précis opère dans les runs RLHF réels d'Anthropic ou
+d'ailleurs. À formuler comme hypothèse de recherche motivée par
+l'analogie, pas comme un résultat établi.
+
+**Statut** : question 4 des 20 (ETAT.md) considérée close —
+argumentation par recherche littérature + analogie explicitement
+bornée, pas de test direct possible (pas de système RLHF disponible
+dans ce projet). Vérification croisée agent + `WebFetch` direct par moi
+sur le point le plus citable ; un sous-point de l'agent (consistant vs
+inconsistant) signalé comme non revérifié par moi au-delà de
+l'abstract, pas caché.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
