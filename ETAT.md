@@ -131,10 +131,18 @@ clos.** Ne pas oublier cette étape finale.
    réelle avec la proximité d'une bifurcation) — semble non publié,
    avec la réserve que deux sources pertinentes n'ont pas été lues en
    détail par l'agent (limite signalée, pas un vide confirmé).
-10. **En entraînement distribué/fédéré, le « bruit des rounds de
-    communication » est-il parfois un kick périodique plancher-de-`v`
-    d'Adam, amplifié par des synchronisations peu fréquentes qui
-    allongent la phase calme avant que `v` touche son plancher ?**
+10. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 10
+    des 20 ». INCIDENT : confabulation moteur de recherche détectée et
+    écartée (agent + moi).] Le bruit fédéré est-il un kick
+    plancher-de-`v` amplifié par des syncs peu fréquentes ?** Réponse :
+    angle non couvert dans la littérature atteinte (FedAdam, FedAdamW,
+    DES-LOC, Q-LocalAdam — textes vérifiés par l'agent, un point
+    revérifié directement par moi) — l'instabilité y est toujours
+    attribuée à l'hétérogénéité non-IID ou à la réinitialisation de `v`
+    à zéro, jamais à une décroissance vers un plancher numérique. Une
+    première recherche avait produit une phrase quasi-identique à
+    l'hypothèse posée, présentée comme publiée — vérifiée fausse
+    (absente du texte source) avant d'être acceptée.
 11. **Le travail de calibration de confiance (temperature scaling)
     corrige-t-il parfois exactement l'artefact de compression `comp¹`
     du softmax plutôt qu'un vrai mécalibrage des logits sous-jacents ?**

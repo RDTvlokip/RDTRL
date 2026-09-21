@@ -13054,6 +13054,75 @@ limites explicitement signalées par l'agent et reprises telles quelles
 
 ---
 
+## Question 10 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## INCIDENT NOTABLE : confabulation du moteur de recherche détectée et
+## écartée par l'agent lui-même, revérifiée indépendamment par moi
+
+**Question posée (ETAT.md, #10)** : en entraînement distribué/fédéré,
+le « bruit des rounds de communication » est-il parfois un kick
+périodique plancher-de-`v` d'Adam, amplifié par des synchronisations
+peu fréquentes qui allongent la phase calme avant que `v` touche son
+plancher ?
+
+**INCIDENT À NOTER EN PREMIER, avant le résultat lui-même** : l'agent
+rapporte qu'un premier résumé `WebSearch` a produit une phrase
+formulant PRESQUE MOT POUR MOT l'hypothèse (b) de la question elle-même
+(« in Local Adam, when synchronization intervals are longer... the
+second moment can decay to small values, which causes small updates to
+become amplified in the next round ») — présentée comme si elle venait
+d'un papier. **L'agent a vérifié directement le texte complet de la
+source citée (DES-LOC, arXiv:2505.22549) et n'y a trouvé AUCUNE trace
+de cette phrase.** Confabulation de la couche de résumé du moteur de
+recherche, pas un résultat publié — écartée avant d'être rapportée
+comme un faux positif. **Revérifié indépendamment par moi** (`WebFetch`
+direct sur l'abstract de 2505.22549) : confirmé, l'abstract ne
+mentionne ni plancher numérique ni amplification au resync, seulement
+des « independent synchronization periods to parameters and momenta »
+(synchronisation désynchronisée par demi-vie). **C'est exactement le
+genre de piège que la règle 5bis est censée intercepter — ici
+intercepté deux fois (par l'agent, puis par moi), pas une fois.**
+
+**Résultat de la recherche (le vrai, pas la confabulation)** :
+
+1. **(a) Le bruit de synchronisation EST parfois attribué à
+   l'optimiseur adaptatif local, mais via un mécanisme différent du
+   nôtre.** FedAdamW (arXiv:2510.27486, AAAI 2026, rapporté par
+   l'agent, non revérifié par moi) : la REINITIALISATION à zéro de `v`
+   à chaque round (pas une décroissance vers un plancher numérique en
+   phase calme) est identifiée comme cause de ralentissement — leur fix
+   est d'agréger `v` entre clients plutôt que de le réinitialiser.
+   Q-LocalAdam (arXiv:2605.17552) documente une distribution log-normale
+   de `v` sur 7-8 ordres de grandeur en fédéré — donnée brute cohérente
+   avec l'idée que `v` explore des valeurs très petites, mais sans
+   relier ça à la fréquence de synchronisation.
+2. **(b) Le lien précis (sync peu fréquente → `v` local plus près du
+   plancher → kick plus grand au resync) n'est PAS documenté** — la
+   seule source qui semblait le confirmer était la confabulation
+   décrite ci-dessus. Le papier thématiquement le plus proche (DES-LOC,
+   texte complet vérifié par l'agent) ne mentionne ni plancher
+   numérique ni cadre oscillatoire/relaxation.
+3. **(c) FedAdam (Reddi et al., ICLR 2021, arXiv:2003.00295) et son
+   suivi sur l'interaction pas-locaux/fréquence-de-communication
+   (arXiv:2205.02719, texte complet vérifié par l'agent) discutent
+   l'instabilité uniquement en termes de variance due à
+   l'hétérogénéité non-IID — jamais via un plancher numérique.**
+
+**Réponse à la question 10** : angle qui SEMBLE non couvert dans la
+littérature fédérée atteinte (7 recherches + 3 lectures directes de
+source primaire par l'agent, confirmé par moi sur un point), mais avec
+un incident méthodologique important à retenir pour la suite : une
+recherche web peut fabriquer une correspondance qui a l'air d'une
+confirmation exacte de l'hypothèse posée — la vérification du TEXTE
+SOURCE, pas du résumé, est ce qui a évité une fausse revendication ici.
+
+**Statut** : question 10 des 20 (ETAT.md) considérée close — recherche
+littérature avec un incident de confabulation détecté et écarté (agent
++ vérification indépendante par moi), résultat final honnête
+« angle non couvert, confiance moyenne-haute sur l'absence », pas
+gonflé malgré la tentation qu'offrait la fausse confirmation initiale.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
