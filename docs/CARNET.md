@@ -14374,6 +14374,32 @@ sans le prouver.**
 
 **Script** : test ponctuel, pas encore promu en fichier permanent.
 
+**APPROFONDI IMMÉDIATEMENT — ce n'est pas juste une corrélation de
+rang, c'est une PROPORTIONNALITÉ quasi exacte.** Calculé
+`dérive_j / prob_base_j` pour les 25 référents :
+
+```
+24 referents sur 25 : ratio = -8,49e9, quasi constant (CV=0,015%
+                       en excluant l'exception ci-dessous)
+1 exception : referent 5, ratio = -7,85e9 (~7,5% sous le groupe commun)
+```
+
+**`dérive ≈ -8,49e9 · prob_base` pour 24 des 25 référents, un seul
+coefficient partagé.** Explique directement l'inversion de rang
+9↔5 trouvée juste avant : le référent 5 n'est PAS un cas de bruit
+proche — c'est une vraie anomalie, sa dérive est ~7,5% plus PETITE
+que ce que sa probabilité de base prédirait via le coefficient commun
+aux 24 autres. **Cause de l'anomalie du référent 5 : non
+investiguée.** Le coefficient `-8,49e9` lui-même n'est pas encore
+relié à une quantité connue du système (`lr`, `beta2`, `eps`,
+nombre de pas écoulés) — piste ouverte, pas creusée davantage ce
+tour.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la relation dérive/probabilité est une proportionnalité (coefficient unique), pas seulement une corrélation de rang | 21/09 (moi) | **confirmée** le 21/09 pour 24/25 référents — CV=0,015% sur le ratio |
+| le référent 5 est un cas limite proche du bruit dans le classement par rang | 21/09 (moi, hypothèse initiale) | **réfutée** le 21/09 — c'est une vraie anomalie de ~7,5% sur le ratio dérive/probabilité, pas un cas limite de bruit |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
