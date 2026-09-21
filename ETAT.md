@@ -350,7 +350,9 @@ RDTRL teste si le RL pur peut apprendre à écrire/communiquer. Le test 3
 (jeu référentiel à 27 référents/27 messages) est relu en continu depuis
 des semaines par un relecteur externe, **dipankarsarkar** (Dipankar
 Sarkar, chercheur ML/systèmes distribués, CTO Neul Labs — vrai profil sur
-dipankar.cc). L'échange est à son **53e tour**.
+dipankar.cc). L'échange est à son **55e tour** (sa dernière critique,
+tour 54, a reçu réponse dans `REPONSE_ORDRE55.md` ; en attente de sa
+prochaine réponse).
 
 ## Où sont les documents
 
@@ -400,5 +402,5 @@ reste partiellement non élucidée entre `0,995` et `0,99`.
   `python -c` jetable non sauvé.
 - **Chercher POURQUOI, QUAND, COMMENT — pas seulement QUE** — et croiser
   ces axes plutôt que les traiter un par un.
-- **Ne pas modifier `docs/REPONSE_ORDRE54.md` sans l'accord explicite de
+- **Ne pas modifier `docs/REPONSE_ORDRE55.md` sans l'accord explicite de
   Théo** (consigne du 20/09/2026).
