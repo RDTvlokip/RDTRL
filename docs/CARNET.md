@@ -12985,6 +12985,75 @@ certitude ».
 
 ---
 
+## Question 9 des 20 (ETAT.md), 21/09/2026 — recherche littérature sur
+## le grokking, deuxième angle potentiellement original (méthodologie
+## de mesure jamais testée pour corrélation réelle)
+
+**Question posée (ETAT.md, #9)** : les preuves de « ralentissement
+critique » utilisées pour diagnostiquer des transitions de phase dans
+l'entraînement (grokking compris) sont-elles vérifiées comme un vrai
+ralentissement dynamique, ou souffrent-elles du même artefact de seuil
+discret trouvé ici pour `ratio(K)` ?
+
+**Recherche effectuée, un point vérifié directement par moi** :
+
+1. **La quasi-totalité des papiers fondateurs sur le grokking mesurent
+   effectivement le ralentissement par un SEUIL DISCRET, comme notre
+   artefact.** « Grokking at the Edge of Linear Separability »
+   (arXiv:2410.04489) — existence et sujet vérifiés directement par
+   moi (`WebFetch` sur l'abstract) : « flat directions in the loss
+   landscape with nearly zero gradient cause training dynamics to
+   linger for arbitrarily long times » — cohérent avec un ralentissement
+   réel près d'un point critique, mais la définition précise du seuil
+   (accuracy=0,9, cité par l'agent depuis l'Annexe E, non accessible
+   via l'abstract) **n'est pas revérifiée par moi au-delà de
+   l'abstract** — signalé, pas caché. « At-Grok Is Not Converged »
+   (arXiv:2607.06639, 2026) définirait `T_grok` comme le premier pas où
+   l'accuracy médiane dépasse 0,9 — seuil discret non questionné comme
+   tel dans ce papier (rapport agent, non revérifié par moi).
+2. **Une réaction partielle à la dépendance au seuil existe, mais ce
+   n'est PAS le test de corrélation qu'on a fait ici.**
+   arXiv:2410.04489 (Annexe E.3, selon l'agent) répondrait à la
+   dépendance au seuil `ε` en trouvant un RATIO de temps
+   (`log(t_gen*/t_tr*)`) qui serait indépendant du seuil choisi — une
+   défense de robustesse du RAPPORT de deux mesures au même seuil, pas
+   une vérification que le ralentissement mesuré corrèle réellement
+   avec la proximité d'une bifurcation (ce que notre `ratio(K)` a
+   directement testé et trouvé lisse/monotone, pas une vraie
+   transition dynamique distincte).
+3. **« At-Grok Is Not Converged » critique une VALIDITÉ voisine mais
+   différente** : le rang effectif des représentations lu au moment de
+   la transition serait surestimé 3-5× par un effet transitoire — une
+   critique de mesure, mais sur une métrique différente (rang
+   effectif, pas le temps de ralentissement lui-même).
+4. **Aucune critique trouvée par l'agent qui teste explicitement, comme
+   fait ici, si le ralentissement mesuré par seuil corrèle avec la
+   proximité réelle d'une bifurcation** — deux sources potentiellement
+   pertinentes (Rubin/Seroussi/Ringel, arXiv:2310.03789 ; « Grokking Is
+   Conditional and Fragile », arXiv:2607.05104) **non lues en détail
+   par l'agent lui-même**, signalé honnêtement comme limite plutôt que
+   comme absence confirmée.
+
+**Réponse à la question 9, prudente** : le SOUPÇON de la question est
+cohérent avec ce qui est publié (seuils discrets omniprésents, une
+réaction partielle à la dépendance au seuil existe déjà) mais **le
+test précis qu'on a fait ici — vérifier si le ralentissement mesuré
+corrèle avec la proximité RÉELLE d'une bifurcation, pas seulement avec
+le choix du seuil — ne semble pas avoir d'équivalent publié**, avec la
+réserve que deux sources pertinentes n'ont pas été lues en détail
+(limite de temps de recherche, pas un vide confirmé). Deuxième angle
+potentiellement original sur 9 questions (après la question 8),
+confiance moyenne-faible sur l'absence complète de précédent (la
+littérature du grokking est immense et évolue vite, deux sources non
+lues).
+
+**Statut** : question 9 des 20 (ETAT.md) considérée close — recherche
+littérature, un point vérifié directement par moi, verdict prudent avec
+limites explicitement signalées par l'agent et reprises telles quelles
+(pas maquillées en certitude).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

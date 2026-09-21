@@ -120,11 +120,17 @@ clos.** Ne pas oublier cette étape finale.
    établi trouvé pour cette distinction précise — angle
    potentiellement original, mais confiance modérée seulement (une
    seule passe de recherche), à ne pas sur-vendre.
-9. **Les preuves de « ralentissement critique » utilisées pour
-   diagnostiquer des transitions de phase dans l'entraînement (grokking
-   compris) sont-elles vérifiées comme un vrai ralentissement
-   dynamique, ou souffrent-elles du même artefact de seuil discret
-   trouvé ici pour `ratio(K)` ?**
+9. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 9 des
+   20 ». Deuxième angle potentiellement original.] Le « ralentissement
+   critique » du grokking souffre-t-il du même artefact de seuil
+   discret que `ratio(K)` ?** Réponse : les papiers fondateurs mesurent
+   effectivement via seuil discret (arXiv:2410.04489, existence/sujet
+   vérifiés directement par moi ; arXiv:2607.06639, rapport agent). Une
+   réaction partielle à la dépendance au seuil existe (ratio de temps
+   indépendant du seuil), mais PAS le test précis fait ici (corrélation
+   réelle avec la proximité d'une bifurcation) — semble non publié,
+   avec la réserve que deux sources pertinentes n'ont pas été lues en
+   détail par l'agent (limite signalée, pas un vide confirmé).
 10. **En entraînement distribué/fédéré, le « bruit des rounds de
     communication » est-il parfois un kick périodique plancher-de-`v`
     d'Adam, amplifié par des synchronisations peu fréquentes qui
