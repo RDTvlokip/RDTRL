@@ -231,12 +231,18 @@ clos.** Ne pas oublier cette étape finale.
     l'intersection de deux littératures qui ne se citent pas. Une
     source proche (DPO, biais structurel) vient d'un domaine déjà
     signalé comme moins fiable (question 5) — traitée avec méfiance.
-18. **Teste-t-on les ablations d'hyperparamètres à un écart/une
-    précision comparable à la vraie sensibilité du système — ou la
-    pratique courante « balaie X, si la métrique ne bouge pas
-    visiblement, X n'a pas d'importance » est-elle structurellement
-    aveugle aux sensibilités proches d'un seuil (comme le cas limite
-    de K=12,5 ici) ?**
+18. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 18
+    des 20 ». Septième angle potentiellement non couvert — la
+    synthèse, pas les pièces individuelles.] Les ablations
+    d'hyperparamètres sont-elles structurellement aveugles aux
+    sensibilités proches d'un seuil ?** Réponse : chaque pièce existe
+    déjà séparément — critique du maillage grossier (Bergstra & Bengio
+    2012, abstract vérifié via voie de contournement après échec
+    d'accès PDF direct), méthodes de sensibilité formelles (HSIC,
+    Sobol), et Edge of Stability (Cohen et al. 2021) comme cas précis
+    du même phénomène — mais aucune source trouvée ne les relie comme
+    trois instances d'un même problème générique. Confiance
+    moyenne-haute sur l'absence de synthèse, recherche web seule.
 19. **Combien de résultats « d'équité/coopération émergente » en RL
     multi-agents sont en fait le même genre de point fixe forcé par la
     symétrie (comme `R=1/2` à `delta=0` ici, une numérologie

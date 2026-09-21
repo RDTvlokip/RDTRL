@@ -13535,6 +13535,58 @@ faible identifiée et traitée avec méfiance plutôt qu'acceptée.
 
 ---
 
+## Question 18 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## septième angle potentiellement non couvert (la SYNTHÈSE entre trois
+## littératures existantes, pas chacune séparément)
+
+**Question posée (ETAT.md, #18)** : teste-t-on les ablations
+d'hyperparamètres à un écart/une précision comparable à la vraie
+sensibilité du système — ou la pratique courante « balaie X, si la
+métrique ne bouge pas visiblement, X n'a pas d'importance » est-elle
+structurellement aveugle aux sensibilités proches d'un seuil (comme le
+cas limite de K=12,5 ici) ?
+
+**Recherche effectuée, un point vérifié (avec une limite d'accès
+signalée)** :
+
+1. **(a) La critique du balayage grossier existe, indirectement.**
+   Bergstra & Bengio (2012, « Random Search for Hyper-Parameter
+   Optimization ») — abstract retrouvé et vérifié par moi (accès direct
+   au PDF échoué, encodage compressé illisible ; contourné via une
+   source secondaire Google Scholar, limite honnêtement signalée) :
+   « only a few hyperparameters substantially matter... a phenomenon
+   that makes grid search poorly suited ». Montre qu'une grille
+   régulière sur-échantillonne les dimensions peu importantes et
+   sous-échantillonne les régions de forte importance — le mécanisme
+   général derrière notre cas K=12,5, mais PAS nommé frontalement comme
+   « un balayage classe à tort `pas d'effet` une sensibilité à 0,03% ».
+2. **(b) Des méthodes formelles plus robustes existent** (analyse de
+   sensibilité HSIC, arXiv:2207.06216 ; indices de Sobol via
+   surrogate, PAR/NSF) mais visent la variance globale de performance,
+   pas un changement de CLASSIFICATION discret comme notre cas. Non
+   revérifié directement par moi.
+3. **(c) « Edge of Stability » (Cohen et al. 2021, arXiv:2103.00065)
+   est structurellement le MÊME phénomène (un seuil précis où le
+   comportement bascule qualitativement) mais reste cantonné au cas
+   `lr`/`sharpness` — aucune des suites trouvées par l'agent (2023-2026)
+   n'en tire la leçon méthodologique générale sur les balayages
+   d'hyperparamètres ailleurs.** Non revérifié directement par moi.
+
+**Réponse à la question 18** : septième angle potentiellement non
+couvert, d'une nature particulière — chaque pièce existe séparément
+(critique du maillage grossier, méthodes de sensibilité formelles,
+Edge of Stability comme cas précis) mais aucune source trouvée ne les
+relie explicitement comme trois instances du même problème générique.
+Confiance moyenne-haute sur l'absence de synthèse (rapportée par
+l'agent), mais recherche web seule, sans accès aux citations croisées
+complètes — un papier de méthodologie plus obscur pourrait exister.
+
+**Statut** : question 18 des 20 (ETAT.md) considérée close — recherche
+littérature avec un point vérifié par une voie de contournement
+(accès PDF direct échoué, limite signalée plutôt que masquée).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
