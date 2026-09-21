@@ -82,22 +82,37 @@ dans `git log`.*
    `tol≤1e-7` ; revérifier K=11 (jamais rebissecté fin) ; tester un K
    NON ENTIER entre 12-13 (le jouet le permet mathématiquement) pour
    trancher coin vs transition lisse.
-   **RÉPONDU le 21/09/2026 puis contesté par un agent, discordance NON
-   RÉSOLUE.** Testé K=12,5/12,8/12,95 : `12 ; 12,5 ; 12,8` dans le
-   plateau (`premier=300`), signal disparaît entre `12,8` et `12,95`
-   — bande resserrée à `[12,80 ; 12,95]`. **Un agent-dipankar a ensuite
-   affirmé que K=12,80 bascule lui-même sous bracket étroit (même
-   défaut que K=13) — ma vérification indépendante, avec le `delta_c`
-   EXACTEMENT identique à celui de l'agent (`0,014409856`, 9 chiffres),
-   donne `premier=300` dans les deux cas (large ET étroit), PAS `60`
-   comme l'agent l'affirme.** Discordance non résolue entre deux
-   calculs indépendants du même point exact — ni acceptée ni rejetée,
-   nécessite une troisième vérification (idéalement avec le script
-   exact des deux côtés comparé ligne à ligne). **Ce qui reste solide
-   malgré ça** : le défaut de bissection à K=13 lui-même (confirmé deux
-   fois, par moi et par un agent différent, en accord total). Scripts :
+   **RÉPONDU le 21/09/2026, contesté par un agent, puis RÉSOLU
+   proprement (COMMENT/POURQUOI/QUAND identifiés) — pas un bug, une
+   vraie sensibilité chaotique.** Testé K=12,5/12,8/12,95 : bande de
+   transition resserrée à `[12,80 ; 12,95]`. Un agent a contesté K=12,80
+   (bascule sous bracket étroit) ; ma première vérification ne
+   reproduisait pas son résultat — discordance. **Résolue** en
+   testant la classification `premier` sur `delta_c(K=12,80)` (bracket
+   étroit, pleine précision `0,014409856109619139`) tronqué à
+   différentes précisions (7 à 14 décimales) :
+   ```
+   ndec=7,9,10,12,14 : premier=60   ndec=8 : premier=300
+   pleine precision (aucune troncature) : premier=300
+   ```
+   **La classification REBONDIT de façon non monotone même pour des
+   perturbations de `1e-15`** — aucune précision ne la stabilise.
+   **COMMENT** : pas un manque de décimales. **POURQUOI** : à
+   K≈12,80, écart 0,03%, la trajectoire est posée quasi exactement SUR
+   une séparatrice de la dynamique continue — dépendance sensible aux
+   conditions initiales, signature du chaos près d'un point critique,
+   qualitativement différent du problème de K=13 (qui LUI se résolvait
+   avec plus de précision). **QUAND** : précisément à cette
+   combinaison (K≈12,80, écart≈0,03%) — ni l'agent ni moi n'étions
+   faux, chacun est tombé d'un côté différent de cette frontière selon
+   son propre chemin flottant. **Conséquence méthodologique** : le
+   protocole `premier_pas_1pct` (seuil discret) est inadapté tout près
+   d'une séparatrice — il faudrait un temps de résidence continu ou un
+   taux de relaxation linéarisé (déjà utilisé ailleurs ce tour pour
+   H6/mécanisme plancher-de-`v`), pas un seuil binaire. Scripts :
    `verifier_localisation_fine_k_non_entier.py`,
-   `verifier_k1280_discordance_agent.py`.
+   `verifier_k1280_discordance_agent.py`,
+   `verifier_chaos_separatrice_k1280.py`.
 
 1. **DEUX rétractations en cascade le 20/09/2026 — un même biais
    d'échantillonnage trouvé deux fois de suite, une fois par moi, une

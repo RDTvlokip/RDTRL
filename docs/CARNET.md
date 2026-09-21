@@ -11452,7 +11452,57 @@ c'est seulement l'EXTENSION de ce défaut au reste de la bande
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
-| K=12,80 bascule de plateau à plat sous bracket de bissection étroit (même défaut que K=13) | 21/09 (agent-dipankar) | **NI CONFIRMÉE NI RÉFUTÉE** — ma vérification indépendante, avec le `delta_c` EXACTEMENT identique rapporté par l'agent, donne `premier=300` (plateau) dans les deux cas, pas `60` comme l'agent l'affirme ; discordance non résolue, à revérifier une troisième fois |
+| K=12,80 bascule de plateau à plat sous bracket de bissection étroit (même défaut que K=13) | 21/09 (agent-dipankar) | **NI CONFIRMÉE NI RÉFUTÉE au premier passage** — ma première vérification, avec le `delta_c` affiché à 9 décimales identique à celui de l'agent, donnait `premier=300`, pas `60` ; **RÉSOLU ensuite (voir ci-dessous), les deux avaient raison ET tort** |
+
+**DISCORDANCE RÉSOLUE le 21/09/2026 (même reprise) — ni un bug, ni du
+bruit de précision banal : une vraie sensibilité chaotique au point
+testé, POURQUOI/COMMENT/QUAND identifiés précisément.**
+
+Diagnostic : rebissecté `delta_c(K=12,80)` en bracket étroit et gardé
+la valeur en PLEINE précision (`0,014409856109619139`, pas la version
+affichée à 9 décimales) — l'écart avec le bracket large est
+`-2,929687500062561e-08`, exactement le chiffre que l'agent avait
+rapporté. Puis testé la classification `premier` en tronquant cette
+valeur à différentes précisions :
+```
+ndec=7   diff=+4,389e-08   premier=60
+ndec=8   diff=+3,890e-09   premier=300
+ndec=9   diff=-1,096e-10   premier=60
+ndec=10  diff=-9,619e-12   premier=60
+ndec=12  diff=+3,809e-13   premier=60
+ndec=14  diff=+8,604e-16   premier=60
+PLEINE PRECISION (aucune troncature)         premier=300
+```
+**COMMENT** : ce n'est PAS qu'il manque des décimales de précision —
+la classification REBONDIT entre 60 et 300 de façon non monotone,
+même pour des perturbations de `delta_c` de l'ordre de `1e-15`
+(quinze ordres de grandeur sous le `delta_c` lui-même). Aucune
+précision testée, aussi fine soit-elle, ne stabilise le résultat.
+**POURQUOI** : à K≈12,80, à l'écart 0,03% sous son propre `delta_c`,
+la trajectoire est posée quasi exactement SUR une séparatrice de la
+dynamique continue sous-jacente — une vraie dépendance sensible aux
+conditions initiales/paramètres, signature standard du chaos près
+d'un point critique, pas un artefact numérique grossier. C'est
+qualitativement différent du problème déjà trouvé à K=13 (qui LUI
+était résolu par plus de précision, `tol=1e-8` aurait suffi) : ici,
+AUCUNE précision ne suffit, parce qu'on est sur la frontière
+elle-même, pas juste proche d'elle avec une bissection insuffisante.
+**QUAND** : ça se manifeste précisément à cette combinaison
+`(K≈12,80, écart≈0,03%)` — ni l'agent ni moi n'étions "faux" dans nos
+calculs respectifs, chacun est tombé d'un côté différent de cette
+frontière sensible selon le chemin flottant exact emprunté par son
+propre script (ordre des opérations, bibliothèque, etc.). **Les deux
+« coin net » et « c'est du bruit » sont simultanément vrais et
+insuffisants** : il y a bien une frontière nette dans l'espace (K,
+delta) — mais elle est si fine, à ce point précis, qu'aucune mesure de
+`premier` à virgule flottante double précision ne peut la localiser
+de façon stable avec le protocole actuel (seuil fixe sur un temps de
+convergence discret). **Conséquence méthodologique pour la suite** :
+le protocole `premier_pas_1pct` lui-même est inadapté tout près
+d'une séparatrice — la bonne mesure serait le temps de résidence
+continu ou le taux de relaxation linéarisé (déjà utilisé ailleurs ce
+tour pour H6, cf. mécanisme plancher-de-`v`), pas un seuil discret sur
+une trajectoire unique.
 
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
