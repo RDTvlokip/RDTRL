@@ -1,5 +1,124 @@
 # État du projet RDTRL — où on en est
 
+## 20 questions inhabituelles mais logiques, posées le 21/09/2026 —
+## à répondre UNE PAR UNE après la prochaine compaction, chacune avec
+## son propre commit (test si possible, sinon argumentation fermée)
+
+Demandées par Théo : des questions que « personne n'aime » dans le
+monde du ML/LLM/RL — pas des questions philosophiques, des questions
+qui découlent logiquement de ce qui a déjà été trouvé et vérifié dans
+CE projet, mais qui dérangent parce qu'elles remettent en cause une
+pratique ou une explication reçue. Chacune se teste ou s'argumente
+individuellement — ne pas répondre en bloc, une réponse = un commit,
+avec le cycle habituel (hypothèse, test si possible, agent-dipankar
+si le résultat est substantiel, journal daté dans `CARNET.md`).
+
+1. **Les « loss spikes » périodiques des gros entraînements ont-ils une
+   période caractéristique gouvernée par la décroissance de `v`
+   (comme trouvé ici), que la communauté attribue plutôt vaguement à
+   du bruit de données — et si oui, baisser `lr` réduit-il vraiment
+   leur fréquence, ou seulement leur amplitude (déjà testé ICI, jamais
+   à ma connaissance testé ailleurs) ?**
+2. **Le « seuil critique de batch size / learning rate » que rapportent
+   certains papiers est-il une vraie bifurcation dynamique, ou un
+   artefact de seuil discret sur un temps de convergence (exactement
+   le mécanisme `ratio(K)` trouvé ici, où un « coin net » s'est révélé
+   être une mesure de seuil binaire sur une quantité lisse) ?**
+3. **Le clipping de gradient déplace-t-il les kicks du plancher-de-`v`
+   au lieu de les éliminer, puisqu'il ne change rien à la récurrence
+   de `v` elle-même (seulement au pas final appliqué) ?**
+4. **Le « reward hacking » en RLHF est-il parfois un franchissement de
+   séparatrice avec sensibilité aux conditions initiales (comme K=12,80
+   ici) — deux graines identiques en hyperparamètres tombant de part et
+   d'autre d'une frontière chaotique, pas deux graines qui « apprennent »
+   des choses différentes ?**
+5. **La correction de biais d'Adam (`bias1`/`bias2`) est-elle vraiment
+   responsable de l'instabilité de début d'entraînement qu'on lui
+   attribue, ou sature-t-elle à 1 si tôt (dès quelques milliers de pas,
+   vérifié ici) qu'elle est hors-jeu pour presque tout le reste de
+   l'entraînement — et le folklore du « warmup aide » masquerait-il en
+   fait le régime plancher-de-`v` plutôt que la correction de biais ?**
+6. **Confond-on systématiquement « le modèle peut représenter la
+   solution optimale » avec « le modèle peut l'ATTEINDRE depuis son
+   init typique par descente de gradient » — un problème de bassin
+   d'attraction habillé en problème de capacité ?**
+7. **Compare-t-on l'importance de coordonnées dans un modèle
+   softmax/sigmoïde SANS corriger par le Jacobien de la saturation
+   (le mécanisme `comp¹` établi ici) — créditant systématiquement trop
+   d'importance aux coordonnées non saturées et trop peu aux
+   saturées ?**
+8. **« Le modèle a appris X » est-il parfois en réalité « la structure
+   de la récompense force X quel que soit ce qui est appris » —
+   attribue-t-on à l'apprentissage ce qui est en fait un point fixe
+   structurel de l'objectif (comme la formule fermée H7 de ce
+   projet) ?**
+9. **Les preuves de « ralentissement critique » utilisées pour
+   diagnostiquer des transitions de phase dans l'entraînement (grokking
+   compris) sont-elles vérifiées comme un vrai ralentissement
+   dynamique, ou souffrent-elles du même artefact de seuil discret
+   trouvé ici pour `ratio(K)` ?**
+10. **En entraînement distribué/fédéré, le « bruit des rounds de
+    communication » est-il parfois un kick périodique plancher-de-`v`
+    d'Adam, amplifié par des synchronisations peu fréquentes qui
+    allongent la phase calme avant que `v` touche son plancher ?**
+11. **Le travail de calibration de confiance (temperature scaling)
+    corrige-t-il parfois exactement l'artefact de compression `comp¹`
+    du softmax plutôt qu'un vrai mécalibrage des logits sous-jacents ?**
+12. **Suppose-t-on toujours que « l'effet rétrécit à plus haute
+    précision » signifie « c'était du bruit » — alors que ça peut
+    vouloir dire, comme ici (la sensibilité à `1e-15` près de K=12,80),
+    qu'on est authentiquement SUR une frontière mathématique où la
+    distinction bruit/signal classique s'effondre (du vrai chaos, pas
+    une erreur de mesure) ?**
+13. **L'arrêt anticipé sur « la perte n'a pas progressé depuis N pas »
+    est-il vulnérable au même hasard de timing qu'un cycle
+    plancher-de-`v` (~500 pas ici) — un run arrêté trop tôt ou trop
+    tard selon where dans le cycle la fenêtre de patience est tombée ?**
+14. **Quand on compare deux graines dont une « généralise mieux »,
+    vérifie-t-on si c'est un vrai apprentissage différent, ou
+    simplement de quel côté d'une séparatrice précoce chaque bruit
+    d'initialisation est tombé ?**
+15. **Le réflexe « augmente la précision pour trancher un désaccord »
+    suppose une convergence monotone vers une « vraie » réponse —
+    alors qu'augmenter la précision peut révéler qu'il n'existe PAS de
+    réponse stable à ce point d'opération (un vrai régime chaotique,
+    trouvé ici), rendant « prends juste plus de décimales » un conseil
+    activement trompeur dans certains cas ?**
+16. **Y a-t-il une différence sous-estimée entre « l'optimiseur a
+    convergé » (les paramètres ont arrêté de bouger visiblement) et
+    « le système a atteint son vrai point fixe » — étant donné qu'ici,
+    Adam et le flot de gradient réel n'ont convergé vers EXACTEMENT le
+    même point fixe qu'une fois `lr` assez grand, ce qui suggère que
+    beaucoup de runs « convergés » à `lr` typique pourraient être
+    bloqués sur un plateau d'artefact, pas le vrai optimum ?**
+17. **Le « reward hacking par quasi-égalités » en RL est-il parfois
+    prévisible à l'AVANCE depuis la seule structure de la récompense
+    (comme la formule H7 de ce projet, où l'identité des référents
+    n'apparaît jamais) — c'est-à-dire que la « préférence » apparente
+    du modèle est un artefact arbitraire de quelle égalité
+    l'optimiseur a fini par trancher, pas une préférence apprise ?**
+18. **Teste-t-on les ablations d'hyperparamètres à un écart/une
+    précision comparable à la vraie sensibilité du système — ou la
+    pratique courante « balaie X, si la métrique ne bouge pas
+    visiblement, X n'a pas d'importance » est-elle structurellement
+    aveugle aux sensibilités proches d'un seuil (comme le cas limite
+    de K=12,5 ici) ?**
+19. **Combien de résultats « d'équité/coopération émergente » en RL
+    multi-agents sont en fait le même genre de point fixe forcé par la
+    symétrie (comme `R=1/2` à `delta=0` ici, une numérologie
+    indépendante de N, pas un apprentissage) habillé en comportement
+    social appris ?**
+20. **« Ablater un composant ne change pas beaucoup le comportement »
+    (utilisé pour argumenter qu'un composant n'a pas d'importance, ex.
+    élagage de têtes d'attention) reflète-t-il parfois une
+    redistribution de masse vers une route alternative (le mécanisme
+    masse_fond de ce projet, où retirer 25 lignes ne fait que
+    déplacer où va la masse, pas si elle bouge) — c'est-à-dire que
+    l'ablation teste l'ATTEIGNABILITÉ d'une route de secours, pas
+    l'importance de la route d'origine ?**
+
+---
+
 *Dernière mise à jour : 20/09/2026 — le VRAI dipankarsarkar a répondu
 une SECONDE fois (tour 54, sur `REPONSE_ORDRE54.md`). Répondu dans
 `docs/REPONSE_ORDRE55.md` (gitignoré), journalisé dans `CARNET.md`
