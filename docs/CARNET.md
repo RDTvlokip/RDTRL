@@ -13379,11 +13379,97 @@ l'intuition qu'une patience plus longue « moyenne » le bruit.
 | la vulnérabilité existe et est mesurable directement sur le vrai système | 21/09 (Théo, implicite dans la question) | **confirmée** le 21/09 — rapport max/min jusqu'à 1,89× selon la phase et le seuil |
 | une patience plus longue réduit toujours la vulnérabilité (dilution) | 21/09 (moi, implicite en écrivant le script) | **réfutée à `EPS` fin** — inversée à `EPS=1e-9`, la vulnérabilité CROÎT avec la patience |
 
-**Statut** : question 13 des 20 (ETAT.md) considérée close — test
-empirique direct sur le vrai système, un bug de calibration trouvé et
-corrigé avant tout résultat exploitable (même vigilance que la
+**Statut initial** : question 13 des 20 (ETAT.md) considérée close —
+test empirique direct sur le vrai système, un bug de calibration trouvé
+et corrigé avant tout résultat exploitable (même vigilance que la
 question 3), prédiction précommise réfutée, mécanisme de remplacement
 plus riche trouvé et quantifié.
+
+**CORRECTION MAJEURE (21/09/2026, agent d'audit sur les questions
+11-20 + vérification indépendante par moi, précommis exécuté) : ma
+grille de phase `DEBUTS_TESTES` (pas de 40) était elle-même trop
+grossière — même famille de biais que la question 3.** L'agent a
+rejoué le script avec un pas de 1 (au lieu de 40) sur les 1000 pas de
+départ possibles. Vérifié indépendamment par moi, chiffres identiques :
+
+```
+                coarse (pas=40)   fine (pas=1)   n_floor/1000
+eps=1e-8  pat=200   ratio=1,14        1,18            922
+eps=1e-8  pat=600   ratio=1,04        1,06            922
+eps=3e-9  pat=200   ratio=1,06        1,365           839
+eps=3e-9  pat=600   ratio=1,02        1,882           837
+eps=1e-9  pat=200   ratio=1,665       2,010           667
+eps=1e-9  pat=400   ratio=1,718       1,925           648
+eps=1e-9  pat=600   ratio=1,892       1,953           641
+```
+
+**Deux problèmes trouvés dans ma publication d'origine, pas un** :
+1. **Mon affirmation « la vulnérabilité CROÎT avec la patience à
+   `eps=1e-9` » (contre-intuitif) ne survit PAS à la grille fine.**
+   Grossier : `1,665→1,718→1,892` (hausse propre). Fin :
+   `2,010→1,925→1,953` (baisse puis légère hausse — pas monotone). Le
+   RATIO n'est pas la bonne quantité — c'est un artefact. Ce qui
+   survit : `extra := durée_max − patience` croît bien de façon
+   monotone (`202→370→572`), un signal plus faible et moins
+   spectaculaire que le ratio que j'avais mis en avant.
+2. **`eps=3e-9` cache une vraie transition de régime que ma grille
+   grossière a sautée.** `extra` reste EXACTEMENT constant (`73`) à
+   `patience=200` et `400`, puis SAUTE à `529` à `patience=600`. Ma
+   table grossière montrait ce cas comme l'exemple le plus propre de
+   « dilution » (`1,060→1,030→1,020`, décroissant) — ce n'était pas ça,
+   c'était un échantillonnage de la partie AVANT la transition d'une
+   courbe qui a une vraie discontinuité dedans.
+
+**Test précommis par l'agent, exécuté par moi (balayage fin de
+`patience` sur `[400,600]` à `eps=3e-9`, résolution 1) : la transition
+est NETTE, pas progressive — et il y en a DEUX, pas une.**
+
+```
+patience=464 -> extra=73   patience=465 -> extra=465   (premier saut, EXACTEMENT a patience=465)
+patience=528 -> extra=465  patience=529 -> extra=529   (second saut, EXACTEMENT a patience=529)
+```
+
+Le déclencheur de rétractation posé à l'avance par l'agent (« si la
+transition est progressive, pas nette, je retire le cadrage `régime
+caché` ») **ne s'est PAS déclenché** — la transition bascule en un
+seul pas de `patience`, deux fois. **Coïncidence notable, non encore
+expliquée** : `extra=465` après le premier saut est quasi identique à
+la période du cycle de kick déjà mesurée ailleurs (`~456-500` pas,
+`verifier_kicks_adam_grille_fine.py`) — suggère que franchir
+`patience≈465` ouvre un mode où le run peut absorber PRESQUE UN CYCLE
+DE KICK COMPLET supplémentaire avant de s'arrêter, pas une coïncidence
+numérique. **Non dérivé analytiquement, juste mesuré.**
+
+**`n_floor` (nombre de départs de phase qui tombent EXACTEMENT sur
+`duree=patience`, sans aucun sursaut) est quasi invariant à la
+patience** (922/1000, 922/1000, 922/1000 à `eps=1e-8` ; 839, 839, 837 à
+`eps=3e-9`) — la vraie « vulnérabilité » est un effet de QUEUE (8% à
+33-36% des phases selon `eps`), pas une fonction lisse de la patience
+comme le ratio le suggérait. **Jamais rapporté dans la première
+version — aurait dû l'être, plus informatif que le ratio.**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| ma grille de phase (`debut`, pas de 40) est assez fine pour caractériser le système | 21/09 (moi, implicite) | **RÉFUTÉE** le 21/09 par agent + vérification indépendante — grille fine (pas=1) donne des ratios systématiquement plus élevés, jamais plus bas |
+| la vulnérabilité CROÎT de façon monotone avec la patience à `eps=1e-9` (ma conclusion contre-intuitive d'origine) | 21/09 (moi) | **RÉFUTÉE** le 21/09 — le ratio n'est pas monotone à grille fine (`2,010→1,925→1,953`), c'était un artefact de sous-échantillonnage |
+| `eps=3e-9` illustre une dilution propre de la vulnérabilité (ma lecture d'origine) | 21/09 (moi) | **RÉFUTÉE** le 21/09 — cache une vraie transition discontinue entre `patience=460` et `530`, jamais vue à grille grossière |
+| la transition `extra: 73→529` (`eps=3e-9`) est nette, pas progressive | 21/09 (agent, précommis) | **confirmée** le 21/09 par moi — bascule en 1 pas de `patience`, DEUX fois (à 465 et 529 exactement) |
+| la vulnérabilité est un effet de queue (fraction de phases), pas une fonction lisse de la patience | 21/09 (moi, trouvé en creusant `n_floor`) | **confirmée** le 21/09 — `n_floor` quasi invariant à la patience à `eps` fixé |
+
+**Réponse révisée à la question 13** : OUI, la vulnérabilité existe et
+est bien pire/plus riche que ma première mesure ne le montrait — pas
+seulement un ratio qui varie en douceur, mais au moins DEUX seuils
+NETS de `patience` (à `eps=3e-9` : `465` et `529`) où le comportement
+d'arrêt bascule discrètement, plus un effet de queue dominant (8-36%
+des phases) que la moyenne/le ratio masquaient. Ma première conclusion
+(« la patience plus longue peut empirer les choses, contre-intuitif »)
+reste vraie dans l'esprit mais était établie sur la mauvaise quantité
+(le ratio, pas `extra`) et sur une grille trop grossière pour voir la
+vraie structure (des seuils nets, pas une pente continue).
+
+**Script permanent** : `verifier_arret_anticipe_grille_fine.py`
+(balayage fin pas=1, localisation des deux transitions nettes à
+`eps=3e-9`).
 
 ---
 
@@ -13816,6 +13902,43 @@ question par question comme fait jusqu'ici pendant la recherche, mais
 un audit global : cohérence entre les réponses, chiffres/citations à
 recontrôler, angles de critique qu'aucune des 20 recherches
 individuelles n'a pensé à chercher.
+
+## AUDIT GLOBAL EXÉCUTÉ EN DEUX PARTIES (21/09/2026) — deux erreurs
+## réelles trouvées et corrigées, une correction majeure sur la
+## question 13, un point de cohérence non résolu assumé
+
+Deux agents style dipankarsarkar, chacun en worktree isolé (premier
+essai sur les 20 questions à la fois a échoué sur un mur de quota,
+relancé scindé en deux sur consigne de Théo), plus vérification
+indépendante par moi de chaque affirmation avant correction :
+
+- **Questions 1-10** : deux erreurs numériques réelles trouvées.
+  Question 3 (fenêtre de sélection `pas_min=5000` cachant 5 événements
+  réels, corrigé `+9`/`~4988` pas au lieu de `+4`/`~2700`) et question 5
+  (mauvais seuil d'arrondi float64, corrigé `t=356`/`37412` au lieu de
+  `342`/`36026`). Voir sections corrigées plus haut.
+- **Questions 11-20** : une correction MAJEURE trouvée sur la question
+  13 (grille de phase trop grossière, même famille de biais que la
+  question 3 — le ratio « croît avec la patience » ne survit pas à la
+  grille fine, remplacé par deux seuils NETS de `patience` à
+  `eps=3e-9`, confirmés par un test précommis exécuté). Voir section
+  corrigée plus haut.
+- **Point de cohérence soulevé par l'agent (questions 11-20), assumé
+  honnêtement plutôt que « corrigé » mécaniquement** : le décompte
+  « Nième angle potentiellement original » applique un seuil de
+  confiance incohérent — la question 4 (« aucun travail ne relie
+  bifurcation/chaos au reward hacking RLHF ») est un résultat de
+  recherche négative de force comparable à la question 11 (« aucune
+  distinction formelle trouvée... confiance modérée, abstract
+  seulement »), mais seule la seconde a reçu un badge « Nième angle ».
+  **Pas retranché ni renuméroté une seconde fois** — le contenu de
+  chaque section reste correct et ses réserves de confiance sont déjà
+  écrites explicitement ; c'est le LABEL informel « Nième angle » qui
+  est appliqué de façon inconsistante, pas une affirmation substantielle
+  fausse. Noté ici pour qu'un futur lecteur ne prenne pas ce décompte
+  pour un chiffre rigoureux de « combien d'angles sont vraiment
+  nouveaux » — ce n'est pas ça, c'est une note de couleur ajoutée au
+  fil de l'eau, pas une métrique.
 
 ---
 

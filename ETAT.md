@@ -177,18 +177,24 @@ clos.** Ne pas oublier cette étape finale.
     littérature ML d'entraînement — 5 requêtes agent sans résultat,
     seul un lemme classique de dynamique générale (shadowing lemma) s'en
     approche.
-13. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 13
-    des 20 ».] L'arrêt anticipé est-il vulnérable au hasard de timing
-    d'un cycle plancher-de-`v` ?** Réponse : OUI, confirmé
-    empiriquement sur le vrai système
-    (`verifier_arret_anticipe_vs_phase_kick.py`) — rapport max/min de
-    la durée jusqu'à arrêt jusqu'à 1,89× selon la phase de départ.
-    Prédiction précommise (sauts discontinus par cycle) réfutée —
-    variation continue. Mécanisme plus riche que prévu : à seuil
-    d'amélioration fin (sensible au bruit de ringing sous-kick), la
-    vulnérabilité CROÎT avec la patience au lieu de se diluer (effet
-    inverse de l'intuition). Bug de calibration initial trouvé et
-    corrigé (seuil 4 ordres de grandeur trop grand, test vide).
+13. **[RÉPONDUE le 21/09/2026, CORRIGÉE le 21/09/2026 par un agent
+    d'audit + vérification indépendante, voir `CARNET.md` section
+    « Question 13 des 20 ».] L'arrêt anticipé est-il vulnérable au
+    hasard de timing d'un cycle plancher-de-`v` ?** Réponse : OUI,
+    confirmé empiriquement, et plus riche que ma première mesure ne le
+    montrait. **Correction majeure** : ma grille de phase d'origine
+    (pas=40) était trop grossière — même famille de biais que la
+    question 3. À grille fine (pas=1, `verifier_arret_anticipe_grille_fine.py`),
+    mon affirmation « la vulnérabilité CROÎT avec la patience »
+    (`eps=1e-9`) ne survit PAS (ratio non monotone à grille fine) —
+    c'était un artefact du RATIO, pas de la vraie dynamique. Ce qui
+    survit et se révèle plus fort : à `eps=3e-9`, deux seuils NETS de
+    `patience` (exactement à `465` et `529`) où le comportement d'arrêt
+    bascule discrètement — pas une pente continue comme d'abord publié.
+    Coïncidence notable non expliquée : `465` est quasi identique à la
+    période du cycle de kick (~456-500 pas). La vraie vulnérabilité est
+    un effet de queue (8-36% des phases selon `eps`), pas une fonction
+    lisse de la patience.
 14. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 14
     des 20 ». Sixième angle potentiellement non couvert.] Compare-t-on
     graines-qui-généralisent-mieux en testant si c'est une séparatrice
