@@ -13336,6 +13336,62 @@ plus riche trouvé et quantifié.
 
 ---
 
+## Question 14 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## cinquième angle potentiellement non couvert (le croisement
+## outil-existant/application-manquante, pas l'outil lui-même)
+
+**Question posée (ETAT.md, #14)** : quand on compare deux graines dont
+une « généralise mieux », vérifie-t-on si c'est un vrai apprentissage
+différent, ou simplement de quel côté d'une séparatrice précoce chaque
+bruit d'initialisation est tombé ?
+
+**Recherche effectuée, un point vérifié directement par moi** :
+
+1. **(a) La pratique standard en reproductibilité RL ne teste PAS
+   l'hypothèse séparatrice.** Henderson et al. (« Deep Reinforcement
+   Learning that Matters », AAAI 2018, arXiv:1709.06560, référence
+   canonique) traite la variance inter-graines comme du bruit
+   statistique à moyenner (moyenne±écart-type sur N graines, tests de
+   significativité) — jamais comme un événement de bifurcation à
+   localiser. Non revérifié directement par moi.
+2. **(b) L'OUTIL pour localiser le point de bifurcation existe déjà et
+   est bien établi.** Frankle et al. (« Linear Mode Connectivity and
+   the Lottery Ticket Hypothesis », ICML 2020, arXiv:1912.05671) —
+   abstract vérifié directement par moi (`WebFetch`) : « We study
+   whether a neural network optimizes to the same, linearly connected
+   minimum under different samples of SGD noise » — leur « instability
+   analysis » identifie explicitement QUAND un réseau devient stable au
+   bruit SGD (dès l'initialisation pour MNIST, tôt dans l'entraînement
+   pour ResNet-50/Inception-v3). C'est précisément l'outil qu'il
+   faudrait pour répondre à la question 14, déjà publié depuis 2020.
+3. **(c) Cet outil n'est PAS mobilisé pour la distinction précise
+   cherchée.** Le cadrage de Frankle et al. reste « stabilité au bruit
+   SGD/connectivité en perte », pas « généralisation différente =
+   bassins différents ». Une source récente et thématiquement très
+   proche (« Riddled basin geometry sets fundamental limits to
+   predictability and reproducibility in deep learning »,
+   arXiv:2510.05606, 2025 — chaos formel, bassins fractals « riddled »,
+   limites de reproductibilité) pourrait faire ce lien, mais **l'agent
+   n'a lu que l'abstract, pas le corps du papier — signalé
+   explicitement comme non confirmé, pas comme un vide établi.**
+
+**Réponse à la question 14** : cinquième angle potentiellement non
+couvert, mais d'une nature différente des précédents — ce n'est PAS
+que l'outil manque (il existe, Frankle et al. 2020, bien cité), c'est
+que personne ne semble l'appliquer SYSTÉMATIQUEMENT comme contrôle
+avant d'interpréter un écart de généralisation entre graines comme un
+« apprentissage différent ». Confiance moyenne : recherche négative
+honnête de l'agent, mais une source clé (arXiv:2510.05606) reste non
+lue en entier — pourrait changer la conclusion si elle fait
+explicitement ce lien.
+
+**Statut** : question 14 des 20 (ETAT.md) considérée close — recherche
+littérature avec un point vérifié directement par moi (Frankle et al.),
+limite explicitement signalée sur la source la plus proche
+(2510.05606, abstract seulement).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

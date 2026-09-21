@@ -181,10 +181,18 @@ clos.** Ne pas oublier cette étape finale.
     vulnérabilité CROÎT avec la patience au lieu de se diluer (effet
     inverse de l'intuition). Bug de calibration initial trouvé et
     corrigé (seuil 4 ordres de grandeur trop grand, test vide).
-14. **Quand on compare deux graines dont une « généralise mieux »,
-    vérifie-t-on si c'est un vrai apprentissage différent, ou
-    simplement de quel côté d'une séparatrice précoce chaque bruit
-    d'initialisation est tombé ?**
+14. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 14
+    des 20 ». Cinquième angle potentiellement non couvert.] Compare-t-on
+    graines-qui-généralisent-mieux en testant si c'est une séparatrice
+    précoce plutôt qu'un vrai apprentissage différent ?** Réponse :
+    l'outil existe déjà (Frankle et al., ICML 2020, arXiv:1912.05671,
+    « instability analysis », abstract vérifié directement par moi)
+    mais ne semble pas mobilisé systématiquement pour CETTE distinction
+    précise — la pratique standard (Henderson et al.) traite la
+    variance inter-graines comme du bruit à moyenner, pas comme un
+    événement de bifurcation à localiser. Une source récente et
+    proche (arXiv:2510.05606) pourrait combler ce vide mais n'a été lue
+    qu'en abstract par l'agent — non confirmé.
 15. **[RÉPONDUE le 21/09/2026 avec la question 12 (même recherche,
     quasi-doublon), voir `CARNET.md` section « Question 12 des 20 ».]
     Le réflexe « augmente la précision pour trancher un désaccord »
