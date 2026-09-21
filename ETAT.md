@@ -26,11 +26,18 @@ si le résultat est substantiel, journal daté dans `CARNET.md`).
    précise trouvée ici (période quasi-invariante à `lr`, amplitude
    linéaire jusqu'à rupture entre `lr∈[0,1;0,2]`) et le mécanisme
    `v_pic∝lr²`.
-2. **Le « seuil critique de batch size / learning rate » que rapportent
-   certains papiers est-il une vraie bifurcation dynamique, ou un
-   artefact de seuil discret sur un temps de convergence (exactement
-   le mécanisme `ratio(K)` trouvé ici, où un « coin net » s'est révélé
-   être une mesure de seuil binaire sur une quantité lisse) ?**
+2. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 2 des
+   20 »] Le « seuil critique de batch size / learning rate » que
+   rapportent certains papiers est-il une vraie bifurcation dynamique,
+   ou un artefact de seuil discret (le mécanisme `ratio(K)` trouvé
+   ici) ?** Réponse, en deux niveaux : NON pour le papier fondateur
+   (McCandlish et al., arXiv:1812.06162 — la « noise scale » est déjà
+   traitée comme continue, pas comme bifurcation, vérifié directement
+   à l'abstract) — mon hypothèse de départ était trop sévère pour cette
+   source précise. PLAUSIBLE mais NON VÉRIFIÉ pour l'usage pratique en
+   aval (citer un chiffre unique de « batch size critique » sans
+   rappeler le seuil de lecture choisi) — pas de recherche dédiée faite
+   sur ce point.
 3. **Le clipping de gradient déplace-t-il les kicks du plancher-de-`v`
    au lieu de les éliminer, puisqu'il ne change rien à la récurrence
    de `v` elle-même (seulement au pas final appliqué) ?**

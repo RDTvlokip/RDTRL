@@ -12414,6 +12414,71 @@ l'abstract joue déjà ce rôle de contre-vérification).
 
 ---
 
+## Question 2 des 20 (ETAT.md), 21/09/2026 — vérification directe de la
+## définition publiée de « batch size critique », argumentation fermée
+## (pas de nouvel entraînement, littérature déjà connue au-delà du
+## coupure de connaissance, vérifiée directement plutôt que suppposée)
+
+**Question posée (ETAT.md, #2)** : le « seuil critique de batch
+size/learning rate » que rapportent certains papiers est-il une vraie
+bifurcation dynamique, ou un artefact de seuil discret sur un temps de
+convergence — exactement le mécanisme `ratio(K)` trouvé ici, où un
+« coin net » s'est révélé être une mesure de seuil binaire sur une
+quantité lisse ?
+
+**Vérification directe** (pas de suppositions sur un souvenir
+d'entraînement — `WebFetch` sur l'abstract de McCandlish et al., « An
+Empirical Model of Large-Batch Training », arXiv:1812.06162, OpenAI,
+2018) : « a simple and easy-to-measure statistic called the gradient
+noise scale predicts the largest useful batch size ». La quantité de
+base (« noise scale », rapport `tr(Σ)/|G|²` en substance) est
+CONTINUE — elle varie en douceur pendant l'entraînement, jamais
+présentée dans le papier original comme une transition dynamique
+discrète. La courbe steps-to-target vs batch size est un compromis de
+Pareto lisse (rendements décroissants), pas une bifurcation ; le
+papier ne revendique PAS de discontinuité dynamique réelle.
+
+**Réponse, nuancée, deux niveaux distincts** :
+
+1. **Au niveau du papier fondateur : NON, ce n'est pas l'artefact
+   `ratio(K)`.** McCandlish et al. traitent déjà la « batch size
+   critique » comme une lecture continue (la valeur instantanée du
+   bruit de gradient), pas comme un seuil dur ou une bifurcation. Mon
+   hypothèse de départ — que la littérature confondrait naïvement seuil
+   et bifurcation — est **réfutée pour cette source précise** : elle
+   est plus rigoureuse que ce que la question supposait.
+2. **Au niveau de l'usage en aval (pratique courante, hors ce papier
+   précis) : PLAUSIBLE, mais non vérifié ici.** Le réflexe pratique
+   répandu — citer UN chiffre de « batch size critique » pour un
+   modèle donné, sans rappeler qu'il vient de la lecture d'un seuil
+   d'efficacité (ex. 90%) sur une courbe continue — reproduirait
+   exactement l'artefact `ratio(K)` : un nombre unique présenté comme
+   propriété du système, alors qu'il dépend du seuil de lecture choisi.
+   **Non vérifié par une recherche dédiée** (pas de temps consacré à
+   sourcer des cas concrets de cette confusion dans des papiers de
+   suivi ou des rapports d'entraînement industriels) — à distinguer
+   explicitement de la conclusion 1, qui elle est vérifiée.
+
+**Différence de fond avec le cas `ratio(K)` d'ici, notée pour éviter de
+sur-vendre l'analogie** : dans notre jouet, le vrai mécanisme dynamique
+(le pic dépasse ou non 99% de l'équilibre) est lisse et le seuil
+`premier_pas_1%` est un artefact de LECTURE ajouté après coup par nous.
+Dans McCandlish et al., la quantité continue (noise scale) EST déjà la
+quantité rapportée — il n'y a pas de seuil discret ajouté dans le
+papier source lui-même. L'analogie tient donc comme mise en garde
+générale (une pratique observée ailleurs dans ce projet peut se
+reproduire dans le champ plus large), pas comme un reproche à ce papier
+précis.
+
+**Statut** : question 2 des 20 (ETAT.md) considérée close —
+argumentation fermée avec vérification directe d'une source, pas de
+test empirique possible ici (rien à entraîner soi-même sur ce point,
+c'est une question de définition publiée). Pas d'agent-dipankar
+nécessaire (pas de résultat numérique nouveau à challenger, seulement
+une lecture de définition déjà publiée, vérifiée par moi directement).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
