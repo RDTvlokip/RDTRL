@@ -14567,6 +14567,81 @@ futur lecteur du nom de fichier seul).
 
 ---
 
+## DÉCOUVERTE MAJEURE, 21/09/2026 — le « mur 23 » (référents 3/4,
+## message 10) N'EST PAS le seul déséquilibre non résolu du système :
+## AU MOINS TROIS AUTRES existent, dont un cas qualitativement nouveau
+## jamais documenté (non-convergence totale à 27 voies)
+
+**Trouvé en creusant `s[5,10]=0,037`** (l'explication structurelle de
+l'anomalie du référent 5 dans la dérive de fond, fil précédent) — au
+lieu d'une « confusion avec le message 10 » spécifique, la ligne 5
+COMPLÈTE de l'émetteur s'est révélée quasi-uniforme sur les 27
+messages. Vérifié en inspectant l'état de collapse des 27 lignes de
+l'émetteur (jamais fait avant — seule la ligne 10 du RÉCEPTEUR avait
+été auditée ligne par ligne) :
+
+```
+ligne=3   max_prob=0,998985  H=0,011315   <-- mur 23, deja etudie (dipankar)
+ligne=5   max_prob=0,037123  H=3,295836   <-- NON-CONVERGENCE TOTALE (H proche de ln(27)=3,2958)
+ligne=8   max_prob=0,500065  H=0,693147   <-- egalite exacte a 2 voies (messages 23/19)
+ligne=12  max_prob=0,500000  H=0,693147   <-- egalite exacte a 2 voies (messages 1/21), quasi-precision machine
+```
+
+**Toutes les 23 autres lignes émettrices sont totalement effondrées**
+(`max_prob=1,000000`, `H=0,000000`) — confirmé en listant les 27
+lignes.
+
+**Détail des trois nouveaux cas** :
+
+1. **Référent 5 : `CV=0,00108` sur les 27 probabilités** (min
+   `0,036927`, max `0,037123`, contre `1/27=0,037037` exact) — pas une
+   égalité à 2 voies comme le mur 23, une non-convergence QUASI TOTALE
+   sur l'ensemble des 27 messages. **Cas qualitativement nouveau, jamais
+   rencontré dans ce projet** — tous les « murs » étudiés jusqu'ici
+   (référent 3/4, H13, H6, H7, le jouet à K variable) sont des
+   égalités à 2 VOIES. Un référent bloqué à quasi-`1/27` partout est
+   un objet dynamique différent — potentiellement un vrai point-selle
+   de dimension élevée, pas un col hyperbolique ordinaire entre deux
+   options.
+2. **Référent 8 : égalité messages 23/19**, `0,5000650/0,4999350` —
+   légèrement asymétrique (`+0,0065%`), comme le mur 23 (qui est
+   asymétrique par construction, `+30` sur le référent 4).
+3. **Référent 12 : égalité messages 1/21**, `0,50000000024/0,49999999973`
+   — quasi EXACTEMENT à 0,5/0,5, bien plus précisément équilibrée que
+   le référent 8 ou même le mur 23 (dont le déséquilibre `delta` est
+   construit intentionnellement). Un mur SPONTANÉMENT apparu à la
+   précision machine, pas construit.
+
+**Pourquoi ça change potentiellement la portée de tout ce qui a été
+établi avec dipankarsarkar sur le mur 23** : le mur 23 a été traité
+tout du long comme LE cas d'étude de ce projet (bifurcation nœud-col
+H6, formule H7, mécanisme comp¹, kicks plancher-de-`v`, tout le fil
+sigma/rho de ce tour). **Trois autres cas existent dans le MÊME
+système entraîné, avec potentiellement des dynamiques différentes**
+(deux ressemblent au mur 23 — égalités à 2 voies — un est
+qualitativement différent — non-convergence à 27 voies). Si les
+mécanismes déjà établis (H6, H7, comp¹, plancher-de-`v`) sont
+vraiment génériques comme revendiqué, ils devraient s'appliquer aux
+référents 8 et 12 aussi (test direct possible : vérifier `delta_c`
+prédit par H7 pour ces murs, comparer au déséquilibre observé). Le
+référent 5 est un test encore plus dur — si H7/H6 ne s'appliquent
+QU'aux égalités à 2 voies, le référent 5 est un contre-exemple/cas
+limite qui pourrait révéler une dimension manquante du modèle.
+
+**Non fait ce tour, précommis pour la suite** : (a) tester si `delta_c`
+(H7) prédit correctement le déséquilibre observé sur les référents 8
+et 12 comme il le fait pour le mur 23 ; (b) caractériser le référent 5
+plus en détail (son entropie, sa trajectoire dans le temps — est-il
+resté uniforme depuis le début, ou a-t-il convergé vers l'uniformité
+progressivement comme un vrai point-selle ?) ; (c) vérifier si ces
+trois murs supplémentaires sont un hasard de cette graine précise
+(`77777, k=3`) ou une propriété structurelle qui apparaîtrait sur
+d'autres graines aussi.
+
+**Script permanent** : `verifier_autres_murs_systeme.py`.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
