@@ -12322,6 +12322,98 @@ pas encore mûre pour être publiée comme contribution.
 
 ---
 
+## Question 1 des 20 (ETAT.md), 21/09/2026 — recherche littérature réelle,
+## mise en garde du 20/09 levée : mécanisme qualitatif déjà publié,
+## loi quantitative lr semble neuve
+
+**Question posée (ETAT.md, #1)** : les « loss spikes » périodiques des
+gros entraînements ont-ils une période caractéristique gouvernée par la
+décroissance de `v` (comme trouvé ici), et si oui, baisser `lr`
+réduit-il vraiment leur fréquence, ou seulement leur amplitude ?
+
+**Méthode** : la mise en garde méthodologique notée le 21/09 dans la
+section précédente (« ni l'agent ni moi n'avons vérifié par une vraie
+recherche ») est maintenant levée — recherche web réelle effectuée par
+un agent (worktree isolé), puis un chiffre-clé revérifié indépendamment
+par moi via `WebFetch` sur l'abstract original (règle 5bis : ne jamais
+prendre les affirmations d'un agent pour acquises).
+
+**Résultat, vérifié à deux niveaux (agent + moi)** :
+
+1. **Le mécanisme qualitatif est déjà publié.** Bai et al.,
+   « Adaptive Preconditioners Trigger Loss Spikes in Adam »
+   (arXiv:2506.04805, poster ICML 2026). Citation vérifiée par moi
+   directement sur l'abstract (`WebFetch`, pas un résumé d'agent) :
+   « the adaptive preconditioner `v_t` fails to track the instantaneous
+   squared gradients `g_t²` » et « five distinct stages of spike
+   evolution ». L'agent, via extraction `pdftotext` du PDF réel (pas
+   un résumé HTML suspect — il a lui-même détecté et écarté un premier
+   résultat `WebFetch`/`ar5iv` qui sentait la confabulation avant de
+   trancher sur le texte brut), a trouvé le cycle complet : `v_t`
+   décroît à un taux proche de `beta2` pendant que le gradient au carré
+   reste sous `v_t`, ce qui déclenche le spike, puis « the optimizer
+   regains stability... completing the spike cycle and returning to
+   Phase 1 » — sept cycles récurrents observés sur un vrai Transformer.
+   **C'est le même mécanisme que le nôtre (décroissance de `v` vers un
+   régime instable → excursion → regonflement → cycle), retrouvé
+   indépendamment, pas une découverte inédite en soi.**
+2. **La loi quantitative période-invariante/amplitude-linéaire en `lr`
+   ne semble PAS publiée.** Le papier de Bai et al. montre que `v_t` AU
+   MOMENT du spike suit une loi de puissance en `lr` (pente ~1 en
+   log-log) — proche mais pas identique à notre affirmation ; aucune
+   formule fermée de PÉRIODE n'y figure, ni de discussion explicite
+   fréquence-vs-amplitude en fonction de `lr`. Non plus trouvé ailleurs
+   (PaLM, OPT-175B logbook : rollback/skip, pas de mécanisme par `v` ;
+   « Epochal Sawtooth Phenomenon » arXiv:2410.10056 : périodicité
+   pilotée par les frontières d'époque, mécanisme distinct).
+3. **Le rôle de `adam_eps` est déjà connu, mais cadré différemment.**
+   Wortsman et al. (DeepMind, ICLR 2024, arXiv:2309.14322,
+   « Small-scale proxies for large-scale Transformer training
+   instabilities ») décrivent une instabilité inverse (« epsilon-RMS ») :
+   quand le RMS du gradient ≈ `eps`, le pas devient disproportionnellement
+   PETIT (starvation ponctuelle), pas un kick cyclique — mécanisme
+   opposé au nôtre, même remède (baisser `eps`). Bai et al. : « using a
+   larger `ε` significantly reduces spike severity by imposing an upper
+   bound on the preconditioned eigenvalues » — confirme empiriquement
+   ce que `verifier_eps_supprime_kicks.py` montre déjà (suppression
+   complète à `adam_eps=1e-6`), mais l'argument publié passe par une
+   borne sur les valeurs propres, pas par « `v` approche son plancher
+   numérique » — les deux lectures ne sont pas formellement montrées
+   équivalentes ici, à creuser si besoin plus tard.
+4. **Terme absent de la littérature trouvée** : le cadre « oscillateur
+   de relaxation » (« relaxation oscillator ») appliqué à Adam — aucune
+   occurrence dans les sources consultées.
+
+**Réponse honnête à la question 1** : PARTIELLEMENT connu, pas « une
+question que personne ne pose ». Le mécanisme qualitatif de spike
+récurrent par décroissance de `v` est publié indépendamment (2506.04805,
+2025/2026) — la contribution de ce projet n'est donc PAS la découverte
+du mécanisme lui-même. Ce qui reste, à ma connaissance après cette
+recherche, non publié : la loi quantitative précise « période
+quasi-invariante à `lr`, amplitude linéaire jusqu'à rupture mesurée
+entre `lr∈[0,1;0,2]` », et le mécanisme du pic post-kick de `v` en
+`lr²` établi ici. **Correction du ton de la question 1 elle-même**
+(posée le 21/09 avant cette vérification) : la formulation « que la
+communauté attribue plutôt vaguement à du bruit de données » est
+FAUSSE pour au moins une partie de la communauté ML de recherche sur
+les LLM — il existe une littérature récente et précise là-dessus, pas
+juste une attribution vague au bruit.
+
+**Point de méfiance non résolu, signalé par l'agent, pas encore
+recreusé** : une affirmation non sourcée circule (« spikes plus
+fréquents quand `lr` augmente ») qui contredirait une période
+`lr`-invariante — origine non retracée à un papier précis. Traité comme
+un signal à vérifier, pas comme une réfutation, tant que la source
+n'est pas identifiée.
+
+**Statut** : question 1 des 20 (ETAT.md) considérée close par cette
+recherche + vérification indépendante — pas un résultat expérimental
+nouveau nécessitant un agent-dipankar séparé (recherche
+bibliographique, la vérification croisée agent+`WebFetch` direct sur
+l'abstract joue déjà ce rôle de contre-vérification).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

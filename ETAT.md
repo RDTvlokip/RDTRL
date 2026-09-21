@@ -13,12 +13,19 @@ individuellement — ne pas répondre en bloc, une réponse = un commit,
 avec le cycle habituel (hypothèse, test si possible, agent-dipankar
 si le résultat est substantiel, journal daté dans `CARNET.md`).
 
-1. **Les « loss spikes » périodiques des gros entraînements ont-ils une
-   période caractéristique gouvernée par la décroissance de `v`
-   (comme trouvé ici), que la communauté attribue plutôt vaguement à
-   du bruit de données — et si oui, baisser `lr` réduit-il vraiment
-   leur fréquence, ou seulement leur amplitude (déjà testé ICI, jamais
-   à ma connaissance testé ailleurs) ?**
+1. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 1 des
+   20 »] Les « loss spikes » périodiques des gros entraînements ont-ils
+   une période caractéristique gouvernée par la décroissance de `v` —
+   et si oui, baisser `lr` réduit-il vraiment leur fréquence, ou
+   seulement leur amplitude ?** Réponse : PARTIELLEMENT connu, pas
+   « une question que personne ne pose » comme formulé initialement
+   (correction assumée) — le mécanisme qualitatif (décroissance de `v`
+   → spike → regonflement → cycle) est déjà publié indépendamment
+   (Bai et al., arXiv:2506.04805, ICML 2026, cité et vérifié à
+   l'abstract). Ce qui semble rester non publié : la loi quantitative
+   précise trouvée ici (période quasi-invariante à `lr`, amplitude
+   linéaire jusqu'à rupture entre `lr∈[0,1;0,2]`) et le mécanisme
+   `v_pic∝lr²`.
 2. **Le « seuil critique de batch size / learning rate » que rapportent
    certains papiers est-il une vraie bifurcation dynamique, ou un
    artefact de seuil discret sur un temps de convergence (exactement
