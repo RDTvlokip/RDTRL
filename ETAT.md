@@ -217,12 +217,20 @@ clos.** Ne pas oublier cette étape finale.
     n'est PAS garanti d'être celui de l'objectif en général — notre
     accord à 7 chiffres est vraisemblablement un cas spécial de notre
     système, pas une propriété générale à sur-généraliser.
-17. **Le « reward hacking par quasi-égalités » en RL est-il parfois
-    prévisible à l'AVANCE depuis la seule structure de la récompense
-    (comme la formule H7 de ce projet, où l'identité des référents
-    n'apparaît jamais) — c'est-à-dire que la « préférence » apparente
-    du modèle est un artefact arbitraire de quelle égalité
-    l'optimiseur a fini par trancher, pas une préférence apprise ?**
+17. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 17
+    des 20 ». Sixième angle potentiellement non couvert.] Le reward
+    hacking par quasi-égalités est-il prévisible à l'avance depuis la
+    structure de récompense (comme H7) ?** Réponse : le bris de
+    symétrie prédictif existe (Soudry et al., arXiv:1710.10345,
+    citation vérifiée mot pour mot par moi — GD converge vers la
+    direction max-margin, prédictible depuis la structure du problème
+    seule), mais côté géométrie d'optimisation, pas côté RL/récompense
+    — rien trouvé qui prédise à l'avance quelle branche d'une
+    quasi-égalité RL sera choisie depuis la structure de récompense
+    seule, seulement des diagnostics après coup. H7 semble à
+    l'intersection de deux littératures qui ne se citent pas. Une
+    source proche (DPO, biais structurel) vient d'un domaine déjà
+    signalé comme moins fiable (question 5) — traitée avec méfiance.
 18. **Teste-t-on les ablations d'hyperparamètres à un écart/une
     précision comparable à la vraie sensibilité du système — ou la
     pratique courante « balaie X, si la métrique ne bouge pas

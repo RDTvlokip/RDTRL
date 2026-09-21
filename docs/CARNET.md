@@ -13473,6 +13473,68 @@ qui confirmerait pour une MAUVAISE raison » demandé par la règle 5ter.
 
 ---
 
+## Question 17 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## sixième angle potentiellement non couvert (H7 à l'intersection de
+## deux littératures qui ne se citent pas), une source suspecte déjà
+## rencontrée réapparaît, traitée avec la même méfiance
+
+**Question posée (ETAT.md, #17)** : le « reward hacking par
+quasi-égalités » en RL est-il parfois prévisible à l'AVANCE depuis la
+seule structure de la récompense (comme H7, où l'identité des
+référents n'apparaît jamais) — la « préférence » apparente étant un
+artefact arbitraire de quelle égalité l'optimiseur a tranchée, pas une
+préférence apprise ?
+
+**Recherche effectuée, un point vérifié directement par moi** :
+
+1. **(a) Le bris de symétrie prédictif EXISTE dans la littérature,
+   mais côté géométrie d'optimisation, pas côté RL/récompense.**
+   Soudry et al. (« Implicit Bias of Gradient Descent on Separable
+   Data », arXiv:1710.10345) — citation vérifiée mot pour mot par moi
+   (`WebFetch`) : « We show the predictor converges to the direction of
+   the max-margin (hard margin SVM) solution » — un résultat qui
+   PRÉDIT à l'avance, depuis la structure du problème seule (données
+   séparables), LEQUEL des optima équivalents en perte d'entraînement
+   sera choisi. C'est exactement le type de résultat que H7 imite,
+   mais appliqué à la géométrie perte/réseau, jamais à un décompte
+   combinatoire type K de « voies alternatives ». Côté RL
+   spécifiquement, l'agent n'a rien trouvé qui prédise à l'avance quelle
+   branche d'une quasi-égalité sera choisie depuis la structure de
+   récompense seule — la littérature détecte le bris de symétrie APRÈS
+   COUP (désaccord entre prédicteurs), pas avant.
+2. **(b) Le reward hacking sur quasi-égalités est surtout DIAGNOSTIQUÉ
+   après coup, pas prédit à l'avance.** arXiv:2601.03468 documente des
+   modèles de récompense produisant des égalités exploitées — un
+   diagnostic, pas une prédiction a priori de laquelle des deux options
+   sera trichée. Non revérifié directement par moi.
+3. **(c) Le match le plus proche existe, avec une réserve
+   méthodologique.** Une source (« Spurious Correlation Learning in
+   Preference Optimization... », `lacuna.tiptreesystems.com`) dériverait
+   une solution fermée montrant qu'un biais de préférence en DPO est un
+   équilibre STRUCTUREL de l'objectif, pas un artefact de données — même
+   logique que H7. **Ce domaine (`tiptreesystems.com`) avait déjà été
+   signalé comme moins fiable à la question 5 — traité ici avec la même
+   méfiance, pas comme confirmation supplémentaire, non revérifié
+   directement par moi.** Un second papier plus solide (« Flattery,
+   Fluff, and Fog », arXiv:2506.05339, ICLR 2026) va dans le même sens
+   empiriquement, sans forme fermée aussi nette.
+
+**Réponse à la question 17** : sixième angle potentiellement non
+couvert — l'agent conclut que H7 « semble être à l'intersection de
+deux littératures qui ne se citent pas mutuellement » (implicit
+bias/optima liés d'un côté, biais de préférence RLHF/DPO de l'autre),
+observation plausible et cohérente avec ma propre vérification du
+point (a). Piste non explorée signalée par l'agent lui-même : la
+théorie des jeux évolutionniste sur la sélection d'équilibre
+(Harsanyi-Selten) prédit aussi depuis la structure du jeu seule — angle
+non creusé faute de temps, pas exclu.
+
+**Statut** : question 17 des 20 (ETAT.md) considérée close — recherche
+littérature, un point solide vérifié mot pour mot par moi, une source
+faible identifiée et traitée avec méfiance plutôt qu'acceptée.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
