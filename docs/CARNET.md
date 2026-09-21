@@ -12164,6 +12164,76 @@ chacune trouvée en creusant plus loin que la précédente sans s'arrêter
 
 ---
 
+## Généralisation au ML au sens large, 21/09/2026 — le mécanisme
+plancher-de-`v` prédit une loi de mise à l'échelle testée et confirmée
+
+**Théo, 21/09/2026 : « continue à chercher des choses inhabituelles
+mais logiques que personne n'aime pas dans le monde du ML/LLM/RL ».**
+Le mécanisme plancher-de-`v` (oscillateur de relaxation : `v=exp_avg_sq`
+décroît vers un plancher pendant une phase calme, un petit gradient
+résiduel déclenche un pas démesuré, le gradient du kick regonfle `v`,
+amortissement — confirmé de bout en bout ailleurs dans ce carnet)
+ressemble structurellement à un phénomène connu sous un autre nom dans
+l'industrie : les **« loss spikes »** périodiques observés dans les
+très longs entraînements de gros modèles, généralement attribués de
+façon vague à des problèmes de données ou de précision numérique,
+rarement à un mécanisme précis et testable.
+
+**Prédiction fermée, posée AVANT le test (pas ajustée après coup) :**
+la récurrence `v_{t+1}=beta2·v_t+(1-beta2)·g_t²` ne fait JAMAIS
+intervenir `lr` — seul le gradient brut alimente `v`. Donc la PÉRIODE
+du cycle (temps pour que `v` décroisse d'un pic à son seuil de
+déclenchement) devrait être **quasi indépendante de `lr`**. En
+revanche, le déplacement réel du paramètre à chaque pas est
+`lr·m/(√v+eps)` — donc l'AMPLITUDE du kick (mesurée en probabilité,
+sur `R`) devrait croître **linéairement avec `lr`**, à mécanisme de
+déclenchement égal.
+
+**Testé sur le VRAI système (pas le jouet), `lr∈{0,025 ; 0,05 ; 0,1}`,
+30000 pas chacun :**
+```
+lr=0,025  n_events=46  espacement_median=469  amplitude_moyenne=0,001784
+lr=0,05   n_events=52  espacement_median=459  amplitude_moyenne=0,003518
+lr=0,1    n_events=62  espacement_median=421  amplitude_moyenne=0,006549
+```
+**Espacement quasi indépendant de `lr`** (`469→459→421`, variation
+`<10%` sur un facteur ×4 de `lr` — contre ce qu'on obtiendrait si le
+mécanisme dépendait directement de `lr`). **Amplitude quasi
+proportionnelle à `lr`** : ratio amplitude/lr = `0,0714`, `0,0704`,
+`0,0655` — remarquablement stable sur un facteur ×4, confirmant une
+loi linéaire simple `amplitude ≈ c·lr` avec `c≈0,07`.
+
+**Ce qui rend ça « inhabituel mais logique » et pertinent au-delà de
+ce projet** : la pratique courante en ML face à des loss spikes est
+de RÉDUIRE `lr` (souvent via un warmup plus long ou un schedule plus
+prudent), en espérant réduire leur fréquence autant que leur
+amplitude. **Ce mécanisme dit que ça ne marche que sur l'amplitude —
+la fréquence des spikes, si elle vient bien d'un cycle plancher-de-`v`,
+resterait quasiment la même.** Un praticien qui observe "moins de gros
+spikes mais toujours aussi fréquents" après avoir baissé `lr` aurait
+là une explication mécanistique précise, pas juste empirique. Testable
+en dehors de ce projet sur n'importe quel modèle Adam à faible
+gradient résiduel prolongé (têtes de classification saturées, fin
+d'entraînement sur des poids déjà quasi convergés).
+
+**JUSQU'OÙ ça tient — pas encore testé** : la loi devrait se casser
+quand `lr` devient assez grand pour que le pas normalisé sature
+(`m/(√v+eps)→±1` avant même le déclenchement du kick) — reste à
+localiser ce point de rupture. **DEPUIS QUAND / SUR COMBIEN** : testé
+sur une seule graine/config (le mur 23), pas encore répliqué sur une
+autre paire de référents ou un autre delta — reste à vérifier que ce
+n'est pas spécifique à cette configuration précise.
+
+Script à sauvegarder : la trace ci-dessus tournait encore en `python
+-c`, à committer sous nom permanent au prochain geste d'écriture.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la période du cycle plancher-de-`v` est quasi indépendante de `lr` (la récurrence de `v` ne dépend que du gradient brut) | 21/09 (moi, précommise avant le test) | **confirmée** — espacement médian varie de <10% sur un facteur ×4 de `lr` (469→459→421) |
+| l'amplitude du kick croît linéairement avec `lr` (le pas réel est `lr·m/√v`) | 21/09 (moi, précommise avant le test) | **confirmée** — ratio amplitude/lr quasi constant (`0,071 ; 0,070 ; 0,065`) sur un facteur ×4 de `lr` |
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
