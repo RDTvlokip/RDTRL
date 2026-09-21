@@ -143,9 +143,17 @@ clos.** Ne pas oublier cette étape finale.
     première recherche avait produit une phrase quasi-identique à
     l'hypothèse posée, présentée comme publiée — vérifiée fausse
     (absente du texte source) avant d'être acceptée.
-11. **Le travail de calibration de confiance (temperature scaling)
-    corrige-t-il parfois exactement l'artefact de compression `comp¹`
-    du softmax plutôt qu'un vrai mécalibrage des logits sous-jacents ?**
+11. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 11
+    des 20 ». Troisième angle potentiellement non couvert.] Le
+    temperature scaling corrige-t-il l'artefact `comp¹` plutôt qu'un
+    vrai mécalibrage ?** Réponse : Guo et al. (ICML 2017,
+    arXiv:1706.04599, abstract vérifié directement par moi) cadre la
+    calibration comme un problème d'entraînement (profondeur, largeur,
+    weight decay, BatchNorm), pas comme un artefact géométrique du
+    softmax — aucune distinction formelle trouvée entre les deux
+    causes dans la littérature atteinte. Limite assumée : vérification
+    arrêtée au niveau abstract, pas de lecture complète de la section
+    « Why Does Temperature Scaling Work? ».
 12. **Suppose-t-on toujours que « l'effet rétrécit à plus haute
     précision » signifie « c'était du bruit » — alors que ça peut
     vouloir dire, comme ici (la sensibilité à `1e-15` près de K=12,80),

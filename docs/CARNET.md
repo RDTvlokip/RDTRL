@@ -13123,6 +13123,59 @@ gonflé malgré la tentation qu'offrait la fausse confirmation initiale.
 
 ---
 
+## Question 11 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## troisième angle potentiellement non couvert, limite de profondeur de
+## lecture explicitement assumée
+
+**Question posée (ETAT.md, #11)** : le travail de calibration de
+confiance (temperature scaling) corrige-t-il parfois exactement
+l'artefact de compression `comp¹` du softmax plutôt qu'un vrai
+mécalibrage des logits sous-jacents ?
+
+**Recherche effectuée, un point vérifié directement par moi** :
+
+1. **Temperature scaling est systématiquement présenté comme corrigeant
+   une VRAIE sur-confiance issue de l'entraînement**, pas un artefact
+   géométrique du softmax. Guo et al. (« On Calibration of Modern
+   Neural Networks », ICML 2017, arXiv:1706.04599) — abstract vérifié
+   directement par moi (`WebFetch`) : « depth, width, weight decay, and
+   Batch Normalization are important factors influencing calibration »
+   — cadrage entraînement/architecture, cohérent avec le rapport de
+   l'agent (facteurs de sur-confiance imputés à l'apprentissage, pas à
+   la géométrie de sortie). **Mon `WebFetch` sur l'abstract seul ne
+   permet PAS de confirmer l'absence totale de discussion du Jacobien
+   dans le corps du papier** (section « Why Does Temperature Scaling
+   Work? », non lue par moi ni entièrement par l'agent) — limite
+   assumée, pas cachée.
+2. **Aucune distinction formelle trouvée** entre « logits mal appris »
+   et « logits bien calibrés mais softmax distordu selon la
+   saturation » — les deux causes sont traitées comme un seul phénomène
+   (« miscalibration ») dans toute la littérature consultée par
+   l'agent. Le résultat le plus proche (« Well-Tempered Classifier »,
+   arXiv:2602.14862, caractérisant `T` via une projection en
+   information géométrique) ne couvre toujours pas cette distinction
+   précise. Non revérifié directement par moi.
+3. **Le fait mathématique de base (`p(1-p)` sur la diagonale du
+   Jacobien softmax) est standard et documenté ailleurs** (dérivations
+   de rétropropagation), mais **jamais relié, d'après l'agent, au débat
+   sur la calibration/température** — c'est précisément le pont que la
+   question 11 propose et qui semble absent de la littérature atteinte.
+
+**Réponse à la question 11, avec la limite de lecture explicitement
+assumée** : angle qui semble non couvert (troisième sur onze
+questions), mais la vérification s'arrête au niveau abstract pour la
+source principale — une lecture complète de la section 3 de Guo et al.
+serait le prochain pas si ce point devient central pour l'article,
+comme le note l'agent lui-même. Confiance modérée, pas haute, faute
+d'une lecture ligne par ligne.
+
+**Statut** : question 11 des 20 (ETAT.md) considérée close — recherche
+littérature avec vérification directe partielle (abstract seulement),
+limite explicitement documentée plutôt que dissimulée derrière un
+« vérifié » trop généreux.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
