@@ -14185,6 +14185,90 @@ correctif localisé.
 
 ---
 
+## Suite tour 56, 21/09/2026 (bis) — agent-dipankar sur le résultat
+## "26 messages" : plus fort que rapporté, et une découverte
+## supplémentaire (convergence dynamique du CV, pas un gel initial),
+## les deux revérifiées indépendamment par moi, un écart de chiffres
+## résolu en creusant plutôt qu'en tranchant à l'aveugle
+
+**Consigne du projet appliquée** (résultat substantiel trouvé seul →
+agent style dipankar AVANT de le clore, worktree isolé). Rapport
+complet, cinq points vérifiés (A-E), toutes ses affirmations
+revérifiées indépendamment par moi avant acceptation :
+
+1. **(A) Chiffres exacts** — confirmés au digit près par l'agent,
+   revérifiés par moi (déjà fait plus haut).
+2. **(B) Le résultat est PLUS FORT que ma première publication.**
+   J'avais rapporté « au moins 6 messages bougent pareil » (top-6 du
+   script). L'agent a étendu le script pour imprimer les 26 — **LES
+   26, pas 6, bougent de la même quantité à 10 chiffres significatifs
+   près.** Le classement « top-6 » n'avait AUCUNE signification
+   structurelle — un artefact de tri sur du bruit flottant au
+   12e-13e chiffre. **Revérifié indépendamment par moi**
+   (`min=8,300733420022688e-03`, `max=8,300733420649742e-03` sur les
+   26, `CV=2,628e-11`) — confirmé, script permanent corrigé en
+   conséquence (rapporte maintenant les 26 + CV, plus de top-6
+   trompeur).
+3. **(C) Jacobien softmax complet** — confirmé au chiffre près par
+   l'agent (déjà fait plus haut).
+4. **(D) Pas un artefact structurel — et une découverte
+   supplémentaire non demandée.** L'agent a vérifié qu'`EmetteurTabulaire`
+   n'a aucun partage de poids (729 paramètres libres, softmax
+   indépendant par ligne) — aucun couplage structurel possible entre
+   indices de messages. Puis a mesuré le CV des 26 probabilités À
+   TRAVERS L'ENTRAÎNEMENT et rapporté une décroissance dynamique
+   progressive (`CV≈2,18` juste après perturbation → `~0,40` à 40000
+   pas → `~2,4e-10` à 59989 pas) — pas un gel d'initialisation.
+   **Écart trouvé avec ma première vérification indépendante** :
+   j'avais d'abord mesuré une trajectoire différente (`CV=0,39` dès
+   « pas=10 ») parce que je repartais de l'état DÉJÀ RETOURNÉ par
+   `construire_mur23()`, qui fait déjà 40000 pas en interne après la
+   perturbation avant de rendre la main — pas une contradiction, deux
+   fenêtres différentes du même phénomène. **Résolu en reconstruisant
+   une trace continue unique depuis la perturbation elle-même**
+   (`verifier_cv_decroissance_ligne3.py`) :
+
+```
+pas depuis perturbation=0      CV=2,125954
+pas depuis perturbation=10     CV=2,001436
+pas depuis perturbation=100    CV=1,600751
+pas depuis perturbation=1000   CV=1,231233
+pas depuis perturbation=5000   CV=0,741437
+pas depuis perturbation=40000  CV=0,393254
+pas depuis perturbation=59989  CV=0,000000
+pas depuis perturbation=99989  CV=0,000000
+```
+
+   **Confirme la trajectoire de l'agent (2,13/2,00/1,60/1,23/0,74/0,39
+   contre ses 2,18/2,05/1,63/1,26/0,76/0,40, écart <3% partout, cohérent
+   avec des graines/précisions de mesure légèrement différentes) — une
+   vraie convergence dynamique sur 4 ordres de grandeur de pas, pas un
+   tirage figé au départ.** Mécanisme de l'agent (non testé plus avant
+   par moi, mais cohérent avec les ordres de grandeur) : la force de
+   gradient individuelle sur chaque `logit_s[3,j]` (j≠10) est
+   proportionnelle à `s[3,j]` lui-même (déjà minuscule), donc s'efface
+   face à la force COMMUNE de renormalisation du softmax pilotée par le
+   mouvement dominant de `logit_s[3,10]`.
+5. **(E) Lien avec le K=26 de H7** — confirmé par l'agent comme réel
+   (pas une coïncidence `27-1=26`), en citant `CARNET.md` lignes
+   6594-6667 (H7 utilise déjà depuis le 14/09 la même réduction
+   « message 10 contre les 26 autres groupées ») et le jouet à K=26
+   (`delta_c(K=26)` à 0,006% du vrai système). **Non revérifié
+   directement par moi** (nécessiterait de relire ces sections
+   anciennes en détail) — accepté comme plausible vu la cohérence avec
+   des résultats déjà indépendamment établis ce mois-ci, signalé comme
+   non revérifié plutôt que tacitement validé.
+
+**Réserve de l'agent, non testée davantage** : reproductibilité sur une
+deuxième graine non vérifiée — tout ce fil (comme la quasi-totalité du
+projet à ce stade) repose sur une seule configuration (`77777, k=3`).
+
+**Scripts** : `verifier_partenaire_miroir_s3.py` (corrigé — top-6
+trompeur remplacé par les 26 + CV), `verifier_cv_decroissance_ligne3.py`
+(nouveau, trajectoire CV reconciliée depuis la perturbation).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
