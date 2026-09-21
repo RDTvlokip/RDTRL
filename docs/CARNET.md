@@ -12666,6 +12666,120 @@ l'abstract, pas caché.
 
 ---
 
+## Question 5 des 20 (ETAT.md), 21/09/2026 — calcul analytique direct
+## sur le vrai système + recherche littérature, verdict net en deux
+## parties
+
+**Question posée (ETAT.md, #5)** : la correction de biais d'Adam
+(`bias1`/`bias2`) est-elle vraiment responsable de l'instabilité de
+début d'entraînement qu'on lui attribue, ou sature-t-elle à 1 si tôt
+qu'elle est hors-jeu pour presque tout le reste de l'entraînement — et
+le folklore du « warmup aide » masquerait-il en fait le régime
+plancher-de-`v` plutôt que la correction de biais ?
+
+**Partie 1 — calcul analytique direct (pas une simulation, une
+résolution fermée de `beta^t < seuil`)**, `beta1=0,9`, `beta2=0,999`
+(valeurs par défaut du projet) :
+
+| seuil d'effet résiduel | `t` pour bias1 | `t` pour bias2 |
+|---|---|---|
+| 5% | 28,9 | 3043 |
+| 1% | 43,8 | 4613 |
+| 0,1% | 65,6 | 6905 |
+| 0,01% | 87,4 | 9206 |
+| saturation exacte précision machine (`float64`, `beta^t<2,22e-16`) | **342** | **36026** |
+
+`bias1` est hors-jeu en quelques centaines de pas, sans ambiguïté.
+`bias2` reste avec un effet >1% jusque vers `t≈4600`, mais est déjà
+sous 1% de correction dès `t≈4600` et totalement saturé (précision
+machine) vers `t≈36000` — cohérent avec la mesure directe déjà faite
+ce tour (« facteur de correction de biais saturé à pas=60000 »,
+`verifier_precommis_dipankar_...`, tour 54 dipankar).
+
+**Comparaison au régime plancher-de-`v`** : les premiers kicks
+observés sur le vrai système (question 3, ce tour) arrivent à
+`pas=5153` (sous clip) et `pas=7869` (baseline). Calcul du facteur de
+correction `bias2` à ces pas précis : `1/(1-0,999^5153)≈1,0058` (0,58%
+d'effet), `1/(1-0,999^7869)≈1,0004` (0,04% d'effet). **Les premiers
+kicks du régime plancher-de-`v` arrivent alors que la correction de
+biais est déjà pratiquement éteinte (<0,6%, souvent <0,1%)** — les deux
+régimes ne se recouvrent quasiment pas dans ce système : `bias2` est
+« chaud » (>1%) pour `t<4600` environ, les kicks commencent à
+`t≥5153`.
+
+**Partie 2 — recherche littérature (agent, un point vérifié
+directement par moi via `WebFetch`)** :
+
+1. **RAdam (Liu et al. 2019, arXiv:1908.03265) est la référence
+   standard sur « pourquoi le warmup aide », et son diagnostic n'est
+   PAS la formule de correction de biais au sens strict.** Citation
+   vérifiée directement par moi (`WebFetch` sur l'abstract) :
+   « we identify a problem of the adaptive learning rate (i.e., it has
+   problematically large variance in the early stage), suggest warmup
+   works as a variance reduction technique ». Le problème invoqué est
+   la VARIANCE de l'estimateur adaptatif (peu d'échantillons de
+   gradient en tout début d'entraînement), pas `bias2=1-beta2^t` en
+   tant que tel.
+2. **La littérature est fragmentée entre au moins trois mécanismes
+   concurrents pour « pourquoi le warmup aide »**, trouvé par l'agent :
+   variance de `v` (RAdam) ; magnitude du terme de mise à jour (Ma &
+   Yarats, arXiv:1910.04209, qui RÉFUTE explicitement l'argument de
+   variance de RAdam) ; conditionnement du paysage de perte (NeurIPS
+   2024, arXiv:2406.09405). **Ces sources ne sont pas revérifiées
+   individuellement par moi au-delà du rapport de l'agent** — seule la
+   citation RAdam ci-dessus est vérifiée directement.
+3. **Confusion terminologique trouvée et confirmée par l'agent** :
+   arXiv:2511.20516 (nov. 2025) et une note associée traitent
+   explicitement la correction de biais elle-même comme un « warmup
+   implicite » (`η_t = η_target·√(1-beta2^t)`), amalgamant les deux
+   notions sans mentionner RAdam ni l'argument de variance — exactement
+   la confusion que la question 5 soupçonnait. **Source secondaire
+   (note, pas un papier arXiv) signalée comme moins fiable, citée par
+   l'agent (`lacuna.tiptreesystems.com`), non revérifiée par moi —
+   traitée avec méfiance, pas comme confirmation supplémentaire.**
+
+**Réponse à la question 5, en deux parties distinctes** :
+
+- **« bias-correction sature-t-elle trop tôt pour expliquer
+  l'instabilité de début d'entraînement » : OUI, confirmé
+  analytiquement.** `bias1` en quelques centaines de pas, `bias2` en
+  quelques milliers pour l'essentiel de son effet (>99% éteint dès
+  `t≈4600`), très en dessous de la durée d'un entraînement de LLM
+  typique (centaines de milliers à millions de pas) — hors-jeu pour la
+  quasi-totalité de l'entraînement, littéralement.
+- **« le folklore warmup-aide masque-t-il le régime plancher-de-`v`
+  plutôt que la correction de biais » : NON, pas au sens direct.** La
+  référence standard (RAdam) n'invoque déjà PAS la correction de biais
+  au sens strict — elle invoque la variance de `v`, un concept plus
+  proche (mais pas identique) du mécanisme plancher-de-`v` trouvé ici
+  (tous deux portent sur la fiabilité de `v` en régime de peu
+  d'information, mais RAdam parle de variance d'ESTIMATION en tout
+  début d'entraînement, notre mécanisme parle de DÉCROISSANCE vers un
+  plancher numérique en régime établi — deux échelles de temps et deux
+  causes distinctes, pas le même phénomène rebaptisé). **Ce qui EST
+  confirmé** : une confusion réelle existe dans la littérature/le
+  folklore entre « correction de biais » et « fiabilité de `v` »
+  (source arXiv:2511.20516 trouvée explicitement) — la question avait
+  raison de soupçonner une confusion terminologique, mais la confusion
+  documentée est entre deux notions DÉJÀ connues (bias-correction vs
+  variance-de-v-de-RAdam), pas entre bias-correction et notre
+  plancher-de-`v` spécifique (jamais mentionné dans aucune des sources
+  trouvées, cohérent avec la conclusion de la question 1).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| `bias2` reste actif (>1%) au moment où les premiers kicks plancher-de-`v` apparaissent | 21/09 (moi, avant calcul) | **réfutée** le 21/09 par calcul analytique direct — `bias2<0,6%` dès le premier kick, régimes quasi disjoints |
+| le folklore « warmup aide » invoque directement la correction de biais stricte comme mécanisme | 21/09 (Théo, implicite dans la question) | **réfutée** le 21/09 — la référence standard (RAdam) invoque la variance de `v`, pas `bias2` au sens formule |
+| le folklore confond bias-correction et fiabilité de `v` | 21/09 (Théo, implicite) | **confirmée partiellement** le 21/09 (agent + une source vérifiée par moi, arXiv:2511.20516) — confusion réelle documentée, mais entre bias-correction et la variance-de-RAdam, pas notre plancher-de-`v` spécifique |
+
+**Statut** : question 5 des 20 (ETAT.md) considérée close — calcul
+analytique direct vérifiable à la main (pas de dépendance à un agent
+pour ce point) + recherche littérature avec un point vérifié
+directement par moi (RAdam), un sous-ensemble de sources non
+revérifiées individuellement (signalé, pas caché).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

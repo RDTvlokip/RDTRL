@@ -71,12 +71,20 @@ clos.** Ne pas oublier cette étape finale.
    bifurcation/chaos au reward hacking en RLHF. Hypothèse de recherche
    motivée par l'analogie, PAS un résultat établi — aucun test direct
    possible (pas de système RLHF dans ce projet).
-5. **La correction de biais d'Adam (`bias1`/`bias2`) est-elle vraiment
-   responsable de l'instabilité de début d'entraînement qu'on lui
-   attribue, ou sature-t-elle à 1 si tôt (dès quelques milliers de pas,
-   vérifié ici) qu'elle est hors-jeu pour presque tout le reste de
-   l'entraînement — et le folklore du « warmup aide » masquerait-il en
-   fait le régime plancher-de-`v` plutôt que la correction de biais ?**
+5. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 5 des
+   20 »] La correction de biais d'Adam sature-t-elle trop tôt pour
+   expliquer l'instabilité de début d'entraînement, et le folklore
+   « warmup aide » masque-t-il le régime plancher-de-`v` ?** Réponse en
+   deux parties : OUI, saturation confirmée analytiquement (`bias1` en
+   `t≈342` pas à la précision machine, `bias2` en `t≈36026`, déjà <1%
+   d'effet dès `t≈4600` — hors-jeu bien avant la fin d'un entraînement
+   typique). NON pour la seconde partie au sens direct : la référence
+   standard sur le warmup (RAdam, arXiv:1908.03265, vérifié directement
+   à l'abstract) n'invoque déjà pas la correction de biais stricte,
+   mais la variance de `v` — un concept proche mais distinct de notre
+   plancher-de-`v`. Confusion bias-correction/fiabilité-de-v confirmée
+   dans la littérature (arXiv:2511.20516), mais pas avec NOTRE
+   mécanisme spécifique.
 6. **Confond-on systématiquement « le modèle peut représenter la
    solution optimale » avec « le modèle peut l'ATTEINDRE depuis son
    init typique par descente de gradient » — un problème de bassin
