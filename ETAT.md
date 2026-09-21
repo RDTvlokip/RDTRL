@@ -97,11 +97,16 @@ clos.** Ne pas oublier cette étape finale.
    vérifié directement, le papier utilise en fait un cadre
    thermodynamique (transition de phase, hystérésis, échappement
    Arrhenius), distinct de notre H6 (bifurcation déterministe).
-7. **Compare-t-on l'importance de coordonnées dans un modèle
-   softmax/sigmoïde SANS corriger par le Jacobien de la saturation
-   (le mécanisme `comp¹` établi ici) — créditant systématiquement trop
-   d'importance aux coordonnées non saturées et trop peu aux
-   saturées ?**
+7. **[RÉPONDUE le 21/09/2026, voir `CARNET.md` section « Question 7 des
+   20 »] Compare-t-on l'importance de coordonnées SANS corriger par le
+   Jacobien de saturation (mécanisme `comp¹`) ?** Réponse : question
+   PAS originale — problème déjà nommé « gradient saturation »,
+   motivation fondatrice d'Integrated Gradients (Sundararajan et al.,
+   ICML 2017, citation vérifiée mot pour mot par moi sur
+   `ar5iv.labs.arxiv.org`), avec un exemple quasi-identique à notre
+   `comp¹` (`f(x)=1-ReLU(1-x)`, gradient nul malgré effet réel). Reste
+   une pratique répandue hors du sous-domaine attribution formel, mais
+   non quantifiée par la recherche faite.
 8. **« Le modèle a appris X » est-il parfois en réalité « la structure
    de la récompense force X quel que soit ce qui est appris » —
    attribue-t-on à l'apprentissage ce qui est en fait un point fixe

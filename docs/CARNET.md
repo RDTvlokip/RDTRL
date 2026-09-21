@@ -12848,6 +12848,75 @@ projet », avec un écart agent/source réel trouvé et corrigé (règle
 
 ---
 
+## Question 7 des 20 (ETAT.md), 21/09/2026 — recherche littérature,
+## question PAS originale (le mécanisme `comp¹` de ce projet est un
+## cas particulier d'un problème déjà résolu ailleurs), citation
+## vérifiée mot pour mot
+
+**Question posée (ETAT.md, #7)** : compare-t-on l'importance de
+coordonnées dans un modèle softmax/sigmoïde SANS corriger par le
+Jacobien de la saturation (le mécanisme `comp¹` établi ici) —
+créditant systématiquement trop d'importance aux coordonnées non
+saturées et trop peu aux saturées ?
+
+**Recherche effectuée, citation vérifiée directement par moi (pas
+seulement acceptée de l'agent, qui avait lui-même signalé ne pas avoir
+lu le PDF ligne par ligne)** :
+
+1. **Le problème est déjà nommé « gradient saturation » et c'est LA
+   motivation fondatrice d'une méthode d'attribution très citée
+   (Integrated Gradients, Sundararajan, Taly & Yan, ICML 2017,
+   arXiv:1703.01365).** Citation vérifiée mot pour mot par moi
+   (`WebFetch` sur `ar5iv.labs.arxiv.org`, pas le résumé de l'agent) :
+   « consider a one variable, one ReLU network,
+   `f(x)=1-ReLU(1-x)`. Suppose the baseline is `x=0` and the input is
+   `x=2`. The function changes from 0 to 1, but because `f` becomes
+   flat at `x=1`, the gradient method gives attribution of 0 to `x` »,
+   et : « gradients break Sensitivity because the prediction function
+   may flatten at the input and thus have zero gradient despite the
+   function value at the input being different from that at the
+   baseline. » **C'est exactement notre mécanisme `comp¹`** : une
+   coordonnée saturée (Jacobien `s(1-s)→0`) peut avoir un effet réel
+   énorme mais un gradient brut proche de zéro, sous-estimant
+   systématiquement son importance si on ne corrige pas.
+2. **Consensus établi sur l'EXISTENCE du problème et sur Integrated
+   Gradients comme correction canonique** (axiomes « Sensitivity » et
+   « Implementation Invariance » explicitement construits pour ça) —
+   mais **PAS un problème définitivement résolu partout.** Un papier
+   de suivi (arXiv:2010.12697, 2020, « Investigating Saturation
+   Effects in Integrated Gradients ») montre que même Integrated
+   Gradients standard reste vulnérable : le chemin d'intégration
+   lui-même traverse des zones saturées où « gradients contribute
+   disproportionately » — trois ans après la solution canonique, la
+   chaîne correctif→re-correctif était encore active. Non revérifié
+   directement par moi (accepté du rapport de l'agent), signalé.
+3. **En dehors du sous-domaine attribution formel (saliency maps ad
+   hoc, analyses d'attention appliquées), l'usage de gradients bruts
+   NON corrigés reste une pratique courante** — l'agent n'a pas trouvé
+   de méta-étude quantifiant l'ampleur du problème résiduel, seulement
+   des indices indirects (persistance de papiers correctifs
+   post-2017). Confiance modérée sur ce point précis, honnêtement
+   signalée par l'agent lui-même et reprise telle quelle.
+
+**Réponse honnête à la question 7** : question PAS originale — le
+problème général (sous-estimer l'importance de coordonnées saturées en
+comparant des gradients bruts) est déjà identifié, nommé, et
+partiellement résolu par Integrated Gradients depuis 2017, avec un
+exemple quasi-identique au mécanisme `comp¹` de ce projet
+(`f(x)=1-ReLU(1-x)`, saturation, gradient nul malgré un effet réel).
+Ce qui reste potentiellement moins couvert : la pratique APPLIQUÉE hors
+du sous-domaine attribution (papiers qui comparent des « importances »
+de coordonnées softmax/sigmoïde par gradient brut sans jamais
+mentionner Integrated Gradients ni corriger par le Jacobien) — plausible
+mais pas quantifié par la recherche faite ici.
+
+**Statut** : question 7 des 20 (ETAT.md) considérée close — recherche
+littérature avec citation vérifiée mot pour mot par moi (pas seulement
+acceptée de l'agent qui avait signalé sa propre limite), verdict
+honnête « déjà connu, mécanisme quasi-identique publié depuis 2017 ».
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
