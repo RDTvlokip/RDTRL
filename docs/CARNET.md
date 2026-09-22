@@ -15029,6 +15029,90 @@ c'est chaotique à TOUTE échelle testée sans seuil identifiable.
 
 ---
 
+## Audit du chaos du signe de kick : les deux points laissés ouverts
+## sont RÉSOLUS — vraie divergence (pas un simple décalage de phase),
+## sensibilité jusqu'à 1 ULP exact, pas de plancher
+
+**Agent style dipankar lancé** (worktree isolé, résultat substantiel,
+consigne du projet) sur la sensibilité chaotique du signe de kick.
+Cinq points vérifiés (A-E), le point C (le plus important) revérifié
+directement par moi.
+
+**A, B confirmés chiffre pour chiffre** (les 5 résultats reproduits à
+17 chiffres significatifs ; contrôle de reproductibilité refait une
+TROISIÈME fois, identique ; code inspecté, aucune source de
+non-déterminisme cachée trouvée — `torch.set_num_threads(1)`,
+générateurs seedés explicitement, aucun état module-level partagé).
+
+**C, LA QUESTION LA PLUS IMPORTANTE, RÉSOLUE — vérifiée directement
+par moi.** Est-ce le MÊME kick qui bascule de signe sous perturbation,
+ou juste un décalage de phase qui nous fait mesurer un événement
+VOISIN de la séquence déjà alternante (déjà établie plus tôt ce
+tour) ? Test décisif : alignement par INDICE (pas par proximité
+temporelle à `pas=59989`) sur toute la séquence d'événements :
+
+```
+baseline vs adam_eps+1e-15 (rejoue independamment par moi) :
+  13 evenements chacun, 7/13 signes identiques par indice (54%)
+
+agent (meme test, 3 perturbations x 13 comparaisons) :
+  19 identiques / 20 inverses sur 39 comparaisons (49%)
+```
+
+**Indiscernable d'un tirage à pile ou face (50/50).** Un simple
+décalage de phase (« c'est juste le kick voisin qu'on mesure »)
+prédirait une corrélation FORTE (proche de 0% ou 100%, puisque la
+séquence entière serait juste translatée) — pas 50%. **RÉFUTE
+l'hypothèse alternative la plus probable.** Signal convergent
+supplémentaire de l'agent (non revérifié directement par moi) :
+l'écart de timing entre événements de même indice croît de `69` pas
+(début de fenêtre) à un pic de `~164` pas (milieu de fenêtre) avant de
+redescendre — signature d'un exposant de Lyapunov positif (divergence
+qui s'accumule avec le temps), pas un artefact de détecteur.
+
+**D, sensibilité testée jusqu'à EXACTEMENT 1 ULP (le minimum
+théorique représentable), CONFIRMÉE, pas de plancher.** L'agent a
+calculé le vrai plancher de précision (`ulp(adam_eps)≈1,29e-26`,
+`ulp(r[10,4])≈8,88e-16`) et testé une perturbation d'EXACTEMENT 1 ULP
+sur chacun — bascule toujours. Un test à `1e-16` sur `r[10,4]`
+(EN DESSOUS de son propre ULP) n'a AUCUN effet — résultat attendu et
+cohérent (l'arithmétique flottante arrondit une quantité sous l'ULP à
+zéro), pas un contre-exemple. **La sensibilité ne sature à AUCUNE
+échelle testable — le plancher est celui de l'arithmétique flottante
+elle-même, pas une limite du mécanisme.**
+
+**E, comparaison à K=12,80 — NUANCÉE, un point important non anticipé
+par moi.** L'agent note que le rapprochement est correct au niveau
+empirique brut mais RISQUE de suggérer un statut épistémique
+équivalent, alors que mur23 est en fait la démonstration LA PLUS
+PROPRE des deux : K=12,80 est une sensibilité le long d'un axe
+PARAMÈTRE (comparaison de runs indépendants à `delta` légèrement
+différents), et le propre diagnostic du projet sur K=12,80
+(`verifier_chaos_separatrice_k1280.py`) reconnaît que la classification
+y reste partiellement confondue avec un artefact de seuil de
+détection près d'une frontière délibérément construite (`delta` à
+0,03% sous `delta_c`). **Rien de comparable ici** : les kicks de
+mur23 (~0,022-0,026) sont ~30× au-dessus du seuil de détection
+(`0,0008`) — pas de cas limite de mesure. Le test par indice
+(point C) EST une divergence temporelle classique de trajectoires
+voisines (sens Lyapunov/papillon standard) — plus direct que la
+sensibilité paramétrique de K=12,80. Non revérifié en détail par moi
+(je n'ai pas relu `verifier_chaos_separatrice_k1280.py` en entier),
+mais cohérent avec ce que je sais déjà du dossier K=12,80.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| c'est un simple décalage de phase, pas une vraie divergence chaotique | 22/09 (agent, testé sur ma demande) | **RÉFUTÉE** le 22/09, vérifiée directement par moi — corrélation de signe par indice indiscernable du hasard (49-54%), pas proche de 0% ou 100% comme prédirait un décalage constant |
+| la sensibilité chaotique sature à une échelle de perturbation identifiable | 22/09 (moi, implicite en ne testant que jusqu'à `1e-15`) | **réfutée** le 22/09 par l'agent — persiste jusqu'à exactement 1 ULP, le minimum représentable, pas de plancher trouvé |
+| mur23 et K=12,80 ont le même statut épistémique de chaos | 22/09 (moi, implicite dans la comparaison) | **nuancée** le 22/09 — mur23 est en fait la démonstration plus propre, K=12,80 reste partiellement confondu avec un artefact de seuil selon le propre diagnostic du projet |
+
+**Statut** : lettre `REPONSE_ORDRE57.md` à mettre à jour avec le
+résultat du test par indice (point C) avant envoi définitif —
+referme la question « la sensibilité s'étend-elle à toute la
+séquence » avec un chiffre plutôt que de la laisser ouverte.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
