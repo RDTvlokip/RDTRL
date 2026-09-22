@@ -14752,6 +14752,131 @@ sweep `adam_eps`, et généricité multi-graines.
 
 ---
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 22/09/2026 (tour 57, PAS simulée)
+## — il avait complètement raison sur les deux lignes, ET sa question
+## de clôture a révélé une vraie erreur de mesure dans ma réponse
+## précédente
+
+**Contexte** : sa réponse réelle à l'addendum de `REPONSE_ORDRE56.md`
+(le fil sigma/rho/closed-form). Traitée en priorité absolue dès
+réception, malgré un souci de quota signalé par Théo entre-temps.
+
+**Sa thèse centrale** : ni la ligne 3 ni la ligne 10 n'ont besoin
+d'une somme complète à 27 termes — les deux sont des sigmoïdes à DEUX
+sorties EXACTES une fois le bon complément identifié, et mes résidus
+de 0,65%/0,88% ne sont que l'artefact de LINÉARISATION (premier ordre
+contre sigmoïde exacte), pas des termes manquants. Sa formule pour la
+ligne 3 : `ds3 = s3(1-s3)(d3 - dbar)`, `dbar=+8,3007e-3` (le mode
+commun des 26 autres messages, déjà trouvé de mon côté) — « la version
+à deux sorties mettait silencieusement `dbar=0` ».
+
+**Vérifié directement, EXACTEMENT confirmé sur les deux lignes**
+(`verifier_reponse_dipankar_tour57_sigmoide_exacte.py`) :
+
+```
+Ligne 10 (r4 vs r3, gap logit direct) :
+  pas=59989 : dR sigmoide EXACTE = -3,632578e-03   dR mesure = -3,632578e-03   ecart=0,0000%
+  pas=60432 : dR sigmoide EXACTE = -3,587504e-03   dR mesure = -3,587504e-03   ecart=0,0000%
+
+Ligne 3 (s3 vs dbar) : PREMIER ESSAI ECHOUE a 96% (bug trouve et
+corrige par moi -- j'avais oublie le facteur de multiplicite ln(K),
+K=26, dans la reduction softmax->sigmoide : sigmoid(logit_10 - dbar)
+au lieu de sigmoid(logit_10 - dbar - ln(26)). LE MEME "26" QUE H7,
+retrouve une troisieme fois ce mois-ci.
+  Apres correction :
+  pas=59989 : ds3 sigmoide EXACTE = -1,847767e-05   ds3 mesure = -1,847767e-05   ecart=0,0000%
+  pas=60432 : ds3 sigmoide EXACTE = -1,881122e-05   ds3 mesure = -1,881122e-05   ecart=0,0000%
+```
+
+**Concédé sans réserve : il avait complètement raison.** Ma
+présentation « la ligne 3 a besoin de la somme complète à 27 termes »
+donnait le bon NOMBRE (0,88-0,90% d'écart, presque exact) mais avec un
+cadrage inutilement compliqué — la vraie correction est juste `dbar`
+(le mode commun) PLUS le facteur `ln(K)` de multiplicité, pas une
+somme sur 27 termes séparés. La ligne 10 n'avait besoin d'aucune
+correction du tout — le résidu de 0,65% était PUREMENT un artefact de
+linéarisation (premier ordre vs sigmoïde exacte), disparaît
+complètement une fois qu'on pousse le gap logit à travers la sigmoïde
+sans l'approximer.
+
+**Sa question de clôture — a révélé une VRAIE ERREUR dans mes
+chiffres publiés, pas juste une question rhétorique.** Il demandait :
+le kick à `delta=0` (gap `+0,0030`) est-il le même événement que le
+kick à `delta` réel (gap `-0,0221`) pointé dans l'autre sens, ou un
+événement différent qui partage seulement le pas ?
+
+**Investigation directe (pas de réponse depuis le fauteuil) :** mes
+chiffres `delta=0` publiés (`+0,0030`) venaient d'une mesure par
+interpolation LINÉAIRE entre `pas=59000` et `pas=61000` sur une
+trajectoire `delta=0` qui, en réalité, oscille bien plus fort et bien
+plus souvent que ces deux points ne le laissaient supposer. Détection
+d'événements RÉELLE (grille fine, seuil, comme
+`verifier_kicks_adam_grille_fine.py`) sur `delta=0`,
+`verifier_reponse_dipankar_tour57_delta0_meme_evenement.py` :
+
+```
+kicks reels a delta=0 (periode ~460-500, magnitude ~0,023, SIGNE ALTERNANT) :
+  55002(-), 55424(+), 55890(+), 56350(-), 56806(-), 57260(+), 57730(-),
+  58194(+), 58663(+), 59123(-), 59579(+), 60044(-), 60508(-), 60975(+),
+  61483(+), 61978(+)
+
+valeur EXACTE du gap a pas=59989 et 60432 (les points publies) :
+  pas=59989 : delta_gap=-6,52e-07   (quasi NUL)
+  pas=60432 : delta_gap=-6,57e-07   (quasi NUL)
+```
+
+**Mes chiffres `delta=0` publiés étaient un ARTEFACT DE MESURE, pas un
+vrai kick** — `pas=59989` et `60432` tombent entre deux kicks réels
+(`59579` et `60044`), pas sur un kick, et l'interpolation linéaire
+entre `59000`/`61000` capturait juste du bruit résiduel de cette
+position creuse. **Le vrai kick réel à `delta=0` a une magnitude
+`~0,023`, presque 8× plus grande que ce que j'avais publié.**
+
+**Vérifié en parallèle sur `delta` réel** (les points `59989`/`60432`
+publiés eux étaient de VRAIS kicks détectés, confirmé :
+`delta_gap=-2,213426e-02` et `-2,186503e-02` à ces pas exacts, matchant
+mes chiffres d'origine) :
+
+```
+kicks reels a delta REEL (meme grille, meme fenetre) :
+  55366(+), 55836(-), 56298(+), 56757(-), 57227(+), 57689(+), 58162(-),
+  58625(-), 59087(+), 59540(+), 59989(-), 60432(-), 60871(+), 61312(+),
+  61768(+)
+```
+
+**Réponse directe à sa question, maintenant fondée sur de vraies
+mesures des deux côtés** : NI « même événement pointé dans l'autre
+sens » NI « événement différent qui partage le pas » au sens qu'il
+proposait — **le SIGNE alterne essentiellement au hasard à TRAVERS
+TOUTE LA SÉQUENCE, aux DEUX valeurs de `delta`**, pas seulement entre
+`delta=0` et `delta` réel. `delta` réel a des kicks `+` ET `-` tout du
+long (`+,-,+,-,+,+,-,-,+,+,-,-,+,+,+`), exactement comme `delta=0`
+(`-,+,+,-,-,+,-,+,+,-,+,-,-,+,+,+`). **Le fait que `pas=59989`/`60432`
+soit tombé « `-` » côté `delta` réel n'a rien à voir avec l'asymétrie
+de récompense** — c'est juste où dans la séquence on a regardé. Le
+mécanisme (période, magnitude) est le MÊME aux deux `delta` ; le
+SIGNE de chaque kick individuel n'est contrôlé ni par `delta` ni,
+apparemment, par rien d'identifié — question ouverte sur ce qui fixe
+le signe d'un kick donné, mais ce n'est manifestement pas
+l'asymétrie de récompense.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| ligne 10 et ligne 3 sont des sigmoïdes exactes à 2 sorties, résidus = artefact de linéarisation | 22/09 (dipankarsarkar) | **CONFIRMÉE** le 22/09, vérifiée directement par moi — écart 0,0000% sur les deux lignes une fois la sigmoïde exacte utilisée (avec le facteur `ln(K)` pour la ligne 3, bug trouvé et corrigé en cours de route) |
+| la ligne 3 a besoin d'une somme complète à 27 termes distincts (mon cadrage précédent) | 21/09 (moi) | **réfutée comme cadrage** le 22/09 — le bon nombre, la mauvaise explication ; c'est `dbar+ln(K)`, pas 27 termes séparés |
+| le kick `delta=0` publié (+0,0030) était un vrai kick détecté | 21/09 (moi, implicite) | **RÉFUTÉE** le 22/09 — artefact de mesure, le vrai kick à ces pas est quasi nul (`-6,5e-7`), le vrai kick le plus proche est ~8× plus grand |
+| le signe du kick est déterminé par l'asymétrie de récompense (`delta`) | 22/09 (dipankarsarkar, implicite dans sa question) | **réfutée** le 22/09 — le signe alterne essentiellement au hasard aux DEUX valeurs de `delta`, pas de contrôle identifié |
+
+**Scripts permanents** :
+`verifier_reponse_dipankar_tour57_sigmoide_exacte.py`,
+`verifier_reponse_dipankar_tour57_delta0_meme_evenement.py`,
+`verifier_reponse_dipankar_tour57_pattern_reel.py`.
+
+**Réponse complète à envoyer : `docs/REPONSE_ORDRE57.md`** (nouveau
+fichier, nouvelle vraie critique).
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
