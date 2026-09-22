@@ -14877,6 +14877,85 @@ fichier, nouvelle vraie critique).
 
 ---
 
+## Audit de la réponse tour 57 avant envoi, 22/09/2026 — CONFIRMÉ sur
+## A/B/C, deux ajouts substantiels trouvés et intégrés à la lettre
+
+**Agent style dipankar lancé** (worktree isolé, dernière vérification
+avant envoi au vrai relecteur, consigne du projet). Cinq points
+vérifiés (A-E), le point E revérifié directement par moi avant
+intégration à la lettre.
+
+**A, B confirmés chiffre pour chiffre** (les 4 mesures sigmoïde
+exacte à 0,0000%, la détection d'événements `delta=0`/`delta` réel
+reproduite à l'identique).
+
+**C, confirmé avec un test formel que je n'avais pas fait** : test de
+Wald-Wolfowitz sur les séquences de signes — `delta` réel (15
+événements, 9+/6-) donne 9 runs contre 8,2 attendus sous hasard
+(`z=0,448`) ; `delta=0` (16 événements, 9+/7-) donne 10 runs contre
+8,875 attendus (`z=0,592`). Aucun résultat significatif — « alterne
+essentiellement au hasard » tient statistiquement, pas seulement à
+l'œil. Réserve honnête ajoutée par l'agent : `n=15-16` donne une
+puissance limitée, ce test ne PROUVE pas le hasard, il échoue
+seulement à le rejeter.
+
+**D, hypothèse alternative testée et réfutée — ajoutée à la lettre,
+je ne l'avais pas testée** : un mécanisme de « ringing forcé » (kick
+vers le haut suivi systématiquement d'un rebond vers le bas)
+prédirait un taux de changement de signe consécutif proche de 100%.
+Mesuré : `57%` (`delta` réel) et `60%` (`delta=0`), statistiquement
+indiscernables de `50%` (test binomial, `p=0,30-0,40`). Le signe d'un
+kick ne prédit PAS le signe du suivant au-delà du hasard.
+
+**E, trou explicatif trouvé et comblé — vérifié directement par moi
+avant d'ajouter le paragraphe à la lettre** : pourquoi la ligne 10
+n'a jamais eu besoin du facteur `ln(K)` alors que la ligne 3 si,
+malgré des structures apparemment similaires (25-27 « autres »
+entrées) :
+
+```
+ligne 10, pas=59989 : max logit des 25 autres = -20,046407876
+                       logit_r3=5,879836   logit_r4=7,211536
+                       masse de probabilite combinee des 25 autres = 2,618182e-11
+                       (r3+r4 = 0,999999999974)
+```
+
+**Vérifié indépendamment par moi, chiffres identiques.** Les 25
+autres entrées de la ligne 10 bougent beaucoup en LOGIT brut
+(`Σ|d|=0,2221`, déjà rapporté tour 56) mais restent ~20 unités de
+logit SOUS la paire dominante — `exp(-20)` avale tout mouvement à
+l'échelle 0,01 quelle que soit la précision, donc contribution nulle
+à la somme pondérée du softmax. La ligne 3 a ses 26 autres à une
+échelle COMPARABLE au logit dominant (`dbar` à probabilité `~8e-3`,
+pas négligeable) — d'où le besoin réel du facteur de multiplicité
+là-bas, absent ici. **Pas une propriété structurelle « ligne 10 vs
+ligne 3 » — un accident numérique de CE point d'entraînement précis**
+(pourrait s'inverser pour un autre mur si les entrées enterrées
+étaient plus proches de la surface).
+
+**Trouvaille annexe de l'agent, non demandée, ajoutée à la lettre**
+: la dérive de phase entre `delta=0` et `delta` réel n'est PAS un
+simple décalage constant — les intervalles inter-kicks de `delta`
+réel se CONTRACTENT sur la fenêtre (`~470→~439-456` pas, ~6-7%),
+tandis que ceux de `delta=0` restent stables (`~454-470`) puis
+sautent en fin de fenêtre (`495, 508`) — deux comportements
+DIFFÉRENTS, pas une simple différence de période constante. Non
+revérifié directement par moi (chiffres de l'agent repris tels
+quels), signalé comme mesure plus précise mais toujours non
+expliquée.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le mécanisme est un « ringing forcé » (alternance de signe systématique après chaque kick) | 22/09 (agent, testé sur ma demande) | **RÉFUTÉE** le 22/09 — taux de changement de signe consécutif `57-60%`, indiscernable de `50%` (hasard) |
+| « le signe alterne essentiellement au hasard » tient à un test statistique formel, pas seulement à l'œil | 22/09 (moi, demandé à l'agent) | **confirmée** le 22/09 — test de Wald-Wolfowitz non significatif aux deux `delta`, réserve de puissance limitée notée honnêtement |
+| la ligne 10 n'a jamais eu besoin de `ln(K)` parce que sa structure est différente de la ligne 3 | 22/09 (moi, implicite, jamais expliqué) | **précisée** le 22/09, vérifiée directement par moi — pas une différence structurelle, un accident numérique (masse des 25 autres ~2,6e-11 contre `dbar` de la ligne 3 ~8e-3) |
+
+**Statut** : lettre `REPONSE_ORDRE57.md` mise à jour avec les points D
+et E avant envoi (le point de dérive de phase aussi ajouté). Prête à
+partir.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
