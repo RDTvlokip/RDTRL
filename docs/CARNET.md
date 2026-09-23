@@ -15471,7 +15471,54 @@ pas encore décru jusqu'au seuil.
 |---|---|---|---|
 | le référent 5 est une non-convergence (point-selle) | 21/09 (moi) | **réfutée** le 23/09 — orphelin, l'uniforme est son optimum exact |
 | H58.11a : cycle limite de période 2, pas `lr/19`, déficit `½(lr/38)²(26/27)` | 23/09 (moi) | **réfutée quantitativement** le 23/09 (pas `lr/39`, salves intermittentes) ; période 2 et proportionnalité au lr confirmées |
-| H58.11b (RÉVISÉE après avoir vu (a)-(d), à tester sur des prédictions neuves) : auto-stabilisation `√v=lr·h/38-eps`, et `v=h²⟨(z-z̄)²⟩` donne un déficit MOYEN DANS LE TEMPS `½(lr/38-eps/h)²` = 8,61e-7 (f=1), 2,14e-7 (f=0,5), 5,29e-8 (f=0,25) ; replay standard prolongé : les orphelins entrent en régime de bord de stabilité, déficit 4,39e-7, `√v=2,48e-8` | 23/09 (moi) | ouverte — prédictions poussées avant le run |
+| H58.11b (RÉVISÉE après avoir vu (a)-(d), à tester sur des prédictions neuves) : auto-stabilisation `√v=lr·h/38-eps`, et `v=h²⟨(z-z̄)²⟩` donne un déficit MOYEN DANS LE TEMPS `½(lr/38-eps/h)²` = 8,61e-7 (f=1), 2,14e-7 (f=0,5), 5,29e-8 (f=0,25) ; replay standard prolongé : les orphelins entrent en régime de bord de stabilité, déficit 4,39e-7, `√v=2,48e-8` | 23/09 (moi) | **confirmée** (voir ci-dessous), avec une correction de courbure trouvée en analysant le résidu |
+
+**Résultats (e) et (f), lus après le push des prédictions (`ad5c1a3`) :**
+```
+(e) mur23, lr ligne 5 × f   <√v> prédit / mesuré      <déficit> prédit / mesuré      déficit instantané min-max
+    f = 1                   3,47e-8 / 3,64e-8          8,61e-7 / 8,73e-7 (+1,4 %)     1,2e-7 – 2,8e-6
+    f = 0,5                 1,73e-8 / 1,82e-8          2,14e-7 / 2,20e-7 (+2,7 %)
+    f = 0,25                8,59e-9 / 9,02e-9          5,29e-8 / 5,40e-8 (+2,2 %)
+(f) replay standard (Adam défaut, eps=1e-8), lignes orphelines 4 et 5
+    pas 10 000              déficit 7,3e-10 / 6,0e-11   √v 1,1e-6 / 6,0e-7   (uniformes, v encore haut)
+    pas 15 000              déficit 3,3e-7  / 3,2e-7    √v 1,0e-7 / 6,0e-8   (v descend)
+    pas 20 000 → 80 000     déficit 4,61-4,65e-7 (les deux lignes)   √v 2,638-2,641e-8 (les deux lignes)
+    prédit                  4,39e-7                      2,48e-8
+```
+La loi en `f²` tient (1 : 0,252 : 0,062). Le déficit instantané varie
+d'un facteur 20 d'un pas à l'autre, ce qui explique les photos
+incohérentes de la partie (b) et le « ~4× sur 6 ordres de grandeur »
+de l'agent du 21/09 (lectures instantanées). Deux lignes orphelines
+différentes donnent la MÊME constante à 3 chiffres (`√v=2,639e-8`,
+déficit `4,62e-7`) : elle ne dépend que de `lr, eps, β, N, K`. Et le
+régime démarre entre 10 000 et 20 000 pas, quand `v` a décru jusqu'au
+seuil — d'où l'uniformité exacte trouvée à 10 000 pas le 21/09.
+
+**Correction trouvée en cherchant le résidu systématique (+5 % en (e),
++6,6 % en (f) sur `√v`) — post hoc, mais calculée, pas ajustée.** J'avais
+pris pour `h` l'élément diagonal du hessien de `-βH/N` à l'uniforme,
+`β(K-1)/(NK²)=2,642e-5`. La courbure qui fixe la stabilité est la
+valeur propre sur le sous-espace à somme nulle (le softmax est
+invariant par translation) : `∂(-H)/∂z_j=(z_j-z̄)/K` exactement au
+premier ordre, donc `h=β/(NK)=2,7435e-5` (valeur propre de multiplicité
+26, la 27ᵉ direction — le mode commun — est de courbure nulle). Avec
+elle : `√v` prédit `3,600e-8` (eps=1e-10) et `2,610e-8` (eps=1e-8),
+mesurés `3,639e-8` et `2,639e-8` — **+1,1 % dans les deux cas** ;
+`S` auto-stabilisé `=lr·h/(√v+eps)=37,6-37,7` contre le seuil 38. Et
+`g=h(z-z̄)` exactement ⇒ `⟨déficit⟩=½v/h²` : `8,80e-7` contre `8,73e-7`
+mesuré (e), `4,626e-7` contre `4,62-4,65e-7` (f). Le résidu de 1 % qui
+reste va dans le sens attendu : `v` moyen un peu au-dessus de sa valeur
+au seuil, puisque chaque salve le regonfle avant qu'il ne redescende.
+
+**Forme fermée du « plateau » du référent 5, établie :** un référent
+orphelin (sans message qui décode vers lui) a pour optimum exact
+l'uniforme ; Adam le tient à une distance RMS `lr/38-eps·NK/β` de cet
+optimum par des salves intermittentes de période 2 sur chaque
+coordonnée (bord de stabilité auto-stabilisé), soit
+`ln K - ⟨H⟩ = ½(lr/38 - eps·NK/β)²`. Conséquence testable (JUSQU'OÙ) :
+au-dessus de `eps_c=lr·β/(38NK)=3,61e-8`, le bord de stabilité est
+inatteignable et l'orphelin converge EXACTEMENT — test (g) lancé,
+prédictions poussées avant (`2,47e-8` à eps=3e-8, ~0 à 5e-8 et 1e-7).
 
 ---
 
