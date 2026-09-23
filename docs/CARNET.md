@@ -15380,6 +15380,52 @@ central du tour :**
 | la pente de 0,68 à eps=0 vient des 26 autres dominés par leur propre fond | 23/09 | **confirmée** (0,519 + 0,160 ; ratio √v 5,96) |
 | le résidu de 2-4 % du balayage vient de l'échantillonnage de `u` | 23/09 | **ouverte, non testée là où elle compte** — sur les deux traces complètes la même méthode donne 1,002/1,001, donc le résidu est propre aux deltas 0,002-0,006 ; leurs séries n'ont pas été sauvegardées |
 
+**La salve elle-même : un bord de stabilité adaptatif au sens de Cohen
+et al. 2022 — testé plutôt que laissé en « non testé »
+(`verifier_tour58_bord_stabilite_salve.py`).** Source vérifiée
+(arXiv:2207.14484, *Adaptive Gradient Methods at the Edge of
+Stability*, abstract) : « For Adam with step size η and β₁ = 0.9, this
+stability threshold is 38/η », sur la valeur propre maximale du hessien
+préconditionné `P⁻¹H`, `P=diag(√v+eps)`. Mesuré à chaque pas
+`S=lr·λ(P⁻¹H)` — sur la direction du gap seule (`S_gap`) et globalement
+(`S_max`, itération de puissance sur produits hessien-vecteur, 1 458
+paramètres) :
+```
+delta=0     pas 58680 (après salve)  S_gap 32,4   √v(r10[4]) 5,71e-7
+            pas 59000                S_gap 37,3   √v 4,96e-7   dgap ~1e-9
+            pas ~59040               S_gap franchit 38
+            pas 59104-59117          S_gap 39,3-39,5, oscillation 1e-4 → 7e-3, vp 0,2 % → 28 % → 99,6 % sur le gap
+            pas 59123 (pic)          dgap 4,3e-2, √v remonte à 5,0e-7 puis 5,4e-7
+            pas 59127                S_gap 34,4 — salve éteinte
+delta réel  pas 59100 → 59500        S_gap 31,0 → 37,1, √v 3,86e-7 → 3,26e-7
+            pas 59520-59540          S_max 39,2-39,7, vp 95,1 % gap + 4,9 % ligne 3 (e3[10]=0,162)
+            pas 59543                S_gap 32,7, S_max 34,2
+```
+Le « kick » est l'instabilité de période 2 qui se déclenche quand la
+décroissance de `v` (plancher) pousse la raideur préconditionnée au-delà
+de 38, et que l'oscillation elle-même éteint en remontant `v` —
+l'auto-stabilisation décrite par Cohen et al., ici en salves plutôt
+qu'en régime continu. Ça relie enfin le « plancher de `v` » établi
+aux tours précédents à un mécanisme publié et chiffré. **Et le mode
+instable dit OÙ vit le couplage** : à delta réel, le vecteur propre
+porte 4,9 % sur la ligne 3 (la salve est un mode couplé récepteur +
+ligne 3, et c'est lui, `S_max=39,7`, qui franchit 38 alors que le gap
+seul plafonne à 37,9) ; à `delta=0`, 0,0000 sur la ligne 3, 100,0 % sur
+le gap. Mesure indépendante de l'ablation, même conclusion : la ligne 3
+n'entre dans le mode que si elle est au-dessus du plancher eps.
+
+**Trouvaille non cherchée, à creuser : entre les salves, la direction
+qui reste en permanence à `S≈38` est la LIGNE 5 de l'émetteur**
+(coordonnées dominantes `e(5,24)`, `e(5,5)`, `e(5,16)`, `e(5,26)`) —
+le référent 5 à non-convergence totale (`H≈ln27`) trouvé le 21/09, dont
+le mécanisme restait ouvert (le balayage d'`adam_eps` avait donné une
+tendance faible, non concluante).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H58.9 : la salve est un bord de stabilité adaptatif (seuil 38/lr de Cohen et al.) | 23/09 (moi) | **confirmée** le 23/09 aux deux deltas — franchissement de 38 au démarrage, retombée à 34 à l'extinction |
+| H58.10 : le référent 5 est tenu sur son plateau `H≈ln27` par l'auto-stabilisation d'Adam au bord de stabilité (la ligne 5 à `S≈38` en permanence), pas par un équilibre de l'objectif | 23/09 (moi, non standard) | **ouverte** — test prévu : réduire le lr de la seule ligne 5 (seuil relevé) et voir si `H(ligne 5)` quitte `ln27` ; prédiction : oui si H58.10, non si le plateau est un vrai équilibre de J |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
