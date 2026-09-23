@@ -15113,6 +15113,70 @@ séquence » avec un chiffre plutôt que de la laisser ouverte.
 
 ---
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 23/09/2026 (tour 58, PAS simulée)
+## — « le signe ne fait aucun travail dans le résultat de co-timing ;
+## la saturation pourrait tout faire »
+
+**Sa thèse.** Le « `s3` reste plat à `delta=0` » du tour 54 ne prouve
+rien : tout mouvement de l'écart logit de `s3` atteint `s3` multiplié
+par `s3(1-s3)`, qui vaut `1,04e-3` à delta réel (`s3=0,998963`) et
+`~1,0e-7` à `delta=0` (`s3=0,99999990`), 10 000× plus petit. Remis en
+unités logit : `1,85e-5/1,04e-3=1,78e-2` au kick réel (cohérent avec
+`d3-dbar=-9,33e-3-8,30e-3=-1,76e-2`), contre au plus
+`1,426e-10/1,0e-7≈1,4e-3` à `delta=0`. Donc « au moins 12× plus
+faible », une BORNE, pas un zéro — et pas « le co-timing ne survit
+pas ». Il demande la comparaison alignée sur les événements :
+`d3-dbar` à chacun des 16 événements `delta=0` à côté des 15 à delta
+réel (test de magnitude, le signe n'y entre pas). Et il signale que
+le `|d_logit_r4|=0,001504` (« ×7,35 plus petit à delta=0 »,
+`REPONSE_ORDRE56.md`) a été lu à pas=59989, ENTRE deux kicks — le
+kick vaut ~0,023 aux deux deltas.
+
+**Vérification de ses chiffres (règle 5bis), avant tout calcul
+nouveau.** Arithmétique exacte : `0,998963×0,001037=1,0359e-3` ✓,
+`1,847767e-5/1,0359e-3=1,784e-2` ✓, `-9,33e-3-8,30e-3=-1,763e-2` ✓,
+`1,426e-10/1,0e-7=1,43e-3` ✓, rapport `12,5` ✓. Linéarisation
+`1,0359e-3×1,763e-2=1,826e-5` contre `1,848e-5` mesuré (1,2 %, écart
+de linéarisation, cohérent avec le tour 57).
+
+**MAIS sa prémisse compare deux quantités différentes, et c'est MON
+bug, pas le sien.** `verifier_precommis_dipankar_delta0_controle.py`
+(tour 54) calcule `s3 = torch.sigmoid(p_e[3, 10])` — la sigmoïde du
+LOGIT BRUT — alors que `e.loi()` est un softmax sur 27 messages
+(`representable_atteignable_stable.py:59`). Même bug pour
+`R4 = sigmoid(p_e[4,10])·sigmoid(p_r[10,4])`. Le `0,998963` de sa
+première ligne vient de `e.loi()[3,10]` (vrai `s3`) ; le `0,99999990`
+de sa deuxième ligne vient de `sigmoid(logit brut)`, une quantité sans
+sens dans une paramétrisation softmax (non invariante par
+translation de la ligne). Conséquences à vérifier, pas supposées :
+(a) le facteur `1,0e-7` est bien la dérivée de la quantité mesurée,
+donc sa conversion borne correctement le mouvement du logit brut
+`p_e[3,10]` — mais c'est une borne sur `d3` seul, PAS sur `d3-dbar` ;
+(b) relative à la moyenne des 100 premiers pas de `[59000,61000)`,
+pas à une ligne de base locale — elle inclut la dérive lente ;
+(c) la vraie saturation de `s3` à `delta=0` est inconnue tant qu'on
+ne l'a pas mesurée avec `e.loi()`.
+
+**Hypothèses posées AVANT de lancer le test aligné (23/09) :**
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H58.1 : « plat » était de la pure saturation ; `d3-dbar` bouge aux événements `delta=0` avec une amplitude comparable au réel (~1,8e-2) | 23/09 (dipankarsarkar, lecture forte de sa thèse) | ouverte |
+| H58.2 : couplage au moins 12× plus faible à `delta=0` — une borne, pas un zéro | 23/09 (dipankarsarkar) | ouverte |
+| H58.3 : `d3-dbar` reste au niveau inter-kicks aux 16 événements `delta=0` (mon affirmation du tour 54) | 20/09 (moi, tour 54) | ouverte |
+| H58.4 (standard, erreur de mesure) : le tour 54 mesurait `sigmoid(logit brut)`, pas `s3` ; le `0,99999990` et la borne ×12 portent sur une autre quantité | 23/09 (moi) | **confirmée par lecture du code** le 23/09 ; ses conséquences numériques restent à mesurer |
+| H58.5 (non standard, séparabilité) : l'asymétrie de récompense ne PEUT PAS être le « canal de transmission » du tour 54 — `∂J/∂s[3,m]=poids[3]·r[m,3]+…` ne contient jamais `poids[4]` ; `delta` n'entre que par l'état (où sont `s3`, `r[10,3]`, `v`) et par `poids[3]=(1-delta)/N`, qui ne varie que de 1,3 % | 23/09 (moi) | ouverte — contredit directement le mécanisme que j'ai écrit au tour 54 |
+| H58.6 (non standard, saturation côté récepteur) : si l'atténuation existe, elle passe par `Δr[10,3]=-r3·r4·Δgap` (masse de `r[10,3]`) qui alimente le gradient de la ligne 3, pas par la sigmoïde de `s3` | 23/09 (moi) | ouverte |
+| H58.7 (standard, normalisation d'Adam) : une perturbation de gradient plus petite sur la ligne 3 peut être rattrapée par `m/√v` si `v` de la ligne 3 est proportionnellement plus petit — l'atténuation en gradient ne se traduit pas 1:1 en déplacement logit | 23/09 (moi) | ouverte |
+
+**Test lancé** : `tracer_mur23_lignes3_10_complet.py` enregistre pas à
+pas sur `[54000,62000)` les logits des lignes 3/4 de l'émetteur et 10
+du récepteur, leurs gradients et l'état d'Adam (`m`, `v`), aux deux
+deltas — de quoi faire la comparaison alignée sur les événements, et
+tester H58.5-H58.7 sur les gradients, sans relancer.
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
