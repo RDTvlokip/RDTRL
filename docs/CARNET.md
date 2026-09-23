@@ -15520,6 +15520,32 @@ au-dessus de `eps_c=lr·β/(38NK)=3,61e-8`, le bord de stabilité est
 inatteignable et l'orphelin converge EXACTEMENT — test (g) lancé,
 prédictions poussées avant (`2,47e-8` à eps=3e-8, ~0 à 5e-8 et 1e-7).
 
+**(g) CADUC tel que conçu** : changer eps pour TOUT l'entraînement
+change le code appris — à eps ≥ 3e-8 le référent 5 reçoit son propre
+message (H=0, « déficit » = ln27 = 3,2958). Seul le contrôle eps=1e-8
+reste lisible : 4,626e-7 (= (f)). **Refait en (h)** comme l'ablation de
+la ligne 3 : depuis le checkpoint mur23 (ligne 5 déjà orpheline et au
+bord de stabilité), eps changé sur la SEULE ligne 5 ; prédictions
+poussées avant le run :
+```
+eps ligne 5   S max sans v = lr·h/eps   <déficit> prédit   mesuré        min – max
+1e-8          137                        4,52e-7            4,66e-7       5,3e-8 – 1,5e-6
+3e-8          45,7  (> 38)               2,47e-8            2,505e-8      1,7e-9 – 8,0e-8
+5e-8          27,4  (< 38)               0                  5,9e-17       ±8,9e-16 (arrondi)
+1e-7          13,7  (< 38)               0                  4,6e-17       ±8,9e-16 (arrondi)
+```
+**`eps_c` CONFIRMÉ.** Sous `eps_c`, l'orphelin reste au bord de
+stabilité avec le déficit prédit à 1,4 % près (3e-8) ; au-dessus, il
+converge EXACTEMENT, au plancher float64. Et la ligne 5 du mur 23
+passée à eps=1e-8 retombe sur la constante du replay standard (4,66e-7
+contre 4,62e-7) : la constante ne dépend que de `(lr, eps, β, N, K)`,
+pas de l'histoire.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H58.11b (bord de stabilité auto-stabilisé sur la ligne orpheline, `⟨déficit⟩=½(lr/38-eps·NK/β)²`) | 23/09 | **confirmée** le 23/09 — f² (e), deux lignes orphelines et démarrage entre 10 000 et 20 000 pas (f), seuil `eps_c` net (h) ; correction de courbure `β/(NK)` post hoc mais calculée |
+| le « ~4× sur 6 ordres de grandeur » d'`adam_eps` du 21/09 contredit un mécanisme de plancher | 21/09 (agent) | **réinterprété** — déficit instantané bruité d'un facteur 20 ; la vraie dépendance en eps est plate sous ~1e-9 puis s'effondre à `eps_c`, et un eps GLOBAL change le code appris |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
