@@ -15270,6 +15270,116 @@ delta réel  eps3 : 1e-10  0,937  | 1e-9   0,685  | 1e-8   0,360  | 1e-7   0,083
 | H58.8 : la saturation agit à travers le plancher `eps` d'Adam (pas linéaire `lr·m/eps` quand `√v≪eps`), pas à travers le jacobien logit→probabilité ; sans `eps`, l'invariance d'échelle d'Adam effacerait `s3(1-s3)` et le couplage serait plein | 23/09 (moi) | ouverte — tranchée par l'ablation |
 | H58.5 (séparabilité : `poids[4]` n'entre pas dans le gradient de la ligne 3) | 23/09 | testée dans le même script (même état, poids échangés) |
 
+**Ablation d'eps sur la seule ligne 3 — lue APRÈS le push des
+prédictions (`d54c143`), deux salves par réglage :**
+```
+delta=0     eps3   1e-10    1e-11    1e-12    1e-13    1e-14    0
+  prédit           4,8e-5   4,8e-4   4,7e-3   4,4e-2   0,26     O(1)
+  mesuré           4,78e-5  4,78e-4  4,75e-3  4,48e-2  0,265    0,68
+                   4,78e-5  4,79e-4  4,82e-3  4,53e-2  0,264    0,69
+delta réel  eps3   1e-10    1e-9     1e-8     1e-7     1e-6     1e-5
+  prédit           0,937    0,685    0,360    0,083    9,6e-3   9,8e-4
+  mesuré           0,938    0,677    0,349    0,0785   8,96e-3  9,11e-4
+                   0,938    0,680    0,351    0,0784   8,95e-3  9,12e-4
+```
+**H58.8 CONFIRMÉE, dans les deux sens, sur cinq décades d'eps.** À
+`delta=0`, eps retiré sur la ligne 3 : le couplage passe de 4,8e-5 à
+0,68 alors que `s3` reste à `1-3,6e-10` — la saturation SEULE n'atténue
+rien. À delta réel, la ligne 3 poussée sous le plancher : le couplage
+meurt selon la formule. Les deux derniers points réels sont 5-7 % sous
+la prédiction ET `max|dgap|` y monte de 3-6 % : quand la ligne 3 cesse
+de co-osciller, la salve du récepteur grossit un peu — rétroaction
+ligne 3 → récepteur, faible mais réelle (le couplage est à double sens).
+Et à `eps3≤1e-13` à `delta=0`, `X` rejoint `25,0000` en quelques
+centaines de pas : l'excès de 0,055 au-dessus de `X*` était lui-même
+limité par eps (même mécanisme, côté comportement à vide).
+
+**Pourquoi 0,68 et pas ~1 à eps=0 (`verifier_reponse_dipankar_tour58_separabilite_et_eps0.py`).**
+Pente 0,679 = part de `e3[10]` 0,519 (ρ_e3/ρ_r ≈ 1,04) + part des 26
+autres 0,160. Les autres ne prennent que ~0,3 du pas normalisé de
+`e3[10]` parce qu'à `delta=0` leur `√v` est dominé par leur propre
+gradient de fond (relaxation non uniforme) : `26·√v(autres)/√v(e3[10])
+=5,96` à `delta=0` contre `1,0000` à delta réel. Même vérification à
+delta réel sur la trace : part(−moy autres)/part(e3[10]) = 0,8848
+[0,8844 ; 0,8852] sur 15 salves, prédit `0,8784/0,9947=0,883` —
+explique le `dbar/d3=0,89` du tour 57, jamais expliqué jusqu'ici.
+
+**H58.5 (séparabilité) CONFIRMÉE exactement — et mon premier test était
+mal conçu.** Le premier essai comparait le gradient STATIQUE de la
+ligne 3 sous deux pondérations : près d'un point stationnaire ce
+gradient est ~0, rapports 6,33 et 1,00 sans signification. Refait comme
+RÉPONSE du gradient de la ligne 3 à une salve du récepteur (gap ±h),
+même état, quatre pondérations :
+```
+                         état delta=0 (h=1e-3)     état delta réel (h=1e-5)
+réponse(W4)/réponse(W0)  1,0000000000 (résidu 0)   1,0000000000 (résidu 0)
+réponse(W3)/réponse(W0)  0,98662                   0,9869733844
+1-delta                  0,98697                   0,9869733844
+forme fermée / autograd  0,02 %                    6e-6
+```
+`poids[4]` a un effet STRICTEMENT nul. À l'état `delta=0` avec
+`h=1e-5`, le rapport sortait à 0,947368 = 18/19 exactement :
+quantification à l'ULP (réponse 6,6e-17 calculée comme différence de
+termes ~0,02) ; converge vers `1-δ` quand `h` monte (0,947 → 0,984 →
+0,9866 pour h=1e-5/1e-4/1e-3). Rapport des réponses état réel/état
+`delta=0` = 1,90e6, forme fermée `s3(1-s3)r3r4` → 1,93e6. **Le
+mécanisme de « canal de transmission par l'asymétrie » écrit au tour 54
+est RÉFUTÉ** : `delta` n'agit que par l'état où il gare le système.
+
+**Balayage en delta (JUSQU'OÙ) — prédictions a priori poussées avant la
+sortie (`74b43cc`), `verifier_reponse_dipankar_tour58_balayage_delta_couplage.py`,
+12-13 salves par delta :**
+```
+delta    pente prédite  mesurée    u prédit   u mesuré   mesuré/formule(u mesuré)  X final / X* forme fermée
+0,002    6,6e-4         6,17e-4    1,27e-13   1,15e-13   1,036                     22,46331 / 22,4633
+0,004    7,5e-3         7,05e-3    1,47e-12   1,35e-12   1,025                     19,98532 / 19,9853
+0,006    6,8e-2         6,47e-2    1,50e-11   1,36e-11   1,032                     17,61055 / 17,6106
+0,008    0,31           0,301      1,31e-10   1,22e-10   1,013                     15,37439 / 15,3744
+0,010    0,59           0,586      9,6e-10    9,28e-10   1,006                     13,29145 / 13,2915
+0,012    0,85           0,850      6,35e-9    6,29e-9    1,005                     11,29519 / 11,2952
+```
+Transition prédite vers `delta~0,009`, confirmée (0,30 à 0,008, 0,59 à
+0,010). La forme fermée de l'équilibre tient à 5 chiffres à chaque
+delta (et `r3` aussi : 0,45017/0,4502 … 0,22865/0,2286). Chaîne a
+priori (loi d'échelle de `u`) : 1-10 % trop haute à petit delta.
+Résidu de la formule avec `u` mesuré : sur les deux traces complètes,
+1,0022 (`delta=0`) et 1,0012 (réel) avec `u` au pic ; avec `u` pondéré
+par dgap², 0,987 et 0,9999 — le 0,987 correspond exactement aux 2,9 %
+de fond dans `v(e3[10])` à `delta=0` (prédit 0,988). **L'écart de 2-4 %
+aux deltas 0,002-0,006 n'est PAS tracé** (ce run n'enregistre pas les
+gradients) — ouvert, chiffré.
+
+**QUAND / COMMENT / POURQUOI / OÙ / COMBIEN / JUSQU'OÙ, pour le mécanisme
+central du tour :**
+- QUAND : à chaque salve de période 2 du récepteur (~tous les 460 pas),
+  pas pour pas, et seulement pendant les ~10 pas de la salve.
+- COMMENT : la salve change `r[10,3]` ; le gradient de la ligne 3 reçoit
+  `s3(1-s3)·poids3·Δr[10,3]` (et `-1/26` de ça sur chacun des 26
+  autres) ; Adam convertit en pas `lr·m/(√v+eps)`.
+- POURQUOI 0,937 et pas 1 : les 26 autres sont à `u/26=7,2e-10`, 7× eps
+  seulement. POURQUOI 4,75e-5 : `√v(e3[10])=9e-15`, 11 000× sous eps.
+- OÙ : sur la ligne 3 de l'émetteur, dans l'état d'Adam de cette ligne
+  — pas dans la récompense (`poids[4]` : effet 0 exact).
+- COMBIEN : `pente=½[u/(u+eps)+(u/26)/(u/26+eps)]`, sans paramètre libre.
+- JUSQU'OÙ : transition autour de `delta≈0,009` pour `eps=1e-10`, fixée
+  par `√v(e3[10])=eps`.
+- Croisé, *quand du pourquoi* : l'explication « Adam normalise » cesse
+  de valoir dès que `√v` de la ligne passe sous eps — à delta≈0,009 ici,
+  et ce seuil bouge avec eps (ablation) et avec beta (via `X*`).
+- **Ce qui ferait basculer la confirmation** : un optimiseur sans eps
+  (ou à eps relatif) qui garderait un couplage atténué à `delta=0`
+  montrerait une autre source d'atténuation ; l'ablation eps3=0 dit
+  que non, mais sur deux salves seulement.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H58.8 (saturation → atténuation via le plancher eps d'Adam) | 23/09 | **confirmée** le 23/09 — ablation, 11 réglages, 2 deltas, prédictions pré-poussées |
+| H58.5 (séparabilité : `poids[4]` hors du gradient de la ligne 3) | 23/09 | **confirmée exactement** le 23/09 (rapport 1,0000000000, résidu 0) — premier test mal conçu, refait |
+| H58.7 (la normalisation d'Adam rattrape une perturbation de gradient plus petite) | 23/09 | **confirmée ET c'est le cœur du mécanisme** — mais seulement au-dessus d'eps |
+| mécanisme du tour 54 : « l'asymétrie de récompense est le canal de transmission » | 20/09 (moi) | **réfutée** le 23/09 |
+| la pente de 0,68 à eps=0 vient des 26 autres dominés par leur propre fond | 23/09 | **confirmée** (0,519 + 0,160 ; ratio √v 5,96) |
+| le résidu de 2-4 % du balayage vient de l'échantillonnage de `u` | 23/09 | **ouverte, non testée là où elle compte** — sur les deux traces complètes la même méthode donne 1,002/1,001, donc le résidu est propre aux deltas 0,002-0,006 ; leurs séries n'ont pas été sauvegardées |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
