@@ -2,9 +2,10 @@
 
 ## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — EN COURS
 
-**Lettre** : `docs/REPONSE_ORDRE58.md` (gitignorée), rédigée, PAS encore
-envoyée ; `REPONSE_ORDRE56.md` reste interdite de modification (consigne
-de Théo). **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR,
+**Lettre** : `docs/REPONSE_ORDRE58.md` (gitignorée), PRÊTE À ENVOYER
+(corrections des deux agents style dipankar intégrées après vérification
+indépendante de chacune) ; `REPONSE_ORDRE56.md` reste interdite de
+modification (consigne de Théo). **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR,
 23/09/2026 (tour 58, PAS simulée) », juste avant « ## 9. ».
 
 **Acquis du tour (tous avec prédictions poussées avant les runs) :**
@@ -25,19 +26,30 @@ de Théo). **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR,
   (optimum ½ exact), tous tenus au bord de stabilité ;
   `ln K-⟨H⟩=½(lr/38-eps·NK/β)²`, `eps_c=3,61e-8` confirmé.
 
+**Acquis après audit (deux agents, chaque chiffre clé revérifié) :** la
+ligne 3 AVANCE la salve de 106 pas à delta réel (valeur propre du mode
+couplé, `ΔS=pente·S_gap·κ`, linéaire en `s3(1-s3)`, sans eps) ; la
+formule de pente n'est que la moitié vecteur propre, `u` est un proxy
+(loi sous plancher `G·poids·s(1-s)·r3r4`) ; l'orphelin est un optimum
+de BLOC dans un piège (`ΔJ=0,034082`) ; constantes `c_K` (c_2=1,080,
+c_27=1,0116) ; collisions spontanées à 0,5/0,5 dans 12345 k=3 et
+77777 k=1.
+
 **Pistes concrètes pour la suite :**
-1. Traiter les retours des deux agents style dipankar lancés le 23/09
-   (cœur du tour 58 ; orphelin/synonymes) — vérifier chaque chiffre
-   (règle 5bis) avant d'intégrer à la lettre.
-2. Résidu ouvert : 2-4 % de la formule de pente aux deltas 0,002-0,006
-   (séries non sauvegardées).
-3. `S` effectif moyen 37,6 (orphelin) contre 35,1 (synonymes) : pas de
-   forme fermée.
-4. Vérifier ligne par ligne, sur 77777 k=1/5 et 12345 k=3, que les
-   « murs » de l'audit du 21/09 sont aussi des orphelins/synonymes.
-5. Relire les tours antérieurs (20-38 surtout) : une lecture de
-   « couplage » ou de « transmission » faite sur une ligne sous le
-   plancher eps mesurait l'optimiseur, pas l'objectif.
+1. Question de clôture posée à dipankar : `delta_c` est-il une propriété
+   de l'objet collision ou du code ? Test précommis : collision 14/6 du
+   message 8 de 12345 k=3 — casse à 0,01344 ± 1 % si propriété de l'objet.
+2. Décalage additif ~10,5 pas dans le retard de timing (β2 0,999 et
+   0,998) : canal de « germe », pas de forme fermée.
+3. Forme fermée de `c_K` (le jouet donne les valeurs, pas la dérivation).
+4. Non-monotonie en β2 d'une question antérieure (462/110/163) :
+   possible artefact de seuil de détecteur selon l'agent, à revérifier.
+5. Relire les tours 20-38 : lister les comparaisons qui enjambent le
+   plancher eps (`√v/eps` des deux côtés) — les rapports entre deux
+   lignes sous le plancher sont, eux, indépendants d'eps.
+6. Refaire tout recensement de « lignes non effondrées » en couvrant
+   AUSSI les lignes du récepteur (`verifier_autres_murs_systeme.py` ne
+   voit aucune collision).
 
 ## 20 questions inhabituelles mais logiques, posées le 21/09/2026 —
 ## à répondre UNE PAR UNE après la prochaine compaction, chacune avec
