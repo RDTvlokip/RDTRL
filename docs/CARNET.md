@@ -15716,7 +15716,11 @@ corrections, dont deux revérifiées avec mon propre code
    synonymes). L'orphelin ne tire pas en salves : son `S_max` est au-dessus
    de 38 sur 99,4 % des pas, relais d'une coordonnée à l'autre ; mon
    « chaque salve le regonfle » décrit les synonymes, pas l'orphelin.
-   Jouet : vérification en cours.
+   **Jouet revérifié avec mon propre code** (`verifier_tour58_audit_agent2.py`
+   partie i, quadratique pur, Adam exact, 200 000 pas) : K=2 →
+   `z_rms/(lr/38-eps/h)=1,0801`, `√v` 1,0775 ; K=27 → 1,0116, `√v` 1,0114.
+   L'ablation du terme `-11ᵀ/K` (27 coordonnées ≈ K=2) n'est pas refaite
+   par moi.
 4. **Équation caractéristique d'Adam linéarisé**, rederivée par moi à la
    main : `μ²+((1-β1)S-(1+β1))μ+β1=0` ; `μ=-1` à `S=38` ; racine double à
    `S=37,974` ; pour `0,026<S<37,974`, `|μ|=√β1=0,94868` EXACTEMENT, quel
@@ -15741,7 +15745,7 @@ corrections, dont deux revérifiées avec mon propre code
 | l'uniforme est l'optimum exact du référent 5 | 23/09 (moi) | **corrigée** — optimum de BLOC ; le code orphelin est un maximum local strict, 0,034082 sous un code voisin (vérifié) |
 | un code à synonymes a forcément des orphelins | 23/09 (moi) | **RÉFUTÉE** — 12345 k=3 et 77777 k=1 paient en collisions (vérifié) |
 | seul le mur 23 est une collision référentielle | 23/09 (moi) | **réfutée hors de 77777 k=3** — 4 collisions spontanées à 0,5/0,5 (vérifié) |
-| le résidu de 1 % de l'orphelin vient de `v` regonflé par les salves | 23/09 (moi) | **réfutée** (agent) — constante `c_K` de taille de bloc, l'orphelin ne tire pas en salves ; jouet en vérification |
+| le résidu de 1 % de l'orphelin vient de `v` regonflé par les salves | 23/09 (moi) | **réfutée** (agent, jouet revérifié par moi : c_2=1,080, c_27=1,0116) — constante `c_K` de taille de bloc, l'orphelin ne tire pas en salves |
 | le retard de gel de la ligne 3 suit `2·pente·κ/(1-β2)` | 23/09 (agent) | **confirmée en tendance** (106 → 59 quand β2 passe à 0,998), avec un décalage additif ~10,5 pas non expliqué |
 
 ---
