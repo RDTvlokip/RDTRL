@@ -216,9 +216,45 @@ def partie_g():
               f"predit {pred:.4e}  (min {min(defs):.2e}, max {max(defs):.2e})")
 
 
+def partie_h():
+    """(g) est CADUC tel que concu : changer eps pour TOUT l'entrainement
+    change le code appris (a eps >= 3e-8 le referent 5 recoit son propre
+    message, H=0) -- le test ne porte plus sur un orphelin. Refait comme
+    l'ablation de la ligne 3 : depuis le checkpoint mur23 (ligne 5
+    orpheline, deja au bord de stabilite), eps change sur la SEULE ligne 5
+    (correction exacte du pas apres opt.step()). Predictions ecrites avant
+    le run, moyenne sur les 2000 derniers de 10 000 pas :
+      eps5 = 1e-8 : retombe sur la valeur de (f), ~4,6e-7 ;
+      eps5 = 3e-8 : S max = lr h/eps = 45,7 > 38 -> bord de stabilite
+                    maintenu, deficit ~2,5-2,7e-8 ;
+      eps5 = 5e-8 : S max = 27,4 < 38 -> convergence EXACTE, deficit -> ~0 ;
+      eps5 = 1e-7 : S max = 13,7 < 38 -> convergence exacte."""
+    for eps5 in (1e-8, 3e-8, 5e-8, 1e-7):
+        e, r, opt, poids = reprendre(0.013026615)
+        p_e = e.p[0]
+        defs = []
+        for k in range(10000):
+            j, _ = objectif_pondere(e, r, BETA, poids)
+            opt.zero_grad()
+            (-j).backward()
+            opt.step()
+            with torch.no_grad():
+                st = opt.state[p_e]
+                m, rv = st["exp_avg"][5], st["exp_avg_sq"][5].sqrt()
+                p_e[5] += LR * m / (rv + ADAM_EPS) - LR * m / (rv + eps5)
+                if k >= 8000:
+                    defs.append(deficit(p_e[5]))
+        pred = 0.5 * max(0.0, LR / 38 - eps5 / H_PROPRE) ** 2
+        print(f"(h) eps ligne 5 = {eps5:.0e}  S max sans v = {LR * H_PROPRE / eps5:6.1f}  "
+              f"<deficit> = {sum(defs)/len(defs):.4e}  predit {pred:.4e}  "
+              f"(min {min(defs):.2e}, max {max(defs):.2e})")
+
+
 if __name__ == "__main__":
     torch.set_num_threads(1)
     quoi = sys.argv[1] if len(sys.argv) > 1 else "abcd"
+    if "h" in quoi:
+        partie_h()
     if "g" in quoi:
         partie_g()
     if "e" in quoi:
