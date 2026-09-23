@@ -178,9 +178,49 @@ def partie_f():
                 sv = {4: [], 5: []}
 
 
+H_PROPRE = BETA / 27 / 27   # valeur propre de -beta H/N sur le sous-espace a somme nulle
+
+
+def partie_g():
+    """CORRECTION trouvee apres (e)-(f) : la courbure qui fixe le seuil de
+    stabilite est la valeur propre du hessien sur le sous-espace a somme
+    nulle (celui ou vit le softmax), h = beta/(N K) = 2,7435e-5, pas
+    l'element diagonal beta(K-1)/(N K^2) utilise en (a)-(f). Avec elle,
+    sqrt(v) predit = lr h/38 - eps colle a +1,1 % en (e) et (f).
+    Consequence (JUSQU'OU), ecrite avant le run : au-dessus de
+    eps_c = lr beta/(38 N K) = 3,61e-8, S = lr h/(sqrt v + eps) ne peut
+    jamais atteindre 38 -> pas de bord de stabilite, l'orphelin converge
+    EXACTEMENT. Predictions (replay standard, graine 77777 k=3, 40 000 pas,
+    moyenne sur les 10 000 derniers) : deficit = 1/2 (lr/38 - eps/h)^2
+    = 2,47e-8 a eps=3e-8 ; ~0 (niveau 1e-10 ou moins) a eps=5e-8 et 1e-7 ;
+    4,52e-7 a eps=1e-8 (controle)."""
+    from representable_atteignable_stable import activer, parametres, objectif
+    for eps in (1e-8, 3e-8, 5e-8, 1e-7):
+        e, r = replay(77777, 3, 0)
+        activer(e, r)
+        opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=eps)
+        p_e = e.p[0]
+        defs = []
+        for k in range(40000):
+            j, _ = objectif(e, r, BETA)
+            opt.zero_grad()
+            (-j).backward()
+            opt.step()
+            if k >= 30000:
+                with torch.no_grad():
+                    defs.append(deficit(p_e[5]))
+        with torch.no_grad():
+            orph = r.loi()[:, 5].max().item() < 1e-6
+        pred = 0.5 * max(0.0, LR / 38 - eps / H_PROPRE) ** 2
+        print(f"(g) eps={eps:.0e}  ligne 5 orpheline={orph}  <deficit>={sum(defs)/len(defs):.4e}  "
+              f"predit {pred:.4e}  (min {min(defs):.2e}, max {max(defs):.2e})")
+
+
 if __name__ == "__main__":
     torch.set_num_threads(1)
     quoi = sys.argv[1] if len(sys.argv) > 1 else "abcd"
+    if "g" in quoi:
+        partie_g()
     if "e" in quoi:
         partie_e()
     if "f" in quoi:
