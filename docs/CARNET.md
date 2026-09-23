@@ -15661,7 +15661,88 @@ balayage 0,002 / 0,004, loi G       1,009/1,012  1,008/0,999 (sans correction ep
 | H58.9 « S_gap franchit 38 au démarrage » aux deux deltas | 23/09 (moi) | **nuancée** — vrai à `delta=0` ; à delta réel c'est le mode couplé qui franchit, le gap seul ne franchirait pas avant le pic |
 | la formule `½[u/(u+eps)+(u/26)/(u/26+eps)]` est le mécanisme | 23/09 (moi) | **nuancée** — c'est la moitié vecteur propre, et `u` est un proxy ; sous le plancher la loi `G·poids·s(1-s)·r3r4` est meilleure (ligne 4, balayage) |
 | la séparabilité testée à 1,0000000000 appuie la réfutation du tour 54 | 23/09 (moi) | **retirée comme preuve** — identité de J |
-| expérience β2 du récepteur 0,999 → 0,998 : retard ~48 pas si le seuil est fixé par la décroissance de `v`, ~106 sinon | 23/09 (agent, précommis) | ouverte |
+| expérience β2 du récepteur 0,999 → 0,998 : retard ~48 pas si le seuil est fixé par la décroissance de `v`, ~106 sinon | 23/09 (agent, précommis) | **confirmée sur le sens, pas sur la loi exacte** — voir ci-dessous |
+
+**Test β2 du récepteur, fait avec mon propre code
+(`verifier_tour58_beta2_recepteur_timing.py`, prédiction poussée
+avant le run) :** β2 du SEUL récepteur changé à partir de 59600,
+retard = pic(ligne 3 gelée) − pic(base) :
+```
+β2 récepteur   pic base   pic ligne 3 gelée   retard   prédit 2·pente·κ/(1-β2)   écart
+0,999          59989      60095               106      95,8                      +10,2
+0,998          59802      59861               59       47,9                      +11,1
+```
+L'alternative « reste vers 106 » est RÉFUTÉE : le retard est divisé
+par 1,8 quand la vitesse de décroissance de `v` double — c'est bien
+elle qui fixe le franchissement. Mais le dépassement n'est pas un
+facteur ×1,1 : il est ADDITIF, ~10,5 pas aux deux β2 — cohérent avec le
+« canal de germe » de l'agent (un nombre fixe de pas de croissance que
+la ligne 3 épargne), lecture a posteriori sur deux points.
+
+**Audit par le second agent style dipankar (worktree isolé) du
+référent 5 orphelin et des synonymes.** Scripts rapatriés tels quels
+(`agent_t58_*.py`, 15 fichiers). **La reclassification tient** ; quatre
+corrections, dont deux revérifiées avec mon propre code
+(`verifier_tour58_audit_agent2.py`) :
+1. **« Optimum exact » est faux au niveau du code — c'est un optimum de
+   bloc dans un piège.** Revérifié : déplacer le référent 5 sur le
+   message 19 (ligne 5 +30 sur 19, ligne 8 −30 sur 19, récepteur ligne
+   19 +30 sur 5) puis relaxer 5000 pas : `J` passe de 0,930055 à
+   0,964138, **ΔJ = 0,034082**, prédit `1/N-(β/N)(ln27+ln2)=0,034082` ;
+   le code déplacé tient (`s[5,19]=s[8,23]=1,000000`). L'agent trouve
+   aussi que le hessien complet n'a aucune valeur propre sous −9e-19 :
+   maximum local strict.
+2. **Collisions spontanées — la dimension manquante était le
+   récepteur.** Revérifié : 12345 k=3 a 3 messages en trop et 3
+   référents sans message décodé (6, 16, 25), et ce sont TOUS des
+   collisions, pas des orphelins — messages 3 (3/25), 7 (19/16), 8
+   (14/6), récepteur à 0,500000/0,500000 (0,500014/0,499986 pour le 8),
+   les deux émetteurs à `s=1,000000`, lignes des colliders à
+   `H≈1,5e-7`. 77777 k=1 : message 14, référents 5/20 à 0,5/0,5.
+   **Chacune est un mur 23 à `delta=0` apparu spontanément.** Mes phrases
+   « seul le mur 23 est une vraie collision » (vraie seulement pour le
+   système 77777 k=3) et « un code qui a des synonymes a forcément des
+   orphelins » (FAUSSE : il a forcément des référents sans message
+   décodé, orphelins OU colliders) sont corrigées. Et
+   `verifier_autres_murs_systeme.py`, qui ne compte que les lignes
+   émettrices à `H>1e-6`, ne peut voir aucune collision.
+3. **Les « 37,6 » et « 35,1 » ne sont pas deux lectures d'un même
+   seuil**, mais deux constantes qui ne dépendent que de la taille K du
+   bloc d'entropie : `c_2=1,078`, `c_27=1,0113` (jouet quadratique pur,
+   Adam exact, aucun paramètre libre ; ingrédient : le terme `-11ᵀ/K`,
+   l'invariance par translation du softmax). Loi corrigée :
+   `ln K-⟨H⟩=½c_K²(lr/38-eps·NK/β)²`. Mes propres données le montraient
+   déjà (√v mesuré/prédit : 1,0107 et 1,0111 orphelin ; 1,0815
+   synonymes). L'orphelin ne tire pas en salves : son `S_max` est au-dessus
+   de 38 sur 99,4 % des pas, relais d'une coordonnée à l'autre ; mon
+   « chaque salve le regonfle » décrit les synonymes, pas l'orphelin.
+   Jouet : vérification en cours.
+4. **Équation caractéristique d'Adam linéarisé**, rederivée par moi à la
+   main : `μ²+((1-β1)S-(1+β1))μ+β1=0` ; `μ=-1` à `S=38` ; racine double à
+   `S=37,974` ; pour `0,026<S<37,974`, `|μ|=√β1=0,94868` EXACTEMENT, quel
+   que soit S. Tous les modes sous-critiques décroissent au même taux ;
+   seule la durée passée sous 38 (fixée par β2) règle la décroissance
+   accumulée par cycle.
+5. **Correction de courbure `h=β/(NK)` : juste, et pas choisie parce
+   qu'elle arrangeait.** L'agent note que mon test (h), dont les
+   prédictions ont été poussées APRÈS la correction mais AVANT le run,
+   la départage hors échantillon : `h` prédit 2,47e-8, l'élément
+   diagonal 1,63e-8, mesuré 2,505e-8.
+6. **Instrument** : mes moyennes sur 2000 pas ont un écart-type de bloc
+   de 0,68 % ; le +1,4 % de (e) est une fenêtre. Déficit instantané :
+   facteur 60 entre min et max, pas 20.
+7. Au passage, l'agent attribue la non-monotonie en β2 d'une question
+   antérieure (carnet « 462 / 110 / 163 ») à un seuil de détecteur (seuil
+   0,0015 qui ne garde que 66 des 477 événements de pompage à β2=0,99) —
+   non revérifié par moi, à reprendre.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| l'uniforme est l'optimum exact du référent 5 | 23/09 (moi) | **corrigée** — optimum de BLOC ; le code orphelin est un maximum local strict, 0,034082 sous un code voisin (vérifié) |
+| un code à synonymes a forcément des orphelins | 23/09 (moi) | **RÉFUTÉE** — 12345 k=3 et 77777 k=1 paient en collisions (vérifié) |
+| seul le mur 23 est une collision référentielle | 23/09 (moi) | **réfutée hors de 77777 k=3** — 4 collisions spontanées à 0,5/0,5 (vérifié) |
+| le résidu de 1 % de l'orphelin vient de `v` regonflé par les salves | 23/09 (moi) | **réfutée** (agent) — constante `c_K` de taille de bloc, l'orphelin ne tire pas en salves ; jouet en vérification |
+| le retard de gel de la ligne 3 suit `2·pente·κ/(1-β2)` | 23/09 (agent) | **confirmée en tendance** (106 → 59 quand β2 passe à 0,998), avec un décalage additif ~10,5 pas non expliqué |
 
 ---
 
