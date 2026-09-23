@@ -15546,6 +15546,46 @@ pas de l'histoire.
 | H58.11b (bord de stabilité auto-stabilisé sur la ligne orpheline, `⟨déficit⟩=½(lr/38-eps·NK/β)²`) | 23/09 | **confirmée** le 23/09 — f² (e), deux lignes orphelines et démarrage entre 10 000 et 20 000 pas (f), seuil `eps_c` net (h) ; correction de courbure `β/(NK)` post hoc mais calculée |
 | le « ~4× sur 6 ordres de grandeur » d'`adam_eps` du 21/09 contredit un mécanisme de plancher | 21/09 (agent) | **réinterprété** — déficit instantané bruité d'un facteur 20 ; la vraie dépendance en eps est plate sous ~1e-9 puis s'effondre à `eps_c`, et un eps GLOBAL change le code appris |
 
+**Les paires synonymes 8 et 12 — même régime
+(`verifier_tour58_synonymes_8_12_bord_stabilite.py`, prédictions
+poussées avant le run).** Récompense plate le long de la répartition
+(les deux messages décodent vers le même référent, `r=0,9999999996`),
+optimum `p=½` exact, valeur propre `h_u=β/(2N)` le long de la
+répartition, gradient par coordonnée `(β/4N)·d` ⇒ au bord de
+stabilité `(p-½)_rms=lr/76=6,58e-4`, `√v=lr·β/(76N)-eps=4,873e-7` :
+```
+             (p-½)_rms   prédit     max|p-½|   √v moyen    prédit     S effectif   alternance
+référent 8   7,04e-4     6,58e-4    6,4e-3     5,27e-7     4,87e-7    35,1         72 %
+référent 12  6,94e-4     6,58e-4    6,1e-3     5,27e-7     4,87e-7    35,2         81 %
+```
+**Les deux sont au bord de stabilité.** Le « 0,50000000024, à la
+précision machine, mur spontanément apparu » du 21/09 pour le référent
+12 était une photo prise entre deux salves (le max sur 4 000 pas vaut
+6,1e-3). Résidu plus grand que pour l'orphelin (+5-8 % contre +1 %),
+avec un `S` effectif moyen à 35,1 au lieu de 37,6 : un seul mode (contre
+26 quasi dégénérés pour l'orphelin), donc des salves plus marquées et un
+`v` moyen plus au-dessus du seuil — lecture qualitative sur deux points,
+pas une loi.
+
+**Bilan structurel des « murs supplémentaires » du 21/09 : AUCUN n'est
+un mur.** Le 5 est un orphelin à son optimum exact (l'uniforme) ; 8 et
+12 sont des égalités de synonymes à leur optimum exact (`p=½`) ; les
+trois sont tenus à une distance fixe de cet optimum par
+l'auto-stabilisation d'Adam au bord de stabilité, distance qui ne
+dépend que de `(lr, eps, β, N, K)`. Seul le mur 23 (référents 3/4) est
+une vraie collision référentielle. Et la « généricité » trouvée par
+l'agent le 21/09 (plusieurs murs sur 77777 k=1/5, 12345 k=3) se relit
+pareil : un code à 27 messages qui a des synonymes a forcément des
+orphelins (pigeonnier), et chacun de ces objets passe au bord de
+stabilité une fois `v` descendu — à vérifier ligne par ligne sur ces
+configurations, pas supposé.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| les synonymes 8/12 sont au même bord de stabilité, `(p-½)_rms=lr/76` | 23/09 (moi) | **confirmée** le 23/09 (7,04e-4 et 6,94e-4 contre 6,58e-4) |
+| le référent 12 est « un mur spontanément apparu à la précision machine » | 21/09 (moi) | **réfutée** — photo entre deux salves |
+| les référents 5/8/12 sont des murs (objets dynamiques non résolus) | 21/09 (moi) | **réfutée** — trois optima exacts tenus au bord de stabilité ; seul le 23 est une collision |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
