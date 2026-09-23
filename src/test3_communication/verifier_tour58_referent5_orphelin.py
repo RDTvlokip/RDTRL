@@ -106,9 +106,85 @@ def partie_d():
                           f"(predit {DEFICIT_PREDIT:.4e} si orpheline)")
 
 
+H_COURBURE = BETA / 27 * 26 / 27 / 27   # diagonale du hessien de -beta H/N a l'uniforme
+
+
+def deficit_eos(lr, eps):
+    """Hypothese REVISEE (23/09, apres les parties a-d : le pas median valait
+    lr/39 et non lr/19, chaque coordonnee fait des salves intermittentes et
+    non un cycle limite). Ce qui se fixe est sqrt(v) : auto-stabilisation a
+    S = lr h/(sqrt(v)+eps) = 38, donc sqrt(v) = lr h/38 - eps ; et comme
+    v = h^2 <(z - zbar)^2>, le deficit MOYEN DANS LE TEMPS vaut
+    1/2 (lr/38 - eps/h)^2."""
+    return 0.5 * (lr / 38 - eps / H_COURBURE) ** 2
+
+
+def partie_e():
+    """Moyennes dans le temps (dernier quart de 8000 pas) de sqrt(v) et du
+    deficit de la ligne 5, lr de la ligne 5 multiplie par f. Predictions
+    (ecrites avant le run) : sqrt(v) = f lr h/38 - eps ; deficit moyen
+    8,61e-7 / 2,14e-7 / 5,29e-8 pour f = 1 / 0,5 / 0,25."""
+    for f in (1.0, 0.5, 0.25):
+        e, r, opt, poids = reprendre(0.013026615)
+        p_e = e.p[0]
+        defs, svs = [], []
+        for k in range(8000):
+            j, _ = objectif_pondere(e, r, BETA, poids)
+            opt.zero_grad()
+            (-j).backward()
+            opt.step()
+            with torch.no_grad():
+                st = opt.state[p_e]
+                if f != 1.0:
+                    p_e[5] += (1 - f) * LR * st["exp_avg"][5] / (st["exp_avg_sq"][5].sqrt() + ADAM_EPS)
+                if k >= 6000:
+                    defs.append(deficit(p_e[5]))
+                    svs.append(st["exp_avg_sq"][5].sqrt().mean().item())
+        print(f"(e) lr ligne 5 x {f}: <sqrt v> = {sum(svs)/len(svs):.4e}  predit {f*LR*H_COURBURE/38 - ADAM_EPS:.4e}   "
+              f"<deficit> = {sum(defs)/len(defs):.4e}  predit {deficit_eos(f*LR, ADAM_EPS):.4e}  "
+              f"(min {min(defs):.2e}, max {max(defs):.2e})")
+
+
+def partie_f():
+    """Replay standard (graine 77777, k=3, Adam par defaut eps=1e-8, lr=0,05)
+    prolonge a 80 000 pas : les lignes orphelines (4 et 5 a 10 000 pas)
+    sont uniformes a 1e-11 a 10 000 pas. Prediction : v y decroit jusqu'au
+    seuil, puis le regime de bord de stabilite s'installe avec un deficit
+    moyen 1/2 (lr/38 - 1e-8/h)^2 = 4,39e-7 et sqrt(v) = lr h/38 - 1e-8 = 2,48e-8."""
+    from representable_atteignable_stable import activer, parametres, objectif
+    e, r = replay(77777, 3, 0)
+    activer(e, r)
+    opt = torch.optim.Adam(parametres(e, r), lr=LR)
+    p_e = e.p[0]
+    acc = {4: [], 5: []}
+    sv = {4: [], 5: []}
+    for k in range(80000):
+        j, _ = objectif(e, r, BETA)
+        opt.zero_grad()
+        (-j).backward()
+        opt.step()
+        with torch.no_grad():
+            for i in (4, 5):
+                acc[i].append(deficit(p_e[i]))
+                sv[i].append(opt.state[p_e]["exp_avg_sq"][i].sqrt().mean().item())
+            if (k + 1) % 5000 == 0:
+                R = r.loi()
+                ligne = "  ".join(f"ligne {i}: orpheline={R[:, i].max().item() < 1e-6} "
+                                  f"<deficit>={sum(acc[i])/len(acc[i]):.3e} <sqrt v>={sum(sv[i])/len(sv[i]):.3e}"
+                                  for i in (4, 5))
+                print(f"(f) pas {k+1:6d}  {ligne}   (predit a terme {deficit_eos(LR, 1e-8):.3e}, "
+                      f"sqrt v {LR*H_COURBURE/38 - 1e-8:.3e})")
+                acc = {4: [], 5: []}
+                sv = {4: [], 5: []}
+
+
 if __name__ == "__main__":
     torch.set_num_threads(1)
     quoi = sys.argv[1] if len(sys.argv) > 1 else "abcd"
+    if "e" in quoi:
+        partie_e()
+    if "f" in quoi:
+        partie_f()
     if "a" in quoi or "b" in quoi:
         partie_ab()
     if "c" in quoi:
