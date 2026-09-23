@@ -15424,7 +15424,54 @@ tendance faible, non concluante).
 | # | hypothèse | posée le | statut |
 |---|---|---|---|
 | H58.9 : la salve est un bord de stabilité adaptatif (seuil 38/lr de Cohen et al.) | 23/09 (moi) | **confirmée** le 23/09 aux deux deltas — franchissement de 38 au démarrage, retombée à 34 à l'extinction |
-| H58.10 : le référent 5 est tenu sur son plateau `H≈ln27` par l'auto-stabilisation d'Adam au bord de stabilité (la ligne 5 à `S≈38` en permanence), pas par un équilibre de l'objectif | 23/09 (moi, non standard) | **ouverte** — test prévu : réduire le lr de la seule ligne 5 (seuil relevé) et voir si `H(ligne 5)` quitte `ln27` ; prédiction : oui si H58.10, non si le plateau est un vrai équilibre de J |
+| H58.10 : le référent 5 est tenu sur son plateau `H≈ln27` par l'auto-stabilisation d'Adam au bord de stabilité (la ligne 5 à `S≈38` en permanence), pas par un équilibre de l'objectif | 23/09 (moi, non standard) | **réfutée avant même le test, par la version triviale** — voir ci-dessous : le plateau EST l'équilibre de J |
+
+**Le référent 5, relu dans sa version la plus triviale (règle du haut
+de CLAUDE.md) : il est ORPHELIN.** Vérifié à l'état `pas=54000` delta
+réel : aucun message ne décode vers le référent 5
+(`max_m r[m,5]=6,28e-11`, `Σ_m r[m,5]=2,3e-10`) ; sa récompense brute
+`Σ_m s[5,m]r[m,5]=8,6e-12`. Décodage complet : les référents 8 et 12
+prennent chacun 2 messages (synonymes), 3 et 4 partagent le message
+10, 22 référents ont un message chacun — `22+2+2+1=27` messages pour 26
+référents couverts, **le 27ᵉ (le 5) n'a rien**. Sa ligne d'émetteur
+n'optimise donc QUE l'entropie : l'uniforme est son optimum EXACT.
+**La « non-convergence totale, cas qualitativement nouveau,
+potentiellement un point-selle de haute dimension » du 21/09 était une
+lecture fausse** — c'est une convergence vers le bon optimum d'un
+référent sans message. Le déficit résiduel (`ln27-H=8,07e-7`) est tout
+ce qui restait à expliquer.
+
+**Premier modèle du déficit — en partie RÉFUTÉ
+(`verifier_tour58_referent5_orphelin.py`, prédictions poussées avant le
+run, `b20e87f`).** Modèle : cycle limite de période 2 par coordonnée,
+pas `lr(1-β1)/(1+β1)=lr/19`, amplitude `A=lr/38-eps/h`
+(`h=β(K-1)/(N K²)=2,642e-5`), déficit `½A²(26/27)`.
+```
+                           prédit        mesuré
+(a) |pas| médian           2,63e-3       1,27e-3   (lr/39, facteur 2 : RÉFUTÉ)
+    alternance de signe    ~100 %        95 %      (période 2 : confirmé)
+(b) déficit (instantané)   8,34e-7       6,07e-7 ; 5,23e-7 ; 8,07e-7 selon l'instant
+(c) pas, lr ligne 5 × f    ∝ f           1,13e-3 / 5,7e-4 / 2,6e-4  (∝ f : confirmé)
+    déficit × f            ∝ f²          5,2e-7 / 4,6e-7 / 1,1e-7   (instantané, RÉFUTÉ tel quel)
+(d) orphelins en replay    8,3e-7        2,7e-11 ; 1,9e-12 ; 6,2e-12 (77777 k=3 lignes 4,5 ; k=5 ligne 1)
+```
+Le pas-à-pas montre pourquoi : ce n'est PAS un cycle limite. Chaque
+coordonnée de la ligne 5 fait ses propres salves de période 2,
+amplitude qui monte puis retombe (coord 5 : 2,2e-3 → 4,4e-3 → décroît ;
+coord 24 : jusqu'à 4,5e-4) — le mécanisme des salves du récepteur, en
+version intermittente et par coordonnée. `|m|/√v` médian 0,023, loin du
+`1/19=0,053` d'un cycle stable. Ce qui est fixé, c'est `√v`, quasi
+identique sur toutes les coordonnées (3,56-3,66e-8), soit
+`S=lr·h/√v≈36,7`, collé au seuil 38. Courbure mesurée
+`|g|/|z-z̄|=2,628e-5` contre `2,642e-5` théorique. Et en (d), les
+orphelins des replays à 10 000 pas sont uniformes à 1e-11 : `v` n'y a
+pas encore décru jusqu'au seuil.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| le référent 5 est une non-convergence (point-selle) | 21/09 (moi) | **réfutée** le 23/09 — orphelin, l'uniforme est son optimum exact |
+| H58.11a : cycle limite de période 2, pas `lr/19`, déficit `½(lr/38)²(26/27)` | 23/09 (moi) | **réfutée quantitativement** le 23/09 (pas `lr/39`, salves intermittentes) ; période 2 et proportionnalité au lr confirmées |
+| H58.11b (RÉVISÉE après avoir vu (a)-(d), à tester sur des prédictions neuves) : auto-stabilisation `√v=lr·h/38-eps`, et `v=h²⟨(z-z̄)²⟩` donne un déficit MOYEN DANS LE TEMPS `½(lr/38-eps/h)²` = 8,61e-7 (f=1), 2,14e-7 (f=0,5), 5,29e-8 (f=0,25) ; replay standard prolongé : les orphelins entrent en régime de bord de stabilité, déficit 4,39e-7, `√v=2,48e-8` | 23/09 (moi) | ouverte — prédictions poussées avant le run |
 
 ---
 
