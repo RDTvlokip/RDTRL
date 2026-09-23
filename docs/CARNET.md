@@ -15586,6 +15586,83 @@ configurations, pas supposé.
 | le référent 12 est « un mur spontanément apparu à la précision machine » | 21/09 (moi) | **réfutée** — photo entre deux salves |
 | les référents 5/8/12 sont des murs (objets dynamiques non résolus) | 21/09 (moi) | **réfutée** — trois optima exacts tenus au bord de stabilité ; seul le 23 est une collision |
 
+**Audit par l'agent style dipankar (worktree isolé) du cœur du tour 58
+— CORRECTION MAJEURE : j'avais mesuré le vecteur propre du mode
+instable, jamais sa valeur propre.** Ses scripts rapatriés tels quels
+(`agent_dk59_*.py`, 11 fichiers), ses prédictions précommises dans
+`D:/tmp/agent_dk59_predictions_*.txt`. Affirmations principales
+**revérifiées avec mon propre code**
+(`verifier_tour58_audit_valeur_propre_et_timing.py`) :
+```
+                                    agent        moi (eigh exact, mon code)
+pas 59480  lambda_max               38,4605      38,4605   (mon itération de puissance loggait 37,99 sur la ligne 5 : coincée)
+           S_gap                    36,7052      36,7052
+           Delta S = lambda - S_gap 1,7553       1,7553    vecteur propre 95,15 % gap + 4,85 % ligne 3
+           kappa                    0,051118     0,051119  = (1-δ)s3(1-s3)/β = 0,98697×1,03587e-3/0,02
+pas 59520  Delta S                  1,7885       1,7885    pente·S_gap·κ = 1,7937 (0,3 %)
+ligne 3 gelée dès 59600, pic suivant (base 59989)
+           k=0                      60095 (+106) 60095
+           k=2                      59878 (-111) 59878
+           delta=0, k=0 et k=2      59580        59579     (aucun décalage)
+ligne 4 à delta=0 (loi sous plancher, sans u)
+           pente X4/gap médiane     -5,53e-7     -5,53e-7  14/15 négatives ; loi -G·poids·s4(1-s4)·r3r4 = -5,92e-7
+balayage 0,002 / 0,004, loi G       1,009/1,012  1,008/0,999 (sans correction eps) contre 1,036/1,025 pour ma formule en u
+```
+**Ce qui change :**
+1. **La valeur propre du mode couplé** : `ΔS = pente·S_gap·κ`, avec
+   `κ=H(e3[10],r10[4])/H(r10[4],r10[4])=(1-δ)s3(1-s3)/β` (le `r3r4`
+   se simplifie, `H(r4,r4)=(β/N)r3r4` à l'équilibre du récepteur). Dans
+   la valeur propre, la saturation est LINÉAIRE et eps ne joue aucun rôle ;
+   eps ne décide que du vecteur propre. Ma phrase « sans eps, Adam
+   effacerait `s3(1-s3)` » ne vaut que pour le vecteur propre.
+2. **Ma « rétroaction faible (3-6 % d'amplitude) » est FAUSSE** : la
+   ligne 3 AVANCE la salve de ~106 pas (24 % du cycle) à delta réel.
+   C'était déjà dans mon log d'ablation (débuts 59981 → 60079, +98 pas,
+   pendant que l'amplitude bougeait de −7/+8 %) — j'ai lu la seule
+   observable que l'auto-stabilisation fige. `Δt≈2·pente·(1-δ)s3(1-s3)/(β(1-β2))=95,8` pas.
+3. À delta réel, **le gap seul ne franchit pas 38** avant le pic (37,45
+   à 59520, il y arriverait à 59549, pic à 59540) : c'est le mode couplé
+   qui franchit (59456). Sans la ligne 3, pas de salve à 59540. Ma
+   ligne H58.9 « S_gap franchit 38 au démarrage » ne vaut qu'à `delta=0`.
+4. **Explique une observation laissée sans explication au tour 57** :
+   les intervalles entre salves se contractent de 6-7 % à delta réel et
+   pas à `delta=0`. L'agent mesure, ligne 3 gelée dès 59600, des périodes
+   518, 497, 481 contre 445 de base. Non revérifié par moi.
+5. **Ma formule en `u` est un proxy** : sous le plancher, la loi
+   `pente_i=±G·poids_i·s_i(1-s_i)·r3r4` (G épinglé sur la ligne 3 à
+   `delta=0`, 1,4652e7) prédit la ligne 4 et le balayage mieux que
+   `½[u/(u+eps)+…]`, qui donne +7,3e-5 pour la ligne 4 (mesuré −5,5e-7,
+   faux jusqu'au signe) parce que `v(e4[10])` est dominé par son gradient
+   de relaxation de fond. **Le résidu de 2-4 % du balayage était dans
+   `u`, pas dans le mécanisme.**
+6. **Ma « séparabilité 1,0000000000 » est une identité de J**, elle ne
+   pouvait pas échouer : c'est une vérification du code, pas une
+   expérience. La réfutation du « canal par l'asymétrie » du tour 54
+   tient par l'algèbre, pas par ce test.
+7. **Le déficit de 5-7 % de l'ablation à eps3 ≥ 1e-7** : `u` décroît de
+   `0,9995^98=0,952` pendant le retard de ~96 pas de la salve — le canal
+   de timing qui fuit dans la pente, pas « la salve grossit » (non
+   revérifié par moi).
+8. **Réponse à ma propre question sur les tours 20-38** : une lecture
+   sur une ligne sous le plancher n'est pas « mesurer eps au lieu de
+   l'objectif » — c'est `s(1-s)` × gain `lr/eps` × constante du
+   récepteur ; le rapport de deux lignes sous le plancher au même eps
+   est indépendant d'eps (ligne 4/ligne 3 à `delta=0` : −0,0116 mesuré,
+   `s4(1-s4)/s3(1-s3)=0,0125`). Ce qui casse : les comparaisons qui
+   enjambent le plancher, et les lectures absolues.
+9. Le mode couplé existe déjà 100 pas AVANT le pic, à une amplitude
+   d'oscillation de 6,5e-10, avec la même pente (0,934) : mon « seulement
+   pendant les ~10 pas de la salve » décrivait la pointe visible (non
+   revérifié par moi).
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| la rétroaction ligne 3 → récepteur est faible (3-6 % d'amplitude) | 23/09 (moi) | **RÉFUTÉE** le 23/09 par l'agent, vérifiée par moi : +106 pas de retard ligne 3 gelée, −111 à k=2 |
+| H58.9 « S_gap franchit 38 au démarrage » aux deux deltas | 23/09 (moi) | **nuancée** — vrai à `delta=0` ; à delta réel c'est le mode couplé qui franchit, le gap seul ne franchirait pas avant le pic |
+| la formule `½[u/(u+eps)+(u/26)/(u/26+eps)]` est le mécanisme | 23/09 (moi) | **nuancée** — c'est la moitié vecteur propre, et `u` est un proxy ; sous le plancher la loi `G·poids·s(1-s)·r3r4` est meilleure (ligne 4, balayage) |
+| la séparabilité testée à 1,0000000000 appuie la réfutation du tour 54 | 23/09 (moi) | **retirée comme preuve** — identité de J |
+| expérience β2 du récepteur 0,999 → 0,998 : retard ~48 pas si le seuil est fixé par la décroissance de `v`, ~106 sinon | 23/09 (agent, précommis) | ouverte |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
