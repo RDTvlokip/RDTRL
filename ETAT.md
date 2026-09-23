@@ -1,5 +1,44 @@
 # État du projet RDTRL — où on en est
 
+## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — EN COURS
+
+**Lettre** : `docs/REPONSE_ORDRE58.md` (gitignorée), rédigée, PAS encore
+envoyée ; `REPONSE_ORDRE56.md` reste interdite de modification (consigne
+de Théo). **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR,
+23/09/2026 (tour 58, PAS simulée) », juste avant « ## 9. ».
+
+**Acquis du tour (tous avec prédictions poussées avant les runs) :**
+- Bug du tour 54 : `sigmoid(logit brut)` au lieu de `s3`/`R4`. Vrai état
+  à `delta=0` : `1-s3=3,5e-10`, récepteur à 50/50, vrai `R4=0,5`.
+- Test aligné sur les événements (sa demande) : pente X/gap 0,937
+  (réel) contre 4,75e-5 (`delta=0`), 15/15 événements — non nulle.
+- Mécanisme : la saturation atténue à travers le plancher `eps` d'Adam,
+  `pente=½[u/(u+eps)+(u/26)/(u/26+eps)]` ; ablation eps ligne 3 (5
+  décades), balayage en delta (transition ~0,009), séparabilité exacte
+  (`poids[4]` : effet nul). Le « canal par l'asymétrie » du tour 54 est
+  réfuté. Le ×7,35 du tour 56 était l'extrémité 61000 de
+  l'interpolation.
+- La salve est un bord de stabilité adaptatif (seuil 38/lr, Cohen et al.
+  2022) : mode couplé à delta réel (4,9 % ligne 3), pur à `delta=0`.
+- Les « murs supplémentaires » du 21/09 n'en sont pas : le référent 5
+  est ORPHELIN (optimum uniforme exact), 8/12 sont des synonymes
+  (optimum ½ exact), tous tenus au bord de stabilité ;
+  `ln K-⟨H⟩=½(lr/38-eps·NK/β)²`, `eps_c=3,61e-8` confirmé.
+
+**Pistes concrètes pour la suite :**
+1. Traiter les retours des deux agents style dipankar lancés le 23/09
+   (cœur du tour 58 ; orphelin/synonymes) — vérifier chaque chiffre
+   (règle 5bis) avant d'intégrer à la lettre.
+2. Résidu ouvert : 2-4 % de la formule de pente aux deltas 0,002-0,006
+   (séries non sauvegardées).
+3. `S` effectif moyen 37,6 (orphelin) contre 35,1 (synonymes) : pas de
+   forme fermée.
+4. Vérifier ligne par ligne, sur 77777 k=1/5 et 12345 k=3, que les
+   « murs » de l'audit du 21/09 sont aussi des orphelins/synonymes.
+5. Relire les tours antérieurs (20-38 surtout) : une lecture de
+   « couplage » ou de « transmission » faite sur une ligne sous le
+   plancher eps mesurait l'optimiseur, pas l'objectif.
+
 ## 20 questions inhabituelles mais logiques, posées le 21/09/2026 —
 ## à répondre UNE PAR UNE après la prochaine compaction, chacune avec
 ## son propre commit (test si possible, sinon argumentation fermée)
