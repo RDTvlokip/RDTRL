@@ -15175,6 +15175,101 @@ du récepteur, leurs gradients et l'état d'Adam (`m`, `v`), aux deux
 deltas — de quoi faire la comparaison alignée sur les événements, et
 tester H58.5-H58.7 sur les gradients, sans relancer.
 
+**Résultats du test aligné sur les événements (23/09),
+`verifier_reponse_dipankar_tour58_evenements_alignes.py`.**
+
+Reproductions d'abord (même trajectoire, mêmes chiffres) : les 16
+événements `delta=0` et les 15 événements delta réel du tour 57,
+identiques pas pour pas et signe pour signe ; le `1,426e-10` du tour 54
+(`sigmoid(logit brut)`, logit brut `p_e[3,10]=16,117` à `delta=0`) ;
+le `R4=0,99856537`, `max|dR4|=1,738e-5` du tour 54 (même sigmoïde
+brute) ; le `+1,504119e-3` du tour 56.
+
+**L'état réel à `delta=0`, jamais mesuré avant (bug du tour 54) :**
+```
+                 vrai s3          1-s3        s3(1-s3)     r[10,3]  r[10,4]  vrai R4   X=d3-dbar  CV(26 autres)
+delta=0          0,9999999996     3,500e-10   3,50e-10     0,5000   0,5000   0,5000    25,0546    2,4e-2
+delta réel       0,9989630570     1,037e-3    1,036e-3     0,2052   0,7948   0,7948    10,1285    4,2e-11
+```
+La saturation réelle de `s3` à `delta=0` est 300× plus forte que sa
+prémisse (3,5e-10, pas 1e-7) et ~3·10⁶× plus forte qu'à delta réel
+(pas 10⁴×). Le récepteur à `delta=0` est à l'**égalité exacte 50/50** —
+le vrai `R4` vaut 0,5, pas 0,9986 comme je l'ai publié au tour 54. Les
+26 autres messages de la ligne 3 ne sont PAS uniformes à `delta=0`
+(`G-(X-ln26)=-2,35e-2`), donc `d3-dbar` n'est qu'approché ; j'ai mesuré
+aussi l'écart exact `G=logit₁₀-LSE(autres)`, mêmes conclusions.
+
+**Comportement à vide, expliqué (règle 4ter) : les deux `X` sont
+l'équilibre entropique de la ligne 3, `X*=(1-δ)·r[10,3]/β`.** Delta
+réel : `0,98697×0,20524/0,02=10,12832` contre `10,12854` mesuré.
+`delta=0` : `0,5/0,02=25,0` contre `25,0546`, en relaxation lente
+(dérive linéaire `-7,8e-7`/pas). Et côté récepteur,
+`log(r4/r3)=((1+δ)s4-(1-δ)s3)/β=1,354` → `r4=0,7948` ✓. C'est
+l'égalité 50/50 du récepteur à `delta=0` qui fixe `X*=25` et donc la
+saturation de `s3` à 3,5e-10 — pas un accident de trajectoire.
+
+**Réponse à sa question, alignée sur les événements (15 événements
+utilisables par delta, le 16ᵉ de `delta=0` à 61978 sort de la trace) :**
+```
+                               delta réel                 delta=0
+|X| au pic (médiane)           2,37e-2                    9,1e-7
+contrôle entre kicks           2,3e-4 (*)                 1,9e-7
+pente X/gap sur la salve       0,937 [0,9347 ; 0,9396]    4,75e-5 [4,35e-5 ; 4,79e-5]
+|d_logit_r4| au pic (médiane)  1,136e-2                   1,148e-2
+|d vrai R4| au pic (médiane)   3,71e-3                    5,74e-3
+```
+(*) contrôle imparfait : la fenêtre « avant » des pseudo-événements
+mord sur la salve précédente. La pente, elle, ne dépend pas de ce
+contrôle.
+
+`X` BOUGE avec les kicks à `delta=0`, en phase, pas pour pas, mais
+~19 700× moins qu'à delta réel. **Une borne non nulle, comme il le
+disait, mais 1 600× plus serrée que son ×12.** Le kick lui-même a la
+MÊME taille aux deux deltas (`d_logit_r4` : rapport 1,01) — son point
+sur le ×7,35 est juste, et c'est pire que « lu entre deux kicks » :
+le `+1,504e-3` vient ENTIÈREMENT de l'extrémité 61000 de
+l'interpolation, qui tombe 25 pas après la salve de 60975 (logit r4
+décalé de `-3,0411e-3` ; `989/2000×3,0411e-3=1,5038e-3` contre
+`1,5041e-3` publié). Aucun signal à 59989.
+
+**Le pas-à-pas montre le vrai mécanisme.** Le « kick » est une salve
+d'oscillation de PÉRIODE 2 (le gap change de signe à chaque pas, monte
+à ~4,4e-2 par pas puis s'éteint en ~10 pas). À delta réel,
+`√v(e3[10])=1,9e-8≫eps=1e-10` : Adam normalise, pas `=lr·m/√v`, et
+`m/√v=0,42` sur `e3[10]` contre `0,43` sur `r10[4]` — même pas
+normalisé, d'où `X` qui bouge autant que le gap. À `delta=0`, le
+gradient de `e3[10]` tombe à ~5e-14, `√v≈9e-15≪eps` : le pas devient
+`lr·m/eps`, linéaire dans le gradient, et c'est là que le facteur de
+saturation passe.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H58.1 (couplage comparable à `delta=0`) | 23/09 | **réfutée** le 23/09 — pente 4,75e-5 contre 0,937 |
+| H58.2 (borne ≥12×, pas un zéro) | 23/09 | **confirmée sur le principe, chiffre remplacé** : non nul, ~19 700× plus faible |
+| H58.3 (`X` reste au niveau inter-kicks à `delta=0`, mon tour 54) | 20/09 | **réfutée** le 23/09 — `X` bouge en phase à chaque salve, faiblement mais de façon reproductible sur 15/15 événements |
+| H58.4 (le tour 54 mesurait une autre quantité) | 23/09 | **confirmée** — et le vrai `R4` du tour 54 était 0,5, pas 0,9986 |
+| H58.6 (atténuation par la masse de `r[10,3]`) | 23/09 | **réfutée** — à `delta=0` `r3r4=0,25`, le MAXIMUM ; le vrai `R4` bouge 1,55× PLUS qu'à delta réel |
+
+**Mécanisme proposé et prédictions écrites AVANT l'ablation (23/09) :**
+si les pas normalisés de `e3[10]` et `r10[4]` sont égaux (`ρ_e3=ρ_r`)
+et si chacun des 26 autres reçoit exactement `-1/26` du gradient de
+`e3[10]` (identité du softmax, `s_j` uniformes), alors avec
+`u=√v(e3[10])` :
+`pente(δ,eps) = ½·[u/(u+eps) + (u/26)/(u/26+eps)]`.
+Delta réel (`u=1,88e-8`) : `½(0,9947+0,8784)=0,937` ✓ mesuré. `delta=0`
+(`u≈9,2e-15`) : `4,78e-5` contre `4,75e-5` mesuré. Explique aussi le
+`dbar/d3=0,89` du tour 57 (prédit `0,8784/0,9947=0,883`) : les 26
+autres, à `u/26=7,2e-10`, ne sont qu'à 7× eps, donc à moitié atténués.
+Ablation `verifier_reponse_dipankar_tour58_ablation_eps_ligne3.py` (eps
+d'Adam changé sur la SEULE ligne 3, 60 pas avant une salve), pentes
+prédites :
+```
+delta=0     eps3 : 1e-10  4,8e-5 | 1e-11  4,8e-4 | 1e-12  4,7e-3 | 1e-13  4,4e-2 | 1e-14  0,26 (sous-estimé : l'état bouge)
+delta réel  eps3 : 1e-10  0,937  | 1e-9   0,685  | 1e-8   0,360  | 1e-7   0,083  | 1e-6   9,6e-3 | 1e-5  9,8e-4
+```
+| H58.8 : la saturation agit à travers le plancher `eps` d'Adam (pas linéaire `lr·m/eps` quand `√v≪eps`), pas à travers le jacobien logit→probabilité ; sans `eps`, l'invariance d'échelle d'Adam effacerait `s3(1-s3)` et le couplage serait plein | 23/09 (moi) | ouverte — tranchée par l'ablation |
+| H58.5 (séparabilité : `poids[4]` n'entre pas dans le gradient de la ligne 3) | 23/09 | testée dans le même script (même état, poids échangés) |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
