@@ -30,3 +30,6 @@ Thumbs.db
 .vscode/
 .idea/
 results_test3/
+
+# Bundles Git
+*.bundle
