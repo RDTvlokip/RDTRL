@@ -1,6 +1,31 @@
 # État du projet RDTRL — où on en est
 
-## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — EN COURS
+## Tour 59 (vraie critique de dipankarsarkar, lue le 27/09/2026) — EN COURS
+
+**Lettre** : `docs/REPONSE_ORDRE59.md` (gitignorée), prête à envoyer
+(excuses pour le retard incluses, demande de Théo). **Carnet** : section
+« VRAIE CRITIQUE DE DIPANKARSARKAR, 27/09/2026 (tour 59, PAS simulée) ».
+
+**Acquis :** ses formes fermées (pli, table `δ_c(C)`) revérifiées à tous
+les chiffres ; pli exact mpmath 0,0134372100660973. La collision 6/14
+(12345 k=3) casse au même endroit que le mur 23, à 1e-9 près (objet, pas
+code). Aucune salve ne « traverse d'abord » géométriquement : elles
+dépassent le jumeau (3,9× en d3, 20× en r4) sans bascule. Sous 1e-8, le
+seuil appartient à l'optimiseur : sans salves (eps 1e-6) pile au pli
+(±3e-10), avec salves décalé de 1e-9 à 1e-8, signe = asymétrie des
+salves (4/4), grandeur non expliquée. Son étiquette corrigée (2,47e-8 =
+déficit, pas √v).
+
+**Pistes concrètes pour la suite :**
+1. Mesurer l'asymétrie des salves AU pli, par eps (elle a été mesurée à
+   pli-1e-6) : si son signe s'oppose au décalage, H59-8 tombe.
+2. Balayage eps sur 6/14 (fait sur le mur 23 seulement).
+3. Isoler la coordonnée lente (décomposition lente/rapide non concluante,
+   base mal conditionnée) : Jacobien réduit au nœud plutôt que ACP.
+4. Chercher l'eps où le seuil d'Adam retombe sur le pli entre 1e-8 et
+   1e-7 (question posée à dipankar).
+
+## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — CLOS
 
 **Lettre** : `docs/REPONSE_ORDRE58.md` (gitignorée), PRÊTE À ENVOYER
 (corrections des deux agents style dipankar intégrées après vérification

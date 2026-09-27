@@ -15775,6 +15775,14 @@ les chiffres imprimés ; `C=29` donnerait 0,0132932. Nuance : je compte
 que je retrouve (ma première grille, qui s'arrêtait à `r3=1e-14`,
 ratait elle-même la racine effondrée — piège noté).
 
+**Son étiquette, vérifiée : il a raison.** Dans la lettre 58, `2,47e-8`
+(et `1,63e-8`) étaient présentés dans la prose sur `√v` ; ce sont des
+DÉFICITS d'entropie : `½(lr/38 - eps/h)² = ½(1,3158e-3 - 1,0935e-3)² =
+2,47e-8` à eps=3e-8, et avec l'élément diagonal (`h·26/27`) 1,62e-8.
+À eps=3e-8, `lr h/38 - eps = 6,1e-9` (son chiffre). Le carnet
+(table (h), plus haut) les étiquetait déjà correctement ; seule la
+lettre se trompait.
+
 **Relecture de mon propre chiffre avant de répondre à sa question :**
 le « 0,013437 saturé » du tour 50/51 était le point milieu imprimé à
 6 décimales ; sa valeur exacte est `0,013 + 28/64·0,001 = 0,0134375`,
@@ -15823,7 +15831,96 @@ H59-7 est réfutée.
 
 | H59-4 les excursions de d3 viennent de l'étalement des 26 concurrents (Jensen) | 27/09 (moi) | **réfutée** le 27/09 (écart-type des concurrents 2e-10, d3 = champ moyen de X3 au 1e-6 près) |
 | H59-5 salves rapides (période 444) à moyenne nulle sur la variable lente | 27/09 (moi) | **confirmée en forme** le 27/09 : médiane de d3 sur le nœud fermé à 1e-9, pics brefs surtout côté opposé au jumeau |
-| H59-7 les salves décalent le pli dynamique vers le HAUT (~8e-10) | 27/09 (moi) | ouverte |
+| H59-7 les salves décalent le pli dynamique vers le HAUT (~8e-10) | 27/09 (moi) | **corrigée** le 27/09 — elles le décalent, mais dans un sens qui dépend d'eps (voir ci-dessous) |
+
+**Résultats du tour (27/09), tous avec `verifier_tour59_delta_c_dynamique.py`.**
+
+(1) **Objet contre code (P1) : confirmé à 1e-9, sept ordres sous sa
+bande de 1 %.** Collision 6/14 message 8 de 12345 k=3, pondérée dans
+les deux sens, même protocole que le mur 23 (Adam lr 0,05, eps 1e-10,
+sans chauffe) :
+```
+                 pli-1e-7  pli-1e-9  pli+3e-10     pli+6e-10  pli+1e-9     pli+1e-7
+mur 23 (3 bas)   tient     tient     tient 300k    tient 80k  bascule 3736  bascule 1274
+6/14 (6 bas)     tient     tient     tient 300k    tient 80k  bascule 3452  bascule 1125
+6/14 (14 bas)    tient     —         —             —          —             bascule 1150
+```
+États finaux sous le pli = branche fermée au 6e chiffre (6/14 à
+pli-1e-5 : `1-s=2,389555e-3`, prédit 2,389555e-3). Nombre effectif de
+concurrents dans les deux collisions : 26, récompense hors collision
+< 1e-9 (`verifier_tour59_concurrents_effectifs.py`). Le pli exact
+(mpmath) : 0,0134372100660973 ; la bissection de grille était juste à
+2,4e-11. H59-1 **confirmée**, et ce qui la ferait basculer : une
+collision dont une ligne de collisionneur porte une récompense
+concurrente non nulle (synonyme qui fuit, son propre caveat) — aucune
+dans les deux codes testés.
+
+(2) **Loi du fantôme au-dessus du pli (QUAND) :** pas de bascule =
+~700 + 0,182/√(δ-δ_c), constant à 3 % de +1e-7 à +1e-5 (759, 805, 881,
+1033, 1274 pas). Le budget de 40 000 pas ne limite rien au-dessus de
+1e-9. H59-3 **réfutée** comme effet dominant (le goulot existe mais
+coûte < 2 000 pas à 1e-8).
+
+(3) **Sa question : aucune salve ne « traverse d'abord » au sens
+géométrique.** Traces pas à pas sous le pli (eps 1e-10) : `d3=1-s3`
+dépasse la coordonnée d3 du jumeau instable jusqu'à 3,9× l'écart
+(pli-1e-8), `r4` jusqu'à ±20×, sans bascule. La médiane de d3 reste
+sur le nœud fermé à 1e-9 près ; les salves (période 444 pas, celle du
+tour 58) sont des pics brefs, surtout côté opposé au jumeau (quantile
+5 % à -6e-5, 95 % à +2,5e-6 à pli-1e-5). Moyenne décalée d'un biais
+STATIONNAIRE (identique sur 4 fenêtres de 10 salves), qui grandit
+vers le pli (-8e-7 à pli-1e-5, -8e-6 à pli-1e-8), équivalent d'un nœud
+à δ-2e-8 en d3 ET en r4 — mais le seuil ne bouge pas de 2e-8 :
+moyenne et seuil sont deux choses différentes.
+H59-4 (Jensen, étalement des concurrents) **réfutée** : écart-type des
+26 concurrents 2e-10, d3 = champ moyen de X3 exactement. Décomposition
+lente/rapide : **non concluante**, base mal conditionnée (pentes
+-0,020 et +0,002), retirée.
+
+(4) **Sous 1e-9, le seuil appartient à l'optimiseur.** Chauffe 20 000
+pas à pli-1e-6 (eps 1e-10), puis eps changé, 20 000 pas d'attente au
+nouvel eps (sépare le choc du changement d'eps), puis δ :
+```
+eps     sd(d3) salves   moyenne-médiane   seuil dynamique
+1e-6    8e-14 (aucune)  +6e-14            (pli-3e-10 ; pli+3e-10)  (+3e-10 bascule au pas 91 264)
+1e-7    1,1e-6          +3,0e-7 (vers jumeau)   (pli-1e-8 ; pli-3e-9)   bascule 3080-4131 pas
+1e-8    4,0e-6          -5,8e-7                 (pli+3e-9 ; pli+1e-8)
+1e-10   1,3e-5          -2,3e-6                 > pli+1e-9 avec chauffe ; (6e-10 ; 1e-9) sans
+```
+Sans salves, le seuil est au pli à ±3e-10. Avec salves, il s'en écarte
+de 1e-9 à 1e-8, et le SIGNE suit l'asymétrie des salves (4/4) : vers
+le jumeau → seuil sous le pli (sa « salve qui traverse d'abord »,
+vraie à eps 1e-7 seulement) ; à l'opposé → seuil au-dessus. La
+GRANDEUR ne suit pas (eps 1e-10 : asymétrie la plus forte, décalage
+le plus faible), et l'asymétrie est mesurée à pli-1e-6, pas au pli.
+À eps 1e-10, le seuil dépend en plus du chemin (chauffe ou non) à
+1e-9 près. Premier « 80 000 pas tient à +3e-10 » à eps 1e-6 : limite
+de budget, retiré (91 264 pas).
+
+**QUAND / COMMENT / POURQUOI / JUSQU'OÙ :** QUAND — la bascule suit la
+loi du fantôme jusqu'à +1e-7 ; en dessous de ~1e-8 de distance, la
+dynamique d'Adam prend la main. COMMENT — le point fixe est exact (le
+modèle à trois lignes est l'objectif réel à ~1e-20 près : récompenses
+concurrentes ∝ e^{-49}), seul le chemin vers lui change. POURQUOI le
+signe — l'asymétrie des salves (corrélation, 4 points, mécanisme de
+grandeur inconnu). JUSQU'OÙ — l'invariance « objet » tient au moins
+jusqu'à 1e-9 sur deux collisions ; testé à eps 1e-10 seulement pour
+6/14.
+
+| H59-8 le seuil dynamique fin (sous 1e-8) est fixé par l'asymétrie des salves, signe compris | 27/09 (moi) | **signe confirmé 4/4, grandeur non expliquée** — ce qui la ferait tomber : une asymétrie mesurée AU pli de signe opposé au décalage |
+| H59-9 le choc du changement d'eps explique la bascule sous le pli à eps 1e-7 | 27/09 (moi) | **réfutée** le 27/09 (bascule identique après 20 000 pas d'attente au nouvel eps) |
+
+Pas d'agent style dipankar lancé : la règle vise les résultats trouvés
+seul pendant qu'il ne répond pas ; ici c'est une réponse directe à sa
+critique, qu'il relira lui-même.
+
+Réponse dans `docs/REPONSE_ORDRE59.md`. Scripts :
+`verifier_tour59_pli_concurrents.py`, `verifier_tour59_recomptage_racines.py`,
+`verifier_tour59_pli_exact_mpmath.py`, `verifier_tour59_concurrents_effectifs.py`,
+`verifier_tour59_delta_c_dynamique.py`, `verifier_tour59_branches_fermees.py`,
+`verifier_tour59_traces_vs_jumeau.py`, `verifier_tour59_jensen_concurrents.py`,
+`verifier_tour59_direction_lente.py` (non concluant), `verifier_tour59_biais_moyen_salves.py`,
+`verifier_tour59_salves_selon_eps.py`.
 
 ---
 

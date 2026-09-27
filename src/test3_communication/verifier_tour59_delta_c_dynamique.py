@@ -49,14 +49,35 @@ def depart(cas):
     return (e, r), msg
 
 
-def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS):
+def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_eps=0):
+    """chauffe > 0 : d'abord `chauffe` pas a delta = pli - 1e-6 et eps 1e-10
+    (l'etat rejoint la branche de collision, ou les gradients ne sont plus
+    minuscules), PUIS bascule vers delta et eps, en gardant l'etat d'Adam.
+    Sans chauffe, un eps >= 1e-7 gele la ligne a son depart (1-s ~ 3e-10).
+    chauffe_eps > 0 : entre les deux, `chauffe_eps` pas supplementaires a
+    pli - 1e-6 avec le NOUVEL eps, pour separer le choc du changement d'eps
+    du changement de delta."""
     torch.set_num_threads(1)
     (e, r), msg = depart(cas)
+    activer(e, r)
+    opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=ADAM_EPS if chauffe else eps)
+    if chauffe:
+        pc = torch.full((N,), 1.0 / N, dtype=torch.float64)
+        pc[a], pc[b] = (1.0 - (0.0134372100660973 - 1e-6)) / N, (1.0 + (0.0134372100660973 - 1e-6)) / N
+        for _ in range(chauffe):
+            j, _ = objectif_pondere(e, r, BETA, pc)
+            opt.zero_grad()
+            (-j).backward()
+            opt.step()
+        opt.param_groups[0]["eps"] = eps
+        for _ in range(chauffe_eps):
+            j, _ = objectif_pondere(e, r, BETA, pc)
+            opt.zero_grad()
+            (-j).backward()
+            opt.step()
     poids = torch.full((N,), 1.0 / N, dtype=torch.float64)
     poids[a] = (1.0 - delta) / N
     poids[b] = (1.0 + delta) / N
-    activer(e, r)
-    opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=eps)
     bascule, lignes = -1, []
     for t in range(pas):
         j, _ = objectif_pondere(e, r, BETA, poids)
@@ -78,7 +99,8 @@ def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS):
         Rb = (S[b, msg] * R[msg, b]).item()
         d = 1 - S[a, msg].item()
     if trace:
-        with open(f"D:/tmp/rdtrl_tour59_trace_{cas}_a{a}_b{b}_delta{delta}_pas{pas}.txt", "w") as f:
+        suffixe = "" if (eps == ADAM_EPS and not chauffe) else f"_eps{eps:.0e}_chauffe{chauffe}"
+        with open(f"D:/tmp/rdtrl_tour59_trace_{cas}_a{a}_b{b}_delta{delta}_pas{pas}{suffixe}.txt", "w") as f:
             f.write("\n".join(lignes))
     print(f"{cas} a={a} b={b} delta={delta!r} eps={eps:.0e} pas={pas} R_b={Rb:.6f} 1-s_a={d:.6e} bascule={bascule}", flush=True)
 
@@ -89,4 +111,6 @@ if __name__ == "__main__":
     cas, a, b, delta, pas = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])
     opts = sys.argv[6:]
     eps = next((float(o[4:]) for o in opts if o.startswith("eps=")), ADAM_EPS)
-    courir(cas, a, b, delta, pas, trace="trace" in opts, eps=eps)
+    chauffe = next((int(o[8:]) for o in opts if o.startswith("chauffe=")), 0)
+    chauffe_eps = next((int(o[12:]) for o in opts if o.startswith("chauffe_eps=")), 0)
+    courir(cas, a, b, delta, pas, trace="trace" in opts, eps=eps, chauffe=chauffe, chauffe_eps=chauffe_eps)

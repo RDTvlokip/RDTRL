@@ -2,7 +2,13 @@
 {direction lente = stable -> jumeau, direction rapide = axe principal des
 oscillations}. Si les salves ne franchissent pas malgre X3 et r4 au-dela
 du jumeau, c'est que leur composante LENTE reste petite (H59-6).
-Lit la trace de verifier_tour59_jensen_concurrents.py."""
+Lit la trace de verifier_tour59_jensen_concurrents.py.
+
+RESULTAT NON CONCLUANT (27/09) : les deux directions sont presque
+paralleles (pentes dr4/dX3 -0,020 et +0,002, toutes deux >99,9 % selon
+X3), la base est mal conditionnee et la "composante lente +-18" n'est
+que du bruit amplifie. Remplace par verifier_tour59_biais_moyen_salves.py
+(mediane et quantiles de d3 contre le noeud ferme)."""
 
 import sys
 import numpy as np
