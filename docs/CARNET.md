@@ -15750,6 +15750,63 @@ corrections, dont deux revérifiées avec mon propre code
 
 ---
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 27/09/2026 (tour 59, PAS simulée)
+
+Postée il y a 4 jours, lue aujourd'hui (Théo indisponible entre-temps ;
+excuses pour le retard dans la lettre). Il répond à ma question de
+clôture du tour 58 par ses propres formes fermées, sans run : trois
+lignes (`X3=(1-δ)r3/β`, `X4=(1+δ)r4/β`, `1-s=26e^-X`, fermeture
+récepteur `log(r4/r3)=((1+δ)s4-(1-δ)s3)/β`) donnent un pli à
+`δ_c=0,013437` ; le code n'entre que par le nombre de concurrents sans
+récompense `C` (25 → 0,013489, 26 → 0,013437, 27 → 0,013387, 28 →
+0,013339, ~0,37 % par message, via log seulement). Prédiction : 12345
+k=3, collision 6/14 message 8, casse à 0,01344. Sa question : le
+`δ_c` mesuré du mur 23 est-il exactement au pli, ou un peu en dessous
+parce qu'une salve traverse d'abord ?
+
+**Vérification indépendante (règle 5bis), `verifier_tour59_pli_concurrents.py`
++ recomptage en coordonnée `u=log(r3/r4)` sur [-200, 200] :** sa table
+de branche (22,46328 / 17,61055 / 13,29146 / 11,29519 / 9,42041 et la
+branche du dessous à 8,92) et sa table `δ_c(C)` se retrouvent à tous
+les chiffres imprimés ; `C=29` donnerait 0,0132932. Nuance : je compte
+5 points fixes sous le pli (effondré-3 à `r3≈1e-21`, instable
+`X3=6,6`, collision, instable `X3=43,5`, effondré-4 près de `r3=1`) et
+3 au-dessus ; son « 3 below, 1 above » ne correspond à aucun comptage
+que je retrouve (ma première grille, qui s'arrêtait à `r3=1e-14`,
+ratait elle-même la racine effondrée — piège noté).
+
+**Relecture de mon propre chiffre avant de répondre à sa question :**
+le « 0,013437 saturé » du tour 50/51 était le point milieu imprimé à
+6 décimales ; sa valeur exacte est `0,013 + 28/64·0,001 = 0,0134375`,
+AU-DESSUS du pli (0,0134372). L'encadrement dynamique réel est donc
+(0,0134219 ; 0,0134375) : il contient le pli, il ne dit rien de
+« dessous ou pile ». Sa question n'a jamais été tranchée.
+
+**Prédictions poussées AVANT les runs (27/09) :**
+- P1 (objet contre code) : le pli idéalisé de 6/14 est le même
+  (`C=26`, même `N`, même `β`). Le seuil DYNAMIQUE de 6/14 (dans les
+  deux sens de pondération) tombe à moins de 2e-6 de celui du mur 23 ;
+  un écart ≥ 1e-4 voudrait dire que le code autour compte.
+- P2 (sa question) : deux effets de signes opposés. (a) goulot du
+  fantôme au-dessus du pli : à budget fini, un `δ` un peu au-dessus de
+  `δ_c` n'a pas encore basculé, donc le seuil mesuré est poussé vers le
+  HAUT, et cet excès rétrécit quand le budget croît ; (b) salves : une
+  excursion d'amplitude `A` en `1-s3` franchit le jumeau instable dès
+  que `C0·√(δ_c-δ) < A` (`C0=0,2212`), ce qui pousse le seuil vers le
+  BAS, d'un montant indépendant du budget. Je parie sur (a) dominant à
+  40 000 pas, avec un seuil au-dessus du pli d'au plus 1e-6, et (b) non
+  mesurable (< 1e-7). Test qui distingue : même grille à 40 000 et
+  160 000 pas ; (a) seul → le seuil descend vers le pli ; (b) → il
+  passe dessous et y reste.
+
+| # | hypothèse | posée le | statut |
+|---|---|---|---|
+| H59-1 `δ_c` appartient à l'objet collision (`N`, `β`, `C`), pas au code autour | 27/09 (lui, et moi au tour 58) | ouverte |
+| H59-2 une salve traverse avant le pli (seuil dynamique sous le pli) | 27/09 (lui) | ouverte |
+| H59-3 le goulot du fantôme met le seuil dynamique AU-DESSUS du pli à budget fini | 27/09 (moi) | ouverte |
+
+---
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
