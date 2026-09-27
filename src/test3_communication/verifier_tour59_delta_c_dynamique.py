@@ -11,7 +11,7 @@ Deux collisions :
 Usage : python verifier_tour59_delta_c_dynamique.py <cas> <a> <b> <delta> <pas> [trace]
 Sort une ligne : cas a b delta pas R[msg,b] 1-s[a,msg] pas_bascule
 (pas_bascule = premier pas ou R[msg,b] > 0,9, -1 sinon).
-Avec trace : ecrit 1-s[a,msg] et R[msg,b] tous les 10 pas dans D:/tmp.
+Avec trace : ecrit 1-s[a,msg], R[msg,b] et r[msg,b] a chaque pas dans D:/tmp.
 """
 
 import sys
@@ -49,14 +49,14 @@ def depart(cas):
     return (e, r), msg
 
 
-def courir(cas, a, b, delta, pas, trace=False):
+def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS):
     torch.set_num_threads(1)
     (e, r), msg = depart(cas)
     poids = torch.full((N,), 1.0 / N, dtype=torch.float64)
     poids[a] = (1.0 - delta) / N
     poids[b] = (1.0 + delta) / N
     activer(e, r)
-    opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=ADAM_EPS)
+    opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=eps)
     bascule, lignes = -1, []
     for t in range(pas):
         j, _ = objectif_pondere(e, r, BETA, poids)
@@ -69,7 +69,7 @@ def courir(cas, a, b, delta, pas, trace=False):
                 Rb = (S[b, msg] * R[msg, b]).item()
                 if bascule < 0 and Rb > 0.9:
                     bascule = t
-                if trace and t % 10 == 0:
+                if trace:
                     lignes.append(f"{t} {1 - S[a, msg].item():.10e} {Rb:.10f} {R[msg, b].item():.10f}")
             if bascule >= 0 and not trace:
                 break
@@ -80,9 +80,13 @@ def courir(cas, a, b, delta, pas, trace=False):
     if trace:
         with open(f"D:/tmp/rdtrl_tour59_trace_{cas}_a{a}_b{b}_delta{delta}_pas{pas}.txt", "w") as f:
             f.write("\n".join(lignes))
-    print(f"{cas} a={a} b={b} delta={delta:.8f} pas={pas} R_b={Rb:.6f} 1-s_a={d:.6e} bascule={bascule}", flush=True)
+    print(f"{cas} a={a} b={b} delta={delta!r} eps={eps:.0e} pas={pas} R_b={Rb:.6f} 1-s_a={d:.6e} bascule={bascule}", flush=True)
 
 
 if __name__ == "__main__":
+    # arguments optionnels apres les cinq positionnels : "trace" et/ou "eps=<valeur>"
+    # (eps d'Adam pendant la phase ponderee ; l'etat de depart reste celui a 1e-10)
     cas, a, b, delta, pas = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5])
-    courir(cas, a, b, delta, pas, trace=len(sys.argv) > 6)
+    opts = sys.argv[6:]
+    eps = next((float(o[4:]) for o in opts if o.startswith("eps=")), ADAM_EPS)
+    courir(cas, a, b, delta, pas, trace="trace" in opts, eps=eps)

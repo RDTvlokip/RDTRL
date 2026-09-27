@@ -15805,6 +15805,26 @@ AU-DESSUS du pli (0,0134372). L'encadrement dynamique réel est donc
 | H59-2 une salve traverse avant le pli (seuil dynamique sous le pli) | 27/09 (lui) | ouverte |
 | H59-3 le goulot du fantôme met le seuil dynamique AU-DESSUS du pli à budget fini | 27/09 (moi) | ouverte |
 
+**Résultats intermédiaires (27/09, détail plus bas une fois le tour
+clos) :** seuils dynamiques des DEUX collisions dans
+(pli+6e-10 ; pli+1e-9) — +3e-10 tient 300 000 pas, +6e-10 tient
+80 000, +1e-9 bascule en 3 452 / 3 736 pas. Pli exact (mpmath, `G=0`
+et `∂G/∂u=0`) : 0,0134372100660973, soit pli de grille + 2,4e-11 — le
+décalage n'est pas numérique. Loi du fantôme mesurée au-dessus :
+excès = 0,182/√(δ-δ_c) pas (±3 % de +1e-7 à +1e-5) ; elle prédit
+~8 100 pas à +6e-10 — non observé en 80 000.
+
+**Prédiction poussée avant le run (H59-7, salves stabilisantes) :** si
+ce sont les salves du bord de stabilité qui tiennent l'état au-delà du
+pli, un eps d'Adam assez grand pour les éteindre (vérifié sur trace :
+écart-type de d3 sous le pli effondré) ramène le seuil dynamique dans
+±2e-10 du pli exact ; si le seuil reste à +6e-10..1e-9 sans salves,
+H59-7 est réfutée.
+
+| H59-4 les excursions de d3 viennent de l'étalement des 26 concurrents (Jensen) | 27/09 (moi) | **réfutée** le 27/09 (écart-type des concurrents 2e-10, d3 = champ moyen de X3 au 1e-6 près) |
+| H59-5 salves rapides (période 444) à moyenne nulle sur la variable lente | 27/09 (moi) | **confirmée en forme** le 27/09 : médiane de d3 sur le nœud fermé à 1e-9, pics brefs surtout côté opposé au jumeau |
+| H59-7 les salves décalent le pli dynamique vers le HAUT (~8e-10) | 27/09 (moi) | ouverte |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
