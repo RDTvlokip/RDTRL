@@ -16214,6 +16214,94 @@ salves : je l'avais d'abord mis dans le rapport, ce qui donnait -205,
 quatre affirmations (a)-(d) de ce bloc ; son retour sera vérifié
 chiffre par chiffre avant toute acceptation (règle 5bis).
 
+**Retour de l'agent (29/09, critique SIMULÉE, pas de dipankarsarkar).**
+Son verdict d'ouverture : « the 97 % cancellation is not there ; Adam's
+phase weighting is not needed for Delta(eps) ». Ses affirmations, avec
+mon statut de vérification :
+1. *La variable lente au pli est le logit d'émetteur z3 = e[3,10] -
+   e[3,autres], pas u* (mode critique à 98 % émetteur, vecteur nul
+   `(n_z, n_u) = (-0,991, -0,133)`) : ma fermeture d'un seul degré de
+   liberté esclavait z3 à u par `dz/du = 7,46`, alors que les traces
+   donnent des pentes `-0,69 … -0,17`. **VÉRIFIÉ sur le réseau complet
+   par mon propre code** (`verifier_tour59_hessien_reseau_complet.py`,
+   2 × 729 paramètres, Newton sans col vers le nœud à pli-1e-6 :
+   d3 = 2,615926e-3, le nœud fermé à 6 chiffres ; le col donne
+   2,837195e-3 = jumeau fermé) : le mode mou (-7,29e-8) pèse **99,1 %
+   sur la ligne 3 de l'émetteur** (95,5 % le logit du message, 3,7 % les
+   26 concurrents) et 0,9 % sur le récepteur ; le mode rigide (-2,27e-4)
+   pèse 99,1 % sur le récepteur. Ses pentes de nœud aussi :
+   `dd3/dδ = 53,880` (lui 53,89), `dr4/dδ = 418,45` (lui 418,6).
+2. *σ_u² ne mêle pas rapide et lent* (98,8 / 99,9 / 100 / 100 % de
+   var(u) au-dessus de 1/100 pas⁻¹) : **à vérifier** (ci-dessous).
+3. *Formule* `Δ = -½ ΣT_ij Σ_ij / (n·F_δ)` avec `Σ = cov(z,u)` sur la
+   fenêtre de salves, `T` = hessien de `n·F` dans (z,u) ; ma formule à
+   une variable est cette expression à la pente esclavée `s = +7,46`
+   (`Q(s) = 2,73e-3`, d'où mon -0,0336) ; `Q` s'annule à `s = -0,337` et
+   `s = +13,99`. **Non vérifié** (dépend de sa réduction).
+4. *Réduction à deux lignes d'émetteur + logits l3, l4 du récepteur,
+   queue de 25 référents gelée* (`D:/tmp/agent_dk60/red2.py`, 0,4 s pour
+   40 000 pas), reproduisant sd(d3) et mean-node(d3) des traces à 1-2 %
+   et mes temps du mur 23 à eps 1e-7 (4141 / 3079 / 2560 contre 4131 /
+   3080 / 2560). **Non vérifié par moi** ; les temps 4131 / 3080 / 2560
+   sont bien les miens.
+5. *Table* `Δ_2D` (reduction threshold) : +4,3e-9 / +8,47e-9 / +3,3e-10
+   / -5,59e-9 à eps 1e-10 / 1e-8 / 3e-8 / 1e-7, contre mes +6,5e-9 /
+   +9,1e-9 / +3,2e-10 / -5,5e-9. **Non vérifié.**
+6. *Ablation par sous-ensembles de coordonnées* : seule la paire
+   e3 + o3 (logit de message et 26 concurrents de la ligne 3) fait
+   changer le signe ; le récepteur seul jamais. **Non vérifié.**
+7. *Poids de la pondération d'Adam* : moyenne exacte de n·F sur 30 000
+   pas = 3,0 / 2,4 / 2,3 / 1,0 % de n·F(x̄), coefficient de variation du
+   gain 4-6 % : moins de 3 %, pas 97 %. **Non vérifié.**
+8. *H59-12 vu de l'autre côté* : `c = 1/53,89 = 0,01856`, et avec le
+   décalage du pli à la place de la falaise `Δ_2D/(-skew) = 0,0184 /
+   0,0180 / 0,0186` à 1e-10 / 1e-8 / 1e-7 ; mon « 0,002-0,004 à 1e-10 »
+   était la falaise, pas le pli ; la coïncidence des zéros (d) est une
+   identité (skew et Δ sont le même déplacement). Le `c = 1/53,89` est
+   **VÉRIFIÉ** (ma pente 53,880 → 0,01856).
+9. *Mécanisme du zéro* : Adam fixe l'axe des salves (`dz/du = (w_z/w_u)
+   (p_z/p_u)` avec gains `p_z = lr[1/(√v+eps) + 1/(√v+26eps)]`, `p_u =
+   2lr/(√v_l+eps)`), le zéro de Δ est où l'axe croise `s* = -0,337`,
+   soit `p_z/p_u = 2,513`, eps = 2,99e-8 (réduction) ou 3,3e-8 (forme
+   fermée) ; mon zéro mesuré est 3,1e-8. **Non vérifié** (mais le zéro
+   mesuré est bien dans son encadrement).
+10. *κ(eps)* : `t = κ(½ + arctan(√(δ0/D))/π)/√D` avec `δ0 = 1e-6` (le
+    t0 « libre » de mon ajustement en est l'empreinte) et `κ = πNL/√(n·F_δ
+    T_nn/2)`, asymptote LINÉAIRE de pente `1,637e6` à grand eps, donc ma
+    droite `0,0711 + 1,389e6·eps` a la mauvaise asymptote : 10-15 % trop
+    bas à partir de eps 1e-6 (c'était mon « 8-9 % » inexpliqué).
+    **Non vérifié.** Test direct : eps 3e-6.
+11. *Falaise à eps 1e-10* : la réduction donne 4,3e-9 contre mes 6-7e-9,
+    frontière non monotone à 1e-11 (tient à 4,40e-9, casse à 4,375e-9),
+    sans mécanisme. **Reconnu par lui comme inexpliqué.** Et : le seuil
+    dépend de lr (`Δ_2D ∝ lr^3,4` ; seuil à eps 1e-8 : 3,2e-10 à
+    lr=0,02, 8,4e-9 à 0,05) : « objet, pas code » vrai entre mur 23 et
+    6/14 à lr 0,05, pas en lr.
+
+**Ce que je retire (mes propres énoncés, 29/09) :**
+- H59-18 (« quasi-annulation Kapitza / pondération d'Adam à ~97 % ») :
+  **réfutée** — elle venait d'une erreur de variable (u au lieu du logit
+  d'émetteur), pas d'une annulation ; le rapport 1-5 % que je lisais
+  comme une annulation est `Q(s_réel)/Q(s=7,46)`.
+- Mon soupçon « σ_u² mêle rapide et lent » : à vérifier (point 2).
+
+**Deux expériences précommises par l'agent, à faire tourner sur le
+RÉSEAU COMPLET (elles ne dépendent pas de sa réduction) :**
+- **E1** : `lr = 0,035`, état chauffé 20 000 + 20 000 recalculé à ce lr,
+  même protocole. Lui : seuil à eps 1e-8 = +3,3e-9 (tient à +1,5e-9,
+  casse à +5e-9) ; seuil à eps 1e-7 = -2,1e-9 (tient à -4e-9, casse à
+  0). « Si ça reste à +8,5e-9 et -5,6e-9, la lecture Kapitza est
+  morte. » Ma mise (65 %) : de son côté, dans un facteur 2. Grille :
+  eps 1e-8 : 0, 1,5e-9, 3e-9, 5e-9, 8,5e-9, 1,5e-8 ; eps 1e-7 : -6e-9,
+  -4e-9, -2e-9, 0, 3e-9 ; pas 60 000.
+- **E2** : eps 3e-6, état chauffé 20 000 + 20 000, bascule à pli+1e-7,
+  +2e-7, +5e-7. Lui : `t(+1e-7) = 13 846 ± 3 %` (sa formule, asymptote de
+  pente 1,637e6, κ = 4,851). Ma droite linéaire, avec son facteur
+  arctan : κ = 4,238, `t(+1e-7) = 12 096`. Écart entre nos deux
+  prédictions : 14 %, donc tranchable. Pour +2e-7 : lui 9 396, moi 8 209.
+  Ma mise : lui (60 %), parce que ma droite est ajustée sur deux points
+  du régime de croisement et pas sur le régime asymptotique.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

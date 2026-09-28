@@ -16,6 +16,8 @@ export TAG=${TAG:-grille}
 export CAS=${CAS:-mur23}
 export A=${A:-3}
 export B=${B:-4}
+# taux d'apprentissage d'Adam (0,05 par defaut, celui de tout le reste du projet)
+export LR=${LR:-0.05}
 EPS_LIST=${1:-"1e-8 3e-8 1e-7"}
 OFFS=${2:-"-1e-8 -6e-9 -3e-9 -1e-9 1e-9 3e-9 6e-9 1e-8 2e-8 5e-8"}
 
@@ -23,7 +25,7 @@ un_run() {
   local E=$1 O=$2
   local D
   D=$(python -c "print($PLI + float('$O'))")
-  python verifier_tour59_delta_c_dynamique.py "$CAS" "$A" "$B" "$D" "$PAS" eps="$E" chauffe="$CHAUFFE" chauffe_eps="$CHAUFFE_EPS" \
+  python verifier_tour59_delta_c_dynamique.py "$CAS" "$A" "$B" "$D" "$PAS" eps="$E" chauffe="$CHAUFFE" chauffe_eps="$CHAUFFE_EPS" lr="$LR" \
     > "/d/tmp/rdtrl_t59_${TAG}_${E}_${O}.txt"
 }
 export -f un_run

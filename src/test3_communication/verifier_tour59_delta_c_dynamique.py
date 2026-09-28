@@ -49,7 +49,7 @@ def depart(cas):
     return (e, r), msg
 
 
-def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_eps=0):
+def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_eps=0, lr=LR):
     """chauffe > 0 : d'abord `chauffe` pas a delta = pli - 1e-6 et eps 1e-10
     (l'etat rejoint la branche de collision, ou les gradients ne sont plus
     minuscules), PUIS bascule vers delta et eps, en gardant l'etat d'Adam.
@@ -62,12 +62,14 @@ def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_
     (e, r), msg = depart(cas)
     activer(e, r)
     params = parametres(e, r)
-    opt = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS if chauffe else eps)
+    opt = torch.optim.Adam(params, lr=lr, eps=ADAM_EPS if chauffe else eps)
     if chauffe:
         # etat chauffe mis en cache : tous les delta d'une meme serie partent du
         # MEME point (parametres + moments d'Adam), ce qui retire la dependance
         # au chemin. Creer le cache par un appel a pas=0 AVANT de lancer en parallele.
-        ck = f"D:/tmp/rdtrl_tour59_chaud_{cas}_{a}_{b}_eps{eps:.0e}_{chauffe}_{chauffe_eps}.pt"
+        # lr different de 0,05 : le taux est dans le nom (le cache de base n'en a pas).
+        tag_lr = "" if lr == LR else f"_lr{lr}"
+        ck = f"D:/tmp/rdtrl_tour59_chaud_{cas}_{a}_{b}_eps{eps:.0e}_{chauffe}_{chauffe_eps}{tag_lr}.pt"
         if os.path.exists(ck):
             c = torch.load(ck)
             with torch.no_grad():
@@ -132,4 +134,5 @@ if __name__ == "__main__":
     eps = next((float(o[4:]) for o in opts if o.startswith("eps=")), ADAM_EPS)
     chauffe = next((int(o[8:]) for o in opts if o.startswith("chauffe=")), 0)
     chauffe_eps = next((int(o[12:]) for o in opts if o.startswith("chauffe_eps=")), 0)
-    courir(cas, a, b, delta, pas, trace="trace" in opts, eps=eps, chauffe=chauffe, chauffe_eps=chauffe_eps)
+    lr = next((float(o[3:]) for o in opts if o.startswith("lr=")), LR)
+    courir(cas, a, b, delta, pas, trace="trace" in opts, eps=eps, chauffe=chauffe, chauffe_eps=chauffe_eps, lr=lr)
