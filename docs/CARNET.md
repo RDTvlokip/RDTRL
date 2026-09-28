@@ -16363,6 +16363,38 @@ de plus grande |n·∂_δ∇J| au lieu du mode mou donne le mode rigide du
 récepteur (|proj| = 1,58e-2 contre 1,54e-3) et une pente de 3,5e4, fausse
 de 46× ; le mode rigide est esclave et n'entre pas dans α.
 
+**E3 (masque d'eps par groupe de coordonnées, RÉSEAU COMPLET) — son
+mécanisme du signe, prédictions poussées avant les runs.** Son
+affirmation (points 6 et 9) : c'est le GAIN d'Adam sur le logit de
+message et les 26 concurrents de la ligne 3 qui fixe l'axe des salves
+donc le signe de Δ ; le récepteur seul ne change jamais le signe. Test :
+`AdamMasque` (eps par coordonnée, `adam_eps_masque.py`,
+`verifier_tour59_adam_masque_equivalence.py` : écart exactement 0 au pas
+1 ; ensuite du même ordre et de même croissance que l'écart entre deux
+`torch.optim.Adam` identiques dont l'un est perturbé de 1e-15 — 1,9e-9
+contre 2,3e-10 à 10 pas, 2,3e-3 contre 3,5e-3 à 3000 pas à eps 3e-6 : la
+dynamique amplifie tout écart d'arrondi, ce n'est pas un défaut de
+l'implémentation). Protocole de la grille : 20 000 pas à eps 1e-10 puis
+20 000 pas sous le masque, puis δ. Masques : `tout` (témoin), `ligne3`
+(toute la ligne 3 de l'émetteur), `recepteur` (tout le récepteur) ;
+eps = 1e-7 sur le groupe, 1e-10 ailleurs.
+- **Témoin** (`tout`, eps 1e-7, nouvelle voie de code) : doit
+  reproduire mes temps de bascule connus à ±5 % : 4131 / 3080 / 2560 à
+  -3e-9 / -1e-9 / +1e-9, et tenir à -6e-9. Sinon le résultat de
+  E3 ne vaut rien.
+- **Lui** (réduction) : `ligne3` seule à eps 1e-7 → seuil **-1,34e-8**
+  (sender-only Δ_2D = -1,39e-8) ; `recepteur` seul → **falaise vers
+  +3,2e-9**. Mes fenêtres : `ligne3` seuil dans [-2,0e-8 ; -0,8e-8] ;
+  `recepteur` seuil dans [+1e-9 ; +8e-9]. « Si ligne3 seule reste
+  positif, le mécanisme du gain d'émetteur tombe » (son critère, que je
+  reprends).
+- Ma mise : le signe de `ligne3` est négatif (75 %), la valeur dans ma
+  fenêtre (50 %) ; le réseau complet a d'autres degrés de liberté que
+  sa réduction (à eps 1e-10 la réduction donne 4,3e-9 contre 6,5e-9).
+  Grille : `ligne3` -2,5e-8 / -2e-8 / -1,5e-8 / -1,2e-8 / -1e-8 / -7e-9 /
+  -4e-9 / 0 ; `recepteur` 0 / 2e-9 / 4e-9 / 6e-9 / 8e-9 / 1,2e-8 ;
+  `tout` -6e-9 / -3e-9 / -1e-9 / +1e-9 ; pas 60 000.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
