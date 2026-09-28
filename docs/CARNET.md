@@ -16335,6 +16335,18 @@ E2  eps=3e-6      pli+1e-7   pli+2e-7   pli+5e-7
   paramètre libre) ; (iii) le E2 dépend de la seule géométrie du pli et
   de `lr` : test indépendant de sa formule fermée de κ (ci-dessous).
 
+**Test précommis de sa formule de κ, par MA dérivation sur le réseau
+complet (29/09).** À eps ≫ √v le préconditionneur d'Adam vaut
+`(lr/eps)·I`, et la dynamique le long du mode nul unitaire n du
+hessien au pli est `ds/dt = (lr/eps)(α μ + β s²)` avec `α = n·∂_δ∇J`,
+`β = ½ D³J[n,n,n]` (réduction à la variété centrale à l'ordre dominant,
+sans terme croisé), d'où `κ_asym/eps = π/(lr·√(αβ))`. Je calcule α et β
+par autograd sur les 2 × 729 paramètres (dérivée en δ et différences de
+∇J le long de n). Prédiction : pente `κ/eps` dans [1,55e6 ; 1,72e6]
+(sa formule : 1,637e6 ; mesure E2 : 1,617e6). Ce qui la réfuterait : un
+écart de plus de 5 % avec la mesure, auquel cas sa concordance avec
+E2 est une coïncidence de constantes.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
