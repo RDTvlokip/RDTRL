@@ -16089,8 +16089,53 @@ salves, pas un pli déterministe), soit il dépend de l'état d'Adam
 
 | H59-12 Δ(eps) = -c·skew(eps), c constant | 28/09 (moi) | **réfutée** en proportionnalité (c = 0,015-0,018 à 1e-8..1e-7, 0,002-0,004 à 1e-10) ; signe et zéro communs 4/4 |
 | H59-13 √v_lent = 5,1e-8 lu sur les 4 logits de la collision | 28/09 (moi) | **réfutée** telle que précommise (faute de définition, un logit saturé à 2e-14) ; lecture par logit post hoc, non concluante |
-| H59-14 le seuil à eps 1e-10 dépend de l'état chauffé | 28/09 (moi) | ouverte |
-| H59-15 le seuil à eps 1e-7 ne dépend pas de l'état chauffé | 28/09 (moi) | ouverte |
+| H59-14 le seuil à eps 1e-10 dépend de l'état chauffé | 28/09 (moi) | **réfutée sur le seuil** (deux états chauffés : tient à +5e-9 / +6e-9, casse à +7e-9 dans les deux) ; le TEMPS de bascule près du seuil, lui, en dépend (+7e-9 : 465 pas contre 9 873 ; +1e-8 : 387 contre 1 256) |
+| H59-15 le seuil à eps 1e-7 ne dépend pas de l'état chauffé | 28/09 (moi) | **confirmée à 1 pas près** (4130 / 3084 / 2563 contre 4131 / 3080 / 2560 ; Δ -5,57e-9 contre -5,54e-9 ; tient à -6e-9 dans les deux) |
+
+**Conséquence sur ce que j'ai publié (lettre 59, figée — à porter dans
+la lettre suivante).** Le « (6e-10 ; 1e-9) » du mur 23 à eps 1e-10
+(protocole sans chauffe, 27/09) mesure le TRANSITOIRE du départ (à
+Adam neuf, `frac max r4` atteint +144× l'écart en 27 pas, cf. traces du
+27/09), pas le seuil de l'état stationnaire. Sur état chauffé (40 000
+pas à pli-1e-6, puis δ), le seuil à eps 1e-10 est (6e-9 ; 7e-9] (base)
+et (5e-9 ; 7e-9] (second état), soit **6,5e-9 ± 1e-9, sept fois
+au-dessus**. Ce que la lettre disait de l'objet contre le code (6/14
+et mur 23 au même endroit) reste vrai — les deux runs avaient le même
+protocole, donc le même transitoire — mais la valeur absolue du décalage
+au réglage par défaut est fausse d'un facteur 6,5 dans la lettre, et
+l'affirmation « la 6/14 casse au même endroit à 1e-9 » doit être
+refaite sur état chauffé (test ci-dessous).
+
+**À eps 1e-10 la bascule n'est pas un passage de goulot.** Sur la
+grille chauffée (14 offsets, +5e-9 à +5e-7), les temps sont 465, 431,
+407, 387, 279, 232, 204, 185, 160, 138, 105, 74 pas : tous du même ordre
+que la période de salve (444). Un passage de goulot suivrait
+`κ/√(δ-δ_c')` avec κ ≈ 0,071 (loi linéaire en eps, extrapolée à 0), soit
+environ 800 pas à +7e-9 et 5 000 à +1e-9 ; l'ajustement des points
+lointains (κ = 0,038, Δ = -2,2e-9, R² = 0,9999) prédit une bascule en
+~440 pas à +6e-9 alors que ce run TIENT 60 000 pas. C'est une falaise :
+sous 6,5e-9, aucune salve ne franchit la séparatrice pendant 60 000 pas
+(~135 salves) ; au-dessus, l'une franchit dans la première période.
+QUAND : le seuil à 6,5e-9 est celui où la hauteur de barrière
+(∝ (δ-δ_c)^{3/2}) rattrape l'amplitude des plus grosses salves, pas un
+pli. Prédiction associée (H59-16) : à eps 1e-10 le seuil dépend de
+l'amplitude MAXIMALE des salves, pas de leur asymétrie ; test : mesurer
+sur trace le maximum de `x = (d3 - nœud)/(jumeau - nœud)` par
+fenêtre de 10 000 pas, prédit ≈ 1 à pli-6,5e-9. Si le maximum vaut 0,3
+ou 3 à cet endroit, la lecture « falaise = barrière contre amplitude »
+tombe.
+
+**Objet contre code, refait sur état chauffé (prédiction poussée avant
+le run).** H59-17 : à eps 1e-10 et état chauffé 20 000 + 20 000 (le
+protocole de la base ci-dessus), la collision 6/14 de 12345 k=3, dans
+les deux sens de pondération, a un seuil dans 6,5e-9 ± 2e-9. Ce qui la
+réfuterait : un seuil hors de [4,5e-9 ; 8,5e-9] dans l'un des deux sens
+— alors les salves, qui dépendent de tout le réseau, comptent pour le
+décalage même si le pli lui-même est celui de l'objet. Offsets testés
+(pas 60 000) : 4e-9, 5e-9, 6e-9, 7e-9, 8e-9, 1e-8 (6 par sens).
+
+| H59-16 à eps 1e-10 le seuil est fixé par l'amplitude maximale des salves contre la hauteur de barrière, pas par leur asymétrie | 28/09 (moi) | ouverte |
+| H59-17 le seuil chauffé à eps 1e-10 de la 6/14 est celui du mur 23 (6,5e-9 ± 2e-9), dans les deux sens | 28/09 (moi) | ouverte |
 
 ---
 
