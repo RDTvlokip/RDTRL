@@ -16526,6 +16526,63 @@ plausible) : je parie sur l'exponentielle (60 %).
   +8e-9 ; grille 0 / 3e-9 / 6e-9 / 1e-8 / 2e-8 / 5e-8 / 1e-7, pas 60 000
   (mise 60 %).
 
+**Résultats H59-24 et E7b (29/09, `lancer_tour59_hasard.sh`,
+`verifier_tour59_hasard_echappement.py` ; 60 runs, 47 échappements) :**
+```
+offset (pli+)   echapp./10   exposition   lambda (par pas)   IC 95 %              temps d'echappement
+6,6e-9          4            247 903      1,6e-5             [4,4e-6 ; 4,1e-5]    8554 15913 16430 27006
+6,8e-9          4            224 326      1,8e-5             [4,9e-6 ; 4,6e-5]    4897 7191 15594 16644
+7,0e-9          9            153 630      5,9e-5             [2,7e-5 ; 1,1e-4]    1110 3590 6242 10486 12135 17969 19351 23460 29287
+7,5e-9          10            64 048      1,6e-4             [7,5e-5 ; 2,9e-4]    999 ... 19496
+8,0e-9          10            24 315      4,1e-4             [2,0e-4 ; 7,6e-4]    986 ... 6007
+1,0e-8          10             4 260      2,3e-3             [1,1e-3 ; 4,3e-3]    409 417 417 419 420 421 422 422 423 490
+```
+- Le taux est bien un taux (temps d'échappement étalés sur une décade
+  à taux fixé, comme un processus de Poisson), pas une falaise. Mais
+  ma prédiction « pente d ln λ/dδ ≈ 9e9 » était fausse d'un facteur
+  6 : mesurée **1,4e9** (ajustement exponentiel MLE avec censure). Elle
+  reposait sur un temps de 465 pas que je prenais pour typique à +7e-9 ;
+  la moyenne sur 10 phases est de 17 000 pas.
+- **À +1e-8 les 10 phases cassent en 409-490 pas** : là on retrouve
+  la période de salve (444), le régime « premier passage ». Le régime
+  de hasard ne vaut que pour δ - 6e-9 ≲ 3e-9.
+- **Exploratoire, post hoc (`verifier_tour59_hasard_mle.py`)** : une
+  loi de puissance `λ = c (x - x*)^γ` avec `x* = pli + 6,031e-9` et
+  `γ = 2,73` est préférée à l'exponentielle par **ΔAIC = +8,2**
+  (logL -449,5 contre -454,6, 3 paramètres contre 2). Signature d'une
+  CRISE (Grebogi-Ott-Yorke : durée de vie du transitoire chaotique en
+  `(δ - δ*)^{-γ}`), avec un seuil δ* SANS taux d'échappement en
+  dessous. C'est l'hypothèse académique H59-19 sous sa forme correcte :
+  transitoire chaotique, pas orbite périodique (qui échapperait « à la
+  première période »).
+- **Test hors échantillon déjà disponible (E5, 10 phases à pli+6,5e-9,
+  JAMAIS utilisées dans l'ajustement)** : l'exponentielle prédit
+  λ = 2,5e-5 donc 7,7 cassures attendues sur 10 en 60 000 pas ; la loi
+  de puissance λ = 7,2e-6 donc 3,5. Observé : **1**. P(≤1 | exp) ≈
+  1e-4, P(≤1 | puissance) ≈ 0,09. Et E8 (300 000 pas à pli+6,0e-9,
+  0 échappement) : exp prédit 3,7 attendus (P(0) = 2,5 %), puissance 0.
+- **E7b ✗** : β2 = 0,9995 : tient à +3e-9, casse à +6e-9 (2 783 pas),
+  +1e-8 (1 213), +2e-8 (718), +5e-8 (247), +1e-7 (129). Le seuil est
+  (3e-9 ; 6e-9], donc PLUS BAS que celui de β2 = 0,999 (6,0e-9), pas
+  au-dessus de +8e-9 comme je le pariais. Ordre : β2 = 0,998 → sous
+  pli-1e-6 ; 0,999 → +6,0e-9 ; 0,9995 → +3..6e-9. Les salves ne
+  deviennent pas plus petites quand la mémoire de v s'allonge, au
+  contraire du pari, et l'effet de β2 est fortement non linéaire :
+  1 000× entre 0,998 et 0,999, ~1× entre 0,999 et 0,9995.
+
+**Test hors échantillon précommis (29/09), qui départage crise et
+exponentielle** : 20 phases (k = 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89,
+144, 233, 377, 610, 987, 1597, 2584, 4181, 6765) à chacun de deux δ,
+100 000 pas, masque `tout` eps 1e-10 :
+- **pli+6,1e-9** : exponentielle (λ = 1,4e-5) → 75 % cassent en 100 000
+  pas, ≈ 15 sur 20 ; puissance (λ = 3,8e-8 à x* = 6,031e-9) → ≤ 1 sur 20.
+- **pli+6,3e-9** : exponentielle (λ = 1,9e-5) → ≈ 17 sur 20 ; puissance
+  (λ = 1,6e-6) → 15 %, ≈ 3 sur 20.
+Ce qui réfuterait la crise : ≥ 8 cassures sur 20 à 6,1e-9. Ce qui
+réfuterait l'exponentielle : ≤ 6 cassures sur 20 à 6,3e-9. La loi de
+puissance avec δ* est falsifiable par UNE cassure à pli+6,0e-9 sur un
+long budget (E8 n'en a pas eu en 300 000 pas).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

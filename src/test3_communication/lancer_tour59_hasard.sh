@@ -10,7 +10,9 @@ cd "$(dirname "$0")"
 export PLI=0.0134372100660973
 export PAS=${2:-30000}
 OFFS=${1:-"6.6e-9 6.8e-9 7e-9 7.5e-9 8e-9 1e-8"}
-KS="0 1 2 3 5 8 13 21 34 55"
+KS=${KS:-"0 1 2 3 5 8 13 21 34 55"}
+# prefixe des sorties (hz par defaut) : /d/tmp/rdtrl_t59_${HZ_TAG}_k<k>_1e-10_<offset>.txt
+HZ_TAG=${HZ_TAG:-hz}
 
 for k in $KS; do
   python verifier_tour59_masque_eps.py mur23 3 4 "$PLI" 0 masque=tout eps=1e-10 chauffe_eps=$((20000 + k)) > /dev/null &
@@ -22,8 +24,9 @@ un_run() {
   local D
   D=$(python -c "print($PLI + float('$O'))")
   python verifier_tour59_masque_eps.py mur23 3 4 "$D" "$PAS" masque=tout eps=1e-10 chauffe_eps=$((20000 + K)) \
-    > "/d/tmp/rdtrl_t59_hz_k${K}_1e-10_${O}.txt"
+    > "/d/tmp/rdtrl_t59_${HZ_TAG}_k${K}_1e-10_${O}.txt"
 }
+export HZ_TAG
 export -f un_run
 
 for k in $KS; do
