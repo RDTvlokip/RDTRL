@@ -21,6 +21,10 @@ if __name__ == "__main__":
     a = k1 - b * 1e-8
     print(f"kappa(eps) = {a:.4f} + {b:.3e} * eps    sqrt(v_lent) = a/b = {a / b:.3e}")
     print(f"eps 3e-8 : kappa predit {a + b * 3e-8:.4f}   ajuste 0,111")
+    # 2e-8 et 5e-8 : ajustes apres coup (grille du 28/09), jamais utilises pour a et b
+    for eps, ajuste in ((2e-8, 0.0995), (5e-8, 0.1379)):
+        p = a + b * eps
+        print(f"eps {eps:.0e} : kappa predit {p:.4f}   ajuste {ajuste:.4f}   ecart {100 * (ajuste / p - 1):+.1f} %")
     k = a + b * 1e-6
     for off, obs in ((3e-10, 91264), (1e-9, 50845)):
         print(f"eps 1e-6, pli+{off:.0e} : t predit {k / off ** 0.5:.0f}   observe {obs}   "

@@ -16225,6 +16225,23 @@ Ce qui réfuterait l'interpolation : Δ(2e-8) hors de [1,6e-9 ; 5,6e-9]
 ou Δ(5e-8) hors de [-4,2e-9 ; -0,2e-9]. Si Δ(eps) n'est pas monotone
 entre 1e-8 et 1e-7, les trois points ne suffisaient pas.
 
+**Résultat (28/09, 17 runs, ajustement 5 et 7 points, R² = 1,0000) :**
+```
+eps    Delta (loi du fantome)   predit (interpolation)    kappa ajuste   kappa lineaire (0,0711+1,389e6 eps)
+2e-8   +3,85e-9                 +3,6e-9  ± 2e-9   ✓       0,099          0,0989  (+0,6 %)
+5e-8   -3,66e-9                 -2,2e-9  ± 2e-9   ✓       0,138          0,1406  (-1,9 %)
+```
+Les deux prédictions de Δ tombent dans leur fenêtre ; la série
+Δ(eps) est monotone décroissante en log eps sur 1e-8 → 1e-7 :
++9,1 / +3,85 / +0,32 / -3,66 / -5,5 (×1e-9), zéro vers 3,1e-8. Et κ
+suit la droite `0,0711 + 1,389e6·eps` à 0,6 % et 1,9 % sur deux eps
+jamais utilisés pour la fixer (5 eps confirmés au total, 2 de calage) :
+**la loi linéaire de κ est solide sur 1e-8 → 1e-7** (mécanisme
+`(√v+eps)/√v` encore non prouvé : c'est la forme qui colle, pas la
+preuve que `√v_lent = 5,1e-8` est une grandeur lue). Δ(1e-10) = +6,5e-9
+reste en dessous de Δ(1e-8) = +9,1e-9 : Δ(eps) n'est pas monotone sur
+toute la plage (maximum entre 1e-10 et 1e-8 ; pas mesuré).
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
