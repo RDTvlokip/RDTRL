@@ -16395,6 +16395,32 @@ eps = 1e-7 sur le groupe, 1e-10 ailleurs.
   -4e-9 / 0 ; `recepteur` 0 / 2e-9 / 4e-9 / 6e-9 / 8e-9 / 1,2e-8 ;
   `tout` -6e-9 / -3e-9 / -1e-9 / +1e-9 ; pas 60 000.
 
+**Résultats E3 (29/09, réseau complet, eps 1e-7 sur le groupe,
+`verifier_tour59_masque_eps.py`) : ses trois prédictions tombent.**
+```
+masque      tient jusqu'a   premier qui casse   temps de bascule                     ajustement       sa prediction
+tout        -6e-9           -3e-9               4107 / 3065 / 2559 (-3,-1,+1e-9)     -5,43e-9         (temoin : mes 4131/3080/2560 a 0,6 %)
+ligne3      -1,5e-8         -1,2e-8             5878 / 3946 / 2818 / 2367 / 1947     -1,36e-8         -1,34e-8   (fenetre -2,0e-8 ; -0,8e-8) ✓
+recepteur   +2e-9           +4e-9               2930 / 1194 / 288 / 240              falaise          +3,2e-9    (fenetre +1e-9 ; +8e-9) ✓
+```
+(`ligne3` : les 5 temps -1,2e-8 → 0 ; `recepteur` : +4e-9 → +1,2e-8.)
+- Le témoin valide la voie de code (écart de 0,6 % sur les trois temps).
+- Mettre eps=1e-7 sur la SEULE ligne 3 de l'émetteur (27 coordonnées)
+  suffit à faire passer le seuil de +6,5e-9 (eps 1e-10 partout) à
+  **-1,36e-8** : le signe est fixé par le gain d'Adam sur le logit de
+  message et les 26 concurrents de la ligne 3. Le récepteur seul
+  laisse le seuil POSITIF (falaise entre +2e-9 et +4e-9, temps qui
+  chutent de 2930 à 240 pas, pas de loi en 1/√). Son mécanisme du
+  signe est **confirmé sur le réseau complet**, indépendamment de sa
+  réduction. Ce qui l'aurait fait tomber : `ligne3` seul positif ; il
+  est à -1,36e-8 contre -1,34e-8 prédit (1,5 %).
+- Bilan du retour de l'agent : mon H59-18 (quasi-annulation Kapitza /
+  pondération d'Adam) est fausse ; sa lecture (variable lente = logit
+  de la ligne 3, axe des salves fixé par les gains d'Adam) est vraie
+  sur E1 (lr), E2 (κ asymptotique, formule vérifiée par mon calcul
+  sur les 2 × 729 paramètres) et E3 (masque de eps). Ce qui reste hors
+  de portée des deux : la falaise à eps 1e-10.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

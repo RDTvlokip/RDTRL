@@ -57,7 +57,7 @@ if __name__ == "__main__":
         casse = [(o, b) for o, b, _ in lst if b >= 0]
         tient = [(o, p) for o, b, p in lst if b < 0]
         print(f"=== eps={eps} : {len(lst)} runs, {len(casse)} basculent")
-        print("    " + "  ".join(f"{o:+.0e}:{'B' + str(b) if b >= 0 else 'tient'}" for o, b, _ in lst))
+        print("    " + "  ".join(f"{o:+.3g}:{'B' + str(b) if b >= 0 else 'tient'}" for o, b, _ in lst))
         if casse and tient:
             print(f"    encadrement direct : tient jusqu'a {max(o for o, _ in tient if o < min(c for c, _ in casse)) if any(o < min(c for c, _ in casse) for o, _ in tient) else float('nan'):+.1e}, "
                   f"premier qui casse {min(c for c, _ in casse):+.1e}")
