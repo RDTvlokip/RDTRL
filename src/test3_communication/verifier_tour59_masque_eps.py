@@ -49,15 +49,16 @@ def poids_pour(a, b, delta):
     return p
 
 
-def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000):
+def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000, beta2=0.999):
     torch.set_num_threads(1)
     (e, r), _ = depart("mur23")
     activer(e, r)
     params = parametres(e, r)
-    ck1 = f"D:/tmp/rdtrl_tour59_phase1_mur23_{a}_{b}_{chauffe}.pt"
-    ck2 = f"D:/tmp/rdtrl_tour59_masque_{masque}_mur23_{a}_{b}_eps{eps:.0e}_{chauffe}_{chauffe_eps}.pt"
+    tag_b = "" if beta2 == 0.999 else f"_b2{beta2}"
+    ck1 = f"D:/tmp/rdtrl_tour59_phase1_mur23_{a}_{b}_{chauffe}{tag_b}.pt"
+    ck2 = f"D:/tmp/rdtrl_tour59_masque_{masque}_mur23_{a}_{b}_eps{eps:.0e}_{chauffe}_{chauffe_eps}{tag_b}.pt"
     pc = poids_pour(a, b, F_PLI - 1e-6)
-    opt = AdamMasque(params, LR, eps_masque(e, r, a, masque, eps))
+    opt = AdamMasque(params, LR, eps_masque(e, r, a, masque, eps), betas=(0.9, beta2))
     if os.path.exists(ck2):
         c = torch.load(ck2)
         with torch.no_grad():
@@ -72,10 +73,10 @@ def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000):
             with torch.no_grad():
                 for p, v in zip(params, c1["params"]):
                     p.copy_(v)
-            opt1 = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS)
+            opt1 = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS, betas=(0.9, beta2))
             opt1.load_state_dict(c1["opt"])
         else:
-            opt1 = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS)
+            opt1 = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS, betas=(0.9, beta2))
             for _ in range(chauffe):
                 j, _ = objectif_pondere(e, r, BETA, pc)
                 opt1.zero_grad(); (-j).backward(); opt1.step()
@@ -100,7 +101,8 @@ def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000):
         S, R = e.loi(), r.loi()
         Rb = (S[b, MSG] * R[MSG, b]).item()
         d = 1 - S[a, MSG].item()
-    print(f"mur23 a={a} b={b} delta={delta!r} eps={eps:.0e} masque={masque} pas={pas} R_b={Rb:.6f} 1-s_a={d:.6e} bascule={bascule}", flush=True)
+    print(f"mur23 a={a} b={b} delta={delta!r} eps={eps:.0e} masque={masque} chauffe_eps={chauffe_eps} beta2={beta2} "
+          f"pas={pas} R_b={Rb:.6f} 1-s_a={d:.6e} bascule={bascule}", flush=True)
 
 
 if __name__ == "__main__":
@@ -108,4 +110,8 @@ if __name__ == "__main__":
     opts = sys.argv[6:]
     masque = next(o[7:] for o in opts if o.startswith("masque="))
     eps = next(float(o[4:]) for o in opts if o.startswith("eps="))
-    courir(a, b, delta, pas, masque, eps)
+    # chauffe_eps= : nombre de pas de la phase sous masque (20 000 par defaut) ; le faire varier de
+    # quelques pas decale la PHASE des salves au moment ou delta est applique.
+    chauffe_eps = next((int(o[12:]) for o in opts if o.startswith("chauffe_eps=")), 20000)
+    beta2 = next((float(o[6:]) for o in opts if o.startswith("beta2=")), 0.999)
+    courir(a, b, delta, pas, masque, eps, chauffe_eps=chauffe_eps, beta2=beta2)

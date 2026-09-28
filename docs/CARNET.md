@@ -16421,6 +16421,52 @@ recepteur   +2e-9           +4e-9               2930 / 1194 / 288 / 240         
   sur les 2 × 729 paramètres) et E3 (masque de eps). Ce qui reste hors
   de portée des deux : la falaise à eps 1e-10.
 
+**La falaise à eps 1e-10 (réglage par défaut de tout le projet) : cinq
+hypothèses, prédictions poussées avant les runs (29/09).** Faits : sur
+le réseau complet, tient à pli+6e-9 (60 000 pas), casse à pli+7e-9 en
+465 pas (une période de salve = 444) ; temps 465 / 431 / 407 / 387 pour
+7 / 8 / 9 / 10e-9, 74 pas à 5e-7, sans divergence en 1/√ ; un second
+état chauffé donne 9 873 pas à +7e-9. L'agent (réduction) : seuil
+non monotone à 1e-11, indépendant de la fenêtre 60k → 300k, excursion
+maximale 2,3e-2 pour 3,9e-3 de distance au col sans bascule.
+- **H59-19 (standard : crise de frontière)** : l'orbite des salves
+  touche la variété stable du col (le jumeau) ; au-delà de δ*, elle
+  s'échappe au premier passage. Signature : temps de bascule ≈ une
+  période, sans loi en puissance ; seuil FRANC.
+- **H59-20 (standard : échappement induit par le bruit / valeur
+  extrême)** : réfutée par l'agent sur la réduction (fenêtre 60k → 300k
+  inchangée) ; à refaire sur le réseau complet : tenir à pli+6e-9 sur
+  300 000 pas.
+- **H59-21 (standard : plancher numérique)** : le seuil dépend de
+  `adam_eps` des coordonnées saturées (`√v` du même ordre que 1e-10).
+  Test : eps 1e-12 partout.
+- **H59-22 (NON standard : frontière entremêlée)** : près du seuil,
+  hold/break n'est pas monotone en δ à 1e-10 de pas (bassins
+  entremêlés), donc « le seuil » n'a pas de sens plus fin que le pas
+  d'entrelacement, et le résultat dépend de la PHASE des salves à
+  l'instant où δ est appliqué.
+- **H59-23 (NON standard : résonance avec la mémoire de v)** : la
+  période des salves (444) est fixée par la recharge de `v` (β2 =
+  0,999, mémoire 1000) ; le seuil dépend de β2 parce que l'amplitude
+  des salves en dépend. Test : β2 = 0,998.
+Prédictions (mur 23, réseau complet, masque `tout`, protocole de la
+grille, pas 60 000) :
+- **E4** (H59-22, 11 δ de pli+6,0e-9 à +7,0e-9, pas 1e-10) : au moins
+  une alternance hold/break parmi les 11 (mise 55 %). Un seul passage
+  hold → break sans retour = frontière franche à 1e-10 (H59-19 seule).
+- **E5** (H59-22, phase : δ = pli+6,5e-9, `chauffe_eps` = 20 000 + k,
+  k ∈ {0,1,2,3,5,8,13,21,34,55}) : au moins un hold ET un break parmi
+  les 10 (mise 50 %) ; si tous identiques, le résultat ne dépend pas de
+  la phase.
+- **E6** (H59-21, eps 1e-12 partout, δ ∈ {3,5,6,7,8,10}e-9) : seuil dans
+  6,5e-9 ± 1,5e-9 (mise 65 %) ; hors de cette fenêtre, la falaise
+  dépend du plancher numérique.
+- **E7** (H59-23, β2 = 0,998, eps 1e-10 partout, δ ∈ {2,4,6,8,10,15}e-9) :
+  seuil HORS de [5,0e-9 ; 8,0e-9] (mise 55 %) ; dedans, la falaise ne
+  dépend pas de la mémoire de v.
+- **E8** (H59-20 sur réseau complet) : hold à pli+6e-9 sur 300 000 pas
+  (mise 70 %).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
