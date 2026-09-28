@@ -60,8 +60,20 @@ def deviance(lam_fn, pts):
     return d
 
 
+def seuil_selon_horizon():
+    """delta au-dessus du pli (1e-9) pour lequel lambda(delta) = 1/T, interpolation log-log de la table :
+    la 'probabilite de casser dans T pas' vaut 1 - exp(-1) = 63 % en ce point."""
+    xs = np.array([x for x, _, _ in TABLE])
+    lam = np.array([n / E for _, n, E in TABLE])
+    print("horizon T (pas)   delta_1/T - pli  (1e-9)   [lambda = 1/T ; 63 % de casser dans T]")
+    for T in (1e4, 6e4, 1e5, 3e5, 1e6, 1e7, 1e8, 1e9):
+        cible = np.log(1.0 / T)
+        x = np.interp(cible, np.log(lam), xs)
+        print(f"   {T:9.0e}         {x:6.2f}")
+
+
 if __name__ == "__main__":
-    fenetres = [("[6,1 ; 8,0]  (ma fenetre)", 6.1, 8.0), ("[6,1 ; 10]", 6.1, 10.0), ("[5,25 ; 10]", 5.25, 10.0), ("[5,0 ; 7,0]", 5.0, 7.0)]
+    fenetres =[("[6,1 ; 8,0]  (ma fenetre)", 6.1, 8.0), ("[6,1 ; 10]", 6.1, 10.0), ("[5,25 ; 10]", 5.25, 10.0), ("[5,0 ; 7,0]", 5.0, 7.0)]
     print("fenetre                       points   gamma    x* (1e-9)   deviance/ddl        son gamma / x*")
     ses = {"[6,1 ; 8,0]  (ma fenetre)": "3,50 / 5,56", "[6,1 ; 10]": "2,26 / 5,87", "[5,25 ; 10]": "4,16 / 5,00", "[5,0 ; 7,0]": "12,4 / 3,43"}
     for nom, a, b in fenetres:
@@ -75,3 +87,5 @@ if __name__ == "__main__":
         if x <= 6.0:
             mu = 1.809e-5 * (x - 5.72) ** 3.48 * E if x > 5.72 else 0.0
             print(f"   x={x:5.2f}   observes {n:4d}   attendus {mu:8.3f}")
+    print()
+    seuil_selon_horizon()

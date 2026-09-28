@@ -16752,6 +16752,55 @@ mécanisme de γ ne sort des exposants de Lyapunov (hyperchaos, λ1 = 8,3e-3,
   soutenue (aucun exposant dérivé ; ses multiplicateurs de Lyapunov, à
   vérifier, donnent γ ≈ 9-10, pas 3,5).
 
+**V4 : sa table de taux, rééchantillonnée par moi avec son code et une
+AUTRE graine (`hasard_reduction_tour59.py`, graine 12345, un processus) :**
+```
+x (1e-9)   mes evenements   mon lambda    son lambda [IC 95 %]        
+7,0        40 / 40 rep.     4,39e-5       3,7e-5 [3,2e-5 ; 4,3e-5]
+6,5        40 / 40 rep.     6,79e-6       6,6e-6 [5,7e-6 ; 7,6e-6]
+6,0        38 / 40 rep.     8,47e-7       5,9e-7 [5,0e-7 ; 7,0e-7]     (mon IC ≈ 6,0e-7 ; 1,2e-6 : chevauche)
+5,5         9 / 30 rep.     3,67e-8       4,0e-8 [3,3e-8 ; 4,9e-8]
+```
+Ses taux sont retrouvés à 1,2× près dans les quatre lignes (6,0 est 1,4×
+plus haut chez moi, intervalles qui se chevauchent). **À 5,5e-9, où ma loi
+de puissance prédit 0, la réduction donne 3,7e-8 par pas (9 échappements
+en 2,45e8 pas)** : il n'y a pas de seuil à 5,7e-9 dans la réduction.
+Limite qui reste : la réduction n'est comparée au réseau complet qu'à
+δ ≥ 6,0e-9 (sa comparaison : 54 échappements observés, 48,8 attendus) ;
+en dessous, le réseau complet n'a jamais été mesuré (5,5e-9 demande
+~2,5e7 pas par échappement, ~20 h de calcul à 6 processus). Fidélité de la
+réduction à 5,5e-9 : inférée, non mesurée.
+
+**Ce que le taux dit pour un budget fini (interpolation log-log de sa
+table, `seuil_selon_horizon`) :** le « seuil » de bascule dépend de
+l'horizon de simulation, car λ varie sur 5 décades :
+```
+horizon T (pas)   1e4    6e4    1e5    3e5    1e6    1e7    1e8    1e9
+delta(63 % de casser) - pli (1e-9)   7,45   6,75   6,61   6,34   6,07   5,64   5,26   5,00
+```
+Mes « tient / casse » à 60 000 pas (6,0-7,0e-9) et les bissections
+à 15 000-200 000 pas des tours 50-58 étaient des points de cette
+courbe, pas une constante du système : un facteur 10^5 de budget déplace
+le « seuil » de 6,75 à 5,0e-9. Aucun budget fini ne le fixe.
+
+**Réponse à sa question (« ta forme fermée du pli, avec la covariance
+Σ de la salve, prédit-elle le coefficient de Kramers a = 2,87 (2,6-3,1)
+par (1e-9)^{3/2} à 30 % sans ajustement ? ») : NON.** Je n'ai aucune
+forme fermée de la barrière effective de l'échappement ; le pli donne la
+hauteur de barrière déterministe (∝ (δ_c-δ)^{3/2}) mais pas comment la
+salve hyperchaotique (deux exposants positifs, λ1 = 8,3e-3, λ2 = 2,6e-3
+par pas, D_KY = 11,3 selon lui, non recalculés par moi) l'abaisse. Ses
+exposants de Lyapunov, sa distribution de pics (kurtosis d'excès 2,76,
+P(z>4) = 1,6e-3 contre 3,2e-5 gaussien), le genou de la pente vers
+7,3e-9 (waiting times non exponentiels au-dessus, sd/moyenne 0,74),
+l'absence d'artefact de détection (0,85-0,99), de perturbation et de
+préchauffe : **non revérifiés.**
+
+| H59-19' crise de transitoire chaotique, λ ∝ (δ-δ*)^γ, δ* = 5,7e-9 | 29/09 (moi, post hoc) | **RETIRÉE** : γ et δ* dépendent de la fenêtre (2,3 à 12,2 ; 3,5 à 5,8e-9), la réduction donne 3,7e-8 à 5,5e-9 où la loi prédit 0 |
+| H59-25 λ(δ) est une loi de puissance / crise à δ* fini | 29/09 (agent, moi) | **non soutenue** ; formes ajustées sans rejet sur [5,0 ; 7,0] : puissance (γ = 12,2, x* = 3,5), queue gaussienne, Kramers 3/2 (x_c = 7,4) ; les données ne choisissent pas |
+| H59-26 ma ligne à 1e-8 est biaisée par les phases k ≤ 55 | 29/09 (agent) | **confirmée** (V1, réseau complet, temps identiques aux siens) |
+| H59-27 la réduction à deux lignes reproduit le réseau complet | 29/09 (agent) | **soutenue à δ ≥ 6,0e-9** (54 contre 48,8 événements ; V2 ; V4) ; **non mesurée en dessous** |
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

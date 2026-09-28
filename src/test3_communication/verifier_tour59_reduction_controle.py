@@ -1,5 +1,5 @@
-"""Tour 59 (29/09/2026) : V2. Rejoue la reduction a deux lignes du second
-agent style dipankar (D:/tmp/agent_dk60/red2.py, simulateur Adam reduit :
+"""Tour 59 (29/09/2026) : V2. Rejoue la reduction a deux lignes du premier
+agent style dipankar (reduction_deux_lignes_tour59.py = red2.py, simulateur Adam reduit :
 lignes 3 et 4 de l'emetteur = logit de message + 26 concurrents symetriques,
 logits l3 et l4 du recepteur, queue de 25 referents gelee) depuis l'etat
 chaud 20 000 + 20 000 pas a eps 1e-10 du reseau complet, aux cinq delta ou
@@ -11,11 +11,11 @@ pour juger l'ecart reduction / reseau complet sur une seule realisation.
 """
 
 import sys
-sys.path.insert(0, "D:/tmp/agent_dk60")
+sys.path.insert(0, ".")
 import numpy as np
 import torch
 
-from red2 import charger, simuler, PLI
+from reduction_deux_lignes_tour59 import charger, simuler, PLI  # copie de red2.py (agent style dipankar)
 
 CHAUD = "D:/tmp/rdtrl_tour59_chaud_mur23_3_4_eps1e-10_20000_20000.pt"
 SES_TEMPS = {1e-8: 490, 7e-9: 574, 6.5e-9: 593, 6e-9: 614, 5e-9: 665}
