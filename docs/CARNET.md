@@ -16302,6 +16302,39 @@ RÉSEAU COMPLET (elles ne dépendent pas de sa réduction) :**
   Ma mise : lui (60 %), parce que ma droite est ajustée sur deux points
   du régime de croisement et pas sur le régime asymptotique.
 
+**Résultats E1 et E2 (29/09, réseau complet, mur 23 ; ses prédictions
+tombent toutes les deux) :**
+```
+E1  lr=0,035      eps    tient jusqu'a   premier qui casse   ajustement δ_c'-pli   sa prediction (reduction)
+                  1e-8   +3e-9           +5e-9  (2183 pas)   +3,25e-9              +3,3e-9   (tient +1,5e-9, casse +5e-9)
+                  1e-7   -4e-9           -2e-9  (27228 pas)  -2,10e-9              -2,1e-9   (tient -4e-9, casse 0)
+    (lr=0,05, pour memoire : +9,1e-9 a 1e-8 ; -5,5e-9 a 1e-7)
+E2  eps=3e-6      pli+1e-7   pli+2e-7   pli+5e-7
+                  13 846     9 343      5 421       (sa prediction : 13 846 +-3 % ; 9 396 ; ma droite lineaire : 12 096 ; 8 209)
+```
+- E1 ✓ : le seuil du réseau complet suit `lr` comme sa réduction le
+  prédit à 2 % (3,25 contre 3,3 ; -2,10 contre -2,1). « Objet, pas
+  code » n'est donc pas vrai en `lr` (facteur 2,8 à eps 1e-8, 2,6 à
+  1e-7 quand lr passe de 0,05 à 0,035). La lecture Kapitza n'est pas
+  morte ; sa version 1-D l'était déjà.
+- E2 ✓ pour lui, ✗ pour moi : `κ` mesuré = 4,851 / 4,824 / 4,767 (par
+  la formule à facteur arctan), soit 4,851 exactement à pli+1e-7 (sa
+  valeur) et une dérive de 1,7 % sur D de 1e-7 à 5e-7. Ma droite
+  `0,0711 + 1,389e6·eps` (κ = 4,238) prédisait 12 096, 12,6 % sous la
+  mesure : **elle avait la mauvaise asymptote**, elle ne valait que
+  dans le régime de croisement où je l'ai ajustée. La pente κ/eps mesurée
+  à 3e-6 est 1,617e6 (la sienne 1,637e6, à 1,2 %).
+- Point de méfiance (une confirmation qui arrive de l'autre camp se
+  vérifie plus) : (i) les trois points de E1 à eps 1e-8 ne font pas un
+  test (ajustement à 3 paramètres) : le test est l'encadrement direct
+  (+3e-9 / +5e-9) contre son « +1,5e-9 / +5e-9 » ; (ii) une réduction
+  qui reproduit deux seuils à 2 % pourrait ne le faire que parce que
+  n'importe quel effet croissant en `lr` donnerait un facteur ≈ 2,5-3
+  entre 0,035 et 0,05 (sa loi : `lr^3,4`, donc (0,05/0,035)^3,4 = 3,4) ;
+  ce qui n'est PAS générique est la valeur absolue (3,25e-9 sans
+  paramètre libre) ; (iii) le E2 dépend de la seule géométrie du pli et
+  de `lr` : test indépendant de sa formule fermée de κ (ci-dessous).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

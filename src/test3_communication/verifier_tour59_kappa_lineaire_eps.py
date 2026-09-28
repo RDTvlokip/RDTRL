@@ -26,6 +26,17 @@ if __name__ == "__main__":
         p = a + b * eps
         print(f"eps {eps:.0e} : kappa predit {p:.4f}   ajuste {ajuste:.4f}   ecart {100 * (ajuste / p - 1):+.1f} %")
     k = a + b * 1e-6
+    # E2 (29/09, reseau complet, eps 3e-6, chauffe 20 000 + 20 000, precommise par l'agent) :
+    # t = kappa (1/2 + arctan(sqrt(delta0/D))/pi) / sqrt(D), delta0 = 1e-6, D = delta - delta_c' (Delta ~ 0
+    # sans salves). Ma droite lineaire predit t(+1e-7) = 12 096 ; la sienne (asymptote 1,637e6) 13 846.
+    import math
+    print("--- E2, eps 3e-6 : temps de bascule mesures (13 846 / 9 343 / 5 421)")
+    for D, t in ((1e-7, 13846), (2e-7, 9343), (5e-7, 5421)):
+        facteur = 0.5 + math.atan(math.sqrt(1e-6 / D)) / math.pi
+        kappa_mesure = t * math.sqrt(D) / facteur
+        print(f"  D={D:.0e} : kappa mesure {kappa_mesure:.3f}   ma droite {a + b * 3e-6:.3f} (t predit {(a + b * 3e-6) * facteur / math.sqrt(D):.0f})   "
+              f"sa formule 4,851 (t predit {4.851 * facteur / math.sqrt(D):.0f})   pente kappa/eps = {kappa_mesure / 3e-6:.3e}")
+    print("--- fin E2")
     for off, obs in ((3e-10, 91264), (1e-9, 50845)):
         print(f"eps 1e-6, pli+{off:.0e} : t predit {k / off ** 0.5:.0f}   observe {obs}   "
               f"delta - delta_c' implique {(k / obs) ** 2:.2e} (Delta(1e-6) petit si ~ 0)")
