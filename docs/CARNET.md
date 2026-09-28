@@ -16134,8 +16134,44 @@ réfuterait : un seuil hors de [4,5e-9 ; 8,5e-9] dans l'un des deux sens
 décalage même si le pli lui-même est celui de l'objet. Offsets testés
 (pas 60 000) : 4e-9, 5e-9, 6e-9, 7e-9, 8e-9, 1e-8 (6 par sens).
 
-| H59-16 à eps 1e-10 le seuil est fixé par l'amplitude maximale des salves contre la hauteur de barrière, pas par leur asymétrie | 28/09 (moi) | ouverte |
-| H59-17 le seuil chauffé à eps 1e-10 de la 6/14 est celui du mur 23 (6,5e-9 ± 2e-9), dans les deux sens | 28/09 (moi) | ouverte |
+| H59-16 à eps 1e-10 le seuil est fixé par l'amplitude maximale des salves contre la hauteur de barrière, pas par leur asymétrie | 28/09 (moi) | **mal posée, abandonnée** : au-dessus du pli il n'y a PAS de barrière (plus de point fixe) ; l'état tient pourtant 60 000 pas à pli+5e-9 et +6e-9 |
+| H59-17 le seuil chauffé à eps 1e-10 de la 6/14 est celui du mur 23 (6,5e-9 ± 2e-9), dans les deux sens | 28/09 (moi) | **confirmée** : 6/14 dans les deux sens, tient à +6e-9, casse à +7e-9 (temps 2079 / 10667 pas), identique à mur 23 (tient +6e-9, casse +7e-9, 465 pas) |
+
+**Ce que H59-16 avait raté (mon propre critère de réfutation, 28/09).**
+J'ai voulu calculer `x = (d3 - nœud)/(jumeau - nœud)` à pli+6e-9 :
+impossible, car au-dessus du pli le nœud et le jumeau n'existent plus.
+Le système déterministe n'a donc AUCUN point fixe à +5e-9 et +6e-9, et
+l'état reste sur 40 000 pas à moins de 2,5e-6 du point de pli (médiane
+de `d3` par fenêtre de 10 000 pas : -1,5 / -2,1 / -2,5 / -1,8e-6 à +5e-9 ;
+-1,2 / -0,5 / -1,4 / -1,0e-6 à +6e-9), avec des pics de -1,1e-4 à
++6,2e-5 (`d3`) et ±3,5e-3 (`r4`). Il y a donc un point fixe MOYENNÉ sur
+les salves là où l'objectif n'en a plus : c'est la lecture Kapitza
+(H59-11) qui est la bonne question, pas « barrière contre amplitude ».
+Une salve n'est pas un obstacle que l'état franchit : elle est le terme
+qui remplace la partie manquante du gradient moyen.
+
+**Test quantitatif de la version simple de H59-11 (prédiction poussée
+avant le calcul).** Version simple : le point fixe moyenné vérifie
+`⟨G(u)⟩ = 0` avec `G` la résiduelle de sa fermeture récepteur, soit
+au voisinage du pli `G_δ·(δ-δ_c) + ½G''·(σ_u² + m²) = 0`, donc
+`Δ = -G''·(σ_u²+m²)/(2G_δ)` : signe FIXÉ (celui de -G''/G_δ),
+proportionnel à la variance de u. Ordres de grandeur avant calcul :
+`G_δ ≈ -(s3+s4)/β ≈ -50`, `G'' ≈ 7` (partie s3 : `d3·(dX3/du)²/β`),
+`σ_u` ≈ (0,3 à 0,5)·10⁻² d'après les pics de `r4`. Prédiction : le
+`Δ` de cette formule dépasse le `Δ` observé (6,5e-9) d'un facteur
+entre 30 et 300, ET son signe est le même pour tout eps alors que Δ
+change de signe. Si l'un des deux échoue (facteur dans [0,3 ; 3], ou
+signe variable), la version simple survit ; sinon elle est réfutée et
+il faut le terme d'Adam (`m/(√v+eps)` pondéré par la phase de la
+salve, H59-18 ci-dessous).
+- **H59-18** : le décalage Δ(eps) vient de la pondération d'Adam
+  `1/(√v+eps)` corrélée à la phase de la salve (après un coup, `v`
+  est gonflé et les pas sont plus courts : les états éloignés du nœud
+  pèsent moins dans le drift moyen). Cette pondération change de signe
+  avec eps parce que `√v` passe de ≫ eps à ≪ eps. Test : drift moyen
+  pondéré `⟨F/(√v+eps)⟩` contre non pondéré `⟨F⟩` sur les traces.
+
+| H59-18 Δ(eps) vient de la pondération d'Adam corrélée à la phase des salves | 28/09 (moi) | ouverte |
 
 ---
 
