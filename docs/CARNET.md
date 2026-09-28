@@ -16690,6 +16690,33 @@ pour le mécanisme central du tour (le décalage Δ du pli dynamique) :**
   une fonction lisse d'eps (falaise stochastique) : la frontière entre les
   deux régimes n'est pas localisée (entre 1e-10 et 1e-8).
 
+**Retour du second agent ciblé (29/09), avant vérification** (critique
+SIMULÉE ; ses scripts sont dans `D:/tmp/agent_dk61/`, rien n'est commité) :
+il affirme (1) que sa réduction (port numba de `red2.py`, 6,8e6 pas/s,
+3,9e10 pas, 5 357 échappements) reproduit mes taux du réseau complet
+(54 observés, 48,8 attendus) ; (2) que MES lignes à 1e-8 et 8e-9 (phases
+k ≤ 55) sont gonflées d'un facteur 4,9 et 2,0 : les 10 phases k ≤ 55 sont
+presque en phase et cassent en 409-490 pas (un passage déterministe),
+alors que k ≥ 89 (réseau complet, qu'il dit avoir lancé) donne 1269 1189
+3309 2620 1630 423 3170 3108 426 4260 à 1e-8 (10 échappements sur 21 404
+pas : 4,7e-4 contre mon 2,3e-3) ; (3) que ma loi de puissance
+(γ = 3,48, δ* = pli+5,72e-9) est un artefact de la fenêtre d'ajustement
+(γ de 2,26 à 12,4 et δ* de 3,4 à 5,9e-9 selon la fenêtre), que la
+réduction donne 96 / 100 / 100 échappements à 5,25 / 5,5 / 5,75e-9 là où
+ma loi en prédit 0, et que mon « 0 sur 20 à 5e-9 » attendait 0,003
+échappement dans la réduction, donc ne départageait rien ; (4) qu'aucun
+mécanisme de γ ne sort des exposants de Lyapunov (hyperchaos, λ1 = 8,3e-3,
+λ2 = 2,6e-3 par pas, D_KY = 11,3) ; (5) un genou de la pente de ln λ vers
+7,3e-9. **Mon plan de vérification (précommis) :**
+- V1 (réseau complet, 6 processus) : k = 89, 144, 233, 377, 610, 987 à
+  pli+1e-8, 15 000 pas. S'il a raison, mes temps reproduisent les siens
+  (1269 1189 3309 2620 1630 423) à quelques pas près. Si je retrouve
+  409-490 pas, son affirmation (2) est fausse.
+- V2 : sa réduction contre la mienne (`red2.py`) aux cinq δ qu'il cite
+  (490 574 593 614 665).
+- V3 : refit de la loi de puissance sur SA table de taux selon la fenêtre,
+  avec mon propre code (Poisson, comparer γ et δ* aux siens).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
