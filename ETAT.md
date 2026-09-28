@@ -66,20 +66,35 @@ seuil déterministe (E4-E8, réseau complet) :** hold/break non monotone
 donne 465 ou 1 110 pas selon l'arrondi ; eps 1e-12 ne change pas la
 position ((6e-9 ; 7e-9]) ; tient 300 000 pas à +6e-9 ; β2 = 0,998 :
 l'état s'effondre déjà à pli-1e-6 (bursts bien plus grands).
-Lecture en cours de test : échappement chaotique à taux de hasard très
-raide en δ (H59-24), `lancer_tour59_hasard.sh` +
-`verifier_tour59_hasard_echappement.py`, et E7b (β2 = 0,9995).
+**Taux d'échappement à eps 1e-10 (131 runs, 54 échappements, MLE avec
+censure, `verifier_tour59_hasard_mle.py hz,hzo,e5,e8,hzp`) :**
+exponentielle exclue (ΔAIC +40) ; loi de puissance
+`λ = 1,81e-5 (x/1e-9 - 5,72)^3,48`, δ* = pli + 5,7e-9 (IC 95 % 5,25 à
+5,95e-9, γ de 4,5 à 3,0 corrélé) ; plancher non soutenu (0 échappement sur
+20 × 100 000 pas à +5e-9, mon pari du contraire perdu). Signature d'une
+crise de transitoire chaotique, MAIS modèle choisi après avoir vu les
+données (un seul test hors échantillon, réussi) et γ non dérivé.
+β2 : 0,998 → l'état s'effondre déjà à pli-1e-6 ; 0,9995 → seuil +3 à 6e-9
+(mon pari « au-dessus de 8e-9 » faux). Un agent style dipankar ciblé sur
+cette question (sa réduction à deux lignes donne 1 000× plus de
+statistique) a été lancé le 29/09, plafond de 2 processus ; son retour
+sera vérifié chiffre par chiffre.
+
+**RÈGLE DE CALCUL (Théo, 29/09) : jamais plus de 6 processus python à la
+fois, un lanceur à la fois** (`NPROC` dans les lanceurs, défaut 6). À 6
+processus les runs vont ~4× plus vite qu'à 22 sur 12 cœurs.
 
 **Pistes concrètes pour la suite :**
-1. Résultats de H59-24 (taux λ(δ), 10 phases × 6 δ) et E7b (β2 = 0,9995)
-   dans `CARNET.md`, sous-section « Après la lettre ».
+1. Retour de l'agent ciblé (λ(δ) dans la réduction, forme de la loi,
+   mécanisme de γ, artefacts possibles) : à vérifier sur le réseau complet.
 2. Lettre 60 : reprendre, quand dipankar reposte, (a) la correction du
    « 6e-10 ; 1e-9 » (transitoire), (b) H59-18 fausse et la variable
-   lente correcte, (c) κ, E1-E3, (d) la falaise stochastique.
-3. Seuil de la 6/14 à lr 0,035 et eps 1e-7 (E1 fait sur le mur 23 seul).
-4. Le seuil à β2 = 0,998 (chauffe à pli-1e-6 insuffisante : chauffer plus
-   bas puis balayer).
-5. Le maximum de Δ(eps) entre 1e-10 (+6,5e-9, falaise) et 1e-8 (+9,1e-9).
+   lente correcte, (c) κ, E1-E3, (d) la falaise = taux d'échappement.
+3. E1-E3 sur la 6/14 (fait sur le mur 23 seul) : le décalage dépend-il du
+   code par le gain d'Adam ?
+4. Localiser la frontière entre le régime lisse (eps ≥ 1e-8, loi du
+   fantôme) et le régime stochastique (eps 1e-10) : eps 1e-9, 3e-9.
+5. Seuil à β2 = 0,998 (chauffer plus bas que pli-1e-6 puis balayer).
 
 ## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — CLOS
 
