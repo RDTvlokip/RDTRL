@@ -16717,6 +16717,41 @@ mécanisme de γ ne sort des exposants de Lyapunov (hyperchaos, λ1 = 8,3e-3,
 - V3 : refit de la loi de puissance sur SA table de taux selon la fenêtre,
   avec mon propre code (Poisson, comparer γ et δ* aux siens).
 
+**Vérifications V1-V3 (29/09, mon propre code ; 6 processus au plus) :**
+- **V1 ✓ (réseau complet)** : à pli+1e-8, k = 89 / 144 / 233 / 377 / 610 /
+  987 donnent 1269 / 1189 / 3309 / 2620 / 1630 / 423 pas, EXACTEMENT ses
+  temps (déterministe). Mes 10 phases k ≤ 55 donnaient 409-490 pas : un
+  passage déterministe à phase quasi identique, non un échappement à
+  taux fixe. **Ma ligne à 1e-8 (et très probablement 8e-9) du tableau
+  H59-24 était gonflée par le plan d'expérience** ; mes pentes
+  d ln λ/dδ et l'ajustement de puissance qui l'utilisent sont à refaire.
+  Sous ~7e-9 la fenêtre k ≤ 55 ne biaise pas (lui : 3,6 contre 4,0e-5 à
+  7e-9, non revérifié).
+- **V2 ✓** : `red2.py` (sa réduction à deux lignes, chaud 40 000 pas)
+  redonne ses cinq temps de bascule : 490 / 574 / 593 / 614 / 665 à
+  1e-8 / 7e-9 / 6,5e-9 / 6e-9 / 5e-9 (`verifier_tour59_reduction_controle.py`).
+- **V3 ✓** : mon refit de Poisson sur SA table de taux
+  (`verifier_tour59_fenetre_puissance_table.py`) redonne, selon la fenêtre,
+  (γ, x*) = 3,44 / 5,56 [6,1-8,0], 2,30 / 5,84 [6,1-10], 4,27 / 4,96
+  [5,25-10], 12,18 / 3,48 [5,0-7,0] (les siens : 3,50 / 5,56, 2,26 /
+  5,87, 4,16 / 5,00, 12,4 / 3,43) ; déviance 27,5/4, 105,7/5, 560/9, 11,2/7 :
+  seule la fenêtre étroite [5,0-7,0] est ajustée. Donc, SUR SA TABLE,
+  mon exposant 3,5 et mon δ* = 5,7e-9 sont des artefacts de fenêtre. Ma loi
+  publiée prédit 0 / 0 / 0,045 / 49,6 événements à 5,25 / 5,5 / 5,75 / 6,0e-9
+  là où sa table en a 96 / 100 / 100 / 136. **La table elle-même n'est pas
+  encore vérifiée en dessous de 6e-9** (le réseau complet n'y va pas) :
+  refaite ci-dessous avec sa réduction et une autre graine.
+- **Ce que je retire (mes énoncés du 29/09)** : (i) « loi de puissance
+  soutenue, δ* = 5,7 ± 0,35e-9, γ = 3,0-4,5 » : retirée telle quelle (le
+  profil de vraisemblance était calculé sur des données dont la ligne à
+  1e-8 était biaisée, et les seules données sous 6,1e-9 étaient 0 sur
+  20, sans pouvoir de discrimination) ; (ii) « vrai test hors échantillon
+  à 5e-9 réussi » : FAUX, la réduction attendait 0,003 événement, aucun
+  modèle ne prédisait mieux ; il excluait seulement un plancher de 1,6e-6
+  (ce qui reste vrai) ; (iii) « crise de Grebogi-Ott-Yorke » : non
+  soutenue (aucun exposant dérivé ; ses multiplicateurs de Lyapunov, à
+  vérifier, donnent γ ≈ 9-10, pas 3,5).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
