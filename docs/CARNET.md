@@ -15970,8 +15970,69 @@ partagé, 60 000 pas max, mur 23) :**
   Δ(eps) n'est pas monotone entre les deux et l'interpolation ne vaut
   rien).
 
-| H59-10 les salves décalent le pli de Δ(eps) sans changer la loi du fantôme | 28/09 (moi) | ouverte |
+| H59-10 les salves décalent le pli de Δ(eps) sans changer la loi du fantôme | 28/09 (moi) | **confirmée sur le décalage, réfutée sur « sans changer la loi »** (voir ci-dessous) |
 | H59-11 Δ(eps) est un effet de moyenne de Kapitza (⟨∇J⟩=0 avec ∇³J et la variance des salves) | 28/09 (moi) | ouverte, à tester après H59-10 |
+
+**Résultat de la grille (30 runs, `lancer_tour59_grille_eps_delta.sh`,
+ajustement `verifier_tour59_ajustement_fantome.py`).** Sur chaque eps,
+les temps de bascule suivent `t = κ/√(δ-δ_c')` avec t0 ≈ 0 (balayage
+t0 de -20 000 à min(t) : optimum à -20…-45) et R² = 1,0000 :
+```
+eps    basculent   δ_c' - pli    κ       A=1/κ²   directe (tient / casse)
+1e-8   3 / 10      +9,1e-9       0,085   139      +6e-9 / +1e-8        (3 points, 3 paramètres : inversion, pas un test)
+3e-8   6 / 10      +3,2e-10      0,111   81,5     -1e-9 / +1e-9
+1e-7   8 / 10      -5,5e-9       0,210   22,6     -6e-9 / -3e-9
+```
+Verdict sur mes prédictions : P-c ✓ (Δ(3e-8) = +0,3e-9, prédit
++0,2e-9 ± 3e-9) ; P-b ✓ à 1e-7 (-5,5e-9 dans -6,5e-9 ± 2e-9), ✗ à
+1e-8 (tient à +6e-9 alors que j'attendais la bascule dès +6e-9 :
+δ_c' entre +6e-9 et +1e-8, prédit +3,9e-9 ± 2e-9) ; P-a ✗ (pente
+A hors de ±30 % de 30,2 à 1e-8 et 3e-8 : mon hypothèse « même κ »
+supposait κ indépendant d'eps, elle est fausse). Ce qui reste de
+H59-10 : le décalage est réel et propre (loi du fantôme exacte avec
+δ_c' décalé, 6 et 8 points, R²=1,0000), signe qui change entre
+1e-8 (+9e-9) et 1e-7 (-5,5e-9), passe par ~0 à 3e-8.
+
+**Trouvé en lisant les κ (pas prédit) : κ est LINÉAIRE en eps.** Deux
+points (1e-8 et 1e-7) donnent `κ(eps) = 0,0711 + 1,389e6·eps`
+(`verifier_tour59_kappa_lineaire_eps.py`). Hors échantillon : eps 3e-8
+→ 0,1128 prédit, 0,111 ajusté (1,6 %) ; eps 1e-6 → temps de bascule
+84 293 prédit contre 91 264 observé à pli+3e-10 (8 %), 46 169 contre
+50 845 à pli+1e-9 (9 %), avec Δ(1e-6) ≈ 0 implicite (4e-11 et 1,8e-10).
+Lecture : un pas d'Adam vaut `lr·m/(√v + eps)`, le temps de passage
+du goulot est multiplié par `(√v_lent + eps)/√v_lent`, donc
+`κ = κ0(1 + eps/√v_lent)` avec `√v_lent = a/b = 5,1e-8` et `κ0 = 0,071`.
+Ce que ça ferait tomber si c'était faux : une courbure de κ(eps) hors
+du linéaire entre 1e-8 et 1e-6 (deux points seulement pour l'ajustement,
+un hors échantillon indépendant à 1,6 %, deux autres à 8-9 %, un écart
+systématique dans le même sens à 1e-6 qui n'est pas expliqué : peut
+être Δ(1e-6) légèrement positif, peut-être un `√v_lent` un peu plus
+bas à ce régime). Note : le 0,182 du point (2) (eps 1e-10, δ loin du
+pli, t0 = 700) n'est pas contradictoire mais n'est pas le même régime ;
+à eps 1e-10 cette loi prédit κ ≈ 0,071 près du pli.
+
+**Nouvelles hypothèses, prédictions poussées AVANT les runs.**
+Δ(eps) a le signe opposé à l'asymétrie des salves mesurée à pli-1e-6
+(mean - median de d3 : 1e-8 → -5,8e-7 ; 1e-7 → +3,0e-7). Rapports :
+Δ/(-skew) = 9,1e-9/5,8e-7 = 0,016 à 1e-8, 5,5e-9/3,0e-7 = 0,018 à
+1e-7 (18 % d'écart entre les deux, pour deux eps dont le signe est
+opposé). Mais ces skews ont été mesurés avec un protocole plus court
+(chauffe sans `chauffe_eps`, transitoire possible sur 10 000 pas).
+- **H59-12** : Δ(eps) = -c·skew(eps), c = 0,017 ± 0,005, skew mesuré au
+  MÊME protocole que la grille (chauffe 20 000 + chauffe_eps 20 000,
+  puis 40 000 pas à pli-1e-6, statistique sur les 30 000 derniers).
+- P-d : signes de skew : négatif à 1e-10 et 1e-8, |skew| < 2e-7 à
+  3e-8, positif à 1e-7.
+- P-e (hors échantillon, eps 1e-10, jamais ajusté) : Δ(1e-10) =
+  +0,017 × 2,3e-6 = +3,9e-8, fenêtre [2e-8 ; 6e-8]. Ce qui la
+  réfuterait : Δ(1e-10) < 1e-8 ou > 1e-7 (alors le skew ne fixe pas
+  Δ, il ne fait que l'accompagner en signe).
+- **H59-13** : `√v_lent = 5,1e-8` est lisible directement : moyenne
+  géométrique de `sqrt(exp_avg_sq)` sur les quatre logits de la
+  collision (`e.p[0][3,10]`, `e.p[0][4,10]`, `r.p[0][10,3]`,
+  `r.p[0][10,4]`), temps-moyennée sur 30 000 pas à pli-1e-6, eps 3e-8 :
+  dans [2,5e-8 ; 1e-7] (facteur 2). Hors de cette fenêtre : `√v_lent`
+  n'est pas cette grandeur, κ(eps) linéaire vient d'ailleurs.
 
 ---
 

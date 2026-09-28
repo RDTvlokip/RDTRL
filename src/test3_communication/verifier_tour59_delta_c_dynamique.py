@@ -106,7 +106,11 @@ def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_
                 if bascule < 0 and Rb > 0.9:
                     bascule = t
                 if trace:
-                    lignes.append(f"{t} {1 - S[a, msg].item():.10e} {Rb:.10f} {R[msg, b].item():.10f}")
+                    # colonnes 4-7 : sqrt(exp_avg_sq) d'Adam sur e[a,msg], e[b,msg], r[msg,a], r[msg,b]
+                    ve, vr = opt.state[e.p[0]]["exp_avg_sq"], opt.state[r.p[0]]["exp_avg_sq"]
+                    sv = (ve[a, msg].sqrt().item(), ve[b, msg].sqrt().item(), vr[msg, a].sqrt().item(), vr[msg, b].sqrt().item())
+                    lignes.append(f"{t} {1 - S[a, msg].item():.10e} {Rb:.10f} {R[msg, b].item():.10f} "
+                                  + " ".join(f"{x:.6e}" for x in sv))
             if bascule >= 0 and not trace:
                 break
     with torch.no_grad():
@@ -114,7 +118,7 @@ def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_
         Rb = (S[b, msg] * R[msg, b]).item()
         d = 1 - S[a, msg].item()
     if trace:
-        suffixe = "" if (eps == ADAM_EPS and not chauffe) else f"_eps{eps:.0e}_chauffe{chauffe}"
+        suffixe = "" if (eps == ADAM_EPS and not chauffe) else f"_eps{eps:.0e}_chauffe{chauffe}_{chauffe_eps}"
         with open(f"D:/tmp/rdtrl_tour59_trace_{cas}_a{a}_b{b}_delta{delta}_pas{pas}{suffixe}.txt", "w") as f:
             f.write("\n".join(lignes))
     print(f"{cas} a={a} b={b} delta={delta!r} eps={eps:.0e} pas={pas} R_b={Rb:.6f} 1-s_a={d:.6e} bascule={bascule}", flush=True)
