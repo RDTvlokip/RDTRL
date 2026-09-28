@@ -16626,6 +16626,70 @@ métastable de durée de vie ~6e5 pas à ces δ, pas un état stable, et
 « le seuil de 6,5e-9 » est l'endroit où un second mécanisme, plus
 rapide, s'ajoute à un échappement de fond.
 
+**Résultat (29/09, 20 phases × 100 000 pas à pli+5e-9, 6 processus au
+plus) : 0 échappement sur 2 000 000 pas.** Le plancher est réfuté à
+p = 5 % (mon critère : 0 sur 20) ; ma mise (≥ 1, 70 %) est perdue. La loi de
+puissance seule, ajustée AVANT ce run (δ* = pli+5,72e-9), prédisait 0 :
+vrai test hors échantillon, réussi. Refit sur 131 runs (54 échappements)
+après correction du modèle (mon codage interdisait λ = 0 sous δ*, ce qui
+collait δ* à 5,000 ; corrigé) :
+```
+modèle                     logL      AIC
+exponentielle              -575,00   1154,00   (ΔAIC = +40,4 en faveur de la puissance)
+puissance seule            -553,80   1113,60   λ = 1,81e-5 (x/1e-9 - 5,72)^3,48
+plancher + puissance       -553,30   1114,61   plancher 8,2e-7 : ΔAIC = -1,0, NON soutenu
+profil de δ* (IC 95 %, logL >= max - 1,92) : 5,25e-9 … 5,95e-9  (γ de 4,5 à 3,0, fortement corrélé à δ*)
+```
+Toute valeur de δ* ≥ 6,1e-9 est exclue (échappements observés à 6,1e-9).
+**Lecture retenue, avec ses limites :** un taux d'échappement qui
+s'annule sous δ* ≈ pli + 5,7e-9 (± 0,35) et monte en loi de puissance
+d'exposant γ ≈ 3,5 (3,0 à 4,5), la signature d'une crise de
+transitoire chaotique (Grebogi-Ott-Yorke). Ce qui ne s'en va pas : le
+modèle a été choisi après avoir vu les données (une fois ; le test à
+5e-9 était hors échantillon), et le taux à 5,8-6,0e-9 est trop petit
+(2e-9 à 2e-7 par pas) pour être mesuré : δ* et γ ne sont donc
+déterminés que par les points ≥ 6,1e-9, et leur corrélation est
+grande. Aucune dérivation de γ à partir de multiplicateurs de l'orbite.
+
+| H59-19 crise de frontière à orbite périodique (échappement à la première période) | 29/09 (moi) | **réfutée** (temps d'échappement de 465 à 82 984 pas à taux fixé) |
+| H59-19' crise de transitoire chaotique, λ ∝ (δ-δ*)^γ | 29/09 (moi, post hoc) | **soutenue** : ΔAIC +40 sur l'exponentielle, test hors échantillon à 5e-9 réussi, δ* = 5,7 ± 0,35e-9, γ = 3,0-4,5 |
+| H59-20 échappement par valeur extrême / bruit | 29/09 (moi) | **réfutée** (E8 : 0 sur 300 000 pas à +6e-9 ; mais taux non nul à +6,1e-9) |
+| H59-21 plancher numérique (adam_eps) | 29/09 (moi) | **réfutée** (eps 1e-12 : même position) |
+| H59-22 frontière entremêlée / dépendance en phase | 29/09 (moi) | **confirmée** (E4, E5) |
+| H59-23 la falaise dépend de β2 | 29/09 (moi) | **confirmée** (0,998 : sous pli-1e-6 ; 0,999 : +5,7e-9 ; 0,9995 : +3 à 6e-9), mais mon pari sur le sens était faux |
+| H59-24 λ(δ) exponentielle (pente 9e9) | 29/09 (moi) | **réfutée** (pente MLE 1,8e9, ΔAIC +40 contre la puissance) |
+| plancher d'échappement de fond ~1,6e-6 | 29/09 (moi, post hoc) | **réfuté à p = 5 %** (0 sur 20 à 5e-9) |
+
+**Grille QUAND / COMMENT / POURQUOI / OÙ / COMBIEN / JUSQU'OÙ / SUR COMBIEN
+pour le mécanisme central du tour (le décalage Δ du pli dynamique) :**
+- *OÙ* : la ligne 3 de l'émetteur (99,1 % du mode critique, Hessien du
+  réseau complet) ; le récepteur porte le mode rigide (99,1 %), esclave.
+- *COMMENT* : au pli, `ds/dt = (lr/eps)(α μ + β s²)` le long du mode mou
+  n ; les salves sont un mouvement rapide à axe fixé par les gains
+  d'Adam (`p_z = lr[1/(√v+eps) + 1/(√v+26eps)]`, `p_u = 2lr/(√v_l+eps)`) ;
+  Δ = -½ΣT_ij Σ_ij/(n·F_δ) avec Σ = covariance des salves dans (z, u) :
+  la version à une variable (Σ esclavé à la pente 7,46) est le cas
+  particulier qui donne -0,0336σ_u². [Formule de l'agent : sa structure
+  est confirmée par E1-E3 ; la formule elle-même n'est pas recalculée par
+  moi, sauf κ.]
+- *POURQUOI ce signe et ce zéro* : l'axe des salves coupe la pente critique
+  `s* = -0,337` quand `p_z/p_u = 2,513`, soit eps ≈ 3,0-3,3e-8 (mesuré :
+  ~3,1e-8) ; E3 (eps sur la seule ligne 3 : -1,36e-8) l'établit sur le
+  réseau complet.
+- *COMBIEN* : Δ = +9,1 / +3,85 / +0,32 / -3,66 / -5,5e-9 à eps 1e-8 / 2e-8 /
+  3e-8 / 5e-8 / 1e-7 ; κ/eps → 1,642e6 (formule) contre 1,617e6 (mesure).
+- *QUAND* : loi du fantôme `t = κ/√(δ-δ_c')` à eps ≥ 1e-8 (R² = 1,0000) ;
+  à eps 1e-10, échappement de type crise, δ* = pli+5,7e-9.
+- *JUSQU'OÙ* : lr (seuil ∝ lr^3,4, vérifié à 0,035), β2 (0,998 : état
+  déjà effondré à pli-1e-6), eps (1e-12 comme 1e-10). Pas au-delà du mur 23
+  pour E1-E3 et la falaise (seule H59-17 est testée sur la 6/14).
+- *SUR COMBIEN* : E1-E3 : un seul code (mur 23), un seul état chauffé ;
+  Δ(1e-7) reproduit à 1 pas sur un second état chauffé ; hasard : 131 runs.
+- *Croisé, quand du pourquoi* : le mécanisme « gain d'Adam de la ligne 3 »
+  vaut pour eps ≥ 1e-8 ; à eps 1e-10, `√v` domine partout et Δ n'est plus
+  une fonction lisse d'eps (falaise stochastique) : la frontière entre les
+  deux régimes n'est pas localisée (entre 1e-10 et 1e-8).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
