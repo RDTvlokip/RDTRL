@@ -16,14 +16,36 @@ seuil appartient à l'optimiseur : sans salves (eps 1e-6) pile au pli
 salves (4/4), grandeur non expliquée. Son étiquette corrigée (2,47e-8 =
 déficit, pas √v).
 
+**LETTRE 59 FIGÉE (consigne de Théo, 28/09) : tout ce qui suit est
+dans `CARNET.md` (sous-section « Après la lettre ») et ira dans la
+lettre 60 quand dipankar reposte.**
+
+**Acquis après la lettre (28/09, dipankar toujours silencieux) :**
+- **Correction de la lettre 59 à porter :** le « (6e-10 ; 1e-9) » du
+  seuil à eps 1e-10 était le transitoire (Adam neuf). Sur état chauffé,
+  le seuil est **(6e-9 ; 7e-9]** pour le mur 23 ET pour la 6/14 dans
+  les deux sens (objet, pas code), reproductible sur deux états chauffés.
+- Loi du fantôme exacte `t = κ(eps)/√(δ-δ_c')`, t0 ≈ 0, R² = 1,0000 (6
+  et 8 points) ; `δ_c' - pli` = +9,1e-9 (1e-8), +3,2e-10 (3e-8),
+  -5,5e-9 (1e-7, reproduit à 1 pas près sur un autre état chauffé).
+- `κ(eps) = 0,0711 + 1,389e6·eps` (hors échantillon 1,6 % à 3e-8, 8-9 %
+  à 1e-6) : Adam ralentit le passage du goulot par `(√v+eps)/√v`.
+- Au-dessus du pli, jusqu'à +6e-9, l'état tient 60 000 pas SANS point
+  fixe déterministe (médiane à 1-2,5e-6 du pli, pics ±1e-4) : point
+  fixe moyenné par les salves. Signe et zéro de Δ(eps) coïncident avec
+  ceux de l'asymétrie des salves (zéro vers 3e-8), pas la grandeur.
+- Kapitza simple (`Δ = -G''σ²/(2G_δ)`) réfuté : signe fixe négatif,
+  22-690× trop grand ; Δ_obs = 1-5 % de l'effet attendu.
+
 **Pistes concrètes pour la suite :**
-1. Mesurer l'asymétrie des salves AU pli, par eps (elle a été mesurée à
-   pli-1e-6) : si son signe s'oppose au décalage, H59-8 tombe.
-2. Balayage eps sur 6/14 (fait sur le mur 23 seulement).
-3. Isoler la coordonnée lente (décomposition lente/rapide non concluante,
-   base mal conditionnée) : Jacobien réduit au nœud plutôt que ACP.
-4. Chercher l'eps où le seuil d'Adam retombe sur le pli entre 1e-8 et
-   1e-7 (question posée à dipankar).
+1. Filtrer la trace de u passe-haut (< 100 pas) et refaire σ_u² sur la
+   partie rapide seule : la quasi-annulation à 97 % survit-elle ?
+2. H59-18 : drift moyen pondéré `⟨F/(√v+eps)⟩` contre `⟨F⟩` sur les
+   traces (les colonnes √v y sont).
+3. Isoler la coordonnée lente : Jacobien réduit au nœud plutôt que ACP.
+4. Chercher l'eps exact du zéro de Δ (entre 1e-8 et 1e-7, mesuré ~3e-8).
+5. À eps 1e-10, seuil = falaise (bascule en ~1 période de salve) : le
+   temps près du seuil dépend de l'état (465 contre 9 873 pas).
 
 ## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — CLOS
 

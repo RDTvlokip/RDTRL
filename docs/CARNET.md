@@ -16173,6 +16173,43 @@ salve, H59-18 ci-dessous).
 
 | H59-18 Δ(eps) vient de la pondération d'Adam corrélée à la phase des salves | 28/09 (moi) | ouverte |
 
+**Résultat du test Kapitza simple (`verifier_tour59_kapitza_simple.py`).**
+Au pli : `G'' = -6,790`, `G_δ = -101,109` (et non -50 et +7 comme je
+l'estimais avant le calcul : G_δ est 2× plus grand, G'' change de
+signe), donc `Δ_kapitza = -0,0336·σ_u²`, NÉGATIF (les salves feraient
+casser plus tôt). σ_u² lu sur les traces à pli-1e-6 (30 000 derniers
+pas) :
+```
+eps      σ_u²        Δ_kapitza    Δ_obs      rapport
+1e-10    8,37e-6     -2,81e-7     +6,5e-9    -43
+1e-8     7,66e-6     -2,57e-7     +9,1e-9    -28
+3e-8     6,59e-6     -2,21e-7     +3,2e-10   -692 (Δ_obs ≈ 0 : mal conditionné)
+1e-7     3,64e-6     -1,22e-7     -5,5e-9    +22
+1e-6     ~0          ~0           ~0         -
+```
+(Le terme `m²` de ma formule est la distance DÉTERMINISTE entre le
+nœud à pli-1e-6 et le point de pli, 3,0e-5 à tout eps, y compris sans
+salves : je l'avais d'abord mis dans le rapport, ce qui donnait -205,
+-140, -3845, +205 ; ce n'est pas un effet des salves.)
+- Prédiction ✓ : facteur de 22 à 690 (fenêtre 30-300 : 43 ✓, 28 et 22
+  juste sous 30, 692 sur un Δ_obs ≈ 0), signe fixe négatif ✓ alors que
+  Δ_obs change de signe. **Version simple de H59-11 RÉFUTÉE** :
+  ni signe ni grandeur.
+- Ce qui ne s'en va pas : `Δ_obs / Δ_kapitza` = -0,023 / -0,035 /
+  -0,0014 / +0,045 : le décalage observé est 1 à 5 % de l'effet
+  Kapitza attendu. Deux termes de l'ordre de σ_u², de signes opposés, qui
+  s'annulent à ~97 %, seraient une lecture de H59-18 (pondération
+  d'Adam) : un facteur de correction `-0,97 ± 0,03` sur le terme
+  Kapitza, qui change de signe entre eps 3e-8 et 1e-7, plutôt qu'un
+  terme indépendant.
+- Réserves (méfiance) : `σ_u²` mêle mouvement rapide (salves) et lent ;
+  Kapitza demande l'amplitude du mouvement RAPIDE seule. Le rapport de
+  1-5 % peut n'être qu'une erreur de variable, pas une annulation.
+  Test qui distinguerait : filtrer passe-haut la trace de u (période
+  < 100 pas) et refaire σ_u² sur la partie rapide seule.
+
+| H59-11 (Kapitza simple, Δ = -G''σ²/(2G_δ)) | 28/09 (moi) | **réfutée** en signe et en grandeur (22× à 690× trop grand, signe fixe) ; Δ_obs = 1-5 % de l'effet attendu |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
