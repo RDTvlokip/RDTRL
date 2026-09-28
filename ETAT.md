@@ -66,19 +66,26 @@ seuil déterministe (E4-E8, réseau complet) :** hold/break non monotone
 donne 465 ou 1 110 pas selon l'arrondi ; eps 1e-12 ne change pas la
 position ((6e-9 ; 7e-9]) ; tient 300 000 pas à +6e-9 ; β2 = 0,998 :
 l'état s'effondre déjà à pli-1e-6 (bursts bien plus grands).
-**Taux d'échappement à eps 1e-10 (131 runs, 54 échappements, MLE avec
-censure, `verifier_tour59_hasard_mle.py hz,hzo,e5,e8,hzp`) :**
-exponentielle exclue (ΔAIC +40) ; loi de puissance
-`λ = 1,81e-5 (x/1e-9 - 5,72)^3,48`, δ* = pli + 5,7e-9 (IC 95 % 5,25 à
-5,95e-9, γ de 4,5 à 3,0 corrélé) ; plancher non soutenu (0 échappement sur
-20 × 100 000 pas à +5e-9, mon pari du contraire perdu). Signature d'une
-crise de transitoire chaotique, MAIS modèle choisi après avoir vu les
-données (un seul test hors échantillon, réussi) et γ non dérivé.
-β2 : 0,998 → l'état s'effondre déjà à pli-1e-6 ; 0,9995 → seuil +3 à 6e-9
-(mon pari « au-dessus de 8e-9 » faux). Un agent style dipankar ciblé sur
-cette question (sa réduction à deux lignes donne 1 000× plus de
-statistique) a été lancé le 29/09, plafond de 2 processus ; son retour
-sera vérifié chiffre par chiffre.
+**Taux d'échappement à eps 1e-10 (CORRIGÉ le 29/09 après le second agent,
+vérifié par V1-V4 dans le carnet) :** ce n'est PAS un seuil, et ma loi de
+puissance (δ* = 5,7e-9, γ = 3,5) est RETIRÉE (artefact de fenêtre
+d'ajustement). La réduction à deux lignes (port numba, 3,9e10 pas) donne
+λ = 1,7e-9 (5,0e-9), 9e-9 (5,25), 4e-8 (5,5), 2e-7 (5,75), 6e-7 (6,0),
+1,2e-6 (6,1), 2,8e-6 (6,3), 6,6e-6 (6,5), 2e-5 (6,8), 3,7e-5 (7,0), 1,1e-4
+(7,5), 1,7e-4 (8), 4,5e-4 (10) par pas ; j'ai retrouvé 7,0 / 6,5 / 6,0 /
+5,5 avec une autre graine. Le réseau complet est d'accord à δ ≥ 6,0e-9
+(54 événements contre 48,8) et n'a jamais été mesuré en dessous. Ma ligne à
+1e-8 (phases k ≤ 55, 409-490 pas) était biaisée ×5 par le plan
+d'expérience (V1 : k ≥ 89 donne 423-3309 pas). Le « seuil » dépend de
+l'horizon : λ = 1/T pour T = 6e4 / 1e6 / 1e9 pas donne pli + 6,75 / 6,07 /
+5,00e-9. Forme de λ(δ) non déterminée (puissance γ = 12 sur [5;7], queue
+gaussienne, Kramers 3/2 avec x_c = 7,4e-9 : ajustées sans rejet). Aucun
+mécanisme (Lyapunov de l'agent : D_KY = 11,3, γ ≈ 9-10 par comptage naïf,
+non recalculé). β2 : 0,998 → l'état s'effondre déjà à pli-1e-6 ; 0,9995 →
+seuil +3 à 6e-9 (mon pari « au-dessus de 8e-9 » faux). Scripts de l'agent
+gardés et rejoués : `reduction_deux_lignes_tour59.py`,
+`reduction_numba_tour59.py`, `hasard_reduction_tour59.py`,
+`verifier_tour59_reduction_controle.py`.
 
 **RÈGLE DE CALCUL (Théo, 29/09) : jamais plus de 6 processus python à la
 fois, un lanceur à la fois** (`NPROC` dans les lanceurs, défaut 6). À 6
