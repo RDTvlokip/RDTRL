@@ -16467,6 +16467,65 @@ grille, pas 60 000) :
 - **E8** (H59-20 sur réseau complet) : hold à pli+6e-9 sur 300 000 pas
   (mise 70 %).
 
+**Résultats E4-E8 (29/09, réseau complet, masque `tout`, eps 1e-10 sauf
+mention) :**
+```
+E4  offset (pli+)   6,0  6,1  6,2  6,3  6,4  6,5  6,6      6,7  6,8  6,9     7,0   (x1e-9)
+    issue           tient tient tient tient tient tient CASSE    tient tient CASSE   CASSE
+    temps                                                 16 430               2 593  1 110
+E5  delta = pli+6,5e-9, chauffe_eps = 20 000 + k :  k = 0,1,2,3,5,8,13,21,34 tiennent 60 000 pas ; k = 55 CASSE au pas 27 444
+E6  eps 1e-12 : tient jusqu'a +6e-9 ; casse a +7e-9 (36 722), +8e-9 (6 390), +1e-8 (3 251)
+E7  beta2 = 0,998 : l'etat est DEJA effondre (d3 = 0,963) a la fin de la chauffe a pli-1e-6 -> B0 a tous les delta
+E8  delta = pli+6e-9, 300 000 pas : TIENT (R_b = 0,8143)
+```
+- **E4 ✓ (H59-22)** : la séquence tient/casse est non monotone à
+  1e-10 de pas (casse à 6,6 ; tient à 6,7 et 6,8 ; casse à 6,9 et
+  7,0) : il n'y a pas de seuil franc plus fin que ~5e-10. Et à
+  +7,0e-9 le run ci-dessus casse au pas 1 110, alors que le run
+  `torch.optim.Adam` du 28/09 cassait au pas 465 : la même dynamique
+  à l'arrondi près donne un temps d'échappement 2,4× différent. Le
+  temps d'échappement n'est pas une fonction déterministe de δ.
+- **E5 ✓ (H59-22, phase)** : à δ fixé (6,5e-9), 1 phase sur 10 casse,
+  au pas 27 444, les 9 autres tiennent 60 000. Un taux de hasard
+  d'environ 1/(10 × 60 000) ≈ 1,7e-6 par pas à +6,5e-9, contre un
+  temps de 465-1 110 pas à +7e-9 (~1e-3) : ×600 en 5e-10 de δ. Ce que
+  cela fait de H59-19 (crise de frontière à orbite périodique, échappement
+  « à la première période ») : **réfutée** (temps d'échappement de 27 444,
+  16 430, 9 873, 2 593, 1 110, 465 ; ce n'est pas une période).
+- **E6 ✓ (H59-21 réfutée)** : le seuil est dans (6e-9 ; 7e-9] pour
+  eps 1e-12 comme pour 1e-10 : pas un plancher numérique. Les
+  temps sont plus longs à 1e-12 (36 722 / 6 390 / 3 251 contre 465 / 431 /
+  387 pour 7 / 8 / 10e-9) sans que le seuil bouge : le taux d'échappement
+  dépend d'eps, la position de la falaise non.
+- **E7 ✓ (H59-23, au sens fort)** : à β2 = 0,998 le seuil est en
+  dessous de pli-1e-6 (l'état ne tient même pas à la chauffe). La falaise
+  dépend donc de β2 de plus de 1 000× en distance au pli. Non chiffré
+  au-delà (la chauffe à pli-1e-6 ne peut pas le mesurer).
+- **E8 ✓ (H59-20 réfutée sur le réseau complet)** : tient 300 000
+  pas à +6e-9. Mais +6,5e-9 casse une fois sur dix en 60 000 : le
+  taux monte d'un facteur > 100 entre +6e-9 et +6,5e-9. « Le »
+  seuil dépend de l'horizon seulement dans cette bande de 5e-10.
+
+**Lecture (non standard, à tester) : un échappement chaotique à taux
+de hasard très raide en δ, pas une falaise déterministe.** Les salves
+sont des excursions chaotiques (entre deux `torch.optim.Adam`
+identiques à 1e-15 près, l'écart est de 8e-7 dès le pas 1) ; à δ fixé,
+l'instant où l'une d'elles touche le bassin d'attraction du col est
+aléatoire au sens pratique ; le taux `λ(δ)` monte de < 3e-6 à 1e-3 par
+pas entre +6e-9 et +7e-9. **H59-24 (à tester)** : `λ(δ)` suit une loi de
+puissance ou exponentielle en `δ - δ*`. Test : temps d'échappement à
+δ ∈ {6,6 ; 6,8 ; 7,0 ; 7,5 ; 8 ; 10}e-9 sur 10 phases (k) chacun, taux
+= nombre d'échappements / somme des temps observés (estimateur du
+maximum de vraisemblance avec censure à 30 000 pas). Prédiction :
+`ln λ` est linéaire en δ sur cette plage avec une pente qui donne
+`λ` ×100 par 5e-10 (`d ln λ/dδ ≈ 9e9`) ; si `λ` est une loi de
+puissance en `δ - δ*` avec δ* < 6e-9, l'exposant serait > 30 (peu
+plausible) : je parie sur l'exponentielle (60 %).
+- **E7b** (β2 = 0,9995, côté opposé, précommis avant le run) : bursts
+  plus petits (mémoire de v plus longue) donc seuil AU-DESSUS de
+  +8e-9 ; grille 0 / 3e-9 / 6e-9 / 1e-8 / 2e-8 / 5e-8 / 1e-7, pas 60 000
+  (mise 60 %).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
