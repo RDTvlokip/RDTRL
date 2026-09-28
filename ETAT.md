@@ -28,24 +28,58 @@ lettre 60 quand dipankar reposte.**
 - Loi du fantôme exacte `t = κ(eps)/√(δ-δ_c')`, t0 ≈ 0, R² = 1,0000 (6
   et 8 points) ; `δ_c' - pli` = +9,1e-9 (1e-8), +3,2e-10 (3e-8),
   -5,5e-9 (1e-7, reproduit à 1 pas près sur un autre état chauffé).
-- `κ(eps) = 0,0711 + 1,389e6·eps` (hors échantillon 1,6 % à 3e-8, 8-9 %
-  à 1e-6) : Adam ralentit le passage du goulot par `(√v+eps)/√v`.
 - Au-dessus du pli, jusqu'à +6e-9, l'état tient 60 000 pas SANS point
   fixe déterministe (médiane à 1-2,5e-6 du pli, pics ±1e-4) : point
-  fixe moyenné par les salves. Signe et zéro de Δ(eps) coïncident avec
-  ceux de l'asymétrie des salves (zéro vers 3e-8), pas la grandeur.
-- Kapitza simple (`Δ = -G''σ²/(2G_δ)`) réfuté : signe fixe négatif,
-  22-690× trop grand ; Δ_obs = 1-5 % de l'effet attendu.
+  fixe moyenné par les salves.
+- Zéro de Δ(eps) vers 3,1e-8 (Δ = +9,1 / +3,85 / +0,32 / -3,66 / -5,5e-9
+  à eps 1e-8 / 2e-8 / 3e-8 / 5e-8 / 1e-7, prédictions d'interpolation
+  tombées).
+
+**Retour de l'agent style dipankar (29/09, critique SIMULÉE), vérifié
+par mon propre code :**
+- Ma « quasi-annulation Kapitza/Adam à 97 % » (H59-18) était FAUSSE :
+  j'avais pris `u` (récepteur) comme variable lente. Le mode critique est
+  à 99,1 % sur la ligne 3 de l'émetteur (Hessien du réseau complet, 2 × 729
+  paramètres, `verifier_tour59_hessien_reseau_complet.py`). Le mode rigide
+  (99 % récepteur) est esclave.
+- Sa lecture, confirmée sur le RÉSEAU COMPLET par trois expériences
+  précommises : **E1** (lr 0,035 : seuils +3,25e-9 / -2,10e-9 contre
+  +3,3e-9 / -2,1e-9 prédits) ; **E2** (eps 3e-6 : bascule en 13 846 pas
+  à pli+1e-7, prédit 13 846) ; **E3** (eps 1e-7 sur la seule ligne 3
+  de l'émetteur : seuil -1,36e-8 contre -1,34e-8 ; sur le récepteur seul :
+  falaise positive +2e-9 / +4e-9 contre +3,2e-9).
+- **Sa formule de κ recalculée par moi sur les 2 × 729 paramètres** :
+  `κ/eps = π/(lr √(αβ)) = 1,6422e6` (α = 1,538e-3, D³J = 1,903e-6) contre
+  1,617e6 mesuré (E2). Ma droite `0,0711 + 1,389e6·eps` avait la
+  mauvaise asymptote (12 % trop bas à 3e-6).
+- Mécanisme du signe : Adam fixe l'axe des salves via ses gains sur la
+  ligne 3 (`p_z = lr[1/(√v+eps) + 1/(√v+26 eps)]`) et le récepteur
+  (`p_u = 2 lr/(√v_l+eps)`), le zéro de Δ est où l'axe croise la pente
+  critique `s* = -0,337`.
+- Le seuil DÉPEND de lr (`Δ ∝ lr^3,4`) : « objet, pas code » est vrai
+  entre mur 23 et 6/14 à lr fixe, pas en lr.
+
+**La falaise à eps 1e-10 (réglage par défaut du projet) n'est PAS un
+seuil déterministe (E4-E8, réseau complet) :** hold/break non monotone
+à 1e-10 de pas (casse à +6,6e-9, tient à +6,7 et +6,8, casse à +6,9 et
++7,0) ; à δ = +6,5e-9 une phase sur dix casse (pas 27 444) ; le même δ
+donne 465 ou 1 110 pas selon l'arrondi ; eps 1e-12 ne change pas la
+position ((6e-9 ; 7e-9]) ; tient 300 000 pas à +6e-9 ; β2 = 0,998 :
+l'état s'effondre déjà à pli-1e-6 (bursts bien plus grands).
+Lecture en cours de test : échappement chaotique à taux de hasard très
+raide en δ (H59-24), `lancer_tour59_hasard.sh` +
+`verifier_tour59_hasard_echappement.py`, et E7b (β2 = 0,9995).
 
 **Pistes concrètes pour la suite :**
-1. Filtrer la trace de u passe-haut (< 100 pas) et refaire σ_u² sur la
-   partie rapide seule : la quasi-annulation à 97 % survit-elle ?
-2. H59-18 : drift moyen pondéré `⟨F/(√v+eps)⟩` contre `⟨F⟩` sur les
-   traces (les colonnes √v y sont).
-3. Isoler la coordonnée lente : Jacobien réduit au nœud plutôt que ACP.
-4. Chercher l'eps exact du zéro de Δ (entre 1e-8 et 1e-7, mesuré ~3e-8).
-5. À eps 1e-10, seuil = falaise (bascule en ~1 période de salve) : le
-   temps près du seuil dépend de l'état (465 contre 9 873 pas).
+1. Résultats de H59-24 (taux λ(δ), 10 phases × 6 δ) et E7b (β2 = 0,9995)
+   dans `CARNET.md`, sous-section « Après la lettre ».
+2. Lettre 60 : reprendre, quand dipankar reposte, (a) la correction du
+   « 6e-10 ; 1e-9 » (transitoire), (b) H59-18 fausse et la variable
+   lente correcte, (c) κ, E1-E3, (d) la falaise stochastique.
+3. Seuil de la 6/14 à lr 0,035 et eps 1e-7 (E1 fait sur le mur 23 seul).
+4. Le seuil à β2 = 0,998 (chauffe à pli-1e-6 insuffisante : chauffer plus
+   bas puis balayer).
+5. Le maximum de Δ(eps) entre 1e-10 (+6,5e-9, falaise) et 1e-8 (+9,1e-9).
 
 ## Tour 58 (vraie critique de dipankarsarkar, 23/09/2026) — CLOS
 
