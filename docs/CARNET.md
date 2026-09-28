@@ -16583,6 +16583,49 @@ réfuterait l'exponentielle : ≤ 6 cassures sur 20 à 6,3e-9. La loi de
 puissance avec δ* est falsifiable par UNE cassure à pli+6,0e-9 sur un
 long budget (E8 n'en a pas eu en 300 000 pas).
 
+**Résultat du test hors échantillon (`verifier_tour59_hasard_echappement.py
+hzo`) : les deux prédictions échouent, la seconde davantage.**
+```
+offset     echapp./20   exposition   lambda        IC 95 %                 temps               exp. predit   puissance (δ*=6,03) predit
+6,1e-9     3            1 811 549    1,66e-6       [3,4e-7 ; 4,8e-6]       8442 20123 82984    15            <= 1  (0,07)
+6,3e-9     3            1 863 862    1,61e-6       [3,3e-7 ; 4,7e-6]       48029 53364 62469   17            ~3
+```
+- L'exponentielle est **réfutée** aux deux δ (≈ 15 et 17 attendus, 3 observés)
+  et par E5 (7,7 attendus sur 10, 1 observé).
+- La loi de puissance avec δ* = pli+6,03e-9 est **réfutée à 6,1e-9**
+  (0,07 échappement attendu, 3 observés : P ≈ 1e-4). Ma lecture « crise
+  de Grebogi-Ott-Yorke avec δ* = 6,03e-9 » tombe telle quelle.
+- Le taux est le MÊME à 6,1e-9 et à 6,3e-9 (1,66e-6 et 1,61e-6) et à 6,5e-9
+  (E5 : 1 sur 600 000 pas, 1,7e-6) : un PLANCHER d'environ 1,6e-6 par pas
+  (un échappement par ~600 000 pas), puis une montée à partir de +6,5e-9
+  (1,6e-5 à 6,6e-9, 6e-5 à 7,0e-9, 1,6e-4 à 7,5e-9, 4e-4 à 8e-9, 2,3e-3
+  à 1e-8).
+- Ajustement MLE avec censure sur les 111 runs (hz + hzo + e5 + e8, 54
+  échappements ; exploratoire, post hoc) :
+```
+modèle                      paramètres                                       logL     AIC      ΔAIC/exp
+exponentielle               λ = exp(-23,3 + 1,78 x/1e-9)                     -573,95  1151,9   0
+plancher + exponentielle    (le plancher tend vers 0)                        -573,95  1153,9   -2
+puissance                   1,81e-5 (x/1e-9 - 5,72)^3,48                     -553,80  1113,6   +38,3
+plancher + puissance        1,48e-6 + 1,26e-4 (x/1e-9 - 6,34)^2,23           -550,95  1109,9   +42,0
+```
+  L'exponentielle est nettement exclue (ΔAIC ≥ 38). Entre la puissance
+  seule et le plancher + puissance : ΔAIC = 3,7 en faveur du plancher,
+  preuve FAIBLE, avec un paramètre de plus et un modèle choisi après
+  avoir vu le résultat. L'exposant (2,2 à 3,5) et δ* (5,7 à 6,3e-9)
+  dépendent de l'inclusion du plancher.
+
+**Test qui départage plancher et puissance seule, précommis (29/09) :**
+20 phases (mêmes k qu'avant) à pli+5,0e-9 et à pli+3,0e-9, 100 000 pas.
+Plancher + puissance : λ = 1,48e-6 même en dessous de 6,3e-9, donc ≈ 3
+échappements attendus par δ (exposition ~2e6) ; puissance seule :
+λ(5e-9) = 0 (sous δ* = 5,72e-9). Ce qui réfuterait le plancher : 0
+échappement sur 20 à 5e-9 (P = 5 % s'il existe). Ma mise : ≥ 1 à
+5e-9 (70 %). Si le plancher existe partout, « tenir » est une situation
+métastable de durée de vie ~6e5 pas à ces δ, pas un état stable, et
+« le seuil de 6,5e-9 » est l'endroit où un second mécanisme, plus
+rapide, s'ajoute à un échappement de fond.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

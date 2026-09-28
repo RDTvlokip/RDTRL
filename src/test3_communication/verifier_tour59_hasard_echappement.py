@@ -26,8 +26,11 @@ def garwood(n, alpha=0.05):
 
 
 if __name__ == "__main__":
+    import sys
+    # argument optionnel : prefixe(s) des fichiers, separes par des virgules (hz par defaut ; hzo = test hors echantillon)
+    prefixes = (sys.argv[1] if len(sys.argv) > 1 else "hz").split(",")
     par_delta = defaultdict(list)
-    for f in glob.glob("D:/tmp/rdtrl_t59_hz_k*_1e-10_*.txt"):
+    for f in [g for p in prefixes for g in glob.glob(f"D:/tmp/rdtrl_t59_{p}_k*_1e-10_*.txt")]:
         m = re.search(r"_k(\d+)_1e-10_([0-9.e+-]+)\.txt$", f)
         txt = open(f).read()
         if not m or "bascule" not in txt:

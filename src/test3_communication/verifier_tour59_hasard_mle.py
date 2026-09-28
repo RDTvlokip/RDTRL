@@ -21,9 +21,22 @@ import numpy as np
 from scipy.optimize import minimize
 
 
+PLI = 0.0134372100660973
+
+
 def lire(prefixe="hz"):
+    """prefixe : hz / hzo (lancer_tour59_hasard.sh), e5 (E5 : 10 phases a 6,5e-9, fichiers
+    e5k<k>), e8 (E8 : un seul run de 300 000 pas a 6,0e-9)."""
     donnees = []
-    for f in glob.glob(f"D:/tmp/rdtrl_t59_{prefixe}_k*_1e-10_*.txt"):
+    if prefixe == "e8":
+        f = "D:/tmp/rdtrl_t59_e8_300k.txt"
+        txt = open(f).read()
+        off = float(re.search(r"delta=([0-9.]+)", txt).group(1)) - PLI
+        pas = int(re.search(r"pas=(\d+)", txt).group(1))
+        b = int(re.search(r"bascule=(-?\d+)", txt).group(1))
+        return [(round(off, 12), b if b >= 0 else None, pas)]
+    motif = "D:/tmp/rdtrl_t59_e5k*_1e-10_*.txt" if prefixe == "e5" else f"D:/tmp/rdtrl_t59_{prefixe}_k*_1e-10_*.txt"
+    for f in glob.glob(motif):
         m = re.search(r"_1e-10_([0-9.e+-]+)\.txt$", f)
         txt = open(f).read()
         if not m or "bascule" not in txt:
@@ -74,6 +87,44 @@ def ajuster_puissance(donnees):
     return meilleur
 
 
+def ajuster_plancher_puissance(donnees):
+    """lambda = l0 + c (x - x*)^g pour x > x*, l0 sinon (5 parametres -> 4 : l0, c, g, x*)."""
+    xmin = min(o for o, _, _ in donnees)
+
+    def f(p):
+        logl0, logc, g, dstar = p
+        if g <= 0 or dstar >= 20.0 or dstar < 0.0:
+            return 1e18
+        def lam(x):
+            xx = x * 1e9 - dstar
+            return np.exp(logl0) + (np.exp(logc) * xx ** g if xx > 0 else 0.0)
+        return -loglik(lam, donnees)
+
+    meilleur = None
+    for l0 in (-14.0, -13.0):
+        for d0 in (5.5, 6.2):
+            for g0 in (1.5, 3.0):
+                r = minimize(f, [l0, -9.0, g0, d0], method="Nelder-Mead", options={"xatol": 1e-8, "fatol": 1e-10, "maxiter": 12000})
+                if meilleur is None or r.fun < meilleur.fun:
+                    meilleur = r
+    return meilleur
+
+
+def ajuster_plancher_exp(donnees):
+    """lambda = l0 + exp(a + b x) (3 parametres)."""
+    def f(p):
+        logl0, a, b = p
+        return -loglik(lambda x: np.exp(logl0) + np.exp(a + b * x * 1e9), donnees)
+    meilleur = None
+    for l0 in (-14.0, -13.0):
+        for a0 in (-14.0, -12.0):
+            for b0 in (0.5, 1.5):
+                r = minimize(f, [l0, a0, b0], method="Nelder-Mead", options={"xatol": 1e-8, "fatol": 1e-10, "maxiter": 8000})
+                if meilleur is None or r.fun < meilleur.fun:
+                    meilleur = r
+    return meilleur
+
+
 if __name__ == "__main__":
     import sys
     # argument optionnel : prefixe des fichiers (hz par defaut) ; plusieurs prefixes separes par des virgules
@@ -89,6 +140,13 @@ if __name__ == "__main__":
     print(f"puissance     : lambda = {np.exp(logc):.3e} * (x/1e-9 - {dstar:.3f})^{g:.3f}   "
           f"delta* = pli + {dstar:.3f}e-9   exposant {g:.2f}   logL={ll_p:.2f}  AIC={2 * 3 - 2 * ll_p:.2f}")
     print(f"difference d'AIC (exp - puissance) = {(4 - 2 * ll_e) - (6 - 2 * ll_p):+.2f}   (>0 : la puissance est preferee ; >6 : nettement)")
+    rfe = ajuster_plancher_exp(D)
+    rfp = ajuster_plancher_puissance(D)
+    ll_fe, ll_fp = -rfe.fun, -rfp.fun
+    l0, a2, b2 = rfe.x
+    print(f"plancher+exp  : lambda = {np.exp(l0):.2e} + exp({a2:.2f} + {b2:.3f} x/1e-9)   logL={ll_fe:.2f}  AIC={2 * 3 - 2 * ll_fe:.2f}")
+    print(f"plancher+puiss: lambda = {np.exp(rfp.x[0]):.2e} + {np.exp(rfp.x[1]):.2e} (x/1e-9 - {rfp.x[3]:.2f})^{rfp.x[2]:.2f}   "
+          f"logL={ll_fp:.2f}  AIC={2 * 4 - 2 * ll_fp:.2f}")
     print("\nprediction hors echantillon : offset   exp        puissance")
     for x in (6.0e-9, 6.3e-9, 6.5e-9, 9e-9, 1.2e-8):
         le = np.exp(a + b * x * 1e9)
