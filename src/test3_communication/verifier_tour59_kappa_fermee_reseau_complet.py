@@ -60,17 +60,24 @@ def main():
         x = x.detach().clone().requires_grad_(True)
         return torch.autograd.grad(J(x, delta), x)[0]
 
-    delta = F_PLI - 1e-9
     x = torch.cat([p.detach().reshape(-1) for p in params]).clone()
-    for it in range(40):  # Newton sans col vers le noeud
-        g = grad(x, delta)
-        H = torch.autograd.functional.hessian(lambda z: J(z, delta), x)
-        w, V = torch.linalg.eigh(H)
-        m = w.abs() > 1e-11
-        dx = V[:, m] @ ((V[:, m].T @ g) / w[m].abs())
-        x = x + dx
-        if dx.norm() < 1e-13:
-            break
+    # continuation en delta (pli-1e-6 -> -1e-9) et pas de Newton plafonne : tout pres du
+    # pli le mode mou a une courbure ~ 0, g/|w| explose et le pas saute jusqu'a l'etat
+    # effondre (d3 = 26/27), ce qui est arrive a une premiere version en un seul coup.
+    for off in (1e-6, 1e-7, 1e-8, 1e-9):
+        delta = F_PLI - off
+        for it in range(60):
+            g = grad(x, delta)
+            H = torch.autograd.functional.hessian(lambda z: J(z, delta), x)
+            w, V = torch.linalg.eigh(H)
+            m = w.abs() > 1e-11
+            dx = V[:, m] @ ((V[:, m].T @ g) / w[m].abs())
+            if dx.norm() > 2e-3:
+                dx = dx * (2e-3 / dx.norm())
+            x = x + dx
+            if dx.norm() < 1e-13:
+                break
+        print(f"  continuation pli-{off:.0e} : {it + 1} iterations, |g|={g.norm():.2e}")
     g = grad(x, delta)
     H = torch.autograd.functional.hessian(lambda z: J(z, delta), x)
     w, V = torch.linalg.eigh(H)
@@ -79,8 +86,20 @@ def main():
     pb = (V[bloc] ** 2).sum(0)
     # mode mou : dans le bloc, hors translation, dominant sur la ligne 3 de l'emetteur (logit du message)
     poids_e3 = V[A * N + MSG] ** 2
-    cand = ((pb > 0.9) & (w.abs() > 1e-13) & (poids_e3 > 0.5)).nonzero().flatten()
-    k = cand[int(w[cand].abs().argmin())]
+    with torch.no_grad():
+        e.p[0], r.p[0] = vers_params(x)
+        print(f"point atteint : d3={1 - e.loi()[A, MSG].item():.6e} r4={r.loi()[MSG, B_].item():.6f} "
+              f"(pli fermé : d3=2.724564e-03 r4=0.814288)")
+    dg0 = (grad(x, delta + 1e-9) - grad(x, delta - 1e-9)) / 2e-9
+    cand = ((pb > 0.9) & (w.abs() > 1e-13)).nonzero().flatten()
+    print("modes du bloc hors translation : lambda / poids e3,msg / projection sur d(gradJ)/d delta (norme de dg = %.3e)" % float(dg0.norm()))
+    for kk in cand[torch.argsort(w[cand].abs())][:8]:
+        print(f"   {w[kk]:+.4e}  e3msg={float(poids_e3[kk]):.3f}  n.dg={float(V[:, kk] @ dg0):+.4e}")
+    # le mode du pli est le mode MOU (lambda -> 0 au pli) porte par le logit de message de la
+    # ligne 3 ; le mode rigide (recepteur) porte la plus grande part de d(grad J)/d delta mais
+    # est esclave (variete centrale) et ne compte pas dans alpha.
+    mous = cand[poids_e3[cand] > 0.5]
+    k = mous[int(w[mous].abs().argmin())]
     n = V[:, k]
     print(f"noeud a pli-1e-9 : |g|={g.norm():.2e} ; mode mou lambda={w[k]:+.3e}, poids e3,msg={float(poids_e3[k]):.3f}")
 

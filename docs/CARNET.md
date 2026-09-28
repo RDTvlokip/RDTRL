@@ -16347,6 +16347,22 @@ par autograd sur les 2 × 729 paramètres (dérivée en δ et différences de
 écart de plus de 5 % avec la mesure, auquel cas sa concordance avec
 E2 est une coïncidence de constantes.
 
+**Résultat (`verifier_tour59_kappa_fermee_reseau_complet.py`) : pente
+`κ/eps = 1,6422e6`, DANS la fenêtre, à +1,6 % de E2 (1,617e6) et +0,3 %
+de sa formule (1,637e6).** Ingrédients, calculés sur les 2 × 729
+paramètres au nœud à pli-1e-9 (mode mou λ = -2,44e-9, 95,4 % sur le
+logit de message de la ligne 3) : `α = n·∂_δ∇J = +1,538285e-3`,
+`D³J[n,n,n] = +1,903169e-6` (stable à 6 chiffres pour h de 3e-4 à
+3e-3), `lr = 0,05`. **Sa formule fermée de κ est donc juste** (pas un
+ajustement) et **ma droite linéaire était un ajustement de croisement
+à la mauvaise asymptote**. Deux pièges rencontrés en route, avant ce
+résultat : (i) Newton sans col lancé directement à pli-1e-9 saute à
+l'état effondré (d3 = 0,963) parce que g/|λ| explose sur le mode mou :
+il faut une continuation en δ et un pas plafonné ; (ii) prendre le mode
+de plus grande |n·∂_δ∇J| au lieu du mode mou donne le mode rigide du
+récepteur (|proj| = 1,58e-2 contre 1,54e-3) et une pente de 3,5e4, fausse
+de 46× ; le mode rigide est esclave et n'entre pas dans α.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
