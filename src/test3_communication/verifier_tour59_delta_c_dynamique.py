@@ -57,24 +57,39 @@ def courir(cas, a, b, delta, pas, trace=False, eps=ADAM_EPS, chauffe=0, chauffe_
     chauffe_eps > 0 : entre les deux, `chauffe_eps` pas supplementaires a
     pli - 1e-6 avec le NOUVEL eps, pour separer le choc du changement d'eps
     du changement de delta."""
+    import os
     torch.set_num_threads(1)
     (e, r), msg = depart(cas)
     activer(e, r)
-    opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=ADAM_EPS if chauffe else eps)
+    params = parametres(e, r)
+    opt = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS if chauffe else eps)
     if chauffe:
-        pc = torch.full((N,), 1.0 / N, dtype=torch.float64)
-        pc[a], pc[b] = (1.0 - (0.0134372100660973 - 1e-6)) / N, (1.0 + (0.0134372100660973 - 1e-6)) / N
-        for _ in range(chauffe):
-            j, _ = objectif_pondere(e, r, BETA, pc)
-            opt.zero_grad()
-            (-j).backward()
-            opt.step()
-        opt.param_groups[0]["eps"] = eps
-        for _ in range(chauffe_eps):
-            j, _ = objectif_pondere(e, r, BETA, pc)
-            opt.zero_grad()
-            (-j).backward()
-            opt.step()
+        # etat chauffe mis en cache : tous les delta d'une meme serie partent du
+        # MEME point (parametres + moments d'Adam), ce qui retire la dependance
+        # au chemin. Creer le cache par un appel a pas=0 AVANT de lancer en parallele.
+        ck = f"D:/tmp/rdtrl_tour59_chaud_{cas}_{a}_{b}_eps{eps:.0e}_{chauffe}_{chauffe_eps}.pt"
+        if os.path.exists(ck):
+            c = torch.load(ck)
+            with torch.no_grad():
+                for p, v in zip(params, c["params"]):
+                    p.copy_(v)
+            opt.load_state_dict(c["opt"])
+            opt.param_groups[0]["eps"] = eps
+        else:
+            pc = torch.full((N,), 1.0 / N, dtype=torch.float64)
+            pc[a], pc[b] = (1.0 - (0.0134372100660973 - 1e-6)) / N, (1.0 + (0.0134372100660973 - 1e-6)) / N
+            for _ in range(chauffe):
+                j, _ = objectif_pondere(e, r, BETA, pc)
+                opt.zero_grad()
+                (-j).backward()
+                opt.step()
+            opt.param_groups[0]["eps"] = eps
+            for _ in range(chauffe_eps):
+                j, _ = objectif_pondere(e, r, BETA, pc)
+                opt.zero_grad()
+                (-j).backward()
+                opt.step()
+            torch.save({"params": [p.detach().clone() for p in params], "opt": opt.state_dict()}, ck)
     poids = torch.full((N,), 1.0 / N, dtype=torch.float64)
     poids[a] = (1.0 - delta) / N
     poids[b] = (1.0 + delta) / N

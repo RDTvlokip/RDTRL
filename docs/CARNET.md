@@ -15922,6 +15922,57 @@ Réponse dans `docs/REPONSE_ORDRE59.md`. Scripts :
 `verifier_tour59_direction_lente.py` (non concluant), `verifier_tour59_biais_moyen_salves.py`,
 `verifier_tour59_salves_selon_eps.py`.
 
+### Après la lettre (28/09/2026) — LETTRE 59 FIGÉE (consigne de Théo), tout ce qui suit reste ici
+
+dipankarsarkar n'a pas répondu depuis plus d'un jour ; Théo demande de
+continuer seul. Même tour (pas de `REPONSE_ORDRE60`).
+
+**Relecture des chiffres de (4) avec la loi du fantôme, avant tout
+nouveau run.** Je n'avais lu les seuils que comme des encadrements. Or
+la loi mesurée en (2), `t = 700 + 0,182/√(δ-δ_c)`, donne un test de
+plus : si le pli était seulement décalé (δ_c' = pli + Δ), les temps de
+bascule le long d'une série doivent suivre la MÊME loi avec δ_c'. Sur
+mes points existants (un seul point par eps, donc à confirmer) :
+```
+eps 1e-8, +1e-8  : bascule 3028 pas -> δ-δ_c' = (0,182/2328)² = 6,1e-9 -> δ_c' = pli + 3,9e-9  (tient à +3e-9 : cohérent)
+eps 1e-7, -1e-9  : bascule 3080 pas -> δ-δ_c' = 6,1e-9 -> δ_c' = pli - 7,1e-9
+eps 1e-7, -3e-9  : bascule 4131 pas -> δ-δ_c' = 2,8e-9 -> δ_c' = pli - 5,8e-9   (tient à -1e-8 : cohérent)
+```
+Deux points indépendants à eps 1e-7 donnent δ_c' à 1,3e-9 l'un de
+l'autre, sans paramètre libre. Ce n'est pas encore une preuve (un seul
+point par droite au départ) mais c'est un test que l'hypothèse
+« décalage d'un pli » pouvait rater et n'a pas raté.
+
+**H59-10 (moi, 28/09) : les salves RENORMALISENT le pli.** Le pli
+dynamique est un vrai pli, à δ_c'(eps) = pli + Δ(eps), avec la même
+loi du fantôme (même coefficient κ = 0,182) ; les salves ne changent
+que Δ. Mécanisme candidat (non standard, du type Kapitza) : le point
+fixe de la dynamique moyennée sur les salves est `⟨∇J⟩ = 0`, pas
+`∇J(⟨x⟩) = 0`, et `⟨∇J⟩ ≈ ∇J(x̄) + ½ ∇³J·⟨δx²⟩`. La correction est
+d'ordre variance des salves, de signe fixé par ∇³J le long de la
+direction lente ; elle serait donc de signe constant pour une salve
+donnée, mais l'asymétrie observée change de signe avec eps. À tester
+après H59-10 elle-même, pas en même temps.
+
+**Prédictions poussées AVANT le run (grille de 10 δ × 3 eps, état chauffé
+partagé, 60 000 pas max, mur 23) :**
+- P-a : sur chaque eps, les temps de bascule des points qui basculent
+  sont alignés en `(t - t0)^-2` contre δ (régression à 3 paramètres :
+  pente, δ_c', t0) avec R² > 0,99 et pente `1/κ²` à ±30 % de 30,2.
+- P-b : δ_c'(1e-8) = pli + 3,9e-9 (±2e-9) ; δ_c'(1e-7) = pli - 6,5e-9
+  (±2e-9).
+- P-c : δ_c'(3e-8) — eps jamais mesuré — tombe entre les deux, à
+  l'interpolation en log(eps) : pli + 0,2e-9 (±3e-9), donc le changement
+  de signe de Δ est vers eps ≈ 2,4e-8.
+- Ce qui réfuterait H59-10 : une pente hors de ±30 % de 30,2 (alors ce
+  n'est pas un pli décalé mais une vitesse réduite) ; ou un δ_c' de
+  chaque droite hors de ±3e-9 de P-b ; ou |Δ(3e-8)| > 3e-9 (alors
+  Δ(eps) n'est pas monotone entre les deux et l'interpolation ne vaut
+  rien).
+
+| H59-10 les salves décalent le pli de Δ(eps) sans changer la loi du fantôme | 28/09 (moi) | ouverte |
+| H59-11 Δ(eps) est un effet de moyenne de Kapitza (⟨∇J⟩=0 avec ∇³J et la variance des salves) | 28/09 (moi) | ouverte, à tester après H59-10 |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
