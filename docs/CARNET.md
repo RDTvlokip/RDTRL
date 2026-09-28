@@ -16210,6 +16210,21 @@ salves : je l'avais d'abord mis dans le rapport, ce qui donnait -205,
 
 | H59-11 (Kapitza simple, Δ = -G''σ²/(2G_δ)) | 28/09 (moi) | **réfutée** en signe et en grandeur (22× à 690× trop grand, signe fixe) ; Δ_obs = 1-5 % de l'effet attendu |
 
+**Agent style dipankar lancé (28/09), un seul, worktree isolé**, sur les
+quatre affirmations (a)-(d) de ce bloc ; son retour sera vérifié
+chiffre par chiffre avant toute acceptation (règle 5bis).
+
+**Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
+Interpolation linéaire en log10(eps) entre les trois mesures
+(1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
+Δ(2e-8) = +3,6e-9 (± 2e-9) ; Δ(5e-8) = -2,2e-9 (± 2e-9) ; zéro de Δ
+vers eps = 3,2e-8. Grille : 2e-8 avec offsets -2e-9, 0, 2e-9, 4e-9,
+6e-9, 8e-9, 1e-8, 2e-8 ; 5e-8 avec -6e-9, -4e-9, -2e-9, 0, 2e-9, 4e-9,
+6e-9, 1e-8, 2e-8 ; pas 60 000, état chauffé de base (20 000 + 20 000).
+Ce qui réfuterait l'interpolation : Δ(2e-8) hors de [1,6e-9 ; 5,6e-9]
+ou Δ(5e-8) hors de [-4,2e-9 ; -0,2e-9]. Si Δ(eps) n'est pas monotone
+entre 1e-8 et 1e-7, les trois points ne suffisaient pas.
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
