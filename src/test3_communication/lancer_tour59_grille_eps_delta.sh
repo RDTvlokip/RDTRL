@@ -37,4 +37,4 @@ for E in $EPS_LIST; do
   for O in $OFFS; do
     echo "$E $O"
   done
-done | xargs -P 12 -L 1 bash -c 'un_run $0 $1'
+done | xargs -P "${NPROC:-6}" -L 1 bash -c 'un_run $0 $1'

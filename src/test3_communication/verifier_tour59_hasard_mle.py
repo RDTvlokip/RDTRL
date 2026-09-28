@@ -52,8 +52,13 @@ def loglik(lam_fonction, donnees):
     ll = 0.0
     for off, b, pas in donnees:
         lam = lam_fonction(off)
-        if lam <= 0 or not np.isfinite(lam):
+        if not np.isfinite(lam) or lam < 0:
             return -1e18
+        if lam == 0:
+            # taux nul (sous delta*) : un run qui tient est parfaitement legal, un echappement est impossible
+            if b is not None:
+                return -1e18
+            continue
         ll += (np.log(lam) - lam * b) if b is not None else (-lam * pas)
     return ll
 
@@ -74,9 +79,9 @@ def ajuster_puissance(donnees):
 
     def f(p):
         logc, g, dstar = p  # dstar en unites 1e-9
-        if dstar >= xmin * 1e9 - 1e-6 or g <= 0:
+        if dstar >= 20.0 or dstar < 0.0 or g <= 0:
             return 1e18
-        return -loglik(lambda x: np.exp(logc) * ((x * 1e9 - dstar)) ** g, donnees)
+        return -loglik(lambda x: np.exp(logc) * (x * 1e9 - dstar) ** g if x * 1e9 > dstar else 0.0, donnees)
 
     meilleur = None
     for d0 in (4.0, 5.0, 5.8):
@@ -85,6 +90,20 @@ def ajuster_puissance(donnees):
             if meilleur is None or r.fun < meilleur.fun:
                 meilleur = r
     return meilleur
+
+
+def profil_puissance(donnees, dstars):
+    """Vraisemblance profilee : pour chaque delta* fixe (unites 1e-9), maximum sur (c, gamma)."""
+    sortie = []
+    for ds in dstars:
+        f = lambda p: -loglik(lambda x: np.exp(p[0]) * (x * 1e9 - ds) ** p[1] if x * 1e9 > ds else 0.0, donnees) if p[1] > 0 else 1e18
+        meilleur = None
+        for g0 in (1.5, 3.5, 6.0):
+            r = minimize(f, [-9.0, g0], method="Nelder-Mead", options={"xatol": 1e-8, "fatol": 1e-10, "maxiter": 6000})
+            if meilleur is None or r.fun < meilleur.fun:
+                meilleur = r
+        sortie.append((ds, -meilleur.fun, meilleur.x[1]))
+    return sortie
 
 
 def ajuster_plancher_puissance(donnees):
@@ -147,6 +166,11 @@ if __name__ == "__main__":
     print(f"plancher+exp  : lambda = {np.exp(l0):.2e} + exp({a2:.2f} + {b2:.3f} x/1e-9)   logL={ll_fe:.2f}  AIC={2 * 3 - 2 * ll_fe:.2f}")
     print(f"plancher+puiss: lambda = {np.exp(rfp.x[0]):.2e} + {np.exp(rfp.x[1]):.2e} (x/1e-9 - {rfp.x[3]:.2f})^{rfp.x[2]:.2f}   "
           f"logL={ll_fp:.2f}  AIC={2 * 4 - 2 * ll_fp:.2f}")
+    print("\nprofil de vraisemblance de la loi de puissance (delta* fixe, max sur c et gamma) ; IC 95 % : logL >= max - 1,92")
+    prof = profil_puissance(D, [4.0, 4.5, 5.0, 5.3, 5.5, 5.7, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5])
+    lmax = max(l for _, l, _ in prof)
+    for ds, l, gg in prof:
+        print(f"   delta* = pli + {ds:.1f}e-9   logL = {l:8.2f}   (max - {lmax - l:5.2f})   gamma = {gg:.2f}   {'dans l IC' if lmax - l <= 1.92 else ''}")
     print("\nprediction hors echantillon : offset   exp        puissance")
     for x in (6.0e-9, 6.3e-9, 6.5e-9, 9e-9, 1.2e-8):
         le = np.exp(a + b * x * 1e9)
