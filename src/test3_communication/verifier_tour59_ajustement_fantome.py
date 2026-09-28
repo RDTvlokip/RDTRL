@@ -21,10 +21,10 @@ PLI = 0.0134372100660973
 KAPPA_PREDIT = 0.182
 
 
-def lire():
+def lire(tag="grille"):
     runs = {}
-    for f in glob.glob("D:/tmp/rdtrl_t59_grille_*.txt"):
-        m = re.search(r"grille_([0-9.e+-]+)_(-?[0-9.e+-]+)\.txt$", f)
+    for f in glob.glob(f"D:/tmp/rdtrl_t59_{tag}_*.txt"):
+        m = re.search(tag + r"_([0-9.e+-]+)_(-?[0-9.e+-]+)\.txt$", f)
         txt = open(f).read().strip()
         if not m or not txt:
             continue
@@ -50,7 +50,9 @@ def ajuster(off, t):
 
 
 if __name__ == "__main__":
-    for eps, lst in sorted(lire().items(), key=lambda kv: float(kv[0])):
+    import sys
+    tag = sys.argv[1] if len(sys.argv) > 1 else "grille"
+    for eps, lst in sorted(lire(tag).items(), key=lambda kv: float(kv[0])):
         lst.sort()
         casse = [(o, b) for o, b, _ in lst if b >= 0]
         tient = [(o, p) for o, b, p in lst if b < 0]

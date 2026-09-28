@@ -7,6 +7,11 @@
 cd "$(dirname "$0")"
 export PLI=0.0134372100660973
 export PAS=${3:-60000}
+# etat chauffe : CHAUFFE pas a pli-1e-6 (eps 1e-10) puis CHAUFFE_EPS pas au nouvel eps
+export CHAUFFE=${CHAUFFE:-20000}
+export CHAUFFE_EPS=${CHAUFFE_EPS:-20000}
+# prefixe des fichiers de sortie (grille = etat chauffe de base 20000+20000)
+export TAG=${TAG:-grille}
 EPS_LIST=${1:-"1e-8 3e-8 1e-7"}
 OFFS=${2:-"-1e-8 -6e-9 -3e-9 -1e-9 1e-9 3e-9 6e-9 1e-8 2e-8 5e-8"}
 
@@ -14,8 +19,8 @@ un_run() {
   local E=$1 O=$2
   local D
   D=$(python -c "print($PLI + float('$O'))")
-  python verifier_tour59_delta_c_dynamique.py mur23 3 4 "$D" "$PAS" eps="$E" chauffe=20000 chauffe_eps=20000 \
-    > "/d/tmp/rdtrl_t59_grille_${E}_${O}.txt"
+  python verifier_tour59_delta_c_dynamique.py mur23 3 4 "$D" "$PAS" eps="$E" chauffe="$CHAUFFE" chauffe_eps="$CHAUFFE_EPS" \
+    > "/d/tmp/rdtrl_t59_${TAG}_${E}_${O}.txt"
 }
 export -f un_run
 

@@ -16034,6 +16034,64 @@ opposé). Mais ces skews ont été mesurés avec un protocole plus court
   dans [2,5e-8 ; 1e-7] (facteur 2). Hors de cette fenêtre : `√v_lent`
   n'est pas cette grandeur, κ(eps) linéaire vient d'ailleurs.
 
+**Résultats (28/09, `verifier_tour59_skew_et_vlent.py`, 5 traces de
+40 000 pas à pli-1e-6 + grille eps 1e-10, 10 offsets) :**
+```
+eps      skew (mean-median d3)   Delta (loi du fantome)    Delta/(-skew)
+1e-10    -2,29e-6                (5e-9 ; 1e-8) direct*     0,002 - 0,004
+1e-8     -6,02e-7                +9,1e-9                   +0,0152
+3e-8     -6,5e-9                 +3,2e-10                  (mal conditionne)
+1e-7     +3,10e-7                -5,5e-9                   +0,0178
+1e-6     +2e-14 (pas de salves)  ~0                        -
+```
+*À eps 1e-10 l'ajustement (9 points, +1e-8 à +5e-7, t de 74 à 387
+pas) donne `Delta=-3,1e-9`, `κ=0,038`, R²=0,9999, mais le run à
++5e-9 TIENT 60 000 pas alors que cet ajustement prédit 422 : les
+points lointains ne voient pas la barrière proche. Ils cassent en moins
+d'une période de salve (444 pas) : ce sont des coups de salve, pas un
+passage de goulot. L'encadrement direct est la seule valeur fiable.
+- P-d ✓ : signes 4/4, |skew(3e-8)| = 6,5e-9 < 2e-7. Le zéro du skew
+  (~3e-8) et le zéro de Δ (~3e-8) coïncident.
+- H59-12 **réfutée comme proportionnalité universelle** : c = 0,0152 et
+  0,0178 entre 1e-8 et 1e-7 (17 % d'écart) mais 0,002-0,004 à 1e-10.
+- P-e ✗ : Δ(1e-10) ∈ (5e-9 ; 1e-8) contre +3,9e-8 prédit [2e-8 ; 6e-8]
+  (mon propre critère de réfutation, Δ < 1e-8, est atteint).
+  Ce qui reste : signe et zéro du skew = signe et zéro de Δ (4 eps sur
+  4) ; la taille sature à ~1e-8 quand le skew grandit de 4× (1e-8 → 1e-10).
+- H59-13 **réfutée telle que précommise** : moyenne géométrique des 4
+  logits = 2,9e-9 à 3e-8 (fenêtre [2,5e-8 ; 1e-7]). Faute de
+  définition : le logit e[4,10] a `√v = 2e-14` (son gradient est nul :
+  1-s4 ≈ 3e-12) et écrase la moyenne géométrique. Par logit, à 3e-8 :
+  e[3,10] 3,9e-8, r[10,3] et r[10,4] 3,0e-7. Lecture POST HOC (à ne pas
+  compter comme confirmation) : avec `√v(e[3,10])` mesuré à pli-1e-6,
+  `κ0(1+eps/√v)` donne κ = 0,088 / 0,126 / 0,325 à 1e-8 / 3e-8 / 1e-7
+  contre 0,085 / 0,111 / 0,210 ajustés (3,5 % / 13 % / 55 %) : pas
+  une confirmation, le v pendant le passage n'est pas le v à pli-1e-6
+  (le gradient s'annule près du pli, v décroît de 0,999 par pas).
+
+**Deux hypothèses nouvelles, prédictions poussées avant les runs
+(reproductibilité : Δ dépend-il de l'état chauffé ?).** L'écart entre le
+protocole « sans chauffe » (Δ(1e-10) ∈ (6e-10 ; 1e-9), 27/09) et « avec
+chauffe » (Δ ∈ (5e-9 ; 1e-8), aujourd'hui) à MÊME eps est d'un facteur
+≥ 5 ; soit le seuil est une distribution (échappement induit par les
+salves, pas un pli déterministe), soit il dépend de l'état d'Adam
+(moments) au démarrage.
+- **H59-14** : à eps 1e-10 le seuil dépend de l'état de départ. Test :
+  état chauffé différent (30 000 + 30 000 pas au lieu de 20 000 + 20 000),
+  mêmes offsets. Prédiction : seuil à 1e-10 dans [3e-9 ; 1e-8] pour
+  les deux états (si H59-14 est fausse) ; si vrai, les deux seuils
+  diffèrent de plus de 5e-9 ou l'un tombe sous 1e-9.
+- **H59-15** : à eps 1e-7 (là où l'ajustement à 8 points donne Δ=-5,5e-9,
+  R²=1,0000) le seuil ne dépend pas de l'état de départ. Test : même
+  chauffe 30 000 + 30 000. Prédiction : bascule à -3e-9, -1e-9, +1e-9
+  avec t à ±30 % de 4131 / 3080 / 2560, et tient à -6e-9. Ce qui la
+  réfuterait : un seul de ces cinq résultats hors de ces fenêtres.
+
+| H59-12 Δ(eps) = -c·skew(eps), c constant | 28/09 (moi) | **réfutée** en proportionnalité (c = 0,015-0,018 à 1e-8..1e-7, 0,002-0,004 à 1e-10) ; signe et zéro communs 4/4 |
+| H59-13 √v_lent = 5,1e-8 lu sur les 4 logits de la collision | 28/09 (moi) | **réfutée** telle que précommise (faute de définition, un logit saturé à 2e-14) ; lecture par logit post hoc, non concluante |
+| H59-14 le seuil à eps 1e-10 dépend de l'état chauffé | 28/09 (moi) | ouverte |
+| H59-15 le seuil à eps 1e-7 ne dépend pas de l'état chauffé | 28/09 (moi) | ouverte |
+
 ---
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
