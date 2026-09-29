@@ -1,6 +1,37 @@
 # État du projet RDTRL — où on en est
 
-## Tour 59 (vraie critique de dipankarsarkar, lue le 27/09/2026) — EN COURS
+## Tour 60 (vraie critique de dipankarsarkar, 29/09/2026) — LETTRE PRÊTE
+
+**Lettre** : `docs/REPONSE_ORDRE60.md` (gitignorée), PRÊTE À ENVOYER, écrite
+à la première personne, avec le compte rendu de ce qui a été fait en interne
+pendant son absence (demande de Théo). La lettre 59 reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 29/09/2026 (tour 60,
+PAS simulée) », juste avant « ## 9. ».
+
+**Sa critique** : il reconnaît son erreur de comptage (grille linéaire
+ratant les racines effondrées) ; il convertit le biais mean-median des
+salves en unités de δ (pente du nœud 16 / 54 / 552) et prédit des seuils ; il
+note que le décalage converti à eps 1e-10 n'est pas stationnaire ; il
+demande si à pli-1e-9 il continue de baisser vers mon « 6e-10 à 1e-9 ».
+**Acquis (tous vérifiés, prédictions poussées avant les runs)** : ses
+racines, pentes et conversions se retrouvent ; son « -2,0e-8 » à pli-1e-8
+est une erreur reprise de MON carnet (-1,46e-8). Décalage converti à eps 1e-10
+(6 phases, aucune échappée) : -4,98e-8 / -4,24e-8 / -2,78e-8 / -1,46e-8 /
+-6,4e-9 / -3,9e-9 / -2,4e-9 à pli-1e-5 … pli-1e-10 : il baisse sans
+rejoindre 1e-9 à pli-1e-9, l'exposant local monte de 0,07 à 0,45 (vers
+1/2 : le décalage tend vers 0 au pli). Sa conversion prédit les seuils
+hors échantillon à 5 % (eps 2e-8) et 9 % (5e-8). La lettre corrige la
+lettre 59 (le « 6e-10 à 1e-9 » était le transitoire d'Adam neuf).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 60 ; attendre sa réponse.
+2. Vérifier p → 1/2 plus près du pli (pli-1e-11) : la réduction numba le
+   fait à bas coût (`hasard_reduction_tour59.py`) ; sa question binaire.
+3. Réseau complet sous pli+6,0e-9 : ÉCARTÉ par Théo (~20 h), ne pas lancer.
+4. Forme de λ(δ) et exposant : non déterminés ; pas de mécanisme.
+5. Conversion sur r4 (fait sur d3 seul) ; quatrième code ; lr > 0,05.
+
+## Tour 59 (vraie critique de dipankarsarkar, lue le 27/09/2026) — CLOS (lettre 59 figée)
 
 **Lettre** : `docs/REPONSE_ORDRE59.md` (gitignorée), prête à envoyer
 (excuses pour le retard incluses, demande de Théo). **Carnet** : section

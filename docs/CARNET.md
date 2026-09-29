@@ -17212,6 +17212,11 @@ pli-1e-10                      5527,32   -2,350e-9                        -1,445
 
 | H60-3 s(δ) → 0 comme √(δ_c-δ) à l'approche du pli | 29/09 (moi, sur les données) | **soutenue** : p_local 0,07 → 0,45 sur 4,5 décades ; à confirmer plus près du pli |
 
+Réponse dans `docs/REPONSE_ORDRE60.md` (gitignorée, écrite à la première
+personne, avec le compte rendu de ce qui a été fait en interne pendant son
+absence, à la demande de Théo). Scripts : `verifier_tour60_conversion_delta.py`,
+`verifier_tour60_biais_converti.py`, `lancer_tour60_traces.sh`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
