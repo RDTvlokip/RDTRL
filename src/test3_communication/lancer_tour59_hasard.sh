@@ -22,15 +22,17 @@ export EPS=${EPS:-1e-10}
 export CAS=${CAS:-mur23}
 export A=${A:-3}
 export B=${B:-4}
+# LRA : taux d'apprentissage d'Adam (0,05 par defaut) ; TAG des sorties a changer si LRA change
+export LRA=${LRA:-0.05}
 for k in $KS; do
   echo "$k"
-done | xargs -P "$NPROC" -I{} bash -c 'python verifier_tour59_masque_eps.py "$CAS" "$A" "$B" "$PLI" 0 masque=tout eps="$EPS" chauffe_eps=$((20000 + {})) > /dev/null'
+done | xargs -P "$NPROC" -I{} bash -c 'python verifier_tour59_masque_eps.py "$CAS" "$A" "$B" "$PLI" 0 masque=tout eps="$EPS" chauffe_eps=$((20000 + {})) lr="$LRA" > /dev/null'
 
 un_run() {
   local K=$1 O=$2
   local D
   D=$(python -c "print($PLI + float('$O'))")
-  python verifier_tour59_masque_eps.py "$CAS" "$A" "$B" "$D" "$PAS" masque=tout eps="$EPS" chauffe_eps=$((20000 + K)) \
+  python verifier_tour59_masque_eps.py "$CAS" "$A" "$B" "$D" "$PAS" masque=tout eps="$EPS" chauffe_eps=$((20000 + K)) lr="$LRA" \
     > "/d/tmp/rdtrl_t59_${HZ_TAG}_k${K}_${EPS}_${O}.txt"
 }
 export HZ_TAG

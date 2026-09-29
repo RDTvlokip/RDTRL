@@ -16938,6 +16938,25 @@ eps      phases  cassent   min    mediane   max     moyenne   sd/moyenne   (pli+
 
 | H59-30 le passage devient stochastique quand eps ≪ √v (frontière raide, cv 0,45 à 3e-9, 0,087 à 1e-8) | 29/09 (moi) | **confirmée** en position (entre 3e-9 et 1e-8) ; la lecture par √v reste une hypothèse |
 
+**Deux tests laissés non testés jusqu'ici, précommis (29/09) :**
+- **T-A, ablation de l'agent sur le réseau complet.** Il dit (réduction) que
+  seul le COUPLE logit de message + 26 concurrents de la ligne sous-pondérée
+  fait changer le signe de Δ à eps 1e-7 : `e3` seul → Δ_2D = +2,11e-8, `o3`
+  (26 concurrents) seul → +1,28e-8, les deux → -1,39e-8. Masques `e3msg` et
+  `o3` (eps 1e-7 sur ce groupe, 1e-10 ailleurs), mur 23, pas 60 000,
+  offsets 0 / 3e-9 / 6e-9 / 9e-9 / 1,2e-8 / 1,8e-8. Prédiction : les DEUX seuils
+  sont positifs (> 0). Ce qui la réfuterait : l'un des deux seuils ≤ -3e-9
+  (alors un seul des deux suffit au changement de signe). Mise 70 %.
+- **T-B, la frontière lisse/stochastique suit-elle √v ?** Mon hypothèse :
+  frontière à eps ≈ 0,1√v, √v ≈ lr·h/38 croît avec lr. Test à lr = 0,02
+  (√v attendu ÷2,5) : mêmes 10 phases (k = 89 … 6 765), δ = pli+1,5e-8, pas
+  40 000, eps ∈ {1e-9, 2e-9, 3e-9, 5e-9, 1e-8}. Prédiction : cv(3e-9) <
+  0,30 (contre 0,452 à lr 0,05) et cv(1e-8) ≤ 0,10. Ce qui la réfuterait :
+  cv(3e-9, lr 0,02) ≥ 0,45 (pas de déplacement) ; ou cv non monotone en eps.
+  Confusion possible : les salves dépendent aussi directement de lr
+  (amplitude, existence du mode) ; un déplacement observé ne prouverait pas à
+  lui seul que √v en est la cause. Mise 55 % sur le déplacement.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

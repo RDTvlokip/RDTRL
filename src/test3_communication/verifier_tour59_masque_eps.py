@@ -29,13 +29,18 @@ from adam_eps_masque import AdamMasque
 MSG = 10
 
 
-def eps_masque(e, r, a, masque, eps):
+def eps_masque(e, r, a, masque, eps, msg=10):
     ee = torch.full_like(e.p[0], ADAM_EPS)
     er = torch.full_like(r.p[0], ADAM_EPS)
     if masque == "tout":
         ee.fill_(eps); er.fill_(eps)
     elif masque == "ligne3":
         ee[a, :] = eps
+    elif masque == "e3msg":  # le seul logit de message de la ligne sous-ponderee
+        ee[a, msg] = eps
+    elif masque == "o3":  # les 26 concurrents de la ligne sous-ponderee, sans le logit de message
+        ee[a, :] = eps
+        ee[a, msg] = ADAM_EPS
     elif masque == "recepteur":
         er.fill_(eps)
     else:
@@ -49,16 +54,16 @@ def poids_pour(a, b, delta):
     return p
 
 
-def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000, beta2=0.999, cas="mur23"):
+def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000, beta2=0.999, cas="mur23", lr=LR):
     torch.set_num_threads(1)
     (e, r), msg = depart(cas)  # msg : 10 pour mur23, 8 pour c814 (collision 6/14 de 12345 k=3)
     activer(e, r)
     params = parametres(e, r)
-    tag_b = "" if beta2 == 0.999 else f"_b2{beta2}"
+    tag_b = ("" if beta2 == 0.999 else f"_b2{beta2}") + ("" if lr == LR else f"_lr{lr}")
     ck1 = f"D:/tmp/rdtrl_tour59_phase1_{cas}_{a}_{b}_{chauffe}{tag_b}.pt"
     ck2 = f"D:/tmp/rdtrl_tour59_masque_{masque}_{cas}_{a}_{b}_eps{eps:.0e}_{chauffe}_{chauffe_eps}{tag_b}.pt"
     pc = poids_pour(a, b, F_PLI - 1e-6)
-    opt = AdamMasque(params, LR, eps_masque(e, r, a, masque, eps), betas=(0.9, beta2))
+    opt = AdamMasque(params, lr, eps_masque(e, r, a, masque, eps, msg), betas=(0.9, beta2))
     if os.path.exists(ck2):
         c = torch.load(ck2)
         with torch.no_grad():
@@ -73,10 +78,10 @@ def courir(a, b, delta, pas, masque, eps, chauffe=20000, chauffe_eps=20000, beta
             with torch.no_grad():
                 for p, v in zip(params, c1["params"]):
                     p.copy_(v)
-            opt1 = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS, betas=(0.9, beta2))
+            opt1 = torch.optim.Adam(params, lr=lr, eps=ADAM_EPS, betas=(0.9, beta2))
             opt1.load_state_dict(c1["opt"])
         else:
-            opt1 = torch.optim.Adam(params, lr=LR, eps=ADAM_EPS, betas=(0.9, beta2))
+            opt1 = torch.optim.Adam(params, lr=lr, eps=ADAM_EPS, betas=(0.9, beta2))
             for _ in range(chauffe):
                 j, _ = objectif_pondere(e, r, BETA, pc)
                 opt1.zero_grad(); (-j).backward(); opt1.step()
@@ -114,4 +119,5 @@ if __name__ == "__main__":
     # quelques pas decale la PHASE des salves au moment ou delta est applique.
     chauffe_eps = next((int(o[12:]) for o in opts if o.startswith("chauffe_eps=")), 20000)
     beta2 = next((float(o[6:]) for o in opts if o.startswith("beta2=")), 0.999)
-    courir(a, b, delta, pas, masque, eps, chauffe_eps=chauffe_eps, beta2=beta2, cas=sys.argv[1])
+    lr = next((float(o[3:]) for o in opts if o.startswith("lr=")), LR)
+    courir(a, b, delta, pas, masque, eps, chauffe_eps=chauffe_eps, beta2=beta2, cas=sys.argv[1], lr=lr)
