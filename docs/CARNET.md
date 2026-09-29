@@ -16957,6 +16957,22 @@ eps      phases  cassent   min    mediane   max     moyenne   sd/moyenne   (pli+
   (amplitude, existence du mode) ; un déplacement observé ne prouverait pas à
   lui seul que √v en est la cause. Mise 55 % sur le déplacement.
 
+**Résultat T-A (ablation de l'agent, réseau complet, mur 23, eps 1e-7 sur le
+groupe, 12 runs) : la prédiction tombe, aucun des deux ne suffit à inverser
+le signe.**
+```
+masque        tient jusqu'a   premier qui casse            ajustement     agent (reduction)   ligne 3 entiere (E3)
+e3msg seul    +9e-9           +1,2e-8  (1517 pas)          (2 points)     Δ_2D = +2,11e-8     
+o3 seul       +6e-9           +9e-9    (33 984 pas)        +8,98e-9       Δ_2D = +1,28e-8     
+e3msg + o3    -1,5e-8         -1,2e-8                       -1,36e-8       -1,39e-8
+rien (1e-10)  cliff +6e-9 (tient) / +7e-9 (casse)                          Δ_2D = +4,23e-8
+```
+Les deux seuils isolés sont POSITIFS et même au-dessus de la falaise par
+défaut (+6,5e-9) ; seule la ligne entière (message + concurrents) passe à
+-1,36e-8. **Son ablation est confirmée sur le réseau complet** : le
+signe négatif exige les 27 coordonnées de la ligne à la fois (le gain
+d'Adam de la ligne fixe l'axe des salves, pas un logit isolé).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
