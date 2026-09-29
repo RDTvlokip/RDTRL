@@ -17230,6 +17230,47 @@ scripts ne résout plus l'écart nœud-jumeau sous ~1e-11).
   (saturation en dessous de 1/2) ou ≥ 0,55 ; ou des phases qui
   s'échappent en nombre tel que la moyenne sur les survivantes est biaisée.
 
+**Résultat (réduction numba, 16 phases, 2 000 000 pas enregistrés, aucune
+phase échappée ; `verifier_tour60_exposant_reduction.py`) : toutes les
+prédictions tombent, et p atteint 1/2.**
+```
+offset      pente     s (reduction)      reseau complet   ecart     p_local   biais_d3 = s x pente   ecart noeud-jumeau   |biais|/ecart
+-1e-5       16,1      -4,982e-8          -4,977e-8        +0,1 %    -         -8,01e-7               7,00e-4              0,00
+-1e-6       53,9      -4,228e-8          -4,235e-8        -0,2 %    0,071     -2,28e-6               2,21e-4              0,01
+-1e-7       173,5     -2,795e-8          -2,779e-8        +0,6 %    0,180     -4,85e-6               7,00e-5              0,07
+-1e-8       551,7     -1,459e-8          -1,458e-8        +0,1 %    0,282     -8,05e-6               2,21e-5              0,36
+-1e-9       1747,8    -6,410e-9          -6,376e-9        +0,5 %    0,357     -1,12e-5               7,00e-6              1,60
+-3e-10      3192,2    -3,866e-9          -3,856e-9        +0,3 %    0,420     -1,23e-5               3,83e-6              3,22
+-1e-10      5530,1    -2,355e-9          -2,350e-9        +0,2 %    0,451     -1,30e-5               2,21e-6              5,89
+-3e-11      10097,7   -1,334e-9          -                          0,472     -1,35e-5               1,21e-6              11,1
+-1e-11      17490,7   -7,844e-10         -                          0,484     -1,37e-5               7,00e-7              19,6
+-3e-12      31934,8   -4,343e-10         -                          0,491     -1,39e-5               3,83e-7              36,2
+-1e-12      55313,7   -2,523e-10         -                          0,494     -1,40e-5               2,21e-7              63,1
+```
+- **Fidélité** : la réduction reproduit le réseau complet à 0,1-0,6 % aux
+  sept offsets communs (fenêtre précommise 15 %).
+- **p → 1/2** : 0,451 / 0,472 / 0,484 / 0,491 / 0,494 ; p_local dans
+  [0,44 ; 0,52] aux deux intervalles annoncés ✓ ; s(-1e-11) = 7,84e-10 dans
+  [6e-10 ; 1,0e-9] ✓ ; s(-1e-12) = 2,52e-10 dans [1,8e-10 ; 3,5e-10] ✓.
+  Limite : s ≈ 2,5e-4 √(δ_c-δ) (2,52e-4 à -1e-12, 2,48e-4 à -1e-11, 2,36e-4 à
+  -1e-10).
+- **Pourquoi (comment)** : le biais de d3 SATURE (8,05e-6 à -1e-8, 1,12e-5 à
+  -1e-9, 1,30e-5 à -1e-10, 1,40e-5 à -1e-12, contre sd(d3) = 1,27e-5 mesuré
+  sur les traces à eps 1e-10) pendant que la pente diverge en 1/√(δ_c-δ) :
+  s = biais/pente varie donc en √. Le biais est de l'ordre de l'amplitude
+  des salves, indépendant de δ près du pli ; l'écart nœud-jumeau, lui,
+  se contracte en √ (2,2e-5 à -1e-8, 2,2e-7 à -1e-12).
+- **Jusqu'où la lecture « la moyenne est le nœud d'un δ décalé » vaut** :
+  quand |biais|/écart ≪ 1. Le rapport franchit 1 vers pli-3e-9 (0,36 à
+  -1e-8, 1,6 à -1e-9) et vaut 63 à -1e-12. À pli-1e-6 (où sont ses
+  conversions à eps ≥ 2e-8) il vaut 0,01 : c'est là que 2e-8, 5e-8 et 1e-7
+  tombent à 1-9 %. À eps 1e-10 près du pli, les salves dépassent d'un
+  facteur 6 à 60 la distance nœud-jumeau : la conversion en unités de δ n'a
+  plus de sens de réponse linéaire.
+
+| H60-3 s(δ) → 0 comme √(δ_c-δ) à l'approche du pli | 29/09 (moi) | **confirmée** : p_local 0,451 → 0,494 sur 2 décades de plus, réduction validée à 0,1-0,6 % ; biais_d3 sature à 1,4e-5 |
+| H60-4 la conversion en unités de δ (réponse linéaire) vaut tant que |biais|/écart nœud-jumeau ≪ 1 | 29/09 (moi) | **soutenue** : hors échantillon à eps 2e-8 et 5e-8 (rapport 0,01), échoue près du pli à eps 1e-10 (rapport 6 à 63) ; le seuil de validité n'est pas testé finement |
+
 Réponse dans `docs/REPONSE_ORDRE60.md` (gitignorée, écrite à la première
 personne, avec le compte rendu de ce qui a été fait en interne pendant son
 absence, à la demande de Théo). Scripts : `verifier_tour60_conversion_delta.py`,

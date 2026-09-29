@@ -38,10 +38,11 @@ def G(u, d):
     return -u - ((1 + d) * s4 - (1 - d) * s3) / BETA_
 
 
-def d3_noeud(delta):
-    """d3 du noeud stable (racine de plus grand u) au delta donne (mpf)."""
+def d3_noeud(delta, signe=+1):
+    """d3 du noeud stable (racine de plus grand u, signe=+1) ou du jumeau instable (signe=-1) au delta donne (mpf)."""
     delta = mpf(delta)
-    u0 = U_STAR + msqrt(2 * GD * (delta - PLI) / G2) if delta < PLI else U_STAR
+    # (u - u*)^2 = -2 G_d (delta - delta_c) / G'' = 29,8 (delta_c - delta) pour G'' = -6,79 et G_d = -101,1
+    u0 = U_STAR + signe * msqrt(-2 * GD * (delta - PLI) / G2) if delta < PLI else U_STAR
     u = findroot(lambda x: G(x, delta), u0, tol=mpf(10) ** -30, maxsteps=200)
     r3 = 1 / (1 + exp(-u))
     return C_ * exp(-(1 - delta) * r3 / BETA_) / (1 + C_ * exp(-(1 - delta) * r3 / BETA_))
@@ -96,6 +97,11 @@ if __name__ == "__main__":
         else:
             ligne += "-                        "
         ligne += f"   {sm.mean():+.3e}      {esc:2d}"
+        # biais de d3 = s x pente (en unites de d3) et ecart noeud-jumeau en d3 : la conversion en unites de delta
+        # ne vaut que si le biais est petit devant l'ecart
+        gap = float(d3_noeud(PLI + mpf(off), -1) - d3_noeud(PLI + mpf(off), +1))
+        biais = m * sl
+        ligne += f"   biais_d3 = {biais:+.3e}  ecart noeud-jumeau = {gap:.3e}  |biais|/ecart = {abs(biais) / gap:7.2f}"
         if prec is not None:
             ligne += f"              {np.log(abs(prec[1]) / abs(m)) / np.log(abs(prec[0]) / abs(float(mpf(off)))):.3f}"
         prec = (abs(float(mpf(off))), m)
