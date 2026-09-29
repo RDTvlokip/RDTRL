@@ -22,7 +22,7 @@ import numpy as np
 from mpmath import mp, mpf, exp
 
 sys.path.insert(0, ".")
-from verifier_tour60_exposant_reduction import PLI, d3_noeud, findroot, G, U_STAR, msqrt, G2, GD  # noqa: F401
+from verifier_tour60_exposant_reduction import PLI, d3_noeud, findroot, G, U_STAR, msqrt, G2, GD, BETA_, C_  # noqa: F401
 import reduction_numba_tour59 as redlib
 from hasard_reduction_tour59 import base_state, warmed
 

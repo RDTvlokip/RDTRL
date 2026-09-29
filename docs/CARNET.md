@@ -17383,6 +17383,32 @@ X4 = (1+δ) r4/β). Si la médiane est le nœud d'un δ décalé, δ'_d4 doit va
 et à pli-1e-12 (mise 55 %). Ce qui montrerait que l'état calme n'est sur la
 courbe des nœuds d'aucun δ : rapport hors de [0,85 ; 1,15] à l'un des deux.
 
+**E61-1 (d4) : test INVALIDE, et ce qu'il révèle.** Deux tentatives. (1) Reconstruire
+d4 = 1 - rb/r4 dans la réduction numba a donné des rapports absurdes (1e6 à 4e7)
+parce que d4 au nœud vaut 3,1e-17, sous la résolution de la double précision
+(1,1e-16). (2) Avec la réduction pure Python (`verifier_tour61_d4_python.py`, qui
+calcule d4 directement) le résultat est encore aberrant, pour une raison
+physique : **d4 médian = 8,056e-13 / 8,039e-13 / 8,042e-13 à pli-1e-9 / -1e-10 /
+-1e-12**, constant en δ à 0,2 % près, soit 2,57e4 fois sa valeur au nœud
+(3,13e-17), avec une excursion max/min de 2,8 dans une trace. Le logit e4 - o4
+de la ligne 4 ne va pas à son nœud : son gradient (∝ d4, ~1e-14 à 1e-19) est
+sous le plancher d'Adam (eps 1e-10), il reste près de sa valeur de chauffe.
+Mon test supposait que d4 se relaxe vers X4 = (1+δ) r4/β ; c'est faux à eps 1e-10.
+La prédiction de rapport [0,85 ; 1,15] n'est ni confirmée ni réfutée (mesure
+impossible). Restent les deux coordonnées vivantes : z3 (d3) et u (r4).
+- **Ce que ça change au reste** : s4 = 1 - 8,0e-13 au lieu de 1 - 3e-17
+  décale la fermeture : δG = (1+δ)/β × d4 = 50,7 × 8,04e-13 = 4,1e-11, donc le
+  pli EFFECTIF de la dynamique diffère du pli idéal de δG/G_δ = 4,1e-11/101,1 ≈
+  4e-13 (signe à calculer). Sans effet à pli-1e-8 ; 4 % de l'offset à -1e-11 ;
+  30 % à -3e-12 ; 40 % à -1e-12. Mes lignes ≤ -1e-11 (dont le p_local
+  0,484 / 0,491 / 0,494) sont mesurées par rapport au pli IDÉAL.
+- **Vérification précommise** : refaire les offsets ≤ -1e-10 par rapport au
+  pli EFFECTIF (fermeture avec d4 = 8,04e-13 fixé, pli et nœud recalculés en mpmath).
+  Prédiction : p_local reste dans [0,45 ; 0,55] aux deux derniers intervalles
+  et la saturation du biais de d3 (B ≈ 1,4e-5) subsiste (mise 60 %). Ce qui
+  réfuterait « p → 1/2 » : p_local hors de [0,40 ; 0,60] à l'un des deux
+  derniers intervalles avec le pli effectif.
+
 | H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
 | H61-2 le décalage total = biais de salves (fixe) + déplacement de l'état calme (qui grandit quand l'écart se ferme) | 29/09 (lui) | **confirmée** : -7,98e-6 fixe + médiane de -5,0e-6 (-1e-10) à -5,97e-6 (-1e-12), limite ≈ -6,1e-6 |
 | H61-3 la médiane déplacée est le nœud de l'objectif moyenné sur les salves, pas d'un δ décalé | 29/09 (lui, en question) | **ouverte** : à 3-4 % elle est le nœud d'un δ décalé dans d3 et r4 (P61-5 fausse) ; d4 (E61-1) départagera |
