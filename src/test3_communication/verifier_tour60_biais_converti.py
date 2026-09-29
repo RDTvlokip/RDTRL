@@ -23,6 +23,10 @@ import numpy as np
 from verifier_tour59_branches_fermees import branche_et_jumeau, mesures, F_PLI
 
 MESURES_DELTA = {"2e-08": +3.85e-9, "5e-08": -3.66e-9}
+# pli EXACT (mpmath, G = 0 et dG/du = 0). F_PLI de verifier_tour59_branches_fermees.py est le pli de
+# GRILLE, 2,4e-11 plus bas : les etiquettes d'offset doivent se lire depuis le pli exact, sinon
+# "pli-1e-10" s'affiche "pli-8e-11". Les noeuds et pentes sont calcules au vrai delta, donc corrects.
+PLI_EXACT = 0.0134372100660973
 
 
 def pente(d):
@@ -44,10 +48,11 @@ if __name__ == "__main__":
         d, eps, ce = float(m.group(1)), m.group(2), int(m.group(3))
         if ce == 20000 or (filtre_eps and eps != filtre_eps):
             continue  # ce == 20000 : traces d'avant le tour 60 (protocole a une seule phase), exclues
-        groupes[(eps, round(d - F_PLI, 12))].append((ce - 20000, f))
+        groupes[(eps, round(d - PLI_EXACT, 12))].append((ce - 20000, f))
     print("eps      offset    phases (echappees)   pente    s_noeud = biais/pente      s_med = (moy-med)/pente     seuil predit = pli - s_med")
+    precedent = {}
     for (eps, off), L in sorted(groupes.items(), key=lambda kv: (float(kv[0][0]), kv[0][1])):
-        d = F_PLI + off
+        d = PLI_EXACT + off
         rs = branche_et_jumeau(d)
         dA = mesures(rs[0], d)[0]
         sl = pente(d)
@@ -68,6 +73,12 @@ if __name__ == "__main__":
         pred = -sm.mean()
         ligne = (f"{eps}  {off:+.0e}   {len(L)} ({esc})   {sl:8.2f}   {sn.mean():+.3e} +- {sn.std(ddof=1) if len(sn) > 1 else 0:.1e}"
                  f"     {sm.mean():+.3e} +- {sm.std(ddof=1) if len(sm) > 1 else 0:.1e}      {pred:+.3e}")
+        # exposant local p = d ln|s| / d ln(delta_c - delta) entre cet offset et le precedent (plus loin du pli) :
+        # p = 1/2 si |s| ~ sqrt(delta_c - delta), distance noeud-jumeau
+        if eps in precedent:
+            o0, s0 = precedent[eps]
+            ligne += f"   p_local = {np.log(abs(s0) / abs(sn.mean())) / np.log(abs(o0) / abs(off)):.2f}"
+        precedent[eps] = (off, sn.mean())
         if eps in MESURES_DELTA:
             mes = MESURES_DELTA[eps]
             ligne += f"   (mesure loi du fantome {mes:+.2e} ; ecart {100 * (pred / mes - 1):+.0f} %)"

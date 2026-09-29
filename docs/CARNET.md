@@ -17177,6 +17177,41 @@ décade), |s(-3e-10)| ∈ [2,5e-9 ; 6e-9] et |s(-1e-10)| ∈ [1,2e-9 ; 4,5e-9]
 |s(-1e-10)| ≥ 0,9 |s(-1e-9)|. Les phases qui s'échappent avant la fin
 (hasard ≠ 0 tout près du pli) sont comptées.
 
+**Résultat E60-3 (eps 1e-10, 6 phases, aucune échappée) : la tendance est
+confirmée, les prédictions tombent, et l'exposant local approche 1/2.**
+```
+offset (depuis le pli EXACT)   pente     s_noeud = (moy - noeud)/pente   s_med = (moy - med)/pente   p_local
+pli-1e-5                       16,07     -4,977e-8                        -4,978e-8                   -
+pli-1e-6                       53,88     -4,235e-8                        -4,236e-8                   0,07
+pli-1e-7                       173,48    -2,779e-8                        -2,780e-8                   0,18
+pli-1e-8                       551,71    -1,458e-8                        -1,376e-8                   0,28
+pli-1e-9                       1747,76   -6,376e-9                        -4,565e-9                   0,36
+pli-3e-10                      3191,82   -3,856e-9                        -2,503e-9                   0,42
+pli-1e-10                      5527,32   -2,350e-9                        -1,445e-9                   0,45
+```
+(p_local = d ln|s| / d ln(δ_c-δ) entre deux lignes successives.)
+- Prédictions précommises : |s(-3e-10)| ∈ [2,5e-9 ; 6e-9] ✓ (3,86e-9),
+  |s(-1e-10)| ∈ [1,2e-9 ; 4,5e-9] ✓ (2,35e-9). Le critère « vers 6e-10
+  à 1e-9 » (|s(-1e-10)| ≤ 1,5e-9 ET pas de plateau) est satisfait par
+  mean-median (1,445e-9) et pas par mean-nœud (2,35e-9) : je ne tranche pas
+  entre les deux statistiques, les deux baissent sans plateau.
+- **L'exposant local monte de 0,07 à 0,45, vers 1/2 :** s ~ (δ_c-δ)^{1/2}
+  près du pli, comme la distance nœud-jumeau. Le décalage converti tend
+  donc VERS 0 au pli ; sa lecture « seuil = pli - s » ne peut pas être un
+  prédicteur du seuil à eps 1e-10 en dessous de pli-1e-9 : elle donne 6,4e-9
+  à -1e-9, 3,9e-9 à -3e-10, 2,4e-9 à -1e-10 (vers 0), alors que les temps
+  d'échappement se situent entre pli+5e-9 et pli+7e-9 pour des budgets de
+  10^6 à 10^4 pas. Le 6,4e-9 à -1e-9 est du bon ordre par coïncidence de
+  point d'évaluation.
+- **Correction d'étiquetage de mon script** : `F_PLI` de
+  `verifier_tour59_branches_fermees.py` (0,013437210041901) est le pli de
+  GRILLE, 2,42e-11 sous le pli exact (0,0134372100660973, mpmath). Le
+  script `verifier_tour60_biais_converti.py` affichait « pli-8e-11 » pour ce
+  qui est pli(exact)-1e-10 ; les nœuds et les pentes étaient calculés au vrai δ
+  (donc les nombres sont justes), seule l'étiquette était fausse. Corrigé.
+
+| H60-3 s(δ) → 0 comme √(δ_c-δ) à l'approche du pli | 29/09 (moi, sur les données) | **soutenue** : p_local 0,07 → 0,45 sur 4,5 décades ; à confirmer plus près du pli |
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
