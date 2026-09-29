@@ -74,9 +74,16 @@ def partie_A():
         print(s)
 
 
-def partie_B(nrec=2_000_000):
+def d4_noeud(delta):
+    """d4 = 1 - s4 au noeud : X4 = (1+delta) r4/beta, d4 = 26 e^-X4 / (1 + 26 e^-X4)."""
+    delta = mpf(delta)
+    x4 = (1 + delta) * r4_noeud(delta) / BETA_
+    return C_ * exp(-x4) / (1 + C_ * exp(-x4))
+
+
+def partie_B(nrec=2_000_000, offs=None):
     ks = [int(a) for a in np.random.default_rng(7).integers(0, 4444, 16)]
-    offs = ["-1e-5", "-1e-6", "-1e-7", "-1e-8", "-1e-9", "-3e-10", "-1e-10", "-3e-11", "-1e-11", "-3e-12", "-1e-12"]
+    offs = offs or ["-1e-5", "-1e-6", "-1e-7", "-1e-8", "-1e-9", "-3e-10", "-1e-10", "-3e-11", "-1e-11", "-3e-12", "-1e-12"]
     s1 = base_state()
     rng = np.random.default_rng(1)
     print("\n=== B. reduction (16 phases x %d pas), d3 puis r4" % nrec)
@@ -86,6 +93,7 @@ def partie_B(nrec=2_000_000):
         delta = float(PLI + mpf(off))
         dn = float(d3_noeud(PLI + mpf(off))); rn = float(r4_noeud(PLI + mpf(off)))
         sl3 = pente_fn(d3_noeud, PLI + mpf(off)); sl4 = pente_fn(r4_noeud, PLI + mpf(off))
+        dn4 = float(d4_noeud(PLI + mpf(off))); sl_d4 = pente_fn(d4_noeud, PLI + mpf(off))
         acc = []
         for k in ks:
             w = warmed(s1, k, rng, 1e-9)
@@ -96,13 +104,17 @@ def partie_B(nrec=2_000_000):
                 continue
             ex = 26.0 * np.exp(-rec[:, 1]); d3 = ex / (1.0 + ex)
             r4 = 1.0 / (1.0 + np.exp(rec[:, 2]) + w["Se"])
+            d4 = 1.0 - rec[:, 0] / r4  # rb = (1 - d4) r4 ; d4 ~ 3e-12, erreur relative ~ 3e-5
             acc.append((d3.mean() - np.median(d3), np.median(d3) - dn, d3.mean() - dn, d3.std(),
                         (np.median(d3) - dn) / sl3, (np.median(r4) - rn) / sl4,
-                        (d3.mean() - dn) / sl3, (r4.mean() - rn) / sl4, d3.mean()))
+                        (d3.mean() - dn) / sl3, (r4.mean() - rn) / sl4, d3.mean(),
+                        (np.median(d4) - dn4) / sl_d4))
         a = np.array(acc).mean(axis=0)
         lignes.append((off, a, sl3))
         rap = a[5] / a[4] if a[4] != 0 else float("nan")
-        print(f"{off:8s}   {a[0]:+.3e}      {a[1]:+.3e}      {a[2]:+.3e}    {a[3]:.3e}   {a[0] / a[3]:+.3f}   |  {a[4]:+.3e}      {a[5]:+.3e}      {rap:+7.3f}     | {a[6]:+.3e}    {a[7]:+.3e}", flush=True)
+        rap4 = a[9] / a[4] if a[4] != 0 else float("nan")
+        print(f"{off:8s}   {a[0]:+.3e}      {a[1]:+.3e}      {a[2]:+.3e}    {a[3]:.3e}   {a[0] / a[3]:+.3f}   |  {a[4]:+.3e}      {a[5]:+.3e}      {rap:+7.3f}     | {a[6]:+.3e}    {a[7]:+.3e}"
+              f"   | delta'_med(d4) {a[9]:+.3e}  rapport d4/d3 {rap4:+7.3f}", flush=True)
     return lignes
 
 
@@ -124,6 +136,10 @@ def partie_C(lignes):
 
 
 if __name__ == "__main__":
-    partie_A()
-    lignes = partie_B()
-    partie_C(lignes)
+    if len(sys.argv) > 1 and sys.argv[1] == "d4":
+        # E61-1 seul : la troisieme coordonnee (d4) aux offsets proches du pli
+        partie_B(offs=["-1e-8", "-1e-9", "-1e-10", "-1e-11", "-1e-12"])
+    else:
+        partie_A()
+        lignes = partie_B()
+        partie_C(lignes)

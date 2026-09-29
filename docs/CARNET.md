@@ -17325,9 +17325,67 @@ Elle répond à la lettre 60 (désormais figée). Contenu, avec mon statut :
   [0,9 ; 1,1] à pli-1e-10 et à pli-1e-12 (mise 55 %). Ce qui donnerait raison
   à « δ décalé » : rapport dans [0,9 ; 1,1] aux deux.
 
-| H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,99e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | ouverte, à vérifier depuis les traces |
-| H61-2 le décalage total = biais de salves (fixe, 0,63 sd) + déplacement de l'état calme (qui grandit quand l'écart se ferme) | 29/09 (lui) | ouverte |
-| H61-3 la médiane déplacée est le nœud de l'objectif moyenné sur les salves, pas d'un δ décalé | 29/09 (lui, en question) | ouverte |
+**Résultats (`verifier_tour61_decomposition_d3.py`, partie A : réseau complet, 6
+phases ; B : réduction, 16 phases × 2 000 000 pas ; C : ajustement) :**
+```
+A. reseau complet, eps 1e-10, unites de d3
+offset     mean-median   median-noeud   mean-noeud    sd(d3)    (mean-median)/sd    sa table (mm, med-noeud, mean-noeud)
+-1e-5      -8.00e-7      +1.8e-10       -8.00e-7      8.08e-6   -0.099             -0.80e-6  0  -0.80e-6
+-1e-6      -2.28e-6      +5.9e-10       -2.28e-6      1.27e-5   -0.179             -2.28e-6  0  -2.28e-6
+-1e-7      -4.82e-6      +1.9e-9        -4.82e-6      1.78e-5   -0.271             -4.82e-6  0  -4.82e-6
+-1e-8      -7.59e-6      -4.48e-7       -8.04e-6      2.10e-5   -0.362             -7.59e-6 -0.45e-6 -8.04e-6
+-1e-9      -7.98e-6      -3.16e-6       -1.11e-5      2.19e-5   -0.364             -7.98e-6 -3.17e-6 -11.14e-6
+-3e-10     -7.99e-6      -4.32e-6       -1.23e-5      2.20e-5   -0.363             -7.99e-6 -4.32e-6 -12.31e-6
+-1e-10     -7.99e-6      -5.00e-6       -1.30e-5      2.21e-5   -0.362             -7.99e-6 -5.00e-6 -12.99e-6
+
+B. reduction (mean-median d3 ; median-noeud d3 ; sd d3 ; (mm)/sd), puis delta' equivalent de la MEDIANE lue dans d3 et dans r4
+-1e-9      -7.999e-6   -3.205e-6   2.186e-5   -0.366     delta'_d3 -1.834e-9   delta'_r4 -1.726e-9   rapport 0.942
+-1e-10     -7.985e-6   -5.036e-6   2.199e-5   -0.363              -9.106e-10             -8.753e-10           0.961
+-3e-11     -7.984e-6   -5.494e-6   2.199e-5   -0.363              -5.441e-10             -5.248e-10           0.964
+-1e-11     -7.983e-6   -5.735e-6   2.200e-5   -0.363              -3.279e-10             -3.167e-10           0.966
+-3e-12     -7.982e-6   -5.886e-6   2.201e-5   -0.363              -1.843e-10             -1.782e-10           0.967
+-1e-12     -7.983e-6   -5.971e-6   2.200e-5   -0.363              -1.079e-10             -1.044e-10           0.967
+
+C. mean - noeud (d3) : B - c x^q ajuste sur 1e-10, 1e-11, 1e-12 : B = 1.4075e-5, c = 5.3127e-2, q = 0.4703
+-3e-11  mesure 1.3478e-5  ajuste 1.3477e-5  (-0.01 %)      -3e-12  mesure 1.3868e-5  ajuste 1.3872e-5  (+0.03 %)
+-3e-10  -0.32 %   -1e-9  -2.15 %   -1e-8  -39 %  (il manque bien 1e-8)
+```
+- **P61-1 ✓** : sa table se retrouve depuis les traces brutes à ≤ 1 %.
+- **P61-2 ✓ (vérification)** : mean - median (d3) dans la réduction = -7,985 /
+  -7,984 / -7,983 / -7,982 / -7,983e-6 de pli-1e-10 à pli-1e-12 : **plat à
+  trois chiffres**, réponse OUI à sa question (a). La médiane s'approche de
+  B - 7,98e-6 = 6,09e-6 (-5,97e-6 à -1e-12) : sa prévision de 6,1e-6 tient.
+- **P61-3 ✓** : mon ajustement retrouve B = 1,4075e-5 et q = 0,4703 (les siens
+  1,41e-5 et 0,47) et prédit les lignes 3e-11 et 3e-12 à 0,01 % et 0,03 %
+  (lui : 0,1 %) ; il rate -1e-8 (39 %) et -1e-9 (2 %).
+- **P61-4 : la moitié tombe, la moitié non.** sd(d3) est saturé (2,186 /
+  2,195 / 2,199 / 2,200 / 2,201 / 2,200e-5, variation < 1 %) ✓. **Mais le
+  rapport (mean-median)/sd vaut 0,363, pas 0,63** : sa référence « sd(d3) =
+  1,27e-5 » est celle de pli-1e-6, où les salves ne sont pas encore
+  saturées ; près du pli sd(d3) = 2,2e-5. **La même erreur est dans ma lettre 60**
+  (« sd of d3 is 1.27e-5 at eps 1e-10 » pour un biais de 1,4e-5 : j'ai pris
+  la valeur de pli-1e-6). Ce qui vaut 0,64 sd sature est le biais TOTAL :
+  B/sd = 1,4075e-5 / 2,200e-5 = 0,640 ; la queue seule vaut 0,363 sd.
+- **P61-5 ✗ (ma prédiction est fausse)** : le rapport δ'_r4(médiane) /
+  δ'_d3(médiane) vaut 0,961 à pli-1e-10 et 0,967 à pli-1e-12, DANS [0,9 ;
+  1,1]. À 3-4 % près, l'état calme est le nœud d'un δ décalé (δ' = -9,1e-10
+  à pli-1e-10, -1,08e-10 à pli-1e-12, ∝ √). Le résidu de 3-4 %, lui, converge
+  (0,955 → 0,967) au lieu de tendre vers 1. À noter : le décalage de la
+  MOYENNE lu dans d3 et dans r4 diffère de 18 % à pli-1e-5 (-4,98e-8 contre
+  -4,08e-8) et de 1 % à pli-1e-8 et plus près : les moyennes de deux
+  observables ne donnent pas le même δ' quand les salves sont petites.
+
+**E61-1, précommis avant le run : une troisième coordonnée indépendante.**
+d3 vient du logit e3-o3 de l'émetteur, r4 du récepteur ; d4 = 1 - s4 vient du
+logit e4-o4 de la ligne 4 de l'émetteur (nœud : d4 = 26 e^{-X4}/(1+26 e^{-X4}),
+X4 = (1+δ) r4/β). Si la médiane est le nœud d'un δ décalé, δ'_d4 doit valoir
+δ'_d3. Prédiction : rapport δ'_d4/δ'_d3 (médianes) dans [0,85 ; 1,15] à pli-1e-10
+et à pli-1e-12 (mise 55 %). Ce qui montrerait que l'état calme n'est sur la
+courbe des nœuds d'aucun δ : rapport hors de [0,85 ; 1,15] à l'un des deux.
+
+| H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
+| H61-2 le décalage total = biais de salves (fixe) + déplacement de l'état calme (qui grandit quand l'écart se ferme) | 29/09 (lui) | **confirmée** : -7,98e-6 fixe + médiane de -5,0e-6 (-1e-10) à -5,97e-6 (-1e-12), limite ≈ -6,1e-6 |
+| H61-3 la médiane déplacée est le nœud de l'objectif moyenné sur les salves, pas d'un δ décalé | 29/09 (lui, en question) | **ouverte** : à 3-4 % elle est le nœud d'un δ décalé dans d3 et r4 (P61-5 fausse) ; d4 (E61-1) départagera |
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
