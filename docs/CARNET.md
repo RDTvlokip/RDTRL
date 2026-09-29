@@ -16973,6 +16973,35 @@ défaut (+6,5e-9) ; seule la ligne entière (message + concurrents) passe à
 signe négatif exige les 27 coordonnées de la ligne à la fois (le gain
 d'Adam de la ligne fixe l'axe des salves, pas un logit isolé).
 
+**Résultat T-B (frontière à lr = 0,02, réseau complet, 50 runs) : prédiction
+tombée dans le sens, mais l'effet est bien plus grand que « √v ∝ lr ».**
+```
+eps (lr 0,02)     1e-9    2e-9    3e-9    5e-9    1e-8
+sd/moyenne        0,041   0,020   0,009   0,011   0,015      (10 phases, pli+1,5e-8, tous cassent)
+temps moyen (pas) 521     586     631     700     848
+(rappel lr 0,05)  0,712   -       0,452   -       0,087
+```
+- cv(3e-9) = 0,009 < 0,30 ✓ (contre 0,452 à lr 0,05), cv(1e-8) = 0,015 ≤ 0,10 ✓,
+  pas d'inversion de plus de 0,15 ✓ (0,009 → 0,015 dans le bruit).
+- À lr 0,02 TOUS les eps testés (dès 1e-9) sont déterministes : la frontière
+  est passée de ~5e-9 (lr 0,05) à < 1e-9 (lr 0,02), soit un facteur ≥ 5 pour
+  un rapport de lr de 2,5. Ma lecture « eps ≈ 0,1 √v avec √v ∝ lr » ne
+  prédisait qu'un facteur 2,5 : **elle est insuffisante** (√v seul ne fixe
+  pas la frontière ; l'existence et l'amplitude des salves dépendent
+  de lr plus vite que linéairement, cohérent avec Δ ∝ lr^3,4 de l'agent).
+  Le sens du déplacement est confirmé, le mécanisme proposé ne l'est pas.
+
+**T-C, précommis avant les runs (29/09) : où est la frontière à lr 0,02,
+et comment se déplace-t-elle avec lr ?** Mêmes 10 phases (k = 89 … 6 765),
+δ = pli+1,5e-8, pas 40 000 (lr 0,02) ou 20 000 (lr 0,035).
+- lr 0,02, eps ∈ {1e-10, 3e-10} : prédiction cv(1e-10) ≥ 0,30 (le réglage
+  par défaut reste stochastique même à lr bas), mise 55 %. Ce qui la réfuterait
+  (et ferait du régime stochastique par défaut une particularité de
+  lr 0,05) : cv(1e-10, lr 0,02) < 0,10.
+- lr 0,035, eps ∈ {1e-9, 3e-9, 1e-8} : prédiction cv entre celle de lr 0,05
+  et celle de lr 0,02 à chaque eps (encadrement monotone en lr), mise 70 %.
+  Ce qui la réfuterait : cv(3e-9, lr 0,035) hors de [0,009 ; 0,452].
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
