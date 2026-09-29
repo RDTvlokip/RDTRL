@@ -16890,6 +16890,19 @@ d'eps. Le seul écart net est la falaise du récepteur seul (elle casse à
 régime stochastique, où un décalage de 2e-9 est de l'ordre de sa
 dispersion (cf. les temps de 465 à 82 984 pas à taux fixé).
 
+**Frontière entre régime lisse et régime stochastique, précommise
+(29/09).** Question : à quel eps le passage cesse-t-il d'être déterministe ?
+Indicateur : sd/moyenne des temps de bascule sur 10 phases largement
+écartées (k = 89 … 6 765), δ = pli+1,5e-8 (au-dessus de tous les seuils
+mesurés), mur 23, masque `tout`, pas 20 000, eps ∈ {1e-10, 1e-9, 3e-9,
+1e-8, 3e-8, 1e-7}. Un passage déterministe (loi du fantôme) donne cv ≈ 0
+(à eps 1e-7 deux états chauffés différents donnaient les mêmes temps à 1
+pas : cv < 0,01) ; un échappement à taux constant donne cv ≈ 1. Prédictions :
+cv(1e-10) ≥ 0,5 ; cv(1e-7) ≤ 0,10 ; cv décroît avec eps ; cv < 0,30 à
+partir d'un eps compris entre 3e-9 et 3e-8 (mise 60 %). Ce qui les
+réfuterait : cv(1e-7) > 0,10, ou cv non monotone (inversion de plus de
+0,15), ou cv(1e-10) < 0,3.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :

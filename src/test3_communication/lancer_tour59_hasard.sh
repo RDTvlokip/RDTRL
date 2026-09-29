@@ -17,16 +17,21 @@ HZ_TAG=${HZ_TAG:-hz}
 # NPROC : nombre maximal de processus python a la fois (6 : plafond fixe par Theo, 29/09/2026 ;
 # ne jamais lancer deux lanceurs en meme temps, le plafond vaut pour le total)
 export NPROC=${NPROC:-6}
+# EPS : eps d'Adam (1e-10 par defaut ; le nom des fichiers en depend) ; CAS A B : collision (mur23 3 4 par defaut)
+export EPS=${EPS:-1e-10}
+export CAS=${CAS:-mur23}
+export A=${A:-3}
+export B=${B:-4}
 for k in $KS; do
   echo "$k"
-done | xargs -P "$NPROC" -I{} bash -c 'python verifier_tour59_masque_eps.py mur23 3 4 "$PLI" 0 masque=tout eps=1e-10 chauffe_eps=$((20000 + {})) > /dev/null'
+done | xargs -P "$NPROC" -I{} bash -c 'python verifier_tour59_masque_eps.py "$CAS" "$A" "$B" "$PLI" 0 masque=tout eps="$EPS" chauffe_eps=$((20000 + {})) > /dev/null'
 
 un_run() {
   local K=$1 O=$2
   local D
   D=$(python -c "print($PLI + float('$O'))")
-  python verifier_tour59_masque_eps.py mur23 3 4 "$D" "$PAS" masque=tout eps=1e-10 chauffe_eps=$((20000 + K)) \
-    > "/d/tmp/rdtrl_t59_${HZ_TAG}_k${K}_1e-10_${O}.txt"
+  python verifier_tour59_masque_eps.py "$CAS" "$A" "$B" "$D" "$PAS" masque=tout eps="$EPS" chauffe_eps=$((20000 + K)) \
+    > "/d/tmp/rdtrl_t59_${HZ_TAG}_k${K}_${EPS}_${O}.txt"
 }
 export HZ_TAG
 export -f un_run
