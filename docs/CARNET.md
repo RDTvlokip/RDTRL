@@ -17068,6 +17068,63 @@ toute la plage (maximum entre 1e-10 et 1e-8 ; pas mesuré).
 
 ---
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 29/09/2026 (tour 60, PAS simulée)
+
+Elle répond à la lettre 59 (figée, non modifiée). Contenu, avec mon
+statut de vérification :
+1. *Il reconnaît son erreur de comptage* (sa grille linéaire sur
+   r3 ∈ [1e-6, 1-1e-6] ratait les deux racines effondrées, r3 = 6,1e-22 et
+   r4 = 2,5e-21) : 5 racines à pli-1e-5 (X3 = 0 ; 9,035 ; 9,292 ; 43,585 ;
+   49,329), 3 à pli+1e-5. **Vérifié** (`verifier_tour60_conversion_delta.py`,
+   coordonnée u sur [-200, 200]) : mêmes nombres à tous les chiffres.
+2. *À ma question, il parie sur « mean - median », converti en unités de
+   δ* : la pente du nœud croît comme 1/√(δ_c-δ), 16 à pli-1e-5, 54 à
+   pli-1e-6, 552 à pli-1e-8. **Vérifié** : 16,07 / 53,88 / 551,04
+   (et 173,46 à -1e-7, 1 726,98 à -1e-9).
+3. *Seuils prédits à partir du biais mesuré à pli-1e-6* : eps 1e-7
+   (+3,0e-7) → pli-5,6e-9 (mon encadrement (pli-1e-8 ; pli-3e-9)) ; 1e-8
+   (-5,8e-7) → pli+1,1e-8 (encadrement (pli+3e-9 ; pli+1e-8)) ; 1e-10
+   (-2,3e-6) → pli+4,3e-8 (encadrement (pli+6e-10 ; pli+1e-9), « 40 à 70×
+   trop grand »). **Conversions vérifiées** : +5,57e-9 / -1,08e-8 /
+   -4,27e-8 (signe de convention : seuil = pli - s).
+4. *À eps 1e-10 le décalage converti n'est pas stationnaire* : -5,0e-8
+   (biais -8e-7 à pli-1e-5), -4,3e-8 (-2,3e-6 à pli-1e-6), -2,0e-8 (-8e-6 à
+   pli-1e-8), « toujours en train de baisser ». **Vérifié pour les deux
+   premiers** (-4,95e-8 et -4,20e-8) ; **le troisième est faux chez lui
+   comme chez moi : -8,034e-6 / 551,04 = -1,46e-8**, pas -2,0e-8. Son
+   « -2,0e-8 » reprend mon énoncé du 28/09 (« équivalent d'un nœud à δ-2e-8 »,
+   carnet, sous-section « Après la lettre »), **qui était une erreur de
+   ma part** (je n'avais pas divisé par la bonne pente).
+5. *Sa question* : « si tu mesures mean - median à pli-1e-9 à eps 1e-10,
+   le décalage continue-t-il de baisser vers ton 6e-10 à 1e-9 ? »
+
+**Ce qui a changé depuis la lettre 59, qu'il ne connaît pas** (et que
+Théo veut qu'on lui donne) : le « 6e-10 à 1e-9 » n'est pas un seuil mais le
+transitoire d'Adam neuf ; à eps 1e-10 il n'y a pas de seuil du tout mais
+un taux d'échappement ; le mécanisme du signe a été confirmé sur le réseau
+complet et sur trois codes ; deux relectures internes (simulées dans son
+style) ont retiré plusieurs de mes énoncés. Tout cela va dans la lettre 60.
+
+| H60-1 le décalage converti à eps 1e-10 continue de baisser à pli-1e-9 vers 6e-10 à 1e-9 | 29/09 (lui, en question) | ouverte |
+| H60-2 sa conversion mean-median → δ prédit le décalage à d'autres eps (2e-8, 5e-8) | 29/09 (lui) | ouverte |
+
+**Prédictions poussées avant les runs (29/09, mur 23, réseau complet,
+traces pas à pas, statistique sur les 30 000 derniers pas de 40 000) :**
+- **E60-1 (sa question)** : eps 1e-10, chauffe 20 000 + 20 000 + k,
+  6 phases (k = 89, 144, 233, 377, 610, 987), offsets pli-1e-5, -1e-6,
+  -1e-7, -1e-8, -1e-9. Décalage converti s = (moyenne d3 - nœud fermé)/pente
+  locale. Ma prédiction : |s| continue de baisser mais ne rejoint PAS
+  6e-10 à 1e-9 : |s(-1e-7)| ∈ [1,5e-8 ; 4e-8], |s(-1e-8)| ∈ [1e-8 ; 2e-8],
+  **|s(-1e-9)| ∈ [4e-9 ; 1,2e-8]** (mise 65 %). Ce qui donnerait raison
+  à la version « vers 6e-10 à 1e-9 » : |s(-1e-9)| ≤ 2e-9. Ce qui
+  montrerait un plateau : |s(-1e-9)| ≥ |s(-1e-8)|. Les phases qui
+  s'échappent (R_b > 0,9 avant la fin) sont comptées et écartées.
+- **E60-2 (sa conversion hors échantillon)** : eps 2e-8 et 5e-8, trois
+  phases (k = 89, 144, 233), trace à pli-1e-6, biais mean-median converti
+  (÷ 53,88) : prédiction seuil = pli - s à moins de 25 % de mes mesures par
+  loi du fantôme (+3,85e-9 à 2e-8, -3,66e-9 à 5e-8) (mise 60 %). Ce qui la
+  réfuterait : un écart de plus de 25 % à l'un des deux.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
