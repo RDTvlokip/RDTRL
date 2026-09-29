@@ -17276,6 +17276,59 @@ personne, avec le compte rendu de ce qui a été fait en interne pendant son
 absence, à la demande de Théo). Scripts : `verifier_tour60_conversion_delta.py`,
 `verifier_tour60_biais_converti.py`, `lancer_tour60_traces.sh`.
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 29/09/2026 (tour 61, PAS simulée)
+
+Elle répond à la lettre 60 (désormais figée). Contenu, avec mon statut :
+1. *Le 2,0e-8 était de lui autant que de moi* (ma pente était dans sa propre
+   table, il ne l'a pas divisée). Rien à tester.
+2. *À ma question (« la bonne unité est-elle un décalage de d3 ? ») : oui sur
+   une distance fixe en d3, NON sur « vers le jumeau »* : le biais est
+   négatif, donc à l'OPPOSÉ du jumeau (d3 du jumeau > d3 du nœud). **Il a
+   raison sur le sens : ma formulation « vers le jumeau » était fausse** (la
+   lettre 59 disait déjà « skewed away »).
+3. *Il découpe mon décalage en d3 (colonnes × pente)* : mean-median = -0,80e-6
+   / -2,28e-6 / -4,82e-6 / -7,59e-6 / -7,98e-6 / -7,99e-6 / -7,99e-6 et
+   median-nœud = ~0 / ~0 / ~0 / -0,45e-6 / -3,17e-6 / -4,32e-6 / -5,00e-6 à
+   pli-1e-5 … -1e-10 ; la queue des salves plafonne à 7,99e-6 = 0,63 sd(d3)
+   (sd = 1,27e-5) ; la médiane, elle, quitte le nœud à partir de pli-1e-8 et
+   porte 39 % du décalage à pli-1e-10. **Arithmétique vérifiée à la main sur mes
+   colonnes** (−6,376e-9 × 1747,76 = −11,14e-6 ; −4,565e-9 × 1747,76 = −7,98e-6,
+   etc.) ; à refaire depuis les traces brutes.
+4. *Le biais de d3 de la réduction suit B − c x^0,47 (x = δ_c − δ), B = 1,41e-5,
+   ajusté sur 1e-10 / 1e-11 / 1e-12, et prédit mes lignes 3e-11 et 3e-12 à
+   0,1 %* ; « si la queue reste à 8,0e-6 sous pli-1e-10, la médiane finit à
+   6,1e-6 du nœud ». **Arithmétique de la dernière phrase vérifiée**
+   (1,41e-5 − 7,99e-6 = 6,1e-6) ; l'ajustement est à refaire.
+5. *Ses questions* : (a) mean − median de la réduction reste-t-il à 8,0e-6 sous
+   pli-1e-10 ? (b) si oui, la médiane déplacée est-elle le nœud de
+   l'objectif moyenné sur les salves plutôt que celui d'un δ décalé ?
+
+**Ce que je vérifie et prédis (poussé avant les runs, 29/09, mur 23) :**
+- P61-1 (A) : depuis les traces brutes du réseau complet, sa table se
+  retrouve à 2 % près (mean-median, median-nœud, mean-nœud).
+- P61-2 (a) : mean-median de d3 dans la réduction reste dans [7,9e-6 ; 8,1e-6]
+  à pli-3e-11, -1e-11, -3e-12, -1e-12. *Note d'honnêteté : ces quatre nombres
+  se lisent déjà par arithmétique sur ma sortie précédente (s_med × pente =
+  7,98e-6 aux quatre) ; c'est une vérification de son affirmation, pas une
+  prédiction indépendante.*
+- P61-3 : l'ajustement B − c x^q sur les trois lignes retrouve les deux lignes
+  intermédiaires (3e-11, 3e-12) à ≤ 0,5 %, avec B ∈ [1,38e-5 ; 1,44e-5] et
+  q ∈ [0,44 ; 0,50] (mise 70 %).
+- P61-4 : sd(d3) est saturé lui aussi sous pli-1e-9 (variation < 5 %) ; le
+  rapport (mean-median)/sd vaut alors 0,63 ± 0,03 (mise 60 %). S'il n'est pas
+  constant, « 0,63 sd » n'est pas une propriété mais un point.
+- **P61-5, le test qui départage sa seconde question** : si l'état calme (la
+  médiane) était le nœud d'un δ décalé, son δ' équivalent lu dans d3 et lu dans
+  r4 seraient égaux. Sinon, la médiane déplacée n'est sur la courbe des nœuds
+  d'AUCUN δ, et « nœud de l'objectif moyenné » (un autre objet) devient la
+  lecture à tester. Prédiction : rapport δ'_r4(médiane) / δ'_d3(médiane) HORS de
+  [0,9 ; 1,1] à pli-1e-10 et à pli-1e-12 (mise 55 %). Ce qui donnerait raison
+  à « δ décalé » : rapport dans [0,9 ; 1,1] aux deux.
+
+| H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,99e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | ouverte, à vérifier depuis les traces |
+| H61-2 le décalage total = biais de salves (fixe, 0,63 sd) + déplacement de l'état calme (qui grandit quand l'écart se ferme) | 29/09 (lui) | ouverte |
+| H61-3 la médiane déplacée est le nœud de l'objectif moyenné sur les salves, pas d'un δ décalé | 29/09 (lui, en question) | ouverte |
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
