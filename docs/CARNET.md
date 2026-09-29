@@ -16821,6 +16821,45 @@ Grille : `tout` -9e-9 / -7e-9 / -5e-9 / -3e-9 / -1e-9 / +1e-9 ; `ligne3`
 -2,2e-8 / -1,8e-8 / -1,4e-8 / -1e-8 / -6e-9 / -2e-9 ; `recepteur` 0 / 2e-9 /
 4e-9 / 6e-9 / 1e-8.
 
+**Résultat E3 sur la 6/14 (réseau complet, 17 runs, 6 processus) : les
+trois prédictions tombent, et les nombres sont ceux du mur 23.**
+```
+masque      6/14 : tient / casse             ajustement    mur 23 (rappel)    temps 6/14 -> mur 23
+tout        -7e-9 / -5e-9                    -5,70e-9      -5,43e-9           -3e-9 : 4099 -> 4107 ; -1e-9 : 3071 -> 3065 ; +1e-9 : 2546 -> 2559
+ligne 6     -1,4e-8 / -1e-8                  -1,31e-8      -1,36e-8           -1e-8 : 3964 -> 3946 ; -6e-9 : 2636 (mur 23 : -7e-9 : 2818)
+recepteur   +2e-9 / +4e-9 (falaise)          ~+4e-9        +2e-9 / +4e-9      +4e-9 : 3698 -> 2930
+```
+Les fenêtres précommises ([-8 ; -3]e-9, [-2,0 ; -0,8]e-8, (0 ; +8e-9])
+sont respectées, et les temps de bascule de `tout` sont ceux du mur 23 à
+0,3-0,6 %. **Le décalage dépendant d'eps (signe, taille, gain d'Adam de la
+ligne sous-pondérée) est donc une propriété de l'objet à (N, β, lr) fixés,
+pas du code autour** : deux codes différents (graines 77777 et 12345, messages
+10 et 8, 25 autres lignes différentes) donnent les mêmes seuils à ~5 %. Ce
+qui la ferait tomber : un troisième code qui s'écarterait (non testé).
+Cela ne contredit pas la dépendance en lr (seuil ∝ lr^3,4) : objet
+= fonction de (N, β, lr, β2, eps), pas du code.
+
+**Les temps d'attente sont exponentiels sous ~7e-9 et pas au-dessus
+(`verifier_tour59_exponentialite_attentes.py`, ses fichiers, bootstrap de
+type Lilliefors) :**
+```
+delta (1e-9)  5,25   5,5   5,75  5,9   6,1   6,3   6,5   6,6   6,8   7,0    7,25   7,5    8,0    10     14
+sd/moyenne    0,87   0,90  0,92  0,95  0,79  0,89  0,96  0,93  0,92  0,74   0,67   0,50   0,47   0,56   0,64
+p             0,71   0,27  0,20  0,68  0,19  0,25  0,13  0,06  0,025 0,0005 0,0005 0,0005 0,0005 0,0005 0,0005
+```
+(Exponentielle : sd/moyenne = 1. Une valeur de 6,0 rééchantillonnée par moi
+donne 0,75, p = 0,02 sur 38 événements : borderline.) **Confirme sa
+remarque : mes ajustements MLE à taux constant n'étaient valides que sous
+~7e-9, et j'y avais mis les lignes à 7,5-10e-9** (déjà biaisées par
+ailleurs). Au-dessus de 7,3e-9, sd/moyenne de 0,45 à 0,65 : le temps
+d'échappement ressemble à celui d'un processus à plusieurs étapes (ordre
+de 3 à 5 salves successives : 1/cv² ≈ 3-5 à 8-10e-9, moyenne 2 245 pas à
+1e-8 ≈ 5 périodes de salve), cohérent avec sa montée de pics avant
+l'échappement (z de +0,45 à +3,87 sur 14 salves), non revérifiée.
+
+| H59-28 le mécanisme dépendant d'eps est une propriété de l'objet (N, β, lr), pas du code | 29/09 (moi) | **confirmée sur 2 codes** (mur 23 et 6/14, trois masques, seuils à ~5 %, temps à < 1 %) |
+| H59-29 les temps d'attente sont exponentiels (taux constant) | 29/09 (moi, implicite dans le MLE) | **réfutée au-dessus de ~7e-9** (sd/moyenne 0,45-0,74, p ≤ 0,0005) ; tenable en dessous |
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
