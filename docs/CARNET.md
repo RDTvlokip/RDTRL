@@ -16769,7 +16769,9 @@ Limite qui reste : la réduction n'est comparée au réseau complet qu'à
 δ ≥ 6,0e-9 (sa comparaison : 54 échappements observés, 48,8 attendus) ;
 en dessous, le réseau complet n'a jamais été mesuré (5,5e-9 demande
 ~2,5e7 pas par échappement, ~20 h de calcul à 6 processus). Fidélité de la
-réduction à 5,5e-9 : inférée, non mesurée.
+réduction à 5,5e-9 : inférée, non mesurée. **Décision de Théo (29/09) :
+ce calcul d'environ 20 h sur le réseau complet est ÉCARTÉ, ne pas le
+lancer** ; la limite reste une limite déclarée, pas un travail en attente.
 
 **Ce que le taux dit pour un budget fini (interpolation log-log de sa
 table, `seuil_selon_horizon`) :** le « seuil » de bascule dépend de
