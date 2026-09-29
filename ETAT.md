@@ -25,8 +25,12 @@ lettre 59 (le « 6e-10 à 1e-9 » était le transitoire d'Adam neuf).
 
 **Pistes concrètes pour la suite :**
 1. Envoyer la lettre 60 ; attendre sa réponse.
-2. Vérifier p → 1/2 plus près du pli (pli-1e-11) : la réduction numba le
-   fait à bas coût (`hasard_reduction_tour59.py`) ; sa question binaire.
+2. FAIT le 29/09 (demande de Théo « fais le », intégré à la lettre 60) : p_local
+   0,451 / 0,472 / 0,484 / 0,491 / 0,494 à pli-1e-10 … -1e-12 (réduction numba,
+   validée à 0,1-0,6 % contre le réseau complet, `verifier_tour60_exposant_reduction.py`) :
+   p → 1/2. Le biais de d3 sature à ≈ 1,4e-5 (≈ sd des salves 1,27e-5), l'écart
+   nœud-jumeau se contracte en √ ; la conversion en unités de δ vaut tant que
+   |biais|/écart ≪ 1 (franchit 1 vers pli-3e-9).
 3. Réseau complet sous pli+6,0e-9 : ÉCARTÉ par Théo (~20 h), ne pas lancer.
 4. Forme de λ(δ) et exposant : non déterminés ; pas de mécanisme.
 5. Conversion sur r4 (fait sur d3 seul) ; quatrième code ; lr > 0,05.
