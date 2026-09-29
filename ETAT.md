@@ -97,8 +97,13 @@ mes MLE à taux constant ne valaient que sous 7e-9. Frontière lisse/stochastiqu
 10 phases à pli+1,5e-8 = 0,77 / 0,71 / 0,45 / 0,087 / 0,011 / 0,004 pour eps
 1e-10 / 1e-9 / 3e-9 / 1e-8 / 3e-8 / 1e-7 : régime stochastique pour eps
 ≲ 3e-9 (dont le réglage par défaut 1e-10), déterministe (loi du fantôme)
-pour eps ≥ 1e-8 ; lecture par eps ≈ 0,1 √v (√v ≈ 4e-8) = hypothèse à
-tester en changeant lr. Un TROISIÈME code
+pour eps ≥ 1e-8. La frontière dépend TRÈS fortement de lr (≈ 5e-9 à lr
+0,05 ; ≈ 2e-9 à 0,035 ; < 1e-10 à 0,02, où eps 1e-10 donne cv 0,11) : la
+lecture eps ≈ 0,1 √v avec √v ∝ lr est RÉFUTÉE (facteur ≥ 5 observé pour
+lr ÷ 2,5). Ablation de l'agent confirmée sur le réseau complet : `e3msg`
+seul (seuil ∈ (+9e-9 ; +1,2e-8]) et `o3` seul (∈ (+6e-9 ; +9e-9]) restent
+POSITIFS, seule la ligne entière donne -1,36e-8. lr 0,05 (le taux de tout
+le projet) est dans le régime stochastique à eps par défaut. Un TROISIÈME code
 (77777 k=1, référents 5/20, message 14, cas `c7771`) donne aussi les
 mêmes seuils (tout -5,67e-9, ligne 5 -1,45e-8) : « objet, pas code »
 tient sur 3 codes pour le mécanisme dépendant d'eps. Théo a écarté le

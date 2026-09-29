@@ -17002,6 +17002,42 @@ et comment se déplace-t-elle avec lr ?** Mêmes 10 phases (k = 89 … 6 765),
   et celle de lr 0,02 à chaque eps (encadrement monotone en lr), mise 70 %.
   Ce qui la réfuterait : cv(3e-9, lr 0,035) hors de [0,009 ; 0,452].
 
+**Résultat T-C (réseau complet, 50 runs, 6 processus) :**
+```
+sd/moyenne des temps de bascule, 10 phases, pli+1,5e-8
+eps       lr 0,05   lr 0,035   lr 0,02
+1e-10     0,773     -          0,112
+3e-10     -         -          0,095
+1e-9      0,712     0,381      0,041
+2e-9      -         -          0,020
+3e-9      0,452     0,040      0,009
+5e-9      -         -          0,011
+1e-8      0,087     0,009      0,015
+```
+- **Prédiction (a) ✗** : cv(1e-10, lr 0,02) = 0,112 alors que je pariais ≥ 0,30
+  (mise 55 % perdue). Mon critère de réfutation « particularité de lr 0,05 »
+  (< 0,10) n'est pas tout à fait atteint (0,112), mais la conclusion est la
+  même : à lr 0,02 le réglage par défaut est presque déterministe.
+- **Prédiction (b) ✓** : à eps 1e-9 et 3e-9, cv(lr 0,035) est entre celui de
+  lr 0,05 et celui de lr 0,02 (0,381 dans [0,041 ; 0,712] ; 0,040 dans
+  [0,009 ; 0,452]).
+- **Frontière (cv < 0,30) en fonction de lr** : ≈ 5e-9 (lr 0,05), ≈ 2e-9
+  (lr 0,035), < 1e-10 (lr 0,02). Un rapport de lr de 0,7 divise la
+  frontière par ~2,5 (lr^2,6) ; de 0,57 par plus de 20 (lr^5 au moins).
+  Plus raide que toute loi de puissance simple : la frontière n'est pas
+  eps ∝ √v ∝ lr. Le mode de salves lui-même s'éteint vite quand lr
+  baisse (cohérent avec Δ ∝ lr^3,4 de l'agent).
+- **Conséquence pratique pour le projet** : lr = 0,05, le taux de TOUT le
+  projet, est dans le régime stochastique à eps par défaut (cv 0,77) : les
+  temps d'échappement de nos runs y sont sensibles à l'arrondi ; à lr =
+  0,02 ils sont reproductibles à 10 %. Les mesures de seuil des tours 20-58 à
+  lr 0,05 et eps 1e-10 sont donc des points d'une courbe de taux (cf. la
+  courbe seuil-en-fonction-de-l'horizon), pas des constantes.
+
+| H59-30' la frontière lisse/stochastique est eps ≈ 0,1 √v avec √v ∝ lr | 29/09 (moi) | **réfutée** : elle se déplace d'un facteur ≥ 5 pour lr ÷ 2,5 (√v ∝ lr prédit 2,5) |
+| H59-31 la frontière se déplace de façon monotone avec lr | 29/09 (moi) | **confirmée** (lr 0,05 : ~5e-9 ; 0,035 : ~2e-9 ; 0,02 : < 1e-10) |
+| H59-32 le réglage par défaut (eps 1e-10) est stochastique à tout lr | 29/09 (moi) | **réfutée** : cv 0,112 à lr 0,02 |
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
