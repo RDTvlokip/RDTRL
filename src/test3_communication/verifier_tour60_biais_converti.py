@@ -37,8 +37,7 @@ def pente(d):
 if __name__ == "__main__":
     filtre_eps = sys.argv[1] if len(sys.argv) > 1 else None
     groupes = defaultdict(list)
-    for f in glob.glob("D:/tmp/rdtrl_tour59_trace_mur23_a3_b4_delta*_pas40000_eps*_chauffe20000_200[0-9][0-9]*.txt") + \
-             glob.glob("D:/tmp/rdtrl_tour59_trace_mur23_a3_b4_delta*_pas40000_eps*_chauffe20000_2[0-9][0-9][0-9][0-9].txt"):
+    for f in glob.glob("D:/tmp/rdtrl_tour59_trace_mur23_a3_b4_delta*_pas40000_eps*_chauffe20000_*.txt"):
         m = re.search(r"delta([0-9.e-]+)_pas40000_eps([0-9.e+-]+)_chauffe20000_(\d+)\.txt$", f)
         if not m:
             continue

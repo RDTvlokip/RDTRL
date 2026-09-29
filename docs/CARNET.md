@@ -17125,6 +17125,58 @@ traces pas à pas, statistique sur les 30 000 derniers pas de 40 000) :**
   loi du fantôme (+3,85e-9 à 2e-8, -3,66e-9 à 5e-8) (mise 60 %). Ce qui la
   réfuterait : un écart de plus de 25 % à l'un des deux.
 
+**Résultats E60-1 et E60-2 (réseau complet, mur 23, 42 runs tracés, 6
+processus ; `verifier_tour60_biais_converti.py`) : les prédictions tombent.**
+```
+E60-1  eps 1e-10, 6 phases (k = 89 ... 987), aucune ne s'echappe
+offset      pente dd3/ddelta   s = (moy d3 - noeud)/pente       s_med = (moy - med)/pente     lui
+pli-1e-5    16,07              -4,977e-8 +- 4,5e-10              -4,978e-8                     -5,0e-8
+pli-1e-6    53,88              -4,235e-8 +- 2,7e-10              -4,236e-8                     -4,3e-8
+pli-1e-7    173,48             -2,779e-8 +- 1,3e-10              -2,780e-8
+pli-1e-8    551,70             -1,458e-8 +- 6,7e-11              -1,376e-8                     -2,0e-8 (faux : cf. plus haut)
+pli-1e-9    1 747,63           -6,376e-9 +- 7,7e-11              -4,566e-9
+
+E60-2  conversion hors echantillon (3 phases, pli-1e-6)
+eps 2e-8    s_med = +... -> seuil predit pli - s_med = +4,04e-9    mesure (loi du fantome) +3,85e-9    ecart +5 %
+eps 5e-8                                              -3,99e-9    mesure                  -3,66e-9    ecart +9 %
+```
+- **Sa question** : oui, le décalage converti continue de baisser quand on
+  s'approche du pli, MAIS il ne rejoint pas 6e-10 à 1e-9 : |s| = 4,98e-8,
+  4,24e-8, 2,78e-8, 1,46e-8, 6,38e-9 (rapports successifs 0,85 / 0,66 /
+  0,52 / 0,44) ; à pli-1e-9 il vaut encore 6,4e-9 (4,6e-9 avec mean-median),
+  six à dix fois son « 6e-10 à 1e-9 ». Mes fenêtres précommises
+  (|s(-1e-7)| ∈ [1,5e-8 ; 4e-8] ✓, |s(-1e-8)| ∈ [1e-8 ; 2e-8] ✓,
+  |s(-1e-9)| ∈ [4e-9 ; 1,2e-8] ✓) tombent toutes ; ni plateau (|s(-1e-9)| <
+  |s(-1e-8)|) ni retour à ≤ 2e-9. Sa lecture « pas stationnaire, toujours en
+  train de baisser » est confirmée, avec un chiffre de plus (-1,46e-8, pas
+  -2,0e-8, à pli-1e-8).
+- **Sa conversion prédit les seuils hors échantillon dans le régime
+  déterministe** : eps 2e-8 à 5 % (4,04 contre 3,85e-9), 5e-8 à 9 % (3,99
+  contre 3,66e-9), plus les trois eps de sa table (1e-7 : 5,57e-9 contre
+  5,5e-9 ; 3e-8 : ~0 contre +3,2e-10 ; 1e-8 : 1,08e-8 contre 9,1e-9, 18 %
+  au-dessus de l'ajustement à 3 points, 8 % au-dessus de l'encadrement
+  direct). Mon « 8 % hors de l'encadrement » à 1e-8 est le seul écart net.
+- **Pourquoi ses 40-70× à eps 1e-10** : il évaluait le décalage à
+  pli-1e-6 (4,2e-8), où il n'a pas convergé ; il décroît d'un facteur
+  ~0,44 par décade à l'approche du pli. À pli-1e-9 on en est à 6,4e-9, du
+  même ordre que la position où le taux d'échappement vaut 1/T pour un
+  budget de T ≈ 3e5 pas (pli+6,3e-9, cf. `seuil_selon_horizon`) : le
+  calcul de réponse linéaire tombe dans la bonne région dès que le point
+  d'évaluation est assez près du pli, coïncidence de l'ordre de grandeur que
+  je ne sais pas encore dériver.
+
+| H60-1 le décalage converti à eps 1e-10 continue de baisser vers 6e-10 à 1e-9 | 29/09 (lui) | **réfutée en position** (|s(-1e-9)| = 6,4e-9), **confirmée en tendance** (décroît de 0,85 à 0,44 par décade) |
+| H60-2 sa conversion mean-median → δ prédit le décalage à 2e-8 et 5e-8 | 29/09 (lui) | **confirmée** (5 % et 9 %) |
+
+**E60-3, précommis avant le run (29/09) : deux points encore plus près
+du pli.** Mêmes 6 phases, eps 1e-10, offsets pli-3e-10 et pli-1e-10. Si le
+décalage converti décroît selon la tendance (rapports 0,44 → ~0,4 par
+décade), |s(-3e-10)| ∈ [2,5e-9 ; 6e-9] et |s(-1e-10)| ∈ [1,2e-9 ; 4,5e-9]
+(mise 60 %). Ce qui donnerait raison à sa lecture « vers 6e-10 à 1e-9 » :
+|s(-1e-10)| ≤ 1,5e-9 ET pas de plateau. Ce qui montrerait un plateau :
+|s(-1e-10)| ≥ 0,9 |s(-1e-9)|. Les phases qui s'échappent avant la fin
+(hasard ≠ 0 tout près du pli) sont comptées.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
