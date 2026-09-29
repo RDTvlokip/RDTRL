@@ -30,12 +30,15 @@ def depart(cas):
     """Etat de depart, mis en cache dans D:/tmp (logits seulement ; Adam
     repart a zero comme dans la bissection du tour 50)."""
     import os
-    msg = {"mur23": 10, "c814": 8}[cas]
+    # c7771 : collision spontanee de la graine 77777 avec k=1 (message 14, referents 5/20), 3e code
+    msg = {"mur23": 10, "c814": 8, "c7771": 14}[cas]
     chemin = f"D:/tmp/rdtrl_tour59_depart_{cas}.pt"
     if cas == "mur23":
         e, r = replay(77777, 3, 10)
-    else:
+    elif cas == "c814":
         e, r = replay(12345, 3, 10)
+    else:
+        e, r = replay(77777, 1, 10)
     activer(e, r)
     params = parametres(e, r)
     if os.path.exists(chemin):
@@ -43,7 +46,12 @@ def depart(cas):
             for p, v in zip(params, torch.load(chemin)):
                 p.copy_(v)
         return (e, r), msg
-    e, r = construire_mur23(adam_eps=ADAM_EPS) if cas == "mur23" else replay(12345, 3, 30000)
+    if cas == "mur23":
+        e, r = construire_mur23(adam_eps=ADAM_EPS)
+    elif cas == "c814":
+        e, r = replay(12345, 3, 30000)
+    else:
+        e, r = replay(77777, 1, 30000)
     activer(e, r)
     torch.save([p.detach().clone() for p in parametres(e, r)], chemin)
     return (e, r), msg

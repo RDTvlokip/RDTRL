@@ -16862,6 +16862,17 @@ l'échappement (z de +0,45 à +3,87 sur 14 salves), non revérifiée.
 | H59-28 le mécanisme dépendant d'eps est une propriété de l'objet (N, β, lr), pas du code | 29/09 (moi) | **confirmée sur 2 codes** (mur 23 et 6/14, trois masques, seuils à ~5 %, temps à < 1 %) |
 | H59-29 les temps d'attente sont exponentiels (taux constant) | 29/09 (moi, implicite dans le MLE) | **réfutée au-dessus de ~7e-9** (sd/moyenne 0,45-0,74, p ≤ 0,0005) ; tenable en dessous |
 
+**Troisième code, précommis avant les runs (29/09).** La collision
+spontanée de la graine 77777 avec k = 1 (message 14, référents 5 et 20 ; cas
+`c7771`) : graine et k différents des deux premiers, autre jeu de lignes. Son
+état chaud est le même nœud (d3 = 2,615943e-3 contre 2,615926e-3 au mur 23).
+Mêmes fenêtres qu'avant, eps 1e-7, sous-pondéré = 5, gagnant = 20 :
+`tout` dans [-8e-9 ; -3e-9] (65 %), ligne 5 seule dans [-2,0e-8 ; -0,8e-8]
+(55 %), récepteur seul positif dans (0 ; +8e-9] (70 %). Ce qui ferait tomber
+« objet, pas code » : un seul seuil hors de sa fenêtre. Grille : `tout` -9e-9 /
+-7e-9 / -5e-9 / -3e-9 / -1e-9 / +1e-9 ; `ligne3` -2,2e-8 / -1,8e-8 / -1,4e-8 /
+-1e-8 / -6e-9 / -2e-9 ; `recepteur` 0 / 2e-9 / 4e-9 / 6e-9 / 1e-8 ; pas 60 000.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
