@@ -16801,6 +16801,26 @@ préchauffe : **non revérifiés.**
 | H59-26 ma ligne à 1e-8 est biaisée par les phases k ≤ 55 | 29/09 (agent) | **confirmée** (V1, réseau complet, temps identiques aux siens) |
 | H59-27 la réduction à deux lignes reproduit le réseau complet | 29/09 (agent) | **soutenue à δ ≥ 6,0e-9** (54 contre 48,8 événements ; V2 ; V4) ; **non mesurée en dessous** |
 
+**E3 sur la collision 6/14 (12345 k=3, message 8), précommis avant les
+runs (29/09).** Jusqu'ici tout ce qui dépend d'eps (Δ, κ, E1-E3) n'a été
+mesuré que sur le mur 23 ; seule la position par défaut à eps 1e-10 a
+été comparée sur la 6/14 (H59-17). Le mécanisme du signe (gain d'Adam de
+la ligne sous-pondérée, ici la ligne 6) prédit les MÊMES ordres de grandeur
+pour un code différent si le hessien du pli est le même (mêmes N, β,
+lr) ; il ne les prédit pas identiques (les 25 autres lignes et les √v
+diffèrent). Protocole du mur 23 (chauffe 20 000 à eps 1e-10 puis 20 000 sous
+le masque, eps 1e-7 sur le groupe, pas 60 000), sous-pondéré = 6, gagnant = 14 :
+- `tout` : seuil dans [-8e-9 ; -3e-9] (mur 23 : -5,4e-9) — mise 65 %.
+- `ligne3` (ici la ligne 6 de l'émetteur) : seuil dans [-2,0e-8 ; -0,8e-8]
+  (mur 23 : -1,36e-8) — mise 55 %.
+- `recepteur` : seuil POSITIF, dans (0 ; +8e-9] (mur 23 : falaise entre
+  +2e-9 et +4e-9) — mise 70 %.
+Ce qui montrerait que le code compte pour le mécanisme : un seul de ces
+trois seuils hors de sa fenêtre, ou `ligne3` de signe positif.
+Grille : `tout` -9e-9 / -7e-9 / -5e-9 / -3e-9 / -1e-9 / +1e-9 ; `ligne3`
+-2,2e-8 / -1,8e-8 / -1,4e-8 / -1e-8 / -6e-9 / -2e-9 ; `recepteur` 0 / 2e-9 /
+4e-9 / 6e-9 / 1e-8.
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
