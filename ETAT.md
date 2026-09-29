@@ -93,7 +93,10 @@ graine 12345) : mêmes seuils que le mur 23 à ~5 % pour les trois masques
 mêmes temps de bascule à < 1 % : le décalage dépendant d'eps est une
 propriété de l'objet à (N, β, lr) fixés. Temps d'attente exponentiels
 sous ~7e-9 seulement (sd/moyenne 0,75-0,97), pas au-dessus (0,45-0,74) :
-mes MLE à taux constant ne valaient que sous 7e-9. Théo a écarté le
+mes MLE à taux constant ne valaient que sous 7e-9. Un TROISIÈME code
+(77777 k=1, référents 5/20, message 14, cas `c7771`) donne aussi les
+mêmes seuils (tout -5,67e-9, ligne 5 -1,45e-8) : « objet, pas code »
+tient sur 3 codes pour le mécanisme dépendant d'eps. Théo a écarté le
 test de 20 h (réseau complet sous 6,0e-9) : ne pas le lancer.
 
 **RÈGLE DE CALCUL (Théo, 29/09) : jamais plus de 6 processus python à la

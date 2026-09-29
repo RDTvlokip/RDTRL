@@ -16873,6 +16873,23 @@ Mêmes fenêtres qu'avant, eps 1e-7, sous-pondéré = 5, gagnant = 20 :
 -7e-9 / -5e-9 / -3e-9 / -1e-9 / +1e-9 ; `ligne3` -2,2e-8 / -1,8e-8 / -1,4e-8 /
 -1e-8 / -6e-9 / -2e-9 ; `recepteur` 0 / 2e-9 / 4e-9 / 6e-9 / 1e-8 ; pas 60 000.
 
+**Résultat du troisième code (77777 k=1, référents 5/20, message 14 ;
+réseau complet, 17 runs, 6 processus) : les trois prédictions tombent.**
+```
+masque      tient / casse            ajustement    mur 23     6/14       temps de bascule (3e code -> mur 23)
+tout        -7e-9 / -5e-9            -5,67e-9      -5,43e-9   -5,70e-9   -3e-9 : 4100 -> 4107 ; -1e-9 : 3076 -> 3065 ; +1e-9 : 2556 -> 2559
+ligne 5     -1,4e-8 / -1e-8          -1,45e-8      -1,36e-8   -1,31e-8   -1e-8 : 3741 (mur 23 : 3946, 6/14 : 3964, -5 %) ; -6e-9 : 2645
+recepteur   0 / +2e-9 (falaise)      >0, <= +2e-9  +2..4e-9   +2..4e-9   +2e-9 : 400 pas (falaise : 1 période de salve)
+```
+Trois codes, trois graines (77777 k=3, 12345 k=3, 77777 k=1), trois messages
+(10, 8, 14) : le seuil `tout` à eps 1e-7 est -5,4 / -5,7 / -5,7e-9 (5 %),
+le seuil de la ligne sous-pondérée seule -1,36 / -1,31 / -1,45e-8 (10 %).
+**« Objet, pas code » tient sur trois codes** pour le mécanisme dépendant
+d'eps. Le seul écart net est la falaise du récepteur seul (elle casse à
++2e-9 en 400 pas ici, à +4e-9 en 3 698 pas sur la 6/14) : c'est le
+régime stochastique, où un décalage de 2e-9 est de l'ordre de sa
+dispersion (cf. les temps de 465 à 82 984 pas à taux fixé).
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
