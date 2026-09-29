@@ -87,6 +87,15 @@ gardés et rejoués : `reduction_deux_lignes_tour59.py`,
 `reduction_numba_tour59.py`, `hasard_reduction_tour59.py`,
 `verifier_tour59_reduction_controle.py`.
 
+**Ajouts du 29/09 (soir) :** E3 refait sur la collision 6/14 (autre code,
+graine 12345) : mêmes seuils que le mur 23 à ~5 % pour les trois masques
+(tout : -5,70e-9 ; ligne 6 : -1,31e-8 ; récepteur : falaise +2 à +4e-9) et
+mêmes temps de bascule à < 1 % : le décalage dépendant d'eps est une
+propriété de l'objet à (N, β, lr) fixés. Temps d'attente exponentiels
+sous ~7e-9 seulement (sd/moyenne 0,75-0,97), pas au-dessus (0,45-0,74) :
+mes MLE à taux constant ne valaient que sous 7e-9. Théo a écarté le
+test de 20 h (réseau complet sous 6,0e-9) : ne pas le lancer.
+
 **RÈGLE DE CALCUL (Théo, 29/09) : jamais plus de 6 processus python à la
 fois, un lanceur à la fois** (`NPROC` dans les lanceurs, défaut 6). À 6
 processus les runs vont ~4× plus vite qu'à 22 sur 12 cœurs.
