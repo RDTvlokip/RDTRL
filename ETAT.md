@@ -93,7 +93,12 @@ graine 12345) : mêmes seuils que le mur 23 à ~5 % pour les trois masques
 mêmes temps de bascule à < 1 % : le décalage dépendant d'eps est une
 propriété de l'objet à (N, β, lr) fixés. Temps d'attente exponentiels
 sous ~7e-9 seulement (sd/moyenne 0,75-0,97), pas au-dessus (0,45-0,74) :
-mes MLE à taux constant ne valaient que sous 7e-9. Un TROISIÈME code
+mes MLE à taux constant ne valaient que sous 7e-9. Frontière lisse/stochastique en eps : sd/moyenne des temps de bascule sur
+10 phases à pli+1,5e-8 = 0,77 / 0,71 / 0,45 / 0,087 / 0,011 / 0,004 pour eps
+1e-10 / 1e-9 / 3e-9 / 1e-8 / 3e-8 / 1e-7 : régime stochastique pour eps
+≲ 3e-9 (dont le réglage par défaut 1e-10), déterministe (loi du fantôme)
+pour eps ≥ 1e-8 ; lecture par eps ≈ 0,1 √v (√v ≈ 4e-8) = hypothèse à
+tester en changeant lr. Un TROISIÈME code
 (77777 k=1, référents 5/20, message 14, cas `c7771`) donne aussi les
 mêmes seuils (tout -5,67e-9, ligne 5 -1,45e-8) : « objet, pas code »
 tient sur 3 codes pour le mécanisme dépendant d'eps. Théo a écarté le

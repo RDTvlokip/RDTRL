@@ -16903,6 +16903,41 @@ partir d'un eps compris entre 3e-9 et 3e-8 (mise 60 %). Ce qui les
 réfuterait : cv(1e-7) > 0,10, ou cv non monotone (inversion de plus de
 0,15), ou cv(1e-10) < 0,3.
 
+**Résultat de la frontière lisse / stochastique (mur 23, réseau complet,
+60 runs, 6 processus, `verifier_tour59_dispersion_phase.py fr`) : les
+quatre prédictions tombent.**
+```
+eps      phases  cassent   min    mediane   max     moyenne   sd/moyenne   (pli+1,5e-8, temps en pas)
+1e-10    10      10        324    666       2407    941       0,773
+1e-9     10      10        398    1198      2893    1332      0,712
+3e-9     10      10        528    1872      2739    1679      0,452
+1e-8     10      10        907    982       1136    1001      0,087
+3e-8     10      10        882    901       910     899       0,011
+1e-7     10      10        1420   1426      1438    1426      0,004
+```
+- cv(1e-10) = 0,77 (≥ 0,5 ✓), cv(1e-7) = 0,004 (≤ 0,10 ✓), monotone
+  décroissant ✓ (aucune inversion), premier eps sous 0,30 : 1e-8, dans
+  la fenêtre [3e-9 ; 3e-8] ✓.
+- La transition est raide : cv passe de 0,45 (3e-9) à 0,087 (1e-8), un
+  facteur 5 en une demi-décade d'eps, puis de 0,087 à 0,011 (3e-8) et
+  0,004 (1e-7). Trois régimes : stochastique (eps ≤ 1e-9, cv ≈ 0,7-0,8,
+  proche de l'exponentielle tronquée), intermédiaire (3e-9), déterministe
+  (eps ≥ 1e-8, loi du fantôme κ/√D, dont la moyenne augmente avec eps : 899
+  à 3e-8, 1 426 à 1e-7, cohérent avec κ(eps) ↑).
+- Lecture (hypothèse, non testée) : la frontière tombe à eps ≈ 0,1 √v
+  où √v ≈ 4e-8 est le second moment de la ligne 3 (agent, mesuré à
+  pli-1e-6) : quand eps ≪ √v, Adam est adaptatif à plein et les salves
+  hyperchaotiques dominent ; quand eps ≳ √v, il devient proche d'un
+  gradient à pas constant (lr/eps) et les salves s'éteignent (à eps 1e-6,
+  sd(d3) = 8e-14). Test qui la fermerait : refaire la frontière en
+  déplaçant √v (par lr) ; à lr 0,035 la frontière doit se déplacer.
+- Corollaire pour ce qui précède : les mesures de Δ(eps), de κ(eps) et
+  de E1-E3 (eps ≥ 1e-8) sont dans le régime déterministe et reproductibles à
+  1 pas ; le régime par défaut du projet (1e-10) est le stochastique, où
+  aucun seuil n'existe (taux d'échappement).
+
+| H59-30 le passage devient stochastique quand eps ≪ √v (frontière raide, cv 0,45 à 3e-9, 0,087 à 1e-8) | 29/09 (moi) | **confirmée** en position (entre 3e-9 et 1e-8) ; la lecture par √v reste une hypothèse |
+
 **Zéro de Δ(eps), précommis (piste 4) — test orthogonal à l'agent.**
 Interpolation linéaire en log10(eps) entre les trois mesures
 (1e-8 : +9,1e-9 ; 3e-8 : +0,32e-9 ; 1e-7 : -5,5e-9) :
