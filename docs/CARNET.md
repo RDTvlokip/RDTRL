@@ -17212,6 +17212,24 @@ pli-1e-10                      5527,32   -2,350e-9                        -1,445
 
 | H60-3 s(δ) → 0 comme √(δ_c-δ) à l'approche du pli | 29/09 (moi, sur les données) | **soutenue** : p_local 0,07 → 0,45 sur 4,5 décades ; à confirmer plus près du pli |
 
+**Ma question à lui, testée avant l'envoi (demande de Théo « fais le »),
+précommise (29/09) : p atteint-il 1/2 tout près du pli ?** Instrument : la
+réduction numba (7e6 pas/s), vérifiée dans le même script contre le réseau
+complet de pli-1e-5 à pli-1e-10 (colonne « réseau complet »). Protocole de
+`hasard_reduction_tour59.py`, 16 phases, 2 000 000 pas enregistrés chacune,
+offsets pli-1e-5 … pli-1e-10 (fidélité) puis pli-3e-11, -1e-11, -3e-12, -1e-12
+(nouveau) ; le nœud est calculé en mpmath (la grille de racines de mes
+scripts ne résout plus l'écart nœud-jumeau sous ~1e-11).
+- Fidélité : s(réduction) à 15 % du réseau complet à chacun des sept
+  offsets communs (mise 75 %).
+- Nouveau : p_local ∈ [0,44 ; 0,52] entre pli-3e-11 et pli-1e-11 et entre
+  pli-3e-12 et pli-1e-12 ; s(-1e-11) ∈ [6e-10 ; 1,0e-9] ; s(-1e-12) ∈
+  [1,8e-10 ; 3,5e-10] (mise 55 %).
+- Réponse à ma question : « p atteint 0,5 » = p_local ∈ [0,45 ; 0,55] au
+  dernier intervalle (-3e-12 → -1e-12). Ce qui donnerait NON : p_local ≤ 0,40
+  (saturation en dessous de 1/2) ou ≥ 0,55 ; ou des phases qui
+  s'échappent en nombre tel que la moyenne sur les survivantes est biaisée.
+
 Réponse dans `docs/REPONSE_ORDRE60.md` (gitignorée, écrite à la première
 personne, avec le compte rendu de ce qui a été fait en interne pendant son
 absence, à la demande de Théo). Scripts : `verifier_tour60_conversion_delta.py`,
