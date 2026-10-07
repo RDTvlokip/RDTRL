@@ -17492,6 +17492,67 @@ Réponse dans `docs/REPONSE_ORDRE61.md` (gitignorée, première personne). Scrip
 | H61-2 le décalage total = biais de salves (fixe) + déplacement de l'état calme (qui grandit quand l'écart se ferme) | 29/09 (lui) | **confirmée** : -7,98e-6 fixe + médiane de -5,0e-6 (-1e-10) à -5,97e-6 (-1e-12), limite ≈ -6,1e-6 |
 | H61-3 la médiane déplacée est le nœud de l'objectif moyenné sur les salves, pas d'un δ décalé | 29/09 (lui, en question) | **ouverte** : à 3-4 % elle est le nœud d'un δ décalé dans d3 et r4 (P61-5 fausse) ; d4 (E61-1) départagera |
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 07/10/2026 (tour 62, PAS simulée)
+
+Elle répond à la lettre 61 (désormais figée). Contenu, avec mon statut :
+1. *Il reconnaît son 0,63 (une queue saturée divisée par un sd non saturé),
+   0,363 = 7,99e-6/2,200e-5, et que 0,64 est le biais total.* Rien à tester.
+2. *À ma question (le 0,968 se déduit-il de la formule de second ordre à 1 % ?) :
+   non, pas sans Σ ni u.* Raisonnement qualitatif : le déplacement le long du mode
+   mou v seul donne un rapport 1 (même δ' pour toute coordonnée) ; le déplacement
+   des salves est α v + β u (u = direction rigide), donc δ'(c) = √x/a (α + β u_c/v_c)
+   et le rapport vaut (α + β u_r/v_r)/(α + β u_d/v_d), constant ≠ 1 si α, β
+   saturent. **Raisonnement non vérifié par moi** (je n'ai ni Σ ni u_c/v_c).
+3. *Il ajuste 1 - rapport = c0 + c1 x^q sur mes six lignes « 0,955 à 0,967,
+   pli-1e-9 à pli-1e-12 »* : q libre → q = 0,25, limite 0,970, écarts 0,0004
+   (-1e-10) et 0,0001 (-1e-12), prédit 0,9687 à pli-1e-13 ; q = 0,47 → limite
+   0,967, écarts 0,0015 et 0,0009, prédit 0,9668. Sa question : à pli-1e-13 le
+   rapport des médianes est-il plus près de 0,9687 ou de 0,9668 ?
+4. *Il juge mon d4 « le plus inquiétant » et dit qu'il est bon que j'aie vérifié
+   le pli effectif.* Rien à tester.
+
+**Vérification de ses chiffres (règle 5bis ; Théo : « ne pas lui faire confiance »),
+`verifier_tour62_ratio_limite.py`, 24 phases × 2 000 000 pas, réduction numba :**
+- **Étiquetage faux** : ses six lignes « 0,955 … 0,967 » sont pli-3e-10 … pli-1e-12,
+  pas pli-1e-9 … pli-1e-12. À pli-1e-9 le rapport vaut 0,9415. (Il a pris la liste
+  de ma lettre 61, « 0,955, 0,961, 0,964, 0,966, 0,967, 0,967 », qui commençait à -3e-10.)
+- Rapports à 5 chiffres (moyenne ± ES sur 24 phases) : 0,94150 ± 0,00003 (-1e-9) ;
+  0,95544 ± 0,00002 (-3e-10) ; 0,96123 ± 0,00002 (-1e-10) ; 0,96445 ± 0,00002
+  (-3e-11) ; 0,96599 ± 0,00002 (-1e-11) ; 0,96692 ± 0,00001 (-3e-12) ;
+  0,96740 ± 0,00001 (-1e-12).
+- **Ses ajustements NE se reproduisent PAS** sur ses six lignes (-3e-10 … -1e-12,
+  plancher d'erreur 3e-4 pour imiter des valeurs à 3 chiffres ; paramètres en unités
+  de 1e-9, bornes larges, 15 départs) : q libre → **q = 0,564**, limite 0,96785,
+  χ² = 0,07 (3 ddl), prédit 0,96772 à -1e-13 ; q = 0,47 → limite 0,96853, χ² = 3,9
+  (4 ddl), prédit 0,96823. Les deux modèles sont ACCEPTABLES et ne diffèrent que
+  de 0,0005 à -1e-13 (pas 0,0019). Sur mes sept lignes (plancher 1e-4) : q libre
+  q = 0,618, limite 0,96760, χ² = 12,3/4, prédit 0,96751 ; q = 0,47 : χ² = 514/5
+  (exclu), limite 0,96925, prédit 0,96890.
+- **Sa prédiction « 0,9668 » est impossible** : à pli-1e-12 le rapport mesuré est
+  déjà 0,96740 et croît vers sa limite ; 1 - rapport = c0 + c1 x^q avec c1 > 0
+  ne peut pas redescendre. Il a ajusté sur les valeurs arrondies à 3 chiffres (0,955,
+  0,961, 0,964, 0,966, 0,967, 0,967, dont la dernière est 0,9674 en vrai), c'est son propre
+  « caveat » : l'écart 0,9687/0,9668 est un artefact d'arrondi.
+- Une première version de mon ajustement à q libre a buté sur ma borne c1 = 10
+  (paramètres non convergés, q = 0,298) ; je l'ai écartée et reparamétrisé en x/1e-9.
+
+**Un doute sur MON instrument, avant de mesurer à pli-1e-13 :** le d4 de la réduction
+au début de la trace vaut 1,791e-12 (médiane sur 24 phases, identique à tous les
+offsets puisque c'est l'état de départ commun). Fermeture : δG = (1+δ) d4/β = 50,7 ×
+1,79e-12 = 9,1e-11, pli effectif = pli idéal + δG/|G_δ| ≈ +9e-13. Mes offsets
+« -1e-12 » et « -1e-13 » sont mesurés depuis le pli IDÉAL, donc à 1,9e-12 et
+1,0e-12 sous le pli effectif, et le nœud de référence (idéal) n'est pas celui que
+suit la dynamique. Pourtant le tour 61 avait trouvé s identique à 3-4 chiffres en
+mesurant depuis le pli effectif (d4 = 8,04e-13) et depuis l'idéal : je ne comprends
+pas ce point (un d4 de 8e-13 aurait dû changer s à -1e-12 d'un facteur √(1,4)).
+**Test précommis (07/10)** : où la dynamique casse-t-elle réellement ? Réduction
+numba, 12 phases, 2 000 000 pas, δ = pli_idéal + {2e-13, 5e-13, 1e-12, 1,5e-12,
+3e-12}. Prédiction : le pli dynamique est au-dessus du pli idéal d'environ
+4e-13 à 1,2e-12 : aucune phase ne s'échappe à +2e-13, toutes à +3e-12 (mise 55 %).
+Ce qui donnerait « le pli idéal gouverne » : des échappements dès +2e-13. Si le pli
+dynamique est effectif, MES lignes du rapport à x ≤ 1e-11 sont à refaire avec
+le nœud effectif (d4 mesuré) et la lecture « 0,968 constant » est à suspecter.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
