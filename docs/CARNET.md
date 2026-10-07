@@ -17633,6 +17633,19 @@ x = pli_ideal - delta   rapport des medianes (moy +- ES)   prediction precommise
 | H62-4 d4 de départ modifie s ou le rapport | 07/10 (moi) | **réfutée** (0,03 % ; 5e-5) |
 | H62-5 le rapport de la réduction vaut celui du réseau complet | 07/10 (moi) | **soutenue** à pli-1e-9, -3e-10, -1e-10 (≤ 1 ES) ; non testé plus près |
 
+**Test du mécanisme « déplacement saturé », précommis (07/10).** Soit D_c = médiane_c -
+valeur_c au point de pli (c = d3, r4 ; point de pli par la fermeture exacte). Si D_c est
+constant pour x ≲ 1e-10, alors le rapport à TOUT x se déduit de deux nombres (D_d, D_r)
+mesurés à un seul x_ref et de la fermeture exacte du nœud :
+rapport(x) = [(D_r - (r4_nœud(x) - r4_pli))/pente_r(x)] / [(D_d - (d3_nœud(x) - d3_pli))/pente_d(x)],
+sans ajustement. Prédictions (réduction, 16 phases, x_ref = 1e-13) : (i) D_d(x) et D_r(x)
+constants à 3 % pour x ∈ {1e-10, 1e-11, 1e-12, 1e-13, 1e-14} (mise 70 %) ; (ii) le
+rapport prédit par les deux constantes de x_ref reproduit le rapport mesuré à x = 1e-14,
+1e-12, 1e-11, 1e-10 à 1e-3 près (mise 65 %). Ce qui réfuterait le mécanisme : D_d ou D_r
+varie de plus de 5 % entre 1e-10 et 1e-14, ou le rapport prédit s'écarte de plus de 3e-3.
+À x = 1e-9, où le biais est encore en train de saturer (cf. B - c x^0,47), un écart plus
+grand est attendu et n'invalide pas.
+
 Réponse dans `docs/REPONSE_ORDRE62.md` (gitignorée, première personne). Scripts :
 `verifier_tour62_ratio_limite.py`, `verifier_tour62_pli_dynamique.py` (non informatif),
 `verifier_tour62_d4_depart.py`, `verifier_tour62_ratio_reseau_complet.py`.
