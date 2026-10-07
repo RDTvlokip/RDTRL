@@ -1,5 +1,37 @@
 # État du projet RDTRL — où on en est
 
+## Tour 61 (vraie critique de dipankarsarkar, 29/09/2026, traitée le 07/10) — LETTRE PRÊTE
+
+**Lettre** : `docs/REPONSE_ORDRE61.md` (gitignorée), PRÊTE À ENVOYER, première
+personne. La lettre 60 reste figée (et contient l'erreur « sd(d3) = 1,27e-5 » corrigée
+dans la 61). **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 29/09/2026
+(tour 61, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : biais des salves = distance FIXE en d3, mais à l'OPPOSÉ du jumeau (ma
+formulation « vers » était fausse) ; décalage = mean-median (fixe, -7,99e-6) + median-nœud
+(grandit, 39 % à pli-1e-10) ; ajustement B - c x^0,47 ; 2 questions (a) plateau sous
+pli-1e-10 ? (b) médiane déplacée = nœud de l'objectif moyenné plutôt que d'un δ décalé ?
+**Acquis (vérifiés, prédictions poussées avant les runs)** : sa table se retrouve à ≤ 1 % ;
+(a) OUI, mean-median = -7,98e-6 plat à 3 chiffres jusqu'à pli-1e-12 (réduction numba) ;
+son ajustement retrouvé (B = 1,4075e-5, q = 0,4703, lignes intermédiaires à 0,01-0,03 %) ;
+**son « 0,63 sd » est faux** (sd(d3) saturé = 2,2e-5, la queue vaut 0,363 sd ; c'est B/sd
+= 0,64 qui vaut 0,63 par hasard) et la même erreur est dans MA lettre 60 ;
+(b) le rapport δ'_r4/δ'_d3 des médianes = 0,961 / 0,967, dispersion 3e-4 entre phases :
+l'écart à 1 est réel et converge vers ~0,968 ; le MODE conjoint donne 0,79 / 0,82 : l'état
+calme n'est le nœud d'aucun δ décalé ; « nœud de l'objectif moyenné » : non calculé.
+**Correction de mon propre énoncé** : d4 (ligne 4) n'est pas gelé, il dérive en 1/t sous le
+plancher d'Adam (t^-0,856, réduction) ; p → 1/2 est invariant au pli effectif.
+**Coupure de courant le 07/10 sans dégât** (dépôt, carnet, lettres intacts, aucun processus
+orphelin).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 61 (la 60 n'est pas encore partie si dipankar n'a pas répondu à l'une
+   d'elles : envoyer les deux dans l'ordre, la 61 corrige la 60).
+2. Sa question de retour : le rapport 0,968 se déduit-il de la covariance des salves ?
+   (calcul de second ordre non fait).
+3. Nœud de l'objectif moyenné sur les salves : non calculé ; seul test qui trancherait (b).
+4. d4 sur le réseau complet (dérive 1/t vue dans la réduction seulement).
+
 ## Tour 60 (vraie critique de dipankarsarkar, 29/09/2026) — LETTRE PRÊTE
 
 **Lettre** : `docs/REPONSE_ORDRE60.md` (gitignorée), PRÊTE À ENVOYER, écrite

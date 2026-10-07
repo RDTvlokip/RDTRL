@@ -17479,6 +17479,13 @@ confirmée ni réfutée, je n'ai pas calculé cet objet. Réserve : résolution 
 la dispersion entre phases (± 0,06 à ± 0,1 par phase) vient de l'estimation du pic.
 Non testé : d4 (dérive, cf. ci-dessus), un quatrième observable indépendant.
 
+Réponse dans `docs/REPONSE_ORDRE61.md` (gitignorée, première personne). Scripts :
+`verifier_tour61_decomposition_d3.py`, `verifier_tour61_rapport_phases.py`,
+`verifier_tour61_mode_conjoint.py`, `verifier_tour61_pli_effectif.py`,
+`verifier_tour61_d4_python.py`, `verifier_tour61_d4_derive.py`.
+
+| H61-5 la médiane déplacée est le nœud d'un δ décalé (d3 et r4 donnent le même δ') | 07/10 (lui, en question) | **réfutée** : rapport 0,961 / 0,967 (dispersion 3e-4), mode 0,79 / 0,82 |
+| H61-6 « 0,63 sd » : la queue des salves vaut 0,63 de sd(d3) | 29/09 (lui) | **réfutée** : 0,363 sd saturé ; 0,64 est B/sd (même erreur dans ma lettre 60) |
 | H61-4 la ligne 4 dérive en 1/t sous le plancher d'Adam | 07/10 (moi) | **soutenue** (exposant -0,856, 15 fenêtres, réduction) ; non testée sur le réseau complet |
 
 | H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
