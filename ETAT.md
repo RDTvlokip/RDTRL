@@ -1,5 +1,35 @@
 # État du projet RDTRL — où on en est
 
+## Tour 62 (vraie critique de dipankarsarkar, 07/10/2026) — LETTRE PRÊTE
+
+**Lettre** : `docs/REPONSE_ORDRE62.md` (gitignorée), PRÊTE À ENVOYER, première
+personne. Les lettres 60 et 61 restent figées (non envoyées à ma connaissance : envoyer
+60, 61, 62 dans l'ordre, chacune corrige la précédente). **Carnet** : section « VRAIE
+CRITIQUE DE DIPANKARSARKAR, 07/10/2026 (tour 62, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : il reconnaît son 0,63 ; pas de 1 % sans Σ ; ajustements 1 - rapport =
+c0 + c1 x^q sur mes six lignes (q libre 0,25 / limite 0,970 ; q = 0,47 / limite 0,967) ;
+question : à pli-1e-13 le rapport est-il plus près de 0,9687 ou de 0,9668 ?
+**Acquis (vérifiés, prédictions poussées avant les runs)** : réponse = NI L'UN NI L'AUTRE :
+0,96782 ± 0,00001 ; ses lignes sont mal étiquetées (0,955…0,967 = pli-3e-10…-1e-12) et ses
+ajustements ne se reproduisent pas (q = 0,564 / limite 0,9679 ; sa prédiction 0,9668 est
+INFÉRIEURE à la valeur déjà mesurée à -1e-12, 0,9674 : arrondi à 3 chiffres). Seul modèle qui
+tient sur 11 lignes : c0 + c1√x + c2x (χ² 12,2/8), limite 0,96799. Mécanisme confirmé :
+déplacement des médianes constant (D_d = -6,081e-6, D_r = -4,391e-5 à 0,1 % pour x ≤ 1e-11 ;
+D_r/D_d = 7,2210), 2 constantes + fermeture exacte du nœud prédisent le rapport à 1e-5-4e-5
+près ; limite = (D_r/D_d)/ρ = 7,2210/7,459415 = 0,96804 (ρ forme fermée du mode mou).
+Le rapport de la réduction = celui du réseau complet à ≤ 1 ES (jusqu'à pli-1e-10).
+**Mes erreurs** : test du pli dynamique par échappements (mal conçu) ; prédiction fausse que le
+départ de d4 change s de > 10 % (0,03 %) ; un premier ajustement non convergé (borne).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer les lettres 60, 61, 62 dans l'ordre ; attendre sa réponse.
+2. Sa question de retour (ma question à lui) : l'inclinaison de 3,2 % entre D_r/D_d et ρ
+   diminue-t-elle quand les salves sont plus petites (eps 1e-8) ? Je peux le tester dans
+   la réduction en passant `eps` à `warmed`/`avancer_obs` (non fait).
+3. Σ et le vecteur rigide pour DÉRIVER 7,2210 : non faits.
+4. Le mode conjoint (0,79 / 0,82) contre les médianes (0,968) : cause non élucidée.
+
 ## Tour 61 (vraie critique de dipankarsarkar, 29/09/2026, traitée le 07/10) — LETTRE PRÊTE
 
 **Lettre** : `docs/REPONSE_ORDRE61.md` (gitignorée), PRÊTE À ENVOYER, première

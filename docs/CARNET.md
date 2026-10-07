@@ -17646,6 +17646,38 @@ varie de plus de 5 % entre 1e-10 et 1e-14, ou le rapport prédit s'écarte de pl
 À x = 1e-9, où le biais est encore en train de saturer (cf. B - c x^0,47), un écart plus
 grand est attendu et n'invalide pas.
 
+**Résultats du test du déplacement saturé (`verifier_tour62_deplacement_sature.py`, 16
+phases ; toutes les prédictions tombent) :**
+```
+x        D_d (médiane d3 - pli)   D_r (médiane r4 - pli)   D_r/D_d    D_d(x)/D_d(ref)  rapport prédit (2 constantes)  mesuré    écart
+1e-9     -6,7021e-6               -4,8640e-5               7,2574     1,1021           0,92276                        0,94150   -0,01874
+1e-10    -6,1431e-6               -4,4382e-5               7,2248     1,0101           0,96050                        0,96121   -0,00071
+1e-11    -6,0847e-6               -4,3939e-5               7,2213     1,0005           0,96596                        0,96600   -0,00004
+1e-12    -6,0765e-6               -4,3878e-5               7,2209     0,9992           0,96740                        0,96739   +0,00001
+1e-13    -6,0837e-6               -4,3929e-5               7,2208     1,0004           0,96784                        0,96781   +0,00003
+1e-14    -6,0814e-6               -4,3914e-5               7,2210     1,0000 (réf.)    0,96797                        0,96797   0
+```
+- (i) ✓ : D_d et D_r constants à 1,0 % (x = 1e-10) et à 0,1 % (x ≤ 1e-11) ;
+  D_r/D_d = 7,2210 ± 0,0003 pour x ≤ 1e-11 (4 chiffres).
+- (ii) ✓ : deux constantes figées à x = 1e-14 reproduisent le rapport mesuré à 4e-5
+  (1e-11), 1e-5 (1e-12), 3e-5 (1e-13) et 7,1e-4 (1e-10, critère 1e-3). À 1e-9 : -0,019,
+  attendu (D encore 10 % trop grand, le biais sature encore). Aucune quantité ajustée.
+- **Pente du mode mou au pli en forme fermée (`verifier_tour62_pente_mode_mou.py`)** :
+  ρ = lim d r4_nœud/d d3_nœud = 7,468866 (x = 1e-9) / 7,462402 (1e-10) / 7,459714 (1e-12) /
+  7,459445 (1e-14) / 7,459415 (1e-20). **Limite du rapport L = (D_r/D_d)/ρ = 7,2210/7,459415
+  = 0,96804**, contre 0,96799 de l'ajustement c0 + c1√x + c2x : accord à 5e-5.
+- **Réponse au « pourquoi 0,968 » sans Σ** : le déplacement des salves de la médiane a une
+  direction (D_r/D_d = 7,2210) qui diffère de celle du mode mou (ρ = 7,4594) de 3,2 %. Un
+  déplacement le long du mode mou seul (sa lecture « décalage de δ ») donnerait D_r/D_d = ρ,
+  donc 1. Les 3,2 % sont la composante rigide de son β (β ≠ 0). **Non dérivé** : il faut
+  Σ (covariance des salves) et le vecteur rigide pour prédire D_r/D_d ; je le MESURE.
+- Ce qui réfute ou limite : D est la médiane marginale de chaque coordonnée, pas l'état
+  conjoint (le mode conjoint a donné 0,79 / 0,82, cf. tour 61) ; réduction (contrôlée au
+  réseau complet à ≤ 1 ES jusqu'à pli-1e-10 seulement).
+
+| H62-3 q = 1/2 exactement dans 1 - rapport = c0 + c1 x^q (biais saturé, nœud en √x) | 07/10 (moi) | **confirmée comme mécanisme** : D_d, D_r constants à 0,1 % pour x ≤ 1e-11 ; rapport prédit par 2 constantes + fermeture exacte à 4e-5 ; limite 0,96804 par ρ fermée contre 0,96799 ajustée |
+| H62-6 la direction du déplacement des salves est celle du mode mou (β = 0) | 07/10 (lui, en creux) | **réfutée** : D_r/D_d = 7,2210 contre ρ = 7,4594 (3,2 % d'écart) |
+
 Réponse dans `docs/REPONSE_ORDRE62.md` (gitignorée, première personne). Scripts :
 `verifier_tour62_ratio_limite.py`, `verifier_tour62_pli_dynamique.py` (non informatif),
 `verifier_tour62_d4_depart.py`, `verifier_tour62_ratio_reseau_complet.py`.
