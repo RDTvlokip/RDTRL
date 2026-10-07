@@ -17567,6 +17567,31 @@ s(-1e-12) change de plus de 10 % entre les deux départs de d4 (mise 60 %), le r
 de plus de 0,005. Ce qui montrerait que d4 est sans effet sur ces observables : s
 et rapport identiques à 3 % et 0,002 près aux deux offsets.
 
+**Résultat (`verifier_tour62_d4_depart.py`, 12 phases) : le départ de d4 est sans effet,
+ma prédiction (> 10 %) est fausse.** d4 = 1,784e-12 (A) contre 3,128e-17 (B) :
+s(-1e-12) = -2,5220e-10 / -2,5227e-10 (écart 0,03 %) ; rapport des médianes 0,96739
+± 0,00002 / 0,96734 ± 0,00001 ; à -1e-11 : s = -7,8422e-10 / -7,8417e-10, rapport
+0,96601 / 0,96602. **Pourquoi (géométrie, pas encore testée à part)** : à x ≲ 1e-9 le biais
+des salves (1,4e-5 en d3) dépasse l'écart nœud-jumeau (2,2e-7 à x = 1e-12, rapport 63) :
+l'état moyen reste à une distance FIXE du point de pli, ses coordonnées ne résolvent pas
+la structure fine du pli (décalage de 4e-13 ou 9e-13) ; seule la référence « nœud »
+bouge, en √x. D'où s = -(biais saturé)/pente ∝ √x trivialement (p → 1/2), et — c'est ce
+que ni lui ni moi n'avions posé — le rapport des médianes tend vers une constante avec
+une correction en √x : **1 - rapport = c0 + c1 √x + c2 x**, q = 1/2 exactement.
+
+**Prédictions précommises (07/10) pour le rapport des médianes, 24 phases, réduction
+numba, ES attendue ~1e-5.** Ajustement c0 + c1√x + c2x (unités de 1e-9) sur trois
+sélections de lignes (7 lignes ; 5 lignes x ≤ 1e-10 ; ses 6 lignes x ≤ 3e-10 avec plancher
+d'ES 3e-4) : limite 0,96798 / 0,96802 / 0,96801, χ² 25,8/4 · 1,3/2 · 0,00/3 ; prédit
+à pli-1e-13 : 0,96779 / 0,96782 / 0,96781 ; à pli-3e-14 : 0,96787 / 0,96791 / 0,96790 ;
+à pli-1e-14 : 0,96792 / 0,96796 / 0,96795.
+- P62-1 : rapport(-1e-13) ∈ [0,9677 ; 0,9679] (mise 65 %).
+- P62-2 : rapport(-1e-14) ∈ [0,9678 ; 0,9681] (mise 60 %), limite 0,9680 ± 0,0002.
+- P62-3 (sa question) : aucune des deux valeurs de lui (0,9687, 0,9668) n'est dans
+  l'intervalle ; la mesure sera plus proche de 0,9687 de 0,0009, de 0,9668 de 0,0010.
+- Ce qui réfuterait mon développement : rapport(-1e-13) hors de [0,9675 ; 0,9681], ou
+  rapport(-1e-14) < rapport(-1e-13) (non monotone).
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et

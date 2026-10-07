@@ -88,6 +88,16 @@ def ajuste():
     print(f"q = 0,47 : 1 - rapport = {c0b:.5f} + {c1b:.5f} (x/1e-9)^0.47   limite rapport = {1 - c0b:.5f}   chi2 = {2 * s2.cost:.2f} ({len(x) - 2} ddl)")
     for xi, ri in zip(x, r):
         print(f"   x={xi:.0e}  mesure {ri:.5f}  q libre {1 - modele(best.x, xi):.5f}  q=0,47 {1 - modele([c0b, c1b], xi, 0.47):.5f}")
+    # Developpement en sqrt(x) : le biais des salves SATURE (distance fixe au point de pli) pendant que le noeud de
+    # reference bouge comme sqrt(x) ; 1 - rapport = c0 + c1 sqrt(x) + c2 x (q = 1/2 exactement, plus la correction suivante)
+    X = np.sqrt(x / 1e-9)
+    A = np.column_stack([np.ones_like(X), X, X ** 2]) / se[:, None]
+    for nom, cols in (("c0 + c1 sqrt(x)", [0, 1]), ("c0 + c1 sqrt(x) + c2 x", [0, 1, 2])):
+        coef, *_ = np.linalg.lstsq(A[:, cols], y / se, rcond=None)
+        chi2 = float(np.sum(((A[:, cols] @ coef) - y / se) ** 2))
+        pred = {xp: 1 - sum(coef[i] * (np.sqrt(xp / 1e-9) ** cols[i]) for i in range(len(cols))) for xp in (1e-13, 3e-14, 1e-14)}
+        print(f"developpement {nom:24s}: limite rapport = {1 - coef[0]:.5f}  chi2 = {chi2:.2f} ({len(x) - len(cols)} ddl)  "
+              + "  ".join(f"x={xp:.0e}: {v:.5f}" for xp, v in pred.items()))
     for xp in (1e-13, 1e-14):
         print(f"prediction rapport a pli-{xp:.0e} : q libre {1 - modele(best.x, xp):.5f}   q=0,47 {1 - modele([c0b, c1b], xp, 0.47):.5f}")
 
