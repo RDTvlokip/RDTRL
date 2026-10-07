@@ -17434,6 +17434,15 @@ dérive aussi (4,0e-13 à d4 = 8e-13, ~5e-14 à d4 = 1e-13), tout en restant sou
 les offsets utilisés. Non vérifié : d4 sur le RÉSEAU COMPLET (réduction
 uniquement) ; ajustement 1/(t+t0) imparfait (21 %).
 
+**Précommis (07/10) : l'écart de 3-4 % à 1 du rapport δ'_r4/δ'_d3 est-il du bruit ?**
+Rapport calculé PAR PHASE (16 phases, réduction numba, 2e6 pas) à pli-1e-10 et
+pli-1e-12, moyenne ± erreur standard. Prédiction : l'erreur standard < 0,005 donc le
+rapport (0,96-0,97) est significativement ≠ 1 aux deux offsets, et ne tend pas vers 1
+(mise 60 %). Ce qui donnerait « nœud d'un δ décalé » : rapport compatible avec 1
+à 2 erreurs standard à pli-1e-12. Lecture si ≠ 1 : la médiane déplacée n'est sur
+la courbe des nœuds d'aucun δ, à 3-4 % près ; c'est la réponse « nœud de l'objectif
+moyenné sur les salves » à sa question (b), non prouvée (je n'ai pas calculé cet objet).
+
 | H61-4 la ligne 4 dérive en 1/t sous le plancher d'Adam | 07/10 (moi) | **soutenue** (exposant -0,856, 15 fenêtres, réduction) ; non testée sur le réseau complet |
 
 | H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
