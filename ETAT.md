@@ -3,8 +3,8 @@
 ## Tour 62 (vraie critique de dipankarsarkar, 07/10/2026) — LETTRE PRÊTE
 
 **Lettre** : `docs/REPONSE_ORDRE62.md` (gitignorée), PRÊTE À ENVOYER, première
-personne. Les lettres 60 et 61 restent figées (non envoyées à ma connaissance : envoyer
-60, 61, 62 dans l'ordre, chacune corrige la précédente). **Carnet** : section « VRAIE
+personne. Les lettres 60 et 61 sont DÉJÀ ENVOYÉES (Théo, 07/10 : sa critique du tour 62
+répond à la 61, celle du tour 61 répondait à la 60) et restent figées. **Carnet** : section « VRAIE
 CRITIQUE DE DIPANKARSARKAR, 07/10/2026 (tour 62, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : il reconnaît son 0,63 ; pas de 1 % sans Σ ; ajustements 1 - rapport =
@@ -23,7 +23,7 @@ Le rapport de la réduction = celui du réseau complet à ≤ 1 ES (jusqu'à pli
 départ de d4 change s de > 10 % (0,03 %) ; un premier ajustement non convergé (borne).
 
 **Pistes concrètes pour la suite :**
-1. Envoyer les lettres 60, 61, 62 dans l'ordre ; attendre sa réponse.
+1. Envoyer la lettre 62 (seule pas encore partie) ; attendre sa réponse.
 2. Sa question de retour (ma question à lui) : l'inclinaison de 3,2 % entre D_r/D_d et ρ
    diminue-t-elle quand les salves sont plus petites (eps 1e-8) ? Je peux le tester dans
    la réduction en passant `eps` à `warmed`/`avancer_obs` (non fait).
@@ -55,8 +55,7 @@ plancher d'Adam (t^-0,856, réduction) ; p → 1/2 est invariant au pli effectif
 orphelin).
 
 **Pistes concrètes pour la suite :**
-1. Envoyer la lettre 61 (la 60 n'est pas encore partie si dipankar n'a pas répondu à l'une
-   d'elles : envoyer les deux dans l'ordre, la 61 corrige la 60).
+1. FAIT : la lettre 61 est partie (sa critique du tour 62 y répond).
 2. Sa question de retour : le rapport 0,968 se déduit-il de la covariance des salves ?
    (calcul de second ordre non fait).
 3. Nœud de l'objectif moyenné sur les salves : non calculé ; seul test qui trancherait (b).
@@ -86,7 +85,7 @@ hors échantillon à 5 % (eps 2e-8) et 9 % (5e-8). La lettre corrige la
 lettre 59 (le « 6e-10 à 1e-9 » était le transitoire d'Adam neuf).
 
 **Pistes concrètes pour la suite :**
-1. Envoyer la lettre 60 ; attendre sa réponse.
+1. FAIT : la lettre 60 est partie (sa critique du tour 61 y répond).
 2. FAIT le 29/09 (demande de Théo « fais le », intégré à la lettre 60) : p_local
    0,451 / 0,472 / 0,484 / 0,491 / 0,494 à pli-1e-10 … -1e-12 (réduction numba,
    validée à 0,1-0,6 % contre le réseau complet, `verifier_tour60_exposant_reduction.py`) :
