@@ -96,7 +96,7 @@ def ajuste():
         coef, *_ = np.linalg.lstsq(A[:, cols], y / se, rcond=None)
         chi2 = float(np.sum(((A[:, cols] @ coef) - y / se) ** 2))
         pred = {xp: 1 - sum(coef[i] * (np.sqrt(xp / 1e-9) ** cols[i]) for i in range(len(cols))) for xp in (1e-13, 3e-14, 1e-14)}
-        print(f"developpement {nom:24s}: limite rapport = {1 - coef[0]:.5f}  chi2 = {chi2:.2f} ({len(x) - len(cols)} ddl)  "
+        print(f"developpement {nom:24s}: coef (c0, c1, c2) = {', '.join(f'{c:.5f}' for c in coef)} ; limite rapport = {1 - coef[0]:.5f}  chi2 = {chi2:.2f} ({len(x) - len(cols)} ddl)  "
               + "  ".join(f"x={xp:.0e}: {v:.5f}" for xp, v in pred.items()))
     for xp in (1e-13, 1e-14):
         print(f"prediction rapport a pli-{xp:.0e} : q libre {1 - modele(best.x, xp):.5f}   q=0,47 {1 - modele([c0b, c1b], xp, 0.47):.5f}")

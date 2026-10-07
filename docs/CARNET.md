@@ -17592,6 +17592,51 @@ d'ES 3e-4) : limite 0,96798 / 0,96802 / 0,96801, χ² 25,8/4 · 1,3/2 · 0,00/3 
 - Ce qui réfuterait mon développement : rapport(-1e-13) hors de [0,9675 ; 0,9681], ou
   rapport(-1e-14) < rapport(-1e-13) (non monotone).
 
+**Résultats (`verifier_tour62_ratio_limite.py mesure`, 24 phases ; toutes les
+prédictions précommises tombent) :**
+```
+x = pli_ideal - delta   rapport des medianes (moy +- ES)   prediction precommise
+3e-13                   0,96765 +- 0,00001                  (non predit)
+1e-13                   0,96782 +- 0,00001                  0,96779 / 0,96782 / 0,96781 ; intervalle [0,9677 ; 0,9679] ✓
+3e-14                   0,96791 +- 0,00002                  0,96787 / 0,96791 / 0,96790 ✓
+1e-14                   0,96796 +- 0,00001                  0,96792 / 0,96796 / 0,96795 ; intervalle [0,9678 ; 0,9681] ✓
+```
+- **Sa question** : ni 0,9687 ni 0,9668 : 0,96782 est à 8,8e-4 de l'un et 1,0e-3 de
+  l'autre (≈ 90 et 100 erreurs standard). Strictement « plus près de 0,9687 » de 1,4e-4,
+  ce qui ne signifie rien.
+- **Onze lignes (x de 1e-9 à 1e-14), ES plancher 3e-5, `ajuste 1e-9 3e-5`** :
+  q libre (q = 0,602, limite 0,96783) χ² = 283/8 : rejeté ; q = 0,47 (limite
+  0,96866) χ² = 8263/9 : rejeté ; c0 + c1√x : χ² = 4810/9 : rejeté ;
+  **c0 + c1√x + c2 x : χ² = 12,2/8, coefficients (0,03201 ; 0,01887 ; 0,00760),
+  limite 0,96799**, seul modèle qui tienne. La limite est stable à 4e-5 près quand
+  on change de sélection de lignes (0,96798 / 0,96802 / 0,96801 avant les quatre nouvelles
+  mesures, 0,96799 après).
+- **Contrôle de l'instrument** (`verifier_tour62_ratio_reseau_complet.py`, 6 phases du
+  réseau complet) : rapport 0,94097 ± 0,00055, 0,95488 ± 0,00033, 0,96132 ±
+  0,00031 à pli-1e-9, -3e-10, -1e-10, contre 0,94150, 0,95544, 0,96123 dans la réduction :
+  écarts -5,3e-4, -5,6e-4, +0,9e-4, tous à ≤ 1,0 erreur standard. Prédiction (accord à
+  0,003) ✓. Le rapport est donc fiable dans la réduction au moins jusqu'à pli-1e-10.
+- **Lecture (géométrie, non dérivée)** : l'état moyen reste à distance fixe du point de
+  pli (biais saturé), le nœud de référence s'en écarte en √x ; au premier ordre le rapport
+  tend vers (Δr4/Δd3 du déplacement des salves)/(pente du mode mou) = 0,9680, avec des
+  corrections en √x (le nœud) puis en x. Sa lecture « α et β saturent, β ≠ 0 donne un
+  rapport constant ≠ 1 » est compatible ; la valeur 0,9680 exige Σ et u_c/v_c que je n'ai pas.
+- **Mes erreurs de ce tour** : (i) test du pli dynamique par échappements, mal conçu
+  (l'état tient au-dessus du pli idéal) ; (ii) ma prédiction que le départ de d4 change s de
+  plus de 10 % (mesuré : 0,03 %) ; (iii) premier ajustement à q libre non convergé (borne).
+  Ce que (ii) enseigne : à x ≲ 1e-9 la structure fine du pli, de l'ordre de d4 (1e-12),
+  est noyée sous le biais de 1,4e-5 des salves.
+
+| H62-1 le rapport δ'_r4/δ'_d3 des médianes tend vers une limite ≠ 1 | 07/10 (lui) | **confirmée** : limite 0,96799, 1 - rapport = 0,03201 + 0,01887√(x/1e-9) + 0,00760 x/1e-9 (χ² 12,2/8) |
+| H62-2 sa prédiction : 0,9687 (q libre) ou 0,9668 (q = 0,47) à pli-1e-13 | 07/10 (lui) | **réfutée** : 0,96782 ± 0,00001 ; ses ajustements ne se reproduisent pas (lignes mal étiquetées, valeurs arrondies à 3 chiffres) |
+| H62-3 q = 1/2 exactement dans 1 - rapport = c0 + c1 x^q (biais saturé, nœud en √x) | 07/10 (moi) | **soutenue** : développement à trois termes χ² 12,2/8 contre q libre 283/8 ; non dérivée |
+| H62-4 d4 de départ modifie s ou le rapport | 07/10 (moi) | **réfutée** (0,03 % ; 5e-5) |
+| H62-5 le rapport de la réduction vaut celui du réseau complet | 07/10 (moi) | **soutenue** à pli-1e-9, -3e-10, -1e-10 (≤ 1 ES) ; non testé plus près |
+
+Réponse dans `docs/REPONSE_ORDRE62.md` (gitignorée, première personne). Scripts :
+`verifier_tour62_ratio_limite.py`, `verifier_tour62_pli_dynamique.py` (non informatif),
+`verifier_tour62_d4_depart.py`, `verifier_tour62_ratio_reseau_complet.py`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
