@@ -17443,6 +17443,27 @@ rapport (0,96-0,97) est significativement ≠ 1 aux deux offsets, et ne tend pas
 la courbe des nœuds d'aucun δ, à 3-4 % près ; c'est la réponse « nœud de l'objectif
 moyenné sur les salves » à sa question (b), non prouvée (je n'ai pas calculé cet objet).
 
+**Résultat (`verifier_tour61_rapport_phases.py`) : ma prédiction tombe, l'écart est
+réel.** Rapport δ'_med(r4)/δ'_med(d3) par phase : 0,9612 ± 0,0000 (min 0,9610 / max
+0,9613) à pli-1e-10 et 0,9674 (0,9673 / 0,9675) à pli-1e-12 ; la dispersion entre
+phases est de 3e-4, donc l'écart à 1 vaut des centaines d'erreurs standard. Avec les
+lignes précédentes (0,955 → 0,961 → 0,964 → 0,966 → 0,967 → 0,967) le rapport converge
+vers ≈ 0,968, pas vers 1.
+
+**Mais ma lecture est à suspecter (méfiance) :** ce sont deux médianes MARGINALES
+(d3 et r4 sont des fonctions monotones d'une seule coordonnée chacune, z3 et u, donc
+chaque médiane est exacte ; mais le couple (méd z3, méd u) n'est pas un état visité).
+Si les deux marginales sont asymétriques différemment, le couple peut quitter la courbe
+des nœuds décalés même si l'état calme commun, lui, y est. **Test qui distingue,
+précommis (07/10)** : estimer le MODE conjoint de (z3, u) (histogramme 2D lissé, 16
+phases, pli-1e-10 et pli-1e-12), calculer δ'_d3(mode) et δ'_r4(mode). Prédiction : le
+rapport de mode est plus proche de 1 que 0,961 / 0,967, soit |rapport - 1| < 0,02 aux
+deux offsets (mise 45 %). Si oui : l'état calme est sur la courbe d'un δ décalé et
+l'écart des médianes vient de l'asymétrie des salves (réponse « δ décalé » à sa
+question (b) pour le mode). Si non (|rapport - 1| ≥ 0,03) : l'état calme quitte la
+courbe des nœuds d'aucun δ, lecture « nœud de l'objectif moyenné », que je n'ai pas
+calculée.
+
 | H61-4 la ligne 4 dérive en 1/t sous le plancher d'Adam | 07/10 (moi) | **soutenue** (exposant -0,856, 15 fenêtres, réduction) ; non testée sur le réseau complet |
 
 | H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
