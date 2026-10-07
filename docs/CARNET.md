@@ -17409,6 +17409,33 @@ impossible). Restent les deux coordonnées vivantes : z3 (d3) et u (r4).
   réfuterait « p → 1/2 » : p_local hors de [0,40 ; 0,60] à l'un des deux
   derniers intervalles avec le pli effectif.
 
+**Résultat du pli effectif (`verifier_tour61_pli_effectif.py`) : p → 1/2 survit.**
+Avec d4 fixé à 8,04e-13, le pli effectif est à pli_idéal + 4,03e-13. Mesuré depuis
+ce pli effectif : s = -1,459e-8 / -6,407e-9 / -3,867e-9 / -2,355e-9 / -1,334e-9 /
+-7,840e-10 / -4,344e-10 / -2,523e-10 (offsets -1e-8 … -1e-12), p_local = 0,357 /
+0,419 / 0,452 / 0,472 / 0,484 / 0,490 / 0,494, identiques à ceux du pli idéal à
+≤ 0,3 %. Prédiction (p_local dans [0,45 ; 0,55] aux deux derniers intervalles ✓,
+B ≈ 1,4e-5 conservé ✓) tombée. **Mais** « gelé » était FAUX (voir ci-dessous) :
+l'invariance vient de ce que le décalage de 4e-13 est négligeable devant des
+offsets ≥ 1e-12 dont la pente seule compte, pas d'un d4 constant.
+
+**Correction du 07/10 (après la coupure de courant) : d4 NE reste PAS gelé, il
+dérive lentement** (`verifier_tour61_d4_derive.py`, réduction pure Python,
+δ = pli-1e-9, 15 fenêtres de 200 000 pas) : d4 médiane = 1,089e-12 (t = 1,4e5) →
+5,90e-13 (3,4e5) → 3,17e-13 (7,4e5) → 1,53e-13 (1,74e6) → 9,67e-14 (2,94e6),
+décroissance monotone, ajustement log-log d4 ~ t^-0,856 (prédiction précommise
+-1 ± 0,2 ✓), forme 1/(t + t0) approchée à 21 % (t0 ≈ 1,9e5). Mon énoncé « le
+logit e4-o4 reste près de sa valeur de chauffe » était donc faux ; la valeur
+8,04e-13 est celle du moment mesuré (t ≈ 6e4-1,3e5 après l'état chaud), pas un
+palier. Lecture : sous le plancher d'Adam (|g| ≪ eps) la ligne 4 se relaxe en
+SGD à pas lr/eps, d'où d4 ∝ 1/t, et n'a pas atteint son nœud (3,1e-17) après 3e6
+pas (d4 y est encore 3e3 fois trop grand). Conséquence : le pli effectif
+dérive aussi (4,0e-13 à d4 = 8e-13, ~5e-14 à d4 = 1e-13), tout en restant sous
+les offsets utilisés. Non vérifié : d4 sur le RÉSEAU COMPLET (réduction
+uniquement) ; ajustement 1/(t+t0) imparfait (21 %).
+
+| H61-4 la ligne 4 dérive en 1/t sous le plancher d'Adam | 07/10 (moi) | **soutenue** (exposant -0,856, 15 fenêtres, réduction) ; non testée sur le réseau complet |
+
 | H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
 | H61-2 le décalage total = biais de salves (fixe) + déplacement de l'état calme (qui grandit quand l'écart se ferme) | 29/09 (lui) | **confirmée** : -7,98e-6 fixe + médiane de -5,0e-6 (-1e-10) à -5,97e-6 (-1e-12), limite ≈ -6,1e-6 |
 | H61-3 la médiane déplacée est le nœud de l'objectif moyenné sur les salves, pas d'un δ décalé | 29/09 (lui, en question) | **ouverte** : à 3-4 % elle est le nœud d'un δ décalé dans d3 et r4 (P61-5 fausse) ; d4 (E61-1) départagera |
