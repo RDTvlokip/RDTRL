@@ -17464,6 +17464,21 @@ question (b) pour le mode). Si non (|rapport - 1| ≥ 0,03) : l'état calme quit
 courbe des nœuds d'aucun δ, lecture « nœud de l'objectif moyenné », que je n'ai pas
 calculée.
 
+**Résultat du mode conjoint (`verifier_tour61_mode_conjoint.py`, 16 phases, histogramme
+2D 240 × 240 lissé σ = 2 bins) : prédiction ✗, et dans le mauvais sens.** δ'_d3(mode)
+= -5,90e-10 / -7,64e-11 et δ'_r4(mode) = -4,66e-10 / -6,23e-11 à pli-1e-10 /
+pli-1e-12 ; rapport r4/d3 = 0,792 ± 0,021 et 0,817 ± 0,012 (dispersion par phase
+0,62-0,94 et 0,75-0,90, plus bruitée que les médianes). Le mode est plus proche du
+nœud que la médiane (|δ'| = 5,9e-10 contre 9,1e-10 à -1e-10), comme pour une
+distribution asymétrique, mais les deux coordonnées ne donnent pas le même δ' : l'état
+calme n'est sur la courbe des nœuds d'AUCUN δ décalé, ni par les médianes (écart 3-4 %)
+ni par le mode (écart 18-21 %). Réponse à sa question (b), limitée : « le nœud d'un δ
+décalé » est exclue pour (z3, u) ; « le nœud de l'objectif moyenné sur les salves » n'est ni
+confirmée ni réfutée, je n'ai pas calculé cet objet. Réserve : résolution du mode
+(bin ≈ 4e-7 en d3, soit 7e-12 de δ' à -1e-12, contre un décalage de 7,6e-11) suffisante ;
+la dispersion entre phases (± 0,06 à ± 0,1 par phase) vient de l'estimation du pic.
+Non testé : d4 (dérive, cf. ci-dessus), un quatrième observable indépendant.
+
 | H61-4 la ligne 4 dérive en 1/t sous le plancher d'Adam | 07/10 (moi) | **soutenue** (exposant -0,856, 15 fenêtres, réduction) ; non testée sur le réseau complet |
 
 | H61-1 les salves portent la moyenne d'une distance fixe en d3 (7,98e-6) À L'OPPOSÉ du jumeau | 29/09 (lui) | **confirmée** (plat à trois chiffres de -1e-9 à -1e-12) ; sa valeur relative « 0,63 sd » **fausse** (0,363 sd_sat) |
