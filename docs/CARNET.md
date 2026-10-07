@@ -17553,6 +17553,20 @@ Ce qui donnerait « le pli idéal gouverne » : des échappements dès +2e-13. S
 dynamique est effectif, MES lignes du rapport à x ≤ 1e-11 sont à refaire avec
 le nœud effectif (d4 mesuré) et la lecture « 0,968 constant » est à suspecter.
 
+**Résultat du test du pli dynamique : INFORMATIF NON, ma conception était fausse.**
+0 / 12 phases échappées à +2e-13, +5e-13, +1e-12, +1,5e-12 et +3e-12 au-dessus du pli
+idéal (d4 = 1,784e-12). Je n'avais pas vu que, au-dessus du pli idéal, l'état TIENT
+(taux d'échappement < 5e-7 par pas sous +6e-9, cf. tour 59) : aucun échappement en
+2e6 pas ne peut localiser un décalage de 1e-12. Ma prédiction (« aucune phase à
++2e-13, toutes à +3e-12 ») est fausse sur la seconde moitié et non testée sur la
+première. **Test direct, précommis (07/10)** : faire démarrer la ligne 4 de la
+réduction à son nœud (d4 = 3,13e-17, soit z4 = ln(26(1-d4)/d4)) au lieu de 1,8e-12,
+puis mesurer à pli-1e-12 et pli-1e-11 (12 phases, 2e6 pas, nœud idéal comme référence) :
+(i) s = (moy d3 - nœud)/pente, (ii) le rapport des médianes δ'_r4/δ'_d3. Prédiction :
+s(-1e-12) change de plus de 10 % entre les deux départs de d4 (mise 60 %), le rapport
+de plus de 0,005. Ce qui montrerait que d4 est sans effet sur ces observables : s
+et rapport identiques à 3 % et 0,002 près aux deux offsets.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
