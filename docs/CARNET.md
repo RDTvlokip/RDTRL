@@ -17870,6 +17870,16 @@ eps    lr     x       sd_d3 sature   D_d (med-pli)   D_r (med-pli)   L=(D_r/D_d)
 | H63-6 le déplacement est piloté par l'amplitude des salves | 08/10 (lui, via sd) | **réfutée** à eps fixe (lr 0,02) et en eps (1e-8) |
 | H63-7 le déplacement suit l'asymétrie des gains d'Adam de la ligne 3 | 08/10 (moi) | **ouverte** (non testée) |
 
+**Test de H63-7, précommis (08/10) : eps par coordonnée dans la réduction** (vecteur
+(e3, o3, e4, o4, l3, l4)), x = 1e-11 et 1e-13, lr 0,05, 16 phases. Références : eps 1e-10
+partout (|D_d| = 6,08e-6, L = 0,96799) et eps 1e-8 partout (8,63e-6, L = 0,94988).
+- Ligne 3 seule à 1e-8 (e3, o3 = 1e-8 ; le reste 1e-10) : |D_d| entre 7,7e-6 et 9,5e-6
+  (à 10 % de 8,63e-6) et L entre 0,94 et 0,96 (mise 55 %).
+- Récepteur seul à 1e-8 (l3, l4 = 1e-8 ; le reste 1e-10) : |D_d| entre 5,5e-6 et 6,7e-6
+  (à 10 % de 6,08e-6) et L entre 0,963 et 0,973 (mise 50 %).
+- Ce qui réfuterait H63-7 : ligne 3 seule à ≤ 6,7e-6 (alors le déplacement ne suit pas la
+  ligne 3) ou récepteur seul à ≥ 7,5e-6 (alors il suit le récepteur).
+
 Réponse dans `docs/REPONSE_ORDRE63.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

@@ -25,13 +25,15 @@ from verifier_tour61_decomposition_d3 import PLI, d3_noeud, r4_noeud, pente_fn
 mp.dps = 60  # 50 chiffres ne suffisent pas pour la racine quasi double a x = 1e-30 (tolerance 1e-30)
 
 if __name__ == "__main__":
-    eps, lr = float(sys.argv[1]), sys.argv[2]
+    # eps : un flottant, ou six valeurs separees par des virgules (e3,o3,e4,o4,l3,l4) pour un eps par coordonnee
+    eps = float(sys.argv[1]) if "," not in sys.argv[1] else np.array([float(a) for a in sys.argv[1].split(",")])
+    lr = sys.argv[2]
     offs = sys.argv[3:]
     redlib = importlib.import_module("reduction_numba_tour59" if lr == "0.05" else "reduction_numba_tour63_lr002")
     ks = [int(a) for a in np.random.default_rng(7).integers(0, 4444, 16)]
     s1 = base_state()
     d3_pli = float(d3_noeud(PLI - mpf("1e-30"))); r4_pli = float(r4_noeud(PLI - mpf("1e-30")))
-    print(f"eps = {eps:g}, lr = {lr}, 16 phases x 2 000 000 pas")
+    print(f"eps = {eps if np.isscalar(eps) else list(eps)}, lr = {lr}, 16 phases x 2 000 000 pas")
     print("offset      sd_d3 (sature?)   mean-med   D_d (med - pli)    D_r (med - pli)    D_d/sd    D_r/D_d    rho(x)      L = (D_r/D_d)/rho   rapport mesure   echappees")
     for off in offs:
         delta = float(PLI + mpf(off))
