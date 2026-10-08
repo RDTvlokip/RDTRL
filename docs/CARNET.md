@@ -17735,6 +17735,62 @@ pli-1e-13 ; l'état de référence est eps 1e-10 :**
   n'est pas un changement de salves « pur » non plus (cf. tour 59 : les salves à lr 0,02,
   eps 1e-10 sont presque absentes, cv 0,11).
 
+**Résultats (`verifier_tour63_deplacement_burst.py`, 16 phases × 2e6 pas ; référence eps
+1e-10 puis eps 1e-8) :**
+```
+eps    x        sd_d3 sature   D_d (med-pli)   D_r (med-pli)   D_d/sd   D_r/D_d   rho(x)    L=(D_r/D_d)/rho   rapport mesure
+1e-10  1e-9     2,1861e-5      -6,7021e-6      -4,8640e-5      0,307    7,2574    7,46887   0,97169           0,94150
+1e-10  1e-11    2,2001e-5      -6,0847e-6      -4,3939e-5      0,277    7,2213    7,46036   0,96795           0,96600
+1e-10  1e-13    2,1995e-5      -6,0837e-6      -4,3929e-5      0,277    7,2208    7,45951   0,96799           0,96781
+1e-8   1e-8     6,1149e-6      -1,3079e-5      -9,5490e-5      2,139    7,3012    7,48936   0,97487           0,84902
+1e-8   1e-9     6,3422e-6      -9,1457e-6      -6,5112e-5      1,442    7,1194    7,46887   0,95321           0,92464
+1e-8   1e-10    6,3666e-6      -8,6819e-6      -6,1545e-5      1,364    7,0888    7,46240   0,94994           0,94266
+1e-8   1e-11    6,3681e-6      -8,6351e-6      -6,1186e-5      1,356    7,0857    7,46036   0,94978           0,94767
+1e-8   1e-12    6,3705e-6      -8,6282e-6      -6,1137e-5      1,354    7,0858    7,45971   0,94987           0,94922
+1e-8   1e-13    6,3665e-6      -8,6313e-6      -6,1159e-5      1,356    7,0857    7,45951   0,94988           0,94968
+```
+- P63-1 ✓ (sd saturé à eps 1e-8 = 6,37e-6 dans [4e-6 ; 9e-6] ; rapport aux 2,2e-5 :
+  0,290, donc son 0,31 était à peu près juste). P63-2 ✗ : D_d(1e-8)/D_d(1e-10) =
+  8,631e-6/6,084e-6 = **1,42** (ni 1/3 ni 1/9). P63-3 ✗ : D_d/sd = 1,356 (ni 0,277).
+  P63-4 ✗ : L = 0,9499, plus LOIN de 1 (inclinaison 5,0 % contre 3,2 %). Sa prédiction
+  (D_d 3× plus petit, limite ≈ 0,990) est contredite dans les deux chiffres.
+- **D_d n'est pas proportionnel au sd des salves** : sd est divisé par 3,45 (2,20e-5 →
+  6,37e-6) et |D_d| est multiplié par 1,42. À eps 1e-8 le déplacement de la médiane
+  n'est pas un effet de salves mais le décalage déterministe du pli (tour 59 : δ_c' - pli =
+  +9,1e-9 à eps 1e-8) : la même grandeur, vue autrement, donne x_eff = 6,1e-9 (voir ci-dessous).
+- **Test de la courbe des nœuds (`verifier_tour63_courbe_noeuds.py`)** : critère CORRECT pour
+  « la médiane est le nœud d'un δ décalé », valable hors réponse linéaire : à même D_d, la
+  courbe fermée (d3_nœud(pli-x), r4_nœud(pli-x)) prédit D_r :
+```
+cas                 D_d mesure   x_eff (d3 sur la courbe)   D_r predit    D_r mesure    ecart    secante pred.   secante mes.
+eps 1e-10 lr 0,05   -6,0814e-6   3,026e-9                   -4,5414e-5    -4,3914e-5    -3,30 %  7,4676          7,2210
+eps 1e-8  lr 0,05   -8,6313e-6   6,100e-9                   -6,4485e-5    -6,1159e-5    -5,16 %  7,4711          7,0857
+```
+  Les médianes ne sont PAS sur la courbe : D_r est 3,3 % (eps 1e-10) et 5,2 % (eps 1e-8) trop
+  petit en module. Le x_eff à eps 1e-8 (6,1e-9) est dans l'encadrement direct du seuil
+  déterministe du tour 59 ((6e-9 ; 1e-8]), cohérent avec « le décalage déterministe domine ».
+- **Correction de mon argument de la lettre 61** : j'y concluais « l'état calme n'est le nœud
+  d'aucun δ décalé » parce que le rapport δ′_r4/δ′_d3 des médianes valait 0,96 ≠ 1. Ce critère
+  n'est valable qu'en réponse linéaire (biais ≪ écart nœud-jumeau) ; ici biais/écart = 6 à 63.
+  Le conclusion tient, vérifiée maintenant par le bon critère (écart de 3,3 % et 5,2 % à la
+  courbe), mais la lettre 61 l'a établie par un argument invalide. À dire dans la lettre 63.
+
+| H63-1 D_d ∝ sd (partie molle saturée sur sd) : D_d(1e-8)/D_d(1e-10) ≈ 0,31 | 08/10 (lui) | **réfutée** : 1,42 |
+| H63-2 l'inclinaison β/α ∝ sd : L(1e-8) ≈ 0,990 | 08/10 (lui) | **réfutée** : L = 0,9499 (l'inclinaison grandit, 3,2 % → 5,0 %) |
+| H63-3 à eps 1e-8, D_d est un effet de salves | 08/10 (lui, implicite) | **réfutée** : sd ÷ 3,45, |D_d| × 1,42 ; x_eff = 6,1e-9 compatible avec le décalage déterministe |
+| H63-4 les médianes sont sur la courbe des nœuds d'un δ décalé | 08/10 (lui, via tour 61 ; moi) | **réfutée** par le bon critère : écart de 3,3 % (eps 1e-10) et 5,2 % (eps 1e-8) à même D_d |
+
+**Test à eps FIXE (sa demande), précommis avant le run (08/10) : lr = 0,02, eps 1e-10**
+(copie de module `reduction_numba_tour63_lr002.py`), offsets 1e-9, 1e-11, 1e-13.
+Réserve écrite d'avance : lr change aussi la vitesse des pas, pas seulement les salves.
+- P63-5a : sd_d3 saturé < 3e-6 (mise 60 %) ; sinon les salves ne rapetissent pas avec lr.
+- P63-5b : écart à la courbe des nœuds (D_r mesuré/prédit - 1, même D_d) de valeur absolue
+  < 3,3 % (inférieur à celui de lr 0,05) (mise 50 %). Si l'écart est inférieur : les salves
+  contribuent à l'inclinaison (sa lecture, à lr). S'il est ≥ 3,3 % : l'inclinaison ne vient pas
+  des salves et l'écart croissant à eps 1e-8 suggère que c'est la dynamique d'Adam
+  (préconditionnement) qui fixe l'écart.
+- P63-5c : L(lr 0,02) ∈ [0,975 ; 0,998] (mise 45 %).
+
 Réponse dans `docs/REPONSE_ORDRE63.md` (à écrire).
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

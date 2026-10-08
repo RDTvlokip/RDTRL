@@ -22,7 +22,7 @@ sys.path.insert(0, ".")
 from hasard_reduction_tour59 import base_state
 from verifier_tour61_decomposition_d3 import PLI, d3_noeud, r4_noeud, pente_fn
 
-mp.dps = 50
+mp.dps = 60  # 50 chiffres ne suffisent pas pour la racine quasi double a x = 1e-30 (tolerance 1e-30)
 
 if __name__ == "__main__":
     eps, lr = float(sys.argv[1]), sys.argv[2]
