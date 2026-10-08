@@ -17682,6 +17682,61 @@ Réponse dans `docs/REPONSE_ORDRE62.md` (gitignorée, première personne). Scrip
 `verifier_tour62_ratio_limite.py`, `verifier_tour62_pli_dynamique.py` (non informatif),
 `verifier_tour62_d4_depart.py`, `verifier_tour62_ratio_reseau_complet.py`.
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 08/10/2026 (tour 63, PAS simulée)
+
+Elle répond à la lettre 62 (partie, figée). Contenu, avec mon statut :
+1. *Il reconnaît ses deux erreurs de la 62 (lignes mal étiquetées, q = 0,25 qui ne survit
+   pas au refit) et reproduit : six lignes, plancher 3e-4 → q = 0,567, limite 0,9677 ;
+   q = 0,47 → 0,9684 ; onze lignes : q libre 0,602 à χ² 285, c0 + c1√x + c2x =
+   (0,03201 ; 0,01887 ; 0,00760) à χ² 12,6 ; D_c et 7,2210/7,459415 = 0,96804.* **Comparé
+   aux miens** : q = 0,564 / limite 0,96785 (lui 0,567 / 0,9677), q = 0,47 → 0,96853 (lui
+   0,9684), q libre onze lignes 0,602 à χ² 282,8 (lui 285), développement mêmes
+   coefficients à χ² 12,18 (lui 12,6). Écarts ≤ 3e-4 en limite, ≤ 3 % en χ² : les
+   plplanchers d'ES utilisés diffèrent probablement un peu. Rien de substantiel.
+2. *Sa réponse à ma question : OUI, « de l'ordre du rapport des salves, pas de son carré ».*
+   Argument : la partie rigide β est une réponse linéaire à H : Σ donc ∝ sd² ; la partie
+   molle α croît comme Σ/√x puis sature quand l'écart nœud-jumeau rejoint la dispersion
+   des salves, donc ∝ sd ; l'inclinaison β/α ∝ sd. **Chiffre à vérifier : « D_d = 6,08e-6
+   contre un sd(d3) de 1,3e-5, soit 0,47 sd »** (voir ci-dessous : sd saturé 2,2e-5 →
+   0,276 sd ; son 1,3e-5 est le sd à pli-1e-6, non saturé, la même erreur que celle qu'il a
+   reconnue au tour précédent pour le 0,63).
+3. *Sa prédiction à eps 1e-8 (sd ≈ 4e-6, facteur 0,31)* : 1 - limite = 0,032 × 0,31 = 0,010,
+   limite du rapport ≈ 0,990 ; D_d = 0,47 × 4e-6 = 1,9e-6 (« 3× plus petit, pas 9× ») ; début
+   du plateau x_sat ~ sd², « environ 10× plus près du pli ». **Test discriminant : D_d est-il
+   3× ou 9× plus petit à eps 1e-8 ?** (3× : la partie molle sature sur sd ; 9× : elle ne sature
+   pas et l'inclinaison ne bougerait pas.)
+4. *Sa réserve : eps est celui d'Adam ; le changer change le préconditionneur et pas seulement
+   les salves ; si l'inclinaison reste à 0,968, c'est là qu'il chercherait ; « un changement
+   de salves à eps fixe séparerait les deux ».*
+
+**Vérifications de ses chiffres (règle 5bis ; Théo : ne pas lui faire confiance) :**
+- **sd(d3) saturé à eps 1e-10 près du pli = 2,200e-5** (tour 61, réduction, sd_d3 de
+  pli-1e-9 à pli-1e-12 : 2,186 / 2,199 / 2,200 / 2,201 / 2,200e-5), pas 1,3e-5. D_d = 6,081e-6
+  vaut donc 0,276 sd et non 0,47 sd (6,081e-6/2,200e-5 = 0,2764 ; 6,081e-6/1,27e-5 = 0,479).
+  Son facteur 0,31 pour sd(1e-8)/sd(1e-10) (4,0e-6/1,27e-5 = 0,315) compare deux sd à
+  pli-1e-6, tous deux non saturés ; le rapport des sd SATURÉS n'est pas mesuré.
+- Les deux hypothèses (3× contre 9×) sont donc à tester sur D_d mesuré à eps 1e-8, et le
+  rapport « sd saturé » doit être mesuré en même temps, sinon « 0,31 » n'est pas la bonne
+  référence.
+
+**Prédictions précommises (08/10), réduction numba, 16 phases × 2 000 000 pas, mur 23,
+état de phase 1 puis 20 000 + k pas à pli-1e-6 à l'eps testé, offsets de pli-1e-9 à
+pli-1e-13 ; l'état de référence est eps 1e-10 :**
+- P63-1 : sd(d3) saturé à eps 1e-8 ∈ [4e-6 ; 9e-6] (mise 60 %).
+- P63-2 : D_d(1e-8)/D_d(1e-10) ∈ [0,20 ; 0,50] (camp « 3× », sd) (mise 55 %) ; < 0,15 =
+  camp « 9× ».
+- P63-3 : D_d/sd_sat à eps 1e-8 ∈ [0,20 ; 0,35] (même rapport qu'à 1e-10, 0,276) (mise 50 %).
+- P63-4 : limite du rapport (D_r/D_d)/ρ à eps 1e-8 ∈ [0,975 ; 0,995], plus près de 1 que 0,968
+  (mise 50 %). Ce qui reproduirait « elle reste à 0,968 » : L ∈ [0,964 ; 0,972].
+- P63-5 (burst à eps fixe, sa demande) : lr = 0,02, eps 1e-10 (réduction à copie de
+  module avec LR = 0,02, état de phase 1 de lr 0,05 réchauffé 20 000 + k pas) : D_d plus petit
+  qu'à lr 0,05 par un facteur dans [0,1 ; 0,6] et L ∈ [0,975 ; 0,998] (mise 45 %). Réserve
+  à écrire dès maintenant : lr change AUSSI la vitesse de pas et le seuil des salves ; ce
+  n'est pas un changement de salves « pur » non plus (cf. tour 59 : les salves à lr 0,02,
+  eps 1e-10 sont presque absentes, cv 0,11).
+
+Réponse dans `docs/REPONSE_ORDRE63.md` (à écrire).
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
