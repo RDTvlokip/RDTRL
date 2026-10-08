@@ -22,6 +22,7 @@ T = [
     (0.02, 1e-9, 3.4520e-6, 5.7817e-6, 0.96219, 1.8398e-8),
     (0.02, 3e-9, 2.0445e-6, 4.8066e-6, 0.96714, 1.7774e-8),
     (0.02, 1e-8, 1.0577e-6, 1.8958e-6, 0.98660, 1.6416e-8),
+    (0.05, 2.6e-8, 2.6529e-6, 4.2685e-6, 0.97243, 4.0792e-8),  # test du bout haut en r (le script affiche "3e-08" par arrondi de format)
 ]
 
 
@@ -58,6 +59,13 @@ if __name__ == "__main__":
         best = min(v02, key=lambda t: abs(math.log((t[1] / t[5]) / r5)))
         r2 = best[1] / best[5]
         print(f"   (0,05, {e5:6.0e}) r = {r5:.3e} L {L5:.5f} |D_d| {D5:.3e}   |  (0,02, {best[1]:6.0e}) r = {r2:.3e} L {best[4]:.5f} |D_d| {best[3]:.3e}   rapport des r {max(r5, r2) / min(r5, r2):.2f}  dL {best[4] - L5:+.5f}  d|D_d| {(best[3] / D5 - 1) * 100:+.1f} %")
+    print("\n(5) exposant local a(r) de |D_d| ~ sd^a entre un etat lr 0,05 et l'etat lr 0,02 de r le plus proche")
+    print("    r(0,05)    r(0,02)    sd(0,05)/sd(0,02)   |D_d|(0,05)/|D_d|(0,02)    a = ln(rapport D)/ln(rapport sd)    L(0,05)   L(0,02)")
+    for lr5, e5, s5, D5, L5, vv5 in v05:
+        r5 = e5 / vv5
+        b = min(v02, key=lambda t: abs(math.log((t[1] / t[5]) / r5)))
+        rs, rd = s5 / b[2], D5 / b[3]
+        print(f"    {r5:.3e}  {b[1] / b[5]:.3e}   {rs:8.2f}            {rd:8.2f}                 {math.log(rd) / math.log(rs):6.2f}                         {L5:.5f}   {b[4]:.5f}")
     print("\n(4) autres organisateurs : L en fonction de eps/lr et de sd, par colonne")
     for lr, eps, sd, D, L, v in sorted(T, key=lambda t: t[1] / t[0]):
         print(f"   eps/lr = {eps / lr:.2e}   lr {lr:4.2f} eps {eps:6.0e}   sd {sd:.3e}   L {L:.5f}   |D_d| {D:.3e}")

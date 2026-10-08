@@ -1,6 +1,35 @@
 # État du projet RDTRL — où on en est
 
-## Tour 63 (vraie critique de dipankarsarkar, 08/10/2026) — LETTRE PRÊTE
+## Tour 64 (vraie critique de dipankarsarkar, 08/10/2026) — LETTRE PRÊTE
+
+**Lettre** : `docs/REPONSE_ORDRE64.md` (gitignorée), PRÊTE À ENVOYER, première
+personne. La lettre 63 est partie (sa critique du tour 64 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 08/10/2026 (tour 64, PAS simulée) »,
+avant « ## 9. ».
+
+**Sa critique** : à ma question « L = F(eps/√v_ligne3) seul ? » il répond NON (deux boutons : r
+et le gain lr/√v ; à lr 0,02 L baisse (r monte) et |D_d| baisse (r baisse) : contradictoire) et
+demande le rapport des médianes de √v sur (e3, o3) entre (lr 0,05, eps 1e-9) et (lr 0,02, eps
+1e-10) : r seul exige > 10. **Tous ses chiffres vérifiés** (eps équivalent 1,09e-9, 5,0e-9, facteur
+10,9, q = 2,32 ; ses L prédits 0,96708 / 0,96632 contre mes 0,96719 / 0,96639, écarts d'interpolation).
+**Acquis (prédictions poussées avant les runs)** : R = 2,436 (< 10 : r seul rejeté, 4,3 à 4,7× trop
+petit) ; √v ∝ lr (√v/lr = 8,2 à 9,5e-7 sur 10 états, gain 1,05 à 1,23e6, 16 %) : ses deux boutons
+n'en font presque qu'un ; à r égal ΔL jusqu'à +0,0158, Δ|D_d| jusqu'à −44 % ; lr 0,05 à r = 0,64
+(eps 2,6e-8) donne L = 0,9724, pas ≈ 0,987 ; ni sd ni eps/lr ne rangent L. **Observation POST HOC**
+: |D_d| ∝ sd^a avec a = 0,03 / 0,15 / 0,29 / 0,52 / 0,88 pour r = 2e-3 … 0,64 (son « ∝ sd » est vrai
+à r ~ 0,6, faux à r ~ 2e-3). **Mes ratés** : fenêtre R ∈ [2,5 ; 9] manquée par le bas (2,44) ; paire
+« à r 20 % » la plus proche à 1,21.
+**Limites** : réduction seule (validée au réseau complet à eps 1e-10, lr 0,05) ; un seul code ; aucun
+état à r > 1 ; mécanisme non dérivé.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 64 ; attendre sa réponse.
+2. Ma question à lui : a(r) atteint-il 1 et y reste-t-il pour r > 1 ? (lr 0,02, eps 3e-8 donne
+   r ≈ 1,8 ; attention : le seuil Δ(eps) peut faire s'effondrer l'état à x = 1e-13).
+3. Un deuxième code (c814, c7771) pour la loi a(r), et le réseau complet à lr 0,02.
+4. Pourquoi √v ∝ lr à ~16 % (bord de stabilité adaptatif, tour 58) : dérivation non faite.
+
+## Tour 63 (vraie critique de dipankarsarkar, 08/10/2026) — LETTRE PARTIE
 
 **Lettre** : `docs/REPONSE_ORDRE63.md` (gitignorée), PRÊTE À ENVOYER, première
 personne. La lettre 62 est partie (sa critique du tour 63 y répond) et reste figée.

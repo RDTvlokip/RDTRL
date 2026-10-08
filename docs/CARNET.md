@@ -17991,7 +17991,33 @@ Si r seul décidait, lr 0,05 à r = 0,61 (eps ≈ 2,6e-8, √v ≈ 4,2e-8) donne
 Prédiction : L(lr 0,05, eps 2,6e-8) < 0,975 (mise 65 %) ; réfutée si ∈ [0,98 ; 0,99]. Je mesure
 aussi |D_d| (à lr 0,02, r = 0,61 : 1,90e-6).
 
-Réponse dans `docs/REPONSE_ORDRE64.md` (à écrire).
+**Résultat du bout haut en r (lr 0,05, eps 2,6e-8, r = 0,637, √v = 4,079e-8, gain 1,226e6)** :
+sd = 2,6529e-6, |D_d| = 4,2685e-6, **L = 0,97243** (le script affiche « 3e-08 » par arrondi de
+format ; l'eps réel est 2,6e-8, confirmé par r = 2,6e-8/4,079e-8 = 0,637). **Prédiction ✓**
+(L < 0,975 ; r seul aurait donné ≈ 0,987). À r ≈ 0,61-0,64 : lr 0,05 → L 0,9724, |D_d| 4,27e-6,
+sd 2,65e-6 ; lr 0,02 → L 0,9866, |D_d| 1,90e-6, sd 1,06e-6.
+
+**Observation POST HOC (non précommise), `verifier_tour64_analyse_grille.py` partie (5) :
+exposant local de |D_d| ∝ sd^a entre un état lr 0,05 et l'état lr 0,02 de r le plus proche :**
+```
+r(0,05)    r(0,02)    sd(0,05)/sd(0,02)   |D_d|(0,05)/|D_d|(0,02)    a = ln/ln    L(0,05)  L(0,02)
+2,11e-3    5,24e-3    3,62                1,04                       0,03         0,96799  0,96540
+2,15e-2    1,59e-2    3,40                1,20                       0,15         0,96620  0,96418
+6,59e-2    5,44e-2    3,59                1,44                       0,29         0,95593  0,96219
+2,29e-1    1,69e-1    3,11                1,80                       0,52         0,94988  0,96714
+6,37e-1    6,09e-1    2,51                2,25                       0,88         0,97243  0,98660
+```
+a monte de 0,03 à 0,88 avec r. À r petit (eps 1e-10, Adam pleinement adaptatif) le déplacement
+de la médiane est indépendant de l'amplitude des salves ; à r ≈ 0,6 (Adam presque non adaptatif)
+il suit sd presque linéairement (sd et D_d dans le rapport 2,5 et 2,25 pour un rapport de lr de
+2,5) : c'est sa lecture « ∝ sd », vraie dans ce régime-là et fausse dans l'autre. Réserves :
+cinq paires, r décalés (jusqu'à 2,5× pour la première), un seul code (mur 23), la réduction
+seule, et r est mesuré par la médiane de √v (dominée par l'état calme).
+
+| H64-4 |D_d| ∝ sd^a avec a croissant de 0 à ~1 quand r passe de 2e-3 à 0,6 | 08/10 (moi, post hoc) | **soutenue** sur 5 paires ; non testée à r > 1 ; non précommise |
+| H64-5 à r ≈ 0,6 lr 0,05 se comporte comme lr 0,02 (L ≈ 0,987) | 08/10 (moi, test de r seul) | **réfutée** : 0,9724 contre 0,9866 |
+
+Réponse dans `docs/REPONSE_ORDRE64.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
