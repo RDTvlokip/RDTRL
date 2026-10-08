@@ -17942,6 +17942,55 @@ suit (gradient de o3 = -gradient de e3/26, donc √v_o3 = √v_e3/26, à vérifi
 - Ce qui donnerait raison à « r seul » (donc contre mes P64-2/3) : toutes les paires à r voisins
   (20 %) ont |ΔL| < 0,0015 et |Δ|D_d|| < 2,5 %.
 
+**Résultats (`verifier_tour64_gain_et_r.py`, `verifier_tour64_analyse_grille.py`,
+`verifier_tour64_sensibilite_interpolation.py` ; 9 états (lr, eps), x = 1e-13, 16 phases × 2e6 pas) :**
+```
+lr    eps     sd_d3       |D_d|       L        med sqrt(v_e3)  sqrt(v)/lr   gain lr/sqrt(v)  r = eps/sqrt(v)
+0,05  1e-10   2,1995e-5   6,0837e-6   0,96799  4,7367e-8       9,47e-7      1,056e6          2,11e-3
+0,05  1e-9    1,7417e-5   7,1539e-6   0,96620  4,6509e-8       9,30e-7      1,075e6          2,15e-2
+0,05  3e-9    1,2380e-5   8,3244e-6   0,95593  4,5509e-8       9,10e-7      1,099e6          6,59e-2
+0,05  1e-8    6,3665e-6   8,6313e-6   0,94988  4,3719e-8       8,74e-7      1,144e6          2,29e-1
+0,02  1e-10   6,0720e-6   5,8490e-6   0,96540  1,9090e-8       9,55e-7      1,048e6          5,24e-3
+0,02  3e-10   5,1226e-6   5,9383e-6   0,96418  1,8856e-8       9,43e-7      1,061e6          1,59e-2
+0,02  1e-9    3,4520e-6   5,7817e-6   0,96219  1,8398e-8       9,20e-7      1,087e6          5,44e-2
+0,02  3e-9    2,0445e-6   4,8066e-6   0,96714  1,7774e-8       8,89e-7      1,125e6          1,69e-1
+0,02  1e-8    1,0577e-6   1,8958e-6   0,98660  1,6416e-8       8,21e-7      1,218e6          6,09e-1
+```
+- **Sa question** : R = médiane √v(e3)(0,05, 1e-9) / médiane √v(e3)(0,02, 1e-10) =
+  4,6509e-8 / 1,9090e-8 = **2,436**. « r seul » exige > 10 (10,55 à 11,56 selon la forme
+  d'interpolation de L, linéaire en log eps, en eps, en √eps, en 1/eps ; ±2e-5 sur L ne
+  change rien : 10,87 à 10,92). Mesuré 4,3 à 4,7 fois trop petit. **« L = F(r) seul » est
+  rejeté.** √v_o3/√v_e3 = 0,0385 = 1/26 à 4 chiffres dans chaque état (vérifié).
+- **P64-1 : ✗ à la lettre** (R = 2,436, ma fenêtre était [2,5 ; 9] : manquée par le bas de 0,06) ;
+  la conclusion portée (R < 10, r seul rejeté) tient.
+- **Constat structurel nouveau (ni lui ni moi)** : √v/lr vaut 8,2e-7 à 9,5e-7 dans les neuf
+  états, donc le gain lr/√v ne varie que de 16 % (1,05e6 à 1,22e6) alors que r varie de 2,1e-3
+  à 0,61 : √v ∝ lr (le bord de stabilité adaptatif, tour 58). Ses « deux boutons » r et gain
+  n'ont donc presque pas de degré de liberté séparé dans cette plage : r ∝ eps/lr ; « L dépend
+  de r et du gain » ne se distingue pas de « L dépend de eps/lr et d'un terme lent en gain ».
+- **À r égal (colonne lr 0,05 interpolée en log r)** :
+  r = 5,2e-3 : L(0,02) − L(0,05) = -0,0019, |D_d| -10 % ; r = 1,6e-2 : -0,0023, -15 % ;
+  r = 5,4e-2 : +0,0045, -29 % ; r = 0,169 : +0,0158, -44 %. Paire la plus proche en r :
+  (0,05, 3e-9) r = 6,59e-2 L 0,95593 |D_d| 8,32e-6 contre (0,02, 1e-9) r = 5,44e-2 L 0,96219
+  |D_d| 5,78e-6 : rapport des r = 1,21, ΔL = +0,00626, Δ|D_d| = -30 %. **P64-2 ✓ et P64-3 ✓**
+  (au rapport de r près : 1,21, et non sous 1,20 ; la paire à 1,36 donne ΔL = +0,0173).
+- **Ni sd ni eps/lr ne rangent L** : triés par eps/lr, L = 0,96799 / 0,96540 / 0,96418 / 0,96620 /
+  0,96219 / 0,95593 / 0,96714 / 0,94988 / 0,98660 (non monotone) ; à sd égal, 6,37e-6 (0,05, 1e-8)
+  donne 0,94988 et 6,07e-6 (0,02, 1e-10) donne 0,96540.
+- **L(lr 0,02) a un minimum** (0,96219 à eps 1e-9 puis remonte à 0,98660 à 1e-8), pas L(lr 0,05)
+  sur la plage mesurée (monotone décroissant jusqu'à eps 1e-8) : la remontée vers 1 est le retour
+  à la médiane sur le nœud (cf. eps 1e-6 : 0,9998) ; à lr 0,02 il arrive à r = 0,17-0,61, à
+  lr 0,05 il n'a pas encore commencé à r = 0,23.
+
+| H64-1 L = F(eps/√v_ligne3) seul | 08/10 (moi, question au tour 63) | **réfutée** : R = 2,44 pour > 10 exigé ; à r égal ΔL jusqu'à +0,0158, Δ|D_d| jusqu'à -44 % |
+| H64-2 L et D_d dépendent de r ET du gain lr/√v indépendamment | 08/10 (lui) | **non testable ici** : le gain ne varie que de 16 % (√v ∝ lr) |
+| H64-3 L est fonction de sd | 08/10 (lui, tour 63) | **réfutée** (sd égal, L différent) |
+
+**Dernier test précommis (08/10) : le bout haut en r.** À lr 0,02, r = 0,61 donne L = 0,9866.
+Si r seul décidait, lr 0,05 à r = 0,61 (eps ≈ 2,6e-8, √v ≈ 4,2e-8) donnerait aussi ≈ 0,987.
+Prédiction : L(lr 0,05, eps 2,6e-8) < 0,975 (mise 65 %) ; réfutée si ∈ [0,98 ; 0,99]. Je mesure
+aussi |D_d| (à lr 0,02, r = 0,61 : 1,90e-6).
+
 Réponse dans `docs/REPONSE_ORDRE64.md` (à écrire).
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
