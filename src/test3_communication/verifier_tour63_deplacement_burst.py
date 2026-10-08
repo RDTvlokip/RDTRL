@@ -56,6 +56,12 @@ if __name__ == "__main__":
             md3, mr4 = np.median(d3), np.median(r4)
             Dd.append(md3 - d3_pli); Dr.append(mr4 - r4_pli)
             rap.append(((mr4 - rn) / sl4) / ((md3 - dn) / sl3))
+        if len(sd) == 0:
+            print(f"{off:>8s}   toutes les phases echappees ({esc}/16)", flush=True)
+            continue
         sd, mm, Dd, Dr, rap = map(np.array, (sd, mm, Dd, Dr, rap))
         L = (Dr.mean() / Dd.mean()) / rho
-        print(f"{off:>8s}   {sd.mean():.4e}    {mm.mean():+.3e}   {Dd.mean():+.5e}    {Dr.mean():+.5e}    {abs(Dd.mean()) / sd.mean():.3f}    {Dr.mean() / Dd.mean():.4f}    {rho:.5f}     {L:.5f}            {rap.mean():.5f}          {esc}", flush=True)
+        # mediane - noeud (d3) : le deplacement PAR RAPPORT AU NOEUD, Dd contient aussi le deplacement du noeud lui-meme
+        mn = Dd.mean() - (dn - d3_pli)
+        print(f"{off:>8s}   {sd.mean():.4e}    {mm.mean():+.3e}   {Dd.mean():+.5e}    {Dr.mean():+.5e}    {abs(Dd.mean()) / sd.mean():.3f}    {Dr.mean() / Dd.mean():.4f}    {rho:.5f}     {L:.5f}            {rap.mean():.5f}          {esc}"
+              f"    mediane-noeud d3 = {mn:+.3e}", flush=True)

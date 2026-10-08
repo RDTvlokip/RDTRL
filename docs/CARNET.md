@@ -17828,7 +17828,49 @@ et un pas constant, il doit disparaître à eps ≫ √v. Réduction, lr 0,05, e
 Réserve : la réduction à eps 1e-6 n'a pas été validée contre le réseau complet (la trace du
 réseau complet existe à pli-1e-6 seulement, sd 8e-14).
 
-Réponse dans `docs/REPONSE_ORDRE63.md` (à écrire).
+**Résultats du dernier test (eps 1e-9, 3e-9, 1e-6, 1e-7 ; lr 0,05) :**
+```
+eps    lr     x       sd_d3 sature   D_d (med-pli)   D_r (med-pli)   L=(D_r/D_d)/rho   ecart a la courbe des noeuds   x_eff    med-noeud d3
+1e-10  0,05   1e-13   2,1995e-5      -6,0837e-6      -4,3929e-5      0,96799           -3,31 %                        3,03e-9  ~ -6,0e-6
+1e-10  0,02   1e-13   6,0720e-6      -5,8490e-6      -4,2121e-5      0,96540           -3,56 %                        2,80e-9
+1e-9   0,05   1e-13   1,7417e-5      -7,1539e-6      -5,1561e-5      0,96620           -3,50 %                        4,19e-9
+3e-9   0,05   1e-13   1,2380e-5      -8,3244e-6      -5,9360e-5      0,95593           -4,55 %                        5,67e-9
+1e-8   0,05   1e-13   6,3665e-6      -8,6313e-6      -6,1159e-5      0,94988           -5,16 %                        6,10e-9
+1e-6   0,05   1e-10   2,4865e-7      -9,9730e-7      -7,4407e-6      0,99979           (D_d = noeud lui-meme)         -        +1,09e-7
+1e-6   0,05   1e-9    1,1105e-7      -3,4640e-6      -2,5856e-5      0,99936           (idem)                         -        +3,28e-8
+1e-7   0,05   1e-9, 1e-10    16 / 16 phases effondrees (aucune mesure)
+```
+- P63-7b ✓ : |D_d|(1e-9) = 7,15e-6 et |D_d|(3e-9) = 8,32e-6 sont entre 6,0e-6 et 8,7e-6 et
+  ordonnés en eps (avec 1e-10 : 6,08e-6 ; 1e-8 : 8,63e-6).
+- P63-7a : **mal posée par moi**. À x = 1e-9 (la réduction à eps 1e-6 se détériore à x ≤ 1e-11,
+  voir ci-dessous) D_d = -3,46e-6 contient le déplacement du nœud lui-même, |D_d| < 5e-7 ne
+  pouvait donc pas être testé tel quel. La grandeur qui répond à ma question est
+  médiane - nœud (d3) : +3,3e-8 (x = 1e-9) et +1,1e-7 (x = 1e-10) à eps 1e-6, contre ≈ -6,0e-6 à
+  eps 1e-10 (un rapport de 50 à 180), et L = 0,99936 / 0,99979 contre 0,968. Dans ce sens, la
+  prédiction (le déplacement disparaît sans salves) est vérifiée, mais mon critère écrit
+  d'avance ne l'était pas.
+- **À eps 1e-6, la réduction s'effondre sous le pli** (`verifier_tour63_debug_eps_1e6.py`,
+  une phase, x = 1e-11 : le nœud est atteint, d3 = 2,724673e-3 pour 2,724770e-3 à 1e5 pas, puis
+  d3 = 0,963 à 1e6 pas). Pas expliqué (pas de salves, pas-gradient lr/eps = 5e4 ; dérive de d4 en
+  1/t ? discrétisation ?). Les offsets x ≤ 1e-11 à eps 1e-6 sont donc inutilisables dans la
+  réduction ; non vérifié sur le réseau complet.
+- **À eps 1e-7 les 16 phases s'effondrent à x = 1e-9 et 1e-10** : cohérent avec le décalage de
+  seuil -5,5e-9 du tour 59 (le pli effectif y est sous ces offsets), pas précommis comme test.
+- **Lecture, avec ses limites** : (1) le déplacement de la médiane et l'inclinaison existent
+  quand Adam est adaptatif (eps ≤ 1e-8) et disparaissent à eps 1e-6 ; (2) ils ne sont PAS
+  pilotés par l'amplitude des salves à eps fixe (lr 0,02 : sd ÷ 3,6, D_d -4 %, inclinaison
+  3,2 → 3,5 %) ; (3) à lr fixe, quand eps monte de 1e-10 à 1e-8, |D_d| monte de 6,08e-6 à 8,63e-6
+  (× 1,42) et l'inclinaison de 3,2 à 5,0 % tandis que sd descend de 2,2e-5 à 6,4e-6 (÷ 3,45) :
+  sd ne range pas les points. Hypothèse (non testée) : le déplacement vient de l'ASYMÉTRIE DES
+  GAINS d'Adam entre coordonnées de la ligne 3 (le mécanisme du signe de Δ, tour 59 E3) et pas des
+  salves ; test qui la distinguerait : masque d'eps par groupe (ligne 3 seule à eps 1e-8, reste à
+  1e-10) dans la réduction, et le déplacement doit alors suivre le groupe.
+
+| H63-5 le déplacement et l'inclinaison disparaissent sans salves (eps 1e-6) | 08/10 (moi) | **confirmée** en médiane-nœud et en L (0,9998) ; réduction instable à x ≤ 1e-11 |
+| H63-6 le déplacement est piloté par l'amplitude des salves | 08/10 (lui, via sd) | **réfutée** à eps fixe (lr 0,02) et en eps (1e-8) |
+| H63-7 le déplacement suit l'asymétrie des gains d'Adam de la ligne 3 | 08/10 (moi) | **ouverte** (non testée) |
+
+Réponse dans `docs/REPONSE_ORDRE63.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
