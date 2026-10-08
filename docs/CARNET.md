@@ -17900,6 +17900,50 @@ Réserve : mesuré dans la réduction seulement, pas sur le réseau complet à c
 
 Réponse dans `docs/REPONSE_ORDRE63.md`.
 
+## VRAIE CRITIQUE DE DIPANKARSARKAR, 08/10/2026 (tour 64, PAS simulée)
+
+Elle répond à la lettre 63 (partie, figée). Contenu, avec mon statut :
+1. *À ma question (« l'inclinaison est-elle fonction de eps/√v_ligne3 seul ? ») : NON.* Pas
+   d'Adam sur la ligne 3 = (lr/√v) m/(1+r), r = eps/√v : deux boutons, r et le gain lr/√v ; eps
+   bouge r, lr bouge les deux. Argument de signe sans interpolation : colonne lr 0,05, monter
+   eps baisse L et monte |D_d|, tous deux monotones ; à lr 0,02, L baisse (0,9680 → 0,9654, lit
+   « r monte ») et |D_d| baisse aussi (6,08e-6 → 5,85e-6, lit « r baisse ») : un run ne peut pas
+   faire bouger r dans les deux sens, donc L et D_d ne sont pas toutes deux fonctions de r seul.
+   **Vérifié** (`verifier_tour64_cartographie_lr.py`) : sur mes lignes, L baisse bien et
+   |D_d| monte bien de façon monotone avec eps à lr 0,05 (0,96799 > 0,96620 > 0,95593 > 0,94988 ;
+   6,08e-6 < 7,15e-6 < 8,32e-6 < 8,63e-6), et à lr 0,02 L est plus bas et |D_d| plus bas.
+2. *Cartographie* de la ligne lr 0,02 sur la colonne lr 0,05, linéaire en log eps : L → eps
+   équivalent 1,09e-9 ; D_d/sd → 5,0e-9 ; |D_d| → aucun (sous la ligne 1e-10). **Vérifié** :
+   1,09e-9 ; 5,01e-9 ; aucun, exactement.
+3. *Si L = F(r), eps 1e-10 à lr 0,02 se comporte comme eps 1,09e-9 à lr 0,05, donc √v3 doit être
+   10,9× plus petit à lr 0,02 ; entre les deux états le sd saturé ne tombe que de 2,80×; exposant
+   requis √v3 ~ sd^2,3.* **Vérifié** : facteur 10,89 ; sd interpolé en log à (lr 0,05, eps
+   1,09e-9) = 1,696e-5, sd(lr 0,02) = 6,072e-6, rapport 2,79 ; q = ln 10,89/ln 2,79 = 2,32.
+4. *Prédictions de L(lr 0,02) selon √v3 ~ sd^q* : q = 1 → 0,96708, q = 2 → 0,96632 (mesuré
+   0,96540). **Mes valeurs** : 0,96719 et 0,96639 (écarts 1,1e-4 et 0,7e-4, dus à l'interpolation
+   du sd). Même conclusion : ni l'un ni l'autre n'atteint 0,96540.
+5. *Sa question* : quel est le rapport de la médiane de √v sur (e3, o3) entre (lr 0,05, eps 1e-9,
+   L = 0,96620) et (lr 0,02, eps 1e-10) ? « r seul exige plus de 10 » (borne qui n'utilise que
+   « L baisse avec r », pas son interpolation).
+
+**Ce que j'ajoute à la mesure demandée** : la cartographie n'est qu'un cas. Avec `√v` de la
+ligne 3 mesuré dans chaque run, je peux placer neuf points (lr, eps) dans le plan (r, gain) et
+voir si L, D_d se rangent sur r seul. Dans le numba, `rec[:,3]` = √v[e3] à chaque pas ; o3
+suit (gradient de o3 = -gradient de e3/26, donc √v_o3 = √v_e3/26, à vérifier sur l'état final).
+
+**Prédictions précommises (08/10), réduction numba, x = 1e-13, 16 phases × 2e6 pas :**
+- P64-1 : R = médiane √v(e3)(lr 0,05, eps 1e-9) / médiane √v(e3)(lr 0,02, eps 1e-10) ∈
+  [2,5 ; 9] (mise 70 %) ; supérieur à 10 donnerait raison à « r seul ». (√v ~ sd^q avec q
+  entre 1 et 2 pour un rapport de sd de 2,79 donne 2,79 à 7,8.)
+- P64-2 : sur les neuf points, L n'est pas fonction monotone de r_médiane = eps/√v_médiane :
+  il existe au moins une paire dont les r diffèrent de moins de 20 % et dont les L diffèrent de
+  plus de 0,003 (mise 55 %).
+- P64-3 : même chose pour |D_d| (paire à r à 20 %, |D_d| différant de plus de 5 %) (mise 55 %).
+- Ce qui donnerait raison à « r seul » (donc contre mes P64-2/3) : toutes les paires à r voisins
+  (20 %) ont |ΔL| < 0,0015 et |Δ|D_d|| < 2,5 %.
+
+Réponse dans `docs/REPONSE_ORDRE64.md` (à écrire).
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
