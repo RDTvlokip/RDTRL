@@ -17791,6 +17791,43 @@ Réserve écrite d'avance : lr change aussi la vitesse des pas, pas seulement le
   (préconditionnement) qui fixe l'écart.
 - P63-5c : L(lr 0,02) ∈ [0,975 ; 0,998] (mise 45 %).
 
+**Résultats du test à eps fixe (lr 0,02, eps 1e-10 ; la précommission est perdue ou
+retournée sur chaque point) :**
+```
+lr     x        sd_d3 sature   D_d (med-pli)   D_r (med-pli)   D_d/sd   D_r/D_d   L=(D_r/D_d)/rho   rapport mesure
+0,05   1e-13    2,1995e-5      -6,0837e-6      -4,3929e-5      0,277    7,2208    0,96799           0,96781
+0,02   1e-9     6,0003e-6      -6,5393e-6      -4,7438e-5      1,090    7,2542    0,97126           0,93895
+0,02   1e-11    6,0708e-6      -5,8565e-6      -4,2178e-5      0,965    7,2020    0,96537           0,96318
+0,02   1e-13    6,0720e-6      -5,8490e-6      -4,2121e-5      0,963    7,2014    0,96540           0,96519
+```
+- P63-5a ✗ : sd saturé à lr 0,02 = 6,07e-6 (pas < 3e-6) : 3,62× plus petit qu'à lr 0,05
+  (2,2e-5). **Les salves rapetissent de 3,6× à eps fixe.**
+- Pourtant D_d = -5,849e-6 contre -6,084e-6 (-3,9 %), D_r/D_d = 7,2014 contre 7,2208 et
+  L = 0,96540 contre 0,96799 : **le déplacement et l'inclinaison ne dépendent pas de
+  l'amplitude des salves** (P63-5c ✗ : L ∉ [0,975 ; 0,998]). Écart à la courbe des nœuds :
+  -3,56 % (lr 0,02), -3,31 % (lr 0,05), -5,16 % (eps 1e-8) : P63-5b ✗ (je pariais < 3,3 %),
+  branche « l'inclinaison ne vient pas des salves ». x_eff (position sur la courbe où se trouve
+  d3) : 2,80e-9 (lr 0,02), 3,03e-9 (lr 0,05), 6,10e-9 (eps 1e-8).
+- **Bilan sur sa prédiction** : il dit qu'à eps 1e-8 (sd ÷ 3) D_d serait ÷ 3 (3× plus petit,
+  salves saturées sur sd) ou ÷ 9 (non saturées, inclinaison immobile). Mesuré : sd ÷ 3,45,
+  D_d × 1,42, L de 0,968 à 0,950. À eps fixe (lr 0,02) : sd ÷ 3,62, D_d × 0,96, L de 0,968 à
+  0,965. Ni l'une ni l'autre branche. Il avait raison de dire qu'eps est un confus ; le test à
+  eps fixe montre que le déplacement n'est de toute façon pas piloté par l'amplitude des salves.
+- Corollaire : sur trois points, ni sd (2,2e-5, 6,07e-6, 6,37e-6) ni D_d (-6,08e-6, -5,85e-6,
+  -8,63e-6) ni les inclinaisons (3,2 %, 3,5 %, 5,0 %) ne se rangent selon sd. L'inclinaison à
+  sd égal (lr 0,02 : 3,5 % ; eps 1e-8 : 5,0 %) diffère.
+
+**Dernier test, précommis (08/10) : D_d est-il lié au régime ADAPTATIF d'Adam ?** Si le
+déplacement vient de l'écart entre le préconditionneur adaptatif (√v + eps, avec √v ≫ eps)
+et un pas constant, il doit disparaître à eps ≫ √v. Réduction, lr 0,05, eps ∈ {1e-9, 3e-9,
+1e-6}, offsets 1e-11 et 1e-13.
+- P63-7a : |D_d|(eps 1e-6) < 5e-7 (mise 70 %), c'est-à-dire pas de déplacement quand il n'y a
+  plus de salves (sd(d3) ~ 1e-13 au tour 59). Ce qui le réfuterait : |D_d| > 2e-6.
+- P63-7b : D_d croît en module avec eps de 1e-10 à 1e-8 : |D_d|(1e-9) et |D_d|(3e-9) entre
+  6,0e-6 et 8,7e-6, ordonnés (mise 55 %).
+Réserve : la réduction à eps 1e-6 n'a pas été validée contre le réseau complet (la trace du
+réseau complet existe à pli-1e-6 seulement, sd 8e-14).
+
 Réponse dans `docs/REPONSE_ORDRE63.md` (à écrire).
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
