@@ -1,6 +1,39 @@
 # État du projet RDTRL — où on en est
 
-## Tour 62 (vraie critique de dipankarsarkar, 07/10/2026) — LETTRE PRÊTE
+## Tour 63 (vraie critique de dipankarsarkar, 08/10/2026) — LETTRE PRÊTE
+
+**Lettre** : `docs/REPONSE_ORDRE63.md` (gitignorée), PRÊTE À ENVOYER, première
+personne. La lettre 62 est partie (sa critique du tour 63 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 08/10/2026 (tour 63, PAS simulée) »,
+avant « ## 9. ».
+
+**Sa critique** : il reproduit mes ajustements et ma table D_c, répond « oui » à ma question
+(l'inclinaison de 3,2 % ∝ sd) et prédit à eps 1e-8 : D_d 3× plus petit (limite du rapport ≈
+0,990) ou 9× (inclinaison immobile) ; il note qu'eps est un confus. Son « 0,47 sd » reprend le
+sd NON saturé (1,3e-5) ; saturé (2,2e-5), D_d = 0,277 sd (même erreur que le 0,63 du tour 61).
+**Acquis (vérifiés, prédictions poussées avant les runs)** : à eps 1e-8 sd saturé ÷ 3,45 (6,37e-6)
+mais |D_d| × 1,42 (8,63e-6) et L = 0,9499 (inclinaison 3,2 → 5,0 %) : NI l'une NI l'autre de ses
+branches. À eps fixe (lr 0,02) : sd ÷ 3,6, D_d −4 %, L 0,9654 : le déplacement et l'inclinaison
+ne sont PAS pilotés par l'amplitude des salves. À eps 1e-6 (sans salves) la médiane est sur le
+nœud (L = 0,9998). Par coordonnée (réduction) : eps 1e-8 sur la ligne 3 seule reproduit tout
+eps 1e-8 (D_d −8,74e-6, L 0,9494, sd 6,27e-6), sur le récepteur seul reproduit eps 1e-10 :
+le déplacement, l'inclinaison et l'amplitude des salves suivent le gain d'Adam de la ligne 3.
+**Mon erreur corrigée** : l'argument de la lettre 61 (« pas le nœud d'un δ décalé car rapport
+δ' ≠ 1 ») était invalide hors réponse linéaire ; le bon critère (courbe des nœuds à même D_d)
+donne un écart de 3,3 à 5,2 % : conclusion maintenue, argument corrigé.
+**Limites** : tout hors eps 1e-10 vient de la réduction (validée au réseau complet à eps 1e-10
+seulement) ; réduction instable à eps 1e-6 et x ≤ 1e-11 (cause non élucidée) ; aucune
+dérivation de D_d ni de l'inclinaison.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 63 ; attendre sa réponse.
+2. Ma question à lui : l'inclinaison est-elle fonction de eps/√v_ligne3 seul ? Test : lr 0,035 ×
+   eps ajusté, ou eps 3e-10 / 3e-9 à lr 0,02 (modules à lr différent : `reduction_numba_tour63_lr002.py`).
+3. Les masques d'eps sur le réseau complet (E3 du tour 59 a été fait sur le réseau complet pour
+   le seuil, pas pour D_d / l'inclinaison).
+4. Pourquoi la réduction s'effondre à eps 1e-6 et x ≤ 1e-11 (non élucidé).
+
+## Tour 62 (vraie critique de dipankarsarkar, 07/10/2026) — LETTRE PARTIE
 
 **Lettre** : `docs/REPONSE_ORDRE62.md` (gitignorée), PRÊTE À ENVOYER, première
 personne. Les lettres 60 et 61 sont DÉJÀ ENVOYÉES (Théo, 07/10 : sa critique du tour 62

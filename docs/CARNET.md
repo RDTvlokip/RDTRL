@@ -17880,6 +17880,24 @@ partout (|D_d| = 6,08e-6, L = 0,96799) et eps 1e-8 partout (8,63e-6, L = 0,94988
 - Ce qui réfuterait H63-7 : ligne 3 seule à ≤ 6,7e-6 (alors le déplacement ne suit pas la
   ligne 3) ou récepteur seul à ≥ 7,5e-6 (alors il suit le récepteur).
 
+**Résultats du test par coordonnée (réduction, lr 0,05, x = 1e-13 ; les deux prédictions
+précommises tombent) :**
+```
+eps par coordonnee (e3,o3,e4,o4,l3,l4)      sd_d3 sature   D_d (med-pli)   D_r (med-pli)   L        ecart pred.
+partout 1e-10 (reference)                   2,1995e-5      -6,0837e-6      -4,3929e-5      0,96799
+partout 1e-8  (reference)                   6,3665e-6      -8,6313e-6      -6,1159e-5      0,94988
+ligne 3 seule a 1e-8 (e3,o3)                6,2685e-6      -8,7409e-6      -6,1903e-5      0,94939  |D_d| dans [7,7e-6 ; 9,5e-6] ✓ ; L dans [0,94 ; 0,96] ✓
+recepteur seul a 1e-8 (l3,l4)               2,1954e-5      -5,8833e-6      -4,2537e-5      0,96923  |D_d| dans [5,5e-6 ; 6,7e-6] ✓ ; L dans [0,963 ; 0,973] ✓
+```
+La ligne 3 seule reproduit eps 1e-8 partout à 1,3 % (D_d), 0,05 % (L) et 1,5 % (sd) ; le
+récepteur seul reproduit eps 1e-10 partout à 3,3 % (D_d), 0,13 % (L) et 0,2 % (sd). **H63-7
+est confirmée dans la réduction** : le déplacement de la médiane, l'inclinaison ET
+l'amplitude saturée des salves sont fixés par le gain d'Adam de la ligne 3 de l'émetteur.
+Réserve : mesuré dans la réduction seulement, pas sur le réseau complet à ces eps ; et
+« D_d suit la ligne 3 » ne dit pas COMMENT (aucune dérivation).
+
+| H63-7 le déplacement suit l'asymétrie des gains d'Adam de la ligne 3 | 08/10 (moi) | **confirmée** (réduction) : ligne 3 seule à 1e-8 → D_d -8,74e-6, L 0,9494 ; récepteur seul → -5,88e-6, 0,9692 |
+
 Réponse dans `docs/REPONSE_ORDRE63.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
