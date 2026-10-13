@@ -15,6 +15,7 @@ entre les deux points qui l'encadrent) avec un intervalle bootstrap sur les phas
 
 import importlib
 import json
+import os
 import sys
 
 import numpy as np
@@ -61,7 +62,7 @@ if __name__ == "__main__":
             w = redlib.copie(s1)
             redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=e, cross=2.0, stop=False)
             w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
-            redlib.avancer_obs(w, delta, 10000, np.zeros((1, 7)), eps=e)
+            redlib.avancer_obs(w, delta, int(os.environ.get("TOUR67_SETTLE", "10000")), np.zeros((1, 7)), eps=e)
             rec = np.zeros((2_000_000, 7))
             first, maxrb, rb, done = redlib.avancer_obs(w, delta, 2_000_000, rec, eps=e)
             if maxrb > 0.9:

@@ -18529,6 +18529,25 @@ D_d − D0. Conséquence immédiate : en retirant D0 = 1,0e-8, D_d s'annule à e
 - P67-9 : D_d contre ce point fixe (D − Δ) s'annule à eps/lr dans [6,15 ; 6,30]e-7 pour lr 0,01, 0,02,
   0,05, 0,1 à x = 1e-8 (donc le zéro est fixe à 2 %). Mise : 65 %.
 
+**Résultats du quatrième lot (`verifier_tour67_point_fixe_reduction.py`, `verifier_tour67_zero_corrige.py`) :**
+point fixe propre de la réduction (avec Se, Sed) moins nœud fermé, en d3 : −6,06e-9 (x = 1e-8), −1,91e-8
+(1e-9), −5,91e-8 (1e-10), −1,57e-7 (1e-11), −3,33e-7 (1e-13) ; × √x : −6,06e-13, −6,05e-13, −5,91e-13,
+−4,96e-13, −1,05e-13 (constant jusqu'à 1e-10, puis non : la valeur propre molle n'est plus ∝ √x
+quand le résidu dépasse l'écart). **P67-8 ✗** : le signe est négatif (j'attendais +) et K = −6,06e-13
+(j'attendais +1,0 à +1,1e-12). Le point fixe propre est SOUS le nœud fermé : D_d contre lui vaut D_d + 6,06e-9
+à x = 1e-8, donc D0 est +1,6e-8 contre le point fixe et pas +1,0e-8. **L'hypothèse « D0 est une erreur de
+référence » est réfutée.** Zéros en eps/lr (1e-7), lr 0,005 / 0,01 / 0,02 / 0,05 / 0,1 :
+nœud fermé : — / 5,757 / 6,104 / 6,199 / 6,186 ; point fixe propre : — / 5,509 / 6,036 / 6,188 / 6,184 ;
+avec un décalage de +1,0e-8 (non justifié) : 6,158 / 6,211 / 6,225 / 6,220 / 6,191 (fixe à 1,1 %).
+**P67-9 ✗** (contre le point fixe propre, 5,51 et 6,04 hors de [6,15 ; 6,30]).
+**Constat :** il y a un déplacement médiane − point fixe de +1,6e-8 à x = 1e-8 qui ne dépend ni de lr
+(0,005 → 0,1) ni d'eps/lr, et qui va comme 1/√x (3,3e-8 + 1,9e-8 à 1e-9, 1,1e-7 + 5,9e-8 à 1e-10 sans
+salves à eps 1e-6) ; je n'en connais pas l'origine. S'il est retiré (à +1,0e-8), le zéro est fixe à
+1 % pour les cinq lr : sa loi D = lr² G(eps/lr)/λ est la bonne en dehors de ce terme.
+**Prédiction précommise (14/10) :** le terme lr-indépendant est-il un transitoire ? lr 0,005, x = 1e-8,
+eps/lr = 6,0e-7 avec 200 000 pas de mise en place au lieu de 10 000 (variable `TOUR67_SETTLE`) : D_d
+reste à ±5 % de +9,20e-9. Mise : 80 %.
+
 Réponse dans `docs/REPONSE_ORDRE67.md`.
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
