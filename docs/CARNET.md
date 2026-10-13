@@ -18507,6 +18507,28 @@ partie qui ne va pas comme lr², positive).
   +1,2e-8 ; +1,2e-8 ; +6,2e-9 ; +1,4e-8. Je mise sur la mienne : D(0,005, 6,5e-7) > 0 (la sienne donne
   < 0) à 70 % ; et D(0,005, 6,0e-7) dans [5e-9 ; 1,5e-8] à 60 %.
 
+**Résultat P67-7 ✓** : lr 0,005, x = 1e-8 : D_d = +8,65e-9 ; +9,20e-9 ; +1,02e-8 ; +1,16e-8 (q = 5,9 ;
+6,0 ; 6,2 ; 6,5e-7), contre +1,1e-9 ; +2,8e-9 ; +4,9e-9 ; −4,3e-9 pour D = a lr² + D0 (p = 2). La
+loi lr² pure à D0 = 0 est réfutée (signe à 6,5e-7, facteur 8 à 5,9e-7) ; mon ajustement à p libre
+(+1,2e-8) est à 25 % de la mesure. Un D0 ≈ +1,0e-8 presque indépendant de lr et de q existe.
+
+**Observation POST HOC (à tester) : D0 est une erreur de référence.** Mes anciens offsets sans salves
+(tour 63, eps 1e-6) : médiane − nœud = +3,3e-8 (x = 1e-9) et +1,1e-7 (x = 1e-10) ; ici D0 = +1,0e-8
+(x = 1e-8). Les trois valent K/√x avec K = 1,0–1,1e-12 (1e-8·1e-4 ; 3,3e-8·3,16e-5 ; 1,1e-7·1e-5).
+Le nœud « fermé » (`d3_noeud`) ignore la queue (Se = 4,9e-11, Sed = −1,3e-9 de la réduction) ; le
+jacobien (`verifier_tour66_forme_normale.py`) donne un résidu de gradient de 1,2e-13 au nœud fermé et
+une valeur propre molle ∝ √x : un résidu g_res déplace le point fixe de g_res/λ ∝ 1/√x. Si c'est ça, le
+point fixe propre de la réduction est au-dessus du nœud fermé de K/√x, et D_d contre ce point fixe =
+D_d − D0. Conséquence immédiate : en retirant D0 = 1,0e-8, D_d s'annule à eps/lr = 6,29 (lr 0,01), 6,22
+(0,02), 6,22 (0,05), 6,19 (0,1), 6,19e-7 (0,005) : le zéro serait fixe à 1,5 % près, c'est-à-dire sa loi.
+**Prédictions précommises (14/10), quatrième lot** (`verifier_tour67_point_fixe_reduction.py`, mpmath,
+50 chiffres) :
+- P67-8 : point fixe de g (3 composantes) de la réduction avec Se, Sed de l'état de base, contre le nœud
+  fermé : d3(point fixe) − d3(nœud fermé) = K/√x avec K entre 1,0e-12 et 1,1e-12 à x = 1e-8, 1e-9,
+  1e-10. Mise : 65 %.
+- P67-9 : D_d contre ce point fixe (D − Δ) s'annule à eps/lr dans [6,15 ; 6,30]e-7 pour lr 0,01, 0,02,
+  0,05, 0,1 à x = 1e-8 (donc le zéro est fixe à 2 %). Mise : 65 %.
+
 Réponse dans `docs/REPONSE_ORDRE67.md`.
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
