@@ -18201,6 +18201,67 @@ POST HOC, un seul eps/lr, coupures encadrées à 1,3–1,5 près : x_c ∝ lr^p 
 
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 13/10/2026 (tour 66, PAS simulée)
+
+« Oui sur l'échelle » : c² est ce que donne la symétrie propre du pli. Forme normale g = d² − x
+(nœud +√x, col −√x) : la symétrie exacte est (lr, eps, x, d) → (c lr, c² eps, c² x, c d) ; il
+l'a vérifiée (PyTorch Adam, 3000 pas, coup de 1e-5 : 7e-15) ; ma paire (c eps, x fixe) dévie de
+54 %, (c eps, c² x) de 58 %. Conséquences selon lui : (a) mon 0,10–0,20 encadre c² mais avec eps
+mis à l'échelle par c, pas c² : coïncidence ; (b) sous le pli √v va comme c² (6,25), or √v_e3 suit
+lr : « une coordonnée sur le pli ne peut pas faire ça » ; (c) l'ordre en x est à l'envers : d/(2√x)
+vaut 16 à x = 1e-13 et 0,16 à 1e-9 pour d ≈ 1e-5, un pli 1-D casserait la symétrie linéaire à 1e-13
+et la garderait à 1e-9 ; donc la coordonnée qui fait les salves voit une force de rappel linéaire
+dont le coefficient ne vient pas de x. Test : lr 0,02, eps × 0,16, x × 0,16 contre lr 0,05 ; pli →
+sd 2,5, |D_d| 2,5, √v 6,25, tilt inchangé, coupure en x à 0,16. Son a priori que √v_e3 lise 6,25 :
+25 %. Question : si 2,5, quelle coordonnée de la réduction porte le pli ?
+
+**Vérification (`verifier_tour66_forme_normale.py`) :**
+- Symétrie (c lr, c² eps, c² x, c d) sur g = d² − x : exacte, écart 5e-16 à 9e-16 sur 3000 pas
+  (cinq jeux de base) ✓ (il dit 7e-15).
+- Ses 54 % et 58 % : **non reproduits**, il ne donne ni lr, ni eps, ni x de base. Sur mes cinq jeux :
+  (c lr, c eps, x fixe) 0–2 % en écart à c·(d − nœud), mais 116–149 % si l'on compare d brut à c·d
+  (le nœud √x ne bouge pas : comparaison triviale) ; (c lr, c eps, c² x) 0–8 %. Le chiffre dépend
+  du jeu de base et de ce qui est comparé.
+- d/(2√x) pour d = 1e-5 : 15,8 (1e-13), 1,58 (1e-11), 0,158 (1e-9) ✓.
+- **Jacobien de la réduction au nœud** (variables z3 = e3 − o3, z4, u = l3 − l4 ; le gradient ne
+  dépend que d'elles) : trois valeurs propres. z4 découplé (−2,3e-20 : d4 ~ 1e-18). **Mode mou =
+  le pli** : valeur propre −2,32e-11 (x = 1e-13), −2,31e-9 (1e-9), −7,29e-9 (1e-8), donc ∝ √x ✓,
+  vecteur (z3, u) = (−0,991 ; −0,133) : **le pli est porté par z3 (la ligne 3 de l'émetteur) à
+  99,1 %**, comme le hessien du réseau complet (tour 59). **Mode raide** : −1,140e-4, vecteur
+  (0,133 ; −0,991), porté par u (le récepteur). La raideur diagonale de z3 seule,
+  k3 = s3·d3·β/N = 2,013e-6, ne dépend pas de x (0,4 % entre 1e-13 et 1e-8) ; le mode mou est la
+  quasi-annulation k3 − J_zu·J_uz/|J_uu| = 2,013e-6 − (1,502e-5)²/1,120e-4 = 2,013e-6 − 2,014e-6.
+- Lecture déjà visible dans mes lignes (après coup, à vérifier par prédiction) : √v_e3/√v_l3 =
+  0,1336 (lr 0,05, x = 1e-8, eps 5e-8) et 0,1337 (lr 0,02, x = 1e-13, eps 4e-11), la composante z3/u
+  du mode raide est 0,1341.
+
+**Hypothèses (13/10) :**
+- H66-1 (lui) symétrie exacte du pli (c lr, c² eps, c² x, c d) : ✓ sur la forme normale.
+- H66-2 (lui) la coordonnée des salves voit une force de rappel linéaire indépendante de x.
+- H66-3 (moi, non standard) **les salves sont le bord de stabilité d'Adam sur le MODE RAIDE**
+  (u à 99 %, z3 à 13 %), pas sur le pli : √v de chaque coordonnée = projection du mode raide
+  (√v_e3/√v_l3 = 0,134), et √v_l3 + eps est fixé par lr·2|J_uu|/(√v_l3 + eps) ≈ 38
+  (2(1+β1)/(1−β1)), d'où √v ∝ lr et la dépendance en eps (√v_l3 baisse de ~eps). Le pli (z3 à
+  99 %) est une autre direction, qui reçoit le bruit des salves par sa composante 13 %.
+- H66-4 (moi) la variable d'eps pertinente est eps/√v_l3 (le récepteur), pas eps/√v_e3.
+- H66-5 (standard) les salves sont un cycle limite à deux pas (période ~444 pas : non, déjà
+  mesuré) — écartée d'avance par la période mesurée au tour 58.
+
+**Prédictions précommises (13/10), avant les runs (`verifier_tour66_paire_pli.py`, 16 phases × 2e6
+pas, D contre le nœud au δ mesuré) :**
+Paires du pli (lr 0,05 | lr 0,02 avec eps × 0,16, x × 0,16) : A (eps 1e-7, x 1e-8 | 1,6e-8, 1,6e-9) ;
+B (1e-8, 1e-13 | 1,6e-9, 1,6e-14) ; C (5e-8, 1e-8 | 8e-9, 1,6e-9) ; D (1e-9, 1e-11 | 1,6e-10, 1,6e-12).
+- P66-1 : rapport des médianes de √v_e3 dans [2,2 ; 2,8] pour les quatre paires ; jamais près de 6,25.
+  Mise : 90 %.
+- P66-2 : √v_e3/√v_l3 = 0,134 ± 0,004 dans les huit états. Mise : 80 %.
+- P66-3 : S = lr·2|J_uu|/(√v_l3 + eps) entre 30 et 40 dans les huit états. Mise : 70 %.
+- P66-4 : au moins une paire a un rapport sd hors de [2,3 ; 2,7] (le pli ne gouverne pas sd).
+  Mise : 70 %.
+- P66-5 : coupure en x au même eps (sa prédiction 0,16) : lr 0,02 eps 6,4e-9 ne s'effondre pas même à
+  x = 1e-13 (eps/lr 3,2e-7 < 6e-7), donc pas de coupure à 0,16 × (2–3e-9). Mise : 85 %.
+
+Réponse dans `docs/REPONSE_ORDRE66.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
