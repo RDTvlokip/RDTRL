@@ -18472,8 +18472,6 @@ statistique). eps/lr égal, S égal à 0,1 % : l'écart de zéro ne vient pas de
   (+4 %) : **l'autre moitié de P67-3 ✗** (je prévoyais S et √v_l3 inchangés à 1 %). Le changement
   d'eps de o3 agit donc aussi sur u, par le couplage de z3 (sd_d3 ×4).
 
-Réponse dans `docs/REPONSE_ORDRE67.md`.
-
 **Prédictions précommises (14/10), second lot :** le zéro dépend de lr à bas lr (le D_d à bas lr a une
 partie qui ne va pas comme lr², positive).
 - P67-4 : lr 0,01, grille 5,3 … 5,85e-7 : zéro encadré, entre 5,6 et 5,9e-7. Mise : 70 %.
@@ -18483,6 +18481,33 @@ partie qui ne va pas comme lr², positive).
   (post hoc), et à eps/lr = 1e-6 et 1,5e-6 en ordre croissant de lr (lr 0,01 contre 0,02 à x = 1e-8 :
   rapport de |D_d| dans [3,0 ; 4,5], sous 4 : 55 %).
 
+**Résultats du second lot (14/10) :**
+- **P67-4 ✓** : lr 0,01, zéro encadré à eps/lr = 5,7567e-7 (dans [5,6 ; 5,9]e-7 ; l'extrapolation
+  donnait 5,75). **P67-5 ✓ (extrapolé)** : lr 0,005, D_d > 0 sur toute la grille 4,6–5,8e-7
+  (+3,0e-10 à 4,6e-7), zéro extrapolé vers 4,56e-7, sous celui de lr 0,01 ; non encadré.
+- **P67-6 : tenue pour la moitié sans effondrement, ✗ pour le rapport.** x = 1e-7 : lr 0,05 et 0,1
+  sans effondrement (75 % ✓) ; |D_d| lr 0,1 / lr 0,05 : 5,83 (eps/lr 1e-6 : 7,726e-7 / 1,326e-7) et
+  5,70 (1,5e-6 : 1,870e-6 / 3,281e-7) : **hors [4,2 ; 5,2]** (✗) et hors sa fenêtre [3,6 ; 4,8] ; exposant
+  2,54 / 2,51. lr 0,01 contre 0,02 à x = 1e-8 : 3,74 (1e-6 : 2,811e-7 / 7,508e-8) et 3,89 (1,5e-6) : dans
+  [3,0 ; 4,5] et sous 4 (✓) ; exposant 1,90 / 1,96.
+  Exposants de |D_d| en lr, à eps/lr = 1e-6, hors voisinage du zéro : 1,90 (0,01→0,02, x = 1e-8), 2,18
+  (0,02→0,05, x = 1e-8 : 2,0649e-6 / 2,811e-7), 2,54 (0,05→0,1, x = 1e-7) : ni 2 partout, ni constant
+  (les x diffèrent entre les deux premiers et le dernier).
+- Pente de D_d en eps/lr : lr² à 5 % (×3,9 ; ×6,4 ; ×3,8). Le zéro dérive pourtant : 4,56 (extrapolé),
+  5,757, 6,104, 6,199, 6,186e-7 pour lr 0,005 ; 0,01 ; 0,02 ; 0,05 ; 0,1.
+- **Décomposition POST HOC (`verifier_tour67_decomposition_lr.py`)** : D(lr, q) = a(q) lr^p + D0 avec les
+  quatre lr de la grille fine : p libre = 1,5–2,8 (instable), **D0 ≈ +1,2 à +1,5e-8** presque constant
+  en q (1,50 ; 1,44 ; 1,51 ; 1,17 ; 1,27 ; 1,37e-8) ; avec p = 2 imposé et D0 = 0, les résidus sont de
+  7e-9 à 1,6e-8, du même ordre que D0 : la loi D = lr² G/λ pure ne passe pas.
+  Test hors échantillon précommis ci-dessous (lr 0,005).
+
+**Prédictions précommises (14/10), troisième lot** (lr 0,005, x = 1e-8, q = 5,9 ; 6,0 ; 6,2 ; 6,5e-7) :
+- P67-7 : la loi de dipankarsarkar (D = a lr² + D0 ajustée sur lr 0,01–0,1 avec p = 2) prédit
+  D(0,005) = +1,1e-9 ; +2,8e-9 ; +4,9e-9 ; −4,3e-9 ; mon ajustement à p libre (D0 ≈ +1,3e-8) prédit
+  +1,2e-8 ; +1,2e-8 ; +6,2e-9 ; +1,4e-8. Je mise sur la mienne : D(0,005, 6,5e-7) > 0 (la sienne donne
+  < 0) à 70 % ; et D(0,005, 6,0e-7) dans [5e-9 ; 1,5e-8] à 60 %.
+
+Réponse dans `docs/REPONSE_ORDRE67.md`.
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
