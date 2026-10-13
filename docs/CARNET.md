@@ -18150,6 +18150,33 @@ lr 0,05 à x = 1e-8 (lot précédent) contre lr 0,02 à x = 4e-9 (c = 0,4), eps 
   reste autour de 7, le déplacement n'est pas lié à x par l'échelle linéaire et sa lecture
   (D exact seulement dans la limite linéaire) ne couvre pas ces états.
 
+**Résultats du troisième lot (lr 0,02 à x = 4e-9, contre lr 0,05 à x = 1e-8) :**
+```
+eps (0,02)  r       sd ratio   |D_d| noeud ratio   D_r/D_d noeud (0,05 | 0,02)
+2e-8        1,357   2,925      4,07                6,737 | 6,939
+4e-8        3,431   3,826      4,45                7,025 | 7,104
+6e-8        6,926   3,934      4,16                7,088 | 7,174
+```
+**P65-11 ✗** (sd inchangé par la mise à l'échelle de x : sd ne dépend pas de x ici, 7,19e-7 à
+x = 4e-9 contre 7,16e-7 à 1e-8), **P65-12 ✗** (4,1–4,5, hors [2,1 ; 2,9], mais plus près que 7,0–7,7 :
+|D_d| nœud à lr 0,02 passe de 2,8e-7 à 5,1e-7 quand x passe de 1e-8 à 4e-9, il dépend de x).
+L'invariance complète (x mis à l'échelle aussi) échoue donc à r > 1 : sd va comme lr^1,2–1,5 à
+eps/lr égal. Le tilt D_r/D_d, lui, est le même pour les deux lr (à 1–3 %).
+
+| H65-1 symétrie d'échelle d'Adam (gradient linéaire) | 13/10 (lui) | **exacte sur le jouet** (5e-16 à 2 000 pas, cassée par un terme quadratique) ; dans la réduction : sd 2,56 et |D_d| 2,504 à la paire du haut seulement (x = 1e-13), sd 3,4–3,9 et |D_d| 1,05–2,0 ailleurs |
+| H65-2 a monte parce que les salves deviennent linéaires | 13/10 (lui) | **non soutenue à r > 1** : sd 2,9–3,9 et |D_d| 7,0–7,7 (x = 1e-8) ou 4,1–4,5 (x mis à l'échelle), pas 2,5 ; soutenue de façon étroite (sd 2,56, |D_d| 2,504) à eps/lr = 5,2e-7 |
+| H65-3 le seuil d'effondrement est au même eps/lr, ratio 0,4 | 13/10 (lui) | **confirmée à x = 1e-13 et 1e-11** (entre 6,0e-7 et 6,3e-7 pour les deux lr) ; **fausse à x = 1e-9** (lr 0,02 ne s'effondre pas jusqu'à 5e-6, lr 0,05 s'effondre à 7e-7) |
+| H65-4 rapport de seuil entre 0,5 et 1 | 13/10 (moi) | **réfutée** à x = 1e-13 (0,4) |
+| H65-5 le seuil va comme eps, pas eps/lr (décalage du pli effectif) | 13/10 (moi) | **réfutée** à x = 1e-13 |
+| H65-6 il y a des états à r > 1 sans effondrement | 13/10 (moi) | **vraie à x ≥ 1e-8 (lr 0,05) et x ≥ 1e-9 (lr 0,02)**, fausse à x = 1e-13 (r max 0,78–0,88) |
+
+**Prédictions précommises (13/10), quatrième lot (sa question de retour : seuil de lr 0,02 à x
+mis à l'échelle) :**
+- P65-13 : lr 0,02 à x = 4e-9 : pas de seuil jusqu'à eps/lr 5e-6 (0 phase sur 16 effondrée), comme à
+  x = 1e-9, donc sa symétrie « x mis à l'échelle » ne retrouve pas 7e-7. Mise : 60 %.
+- P65-14 : lr 0,02 à x = 1e-10 : seuil entre 6,3e-7 et 7e-7 (le seuil quitte 6,1e-7 entre x = 1e-11
+  et 1e-9 de façon continue). Mise : 40 %.
+
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
