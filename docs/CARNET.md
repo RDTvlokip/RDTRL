@@ -18345,6 +18345,29 @@ H66-7 (moi, non standard) : **l'effondrement à petit x est le passage de la mé
 5,5e-7 et 7e-7, pour lr 0,05 (eps 2,5 / 2,75 / 3 / 3,25 / 3,5e-8) et lr 0,02 (eps 1 / 1,1 / 1,2 / 1,3 /
 1,4e-8). P66-8. Mise : 50 %. Ce qui la réfuterait : un zéro hors de [5,5e-7 ; 7e-7] pour l'un des deux lr.
 
+**Résultat : P66-8 ✓.** x = 1e-8 : D_d = −7,11e-7, −4,09e-7, −1,12e-7, +1,63e-7, +4,60e-7 (lr 0,05, eps 2,5
+→ 3,5e-8) ; −1,12e-7, −5,79e-8, −9,3e-9, +3,24e-8, +7,51e-8 (lr 0,02, eps 1,0 → 1,4e-8). Zéro (interpolation
+linéaire) à eps/lr = 6,20e-7 (lr 0,05) et 6,11e-7 (lr 0,02) : au même eps/lr pour les deux lr, et dans
+l'encadrement du seuil d'effondrement à x = 1e-13 (6,0–6,3e-7). Ce qui explique, après coup, la
+réponse « oui » du tour 65 : le seuil à petit x est au même eps/lr parce que le zéro de D_d l'est.
+√v_e3/√v_l3 = 0,1335 et S = 33,8–34,1 dans les dix états.
+
+**Écart nœud–col (`verifier_tour66_ecart_col.py`) : d3(col) − d3(nœud) = 0,2213·√x** (le coefficient
+0,2212 du 17/09), 7,0e-8 à x = 1e-13, 7,0e-6 à 1e-9, 2,2e-5 à 1e-8.
+**Critère POST HOC (`verifier_tour66_critere_col.py`), lu sur les coupures du tour 65 à eps/lr 8e-7 :**
+écart/sd_d3 = 4,55 (lr 0,05, x 2e-9, effondré), 5,57 (3e-9, tient), 4,66 (lr 0,02, 3e-10, effondré),
+5,38 (4e-10, tient) : **l'état s'effondre quand D_d > 0 et que l'écart nœud–col tombe sous k·sd_d3,
+k ∈ [4,66 ; 5,38] pour les deux lr.** Comme sd ne dépend presque pas de x, x_c = (k·sd/0,2213)² ∝ sd² :
+rapport des coupures (sd_02/sd_05)² = 0,143, dans le 0,10–0,20 du tour 65. Le « lr² » du tour 65 est
+donc sd², et sd va comme lr^1,0–1,5 selon eps/lr : la coïncidence qu'il signalait en est une.
+H66-8 (moi) : critère d'effondrement = (D_d > 0) et (0,2213 √x < k sd_d3), k ≈ 5.
+**Prédictions précommises (13/10), P66-9, à des eps/lr où le critère n'a pas été lu :** coupures
+prédites x_c ∈ [1,96 ; 2,61]e-9 (lr 0,05 eps 5e-8), [2,28 ; 3,03]e-10 (lr 0,02 eps 2e-8),
+[1,12 ; 1,50]e-9 (lr 0,05 eps 1e-7), [0,761 ; 1,01]e-10 (lr 0,02 eps 4e-8). États testés (≥ 8 phases sur
+16 = effondré) : effondrés à x = 1,4e-9, 1,6e-10, 8e-10, 5,4e-11 ; tenus à x = 3,6e-9, 4,2e-10, 2,1e-9,
+1,4e-10 (dans le même ordre). Mise : 55 % que les huit soient justes. (Le tour 63 avait lr 0,05,
+eps 1e-7 effondré à x = 1e-9 et 1e-10 : cohérent, 1e-9 < 1,12e-9.)
+
 Réponse dans `docs/REPONSE_ORDRE66.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
