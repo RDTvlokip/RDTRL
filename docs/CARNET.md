@@ -18378,6 +18378,75 @@ mesuré au x de la coupure (D_d dépend de x) : non fait.
 
 Réponse dans `docs/REPONSE_ORDRE66.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 14/10/2026 (tour 67, PAS simulée)
+
+(Critique collée deux fois ; traitée une seule fois.) « Oui, et la raison est dans ton code. » Il a
+tiré RDTRL à 2915880e : `g[1] = -ge3/C`, donc o3 porte exactement −1/26 du gradient de e3,
+m1 = −m0/26 et √v1 = √v0/26 à la précision machine après la chauffe, et le pas sur z3 = e3 − o3
+vaut lr m0 [1/(s+eps) + 1/(s+26 eps)], s = √v_e3. À (lr, eps) mis à l'échelle de c à x fixe et S fixe,
+l'amplitude des salves sur u, s et m0 passent à c : tout pas dû au bruit sur z3 va comme c, la force
+du pli ne change pas et son pas est une fonction d'eps/lr seul. Un déplacement net dû aux salves est
+pair en leur signe : **D_d = lr² G(eps/lr)/λ**, le zéro de D_d est un zéro de G, à eps/lr fixe,
+indépendant de lr à S égal. Il lit mes 6,20 / 6,11e-7 (1,5 %) et mes S 35,2 / 34,2 (3 %) comme ce
+résidu. |D_d| ∝ lr² à x fixé tant que D ≪ l'écart (mes 7,35 ; 7,70 ; 6,98) ; à x = 1e-13 D = l'écart et
+la loi de grandeur casse, mais le signe de G survit : d'où le seuil à 1e-13 et le zéro à 1e-8 au même
+6,1–6,3e-7. Il perd ses 25 % (« la symétrie 1-D du pli n'a pas de coordonnée sur laquelle agir »). Il
+n'a pas pu me rejouer : `base_state()` charge un `.pt` hors dépôt (Se, Sed dedans). Trois
+prédictions : (i) lr 0,01 et 0,1 à x = 1e-8 : zéro à 5 % de 6,15e-7, décalage du signe et de l'ordre
+du décalage de S (70 %) ; (ii) lr 0,1 contre 0,05 à eps/lr égal, x = 1e-8, sans effondrement : rapport
+de |D_d| entre 3,6 et 4,8 (60 %) ; (iii) eps[1] = eps[0]/26 (le pas de o3 devient exactement l'opposé
+de celui de e3) : si le zéro bouge, le changement de signe vit dans l'asymétrie d'eps de 26 entre e3
+et o3 ; a priori 40 % qu'il bouge. Il ne sait pas ce qu'est G : deux termes du second ordre de signes
+opposés, l'un vers le col, l'autre en sens inverse ; il cherche le second dans une moyenne de Kapitza
+(oscillation de 8e-4 sur z3 contre un écart de 2,6e-5 à x = 1e-13). Question : lequel d'abord ?
+
+**Vérification de ce qu'il lit dans le code (`verifier_tour67_code_et_echelle.py`) :**
+- `g[1] = -ge3/C` ✓ (ligne `g[1] = -ge3 / C`). m1/m0 = −1/26 et √(v1/v0) = 1/26 : écart relatif de
+  1e-16 à 2e-15 sur 6 phases, après la chauffe et après 2e6 pas ✓ (l'état de base lui-même, issu du
+  réseau complet : 5e-11 et 4e-9, d'où la dérive de 1e-9 avant la chauffe).
+- Pas sur z3 = lr m0 [1/(s+eps) + 1/(s+26 eps)] : écart relatif 1,0e-11 (eps 5e-8) et 1,0e-13 (eps 1e-10)
+  sur un pas de la réduction ✓.
+- Échelle à eps/lr égal, x = 1e-8 : √v_l3 ×2,4977 / ×2,4997 / ×2,5035 ✓ (2,5 à 0,2 %), mais |D_d|
+  ×7,345 / ×7,697 / ×6,984 contre 6,25 : **+17,5 %, +23,2 %, +11,7 %**, exposant 2,18 / 2,23 / 2,12,
+  pas 2. Sa loi lr² n'est pas exacte dans mes lignes (sa lecture « c'est cela » est trop rapide).
+- Ses S 35,2 | 34,2 ne sont PAS à eps/lr égal (2e-6 | 8e-7 : paire A du tour 66) ; à eps/lr égal
+  (6,0e-7, x = 1e-8) S = 34,00 | 33,96 (0,1 %). L'écart de 1,5 % sur le zéro ne s'explique donc pas par
+  un écart de S. Mes deux zéros viennent d'une grille de pas 5e-8 en eps (soit 0,5e-7 en eps/lr
+  ... : 5,0 ; 5,5 ; 6,0 ; 6,5 ; 7,0e-7), interpolés linéairement : à refaire à pas fin.
+- Reproductibilité : j'exporte l'état de base en JSON (775 octets) dans le dépôt,
+  `src/test3_communication/etat_base_reduction_mur23.json`, plus le script qui le produit ; mes scripts
+  du tour 67 le lisent (`verifier_tour67_zero_dd.py`). Sa phrase « Se et Sed vivent dedans » est exacte.
+- Limite à signaler : la réduction fond les 26 concurrents de la ligne 3 en une seule coordonnée o3
+  (moyenne) avec un seul v ; dans le réseau complet il y a 26 coordonnées avec chacune son v et son eps
+  effectif. L'asymétrie 1/(s+eps) + 1/(s+26 eps) est donc un fait de la réduction, pas démontré pour
+  le réseau complet (la réduction a été validée contre lui à lr 0,05, eps 1e-10 seulement).
+
+**Hypothèses (14/10) :**
+- H67-1 (lui) D_d = lr² G(eps/lr)/λ : zéro à eps/lr fixe, |D_d| ∝ lr² à x fixé.
+- H67-2 (lui) le signe de G vit dans l'asymétrie d'eps de 26 entre e3 et o3 (40 % qu'il bouge si
+  eps[1] = eps[0]/26).
+- H67-3 (lui) un des deux termes est une moyenne de Kapitza de l'oscillation de z3.
+- H67-4 (moi) le zéro dépend faiblement de lr (la loi n'est pas exactement lr² : exposant 2,1–2,2) :
+  monotone en lr ; ordre du décalage 1–4 % entre lr 0,01 et 0,1.
+- H67-5 (moi, non standard) le zéro de D_d est un zéro en r = eps/√v_e3 : à (lr 0,05, 6,20e-7) r =
+  0,775 et à (lr 0,02, 6,11e-7) 0,76 (mes lignes) ; la lecture « à eps/lr fixe » et la lecture « à r
+  fixe » ne se distinguent que par le gain de √v/lr, et un changement d'eps par coordonnée (eps[1])
+  les sépare : le pas de o3 est [1/(s+26 eps)] × lr m0, qui pèse 8 % du pas à r = 0,77 et 50 % si
+  eps[1] = eps/26.
+
+**Prédictions précommises (14/10), avant les runs** (`verifier_tour67_zero_dd.py`, 16 phases × 2e6
+pas, x = 1e-8, grille fine eps/lr = 5,9 ; 6,0 ; 6,1 ; 6,2 ; 6,3 ; 6,4 ; 6,5e-7) :
+- P67-1 : zéro de D_d à lr 0,01, 0,02, 0,05, 0,1 : tous à 5 % de 6,15e-7 (c'est sa prédiction ;
+  mise : 75 %). Ma prédiction en plus, qui la distingue de « résidu de S » : l'ordre est monotone
+  en lr (z(0,01) < z(0,02) < z(0,05) < z(0,1)), mise 60 %, avec un écart total de 1 à 4 %.
+- P67-2 : à eps/lr = 1e-6, x = 1e-8, lr 0,1 contre 0,05 : pas d'effondrement (80 %) ; rapport de |D_d|
+  entre 4,2 et 4,8 (mon extrapolation de l'exposant 2,12–2,23 : 4,3–4,7), pas dans sa fenêtre
+  centrée sur 4 ; mise : 60 % qu'il soit au-dessus de 4,2 ; 90 % qu'il soit dans [3,6 ; 4,8].
+- P67-3 : eps[1] = eps[0]/26 (diviseur 26, lr 0,05, x = 1e-8, même grille élargie à 4,5–8,5e-7) : le
+  zéro bouge de plus de 5 % ; mise : 60 % (lui 40 %). S et √v_l3 inchangés à 1 % (85 %) : o3 n'a pas
+  de voie vers u.
+Réponse dans `docs/REPONSE_ORDRE67.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
