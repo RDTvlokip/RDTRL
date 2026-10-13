@@ -18333,6 +18333,18 @@ ou plus rapide (il les suit adiabatiquement : D_d > 0).
 x = 3,9e-10 (τ ≈ 300 : D_d < 0) et x = 3,6e-9 (τ ≈ 100 : D_d > 0), quatre états. P66-7 : les quatre
 signes comme prédit. Mise : 60 %.
 
+**Résultat : P66-7 ✗** (deux sur quatre). x = 3,9e-10 : D_d = −6,65e-6 (lr 0,05), −2,66e-6 (lr 0,02) ✓ ;
+x = 3,6e-9 (τ ≈ 100) : −3,76e-6 et −1,12e-6, négatifs ✗. **H66-6 réfutée** : τ ne fixe pas le signe.
+Relu sur les 14 lignes : D_d > 0 seulement à eps/lr ≥ 8e-7 (8e-7, 1e-6, 1e-6, 1e-6, 2e-6), D_d < 0 à
+eps/lr ≤ 4e-7 (tous les autres) ; frontière entre 4e-7 et 8e-7, c'est-à-dire là où se trouve le seuil
+d'effondrement à x = 1e-13 (6,0–6,3e-7). Le nœud monte en d3 vers le pli (2,714e-3 à x = 1e-8,
+2,725e-3 à 1e-13), le col est au-dessus : D_d > 0 = médiane du côté du col.
+H66-7 (moi, non standard) : **l'effondrement à petit x est le passage de la médiane du côté du col** ;
+à x = 1e-13 l'écart nœud–col est minuscule devant |D_d| ~ 1e-6, donc tout D_d > 0 fait franchir le col.
+**Prédiction précommise (13/10) :** à x = 1e-8 (pas d'effondrement), D_d change de signe entre eps/lr
+5,5e-7 et 7e-7, pour lr 0,05 (eps 2,5 / 2,75 / 3 / 3,25 / 3,5e-8) et lr 0,02 (eps 1 / 1,1 / 1,2 / 1,3 /
+1,4e-8). P66-8. Mise : 50 %. Ce qui la réfuterait : un zéro hors de [5,5e-7 ; 7e-7] pour l'un des deux lr.
+
 Réponse dans `docs/REPONSE_ORDRE66.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
