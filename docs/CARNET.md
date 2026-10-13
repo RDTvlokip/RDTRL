@@ -18193,6 +18193,12 @@ coupure en x de lr 0,05 est entre 1,2e-9 et 1e-8, donc le rapport des coupures x
 sous 0,33 (< 0,4 de plus de 15 %), pas égal à 0,4. Mise : 70 %. Mesure : x = 1,2e-9, 1,5e-9, 2e-9,
 3e-9, 5e-9.
 
+**Résultat du sixième lot : P65-16 ✓** — à eps/lr 8e-7 la coupure en x de lr 0,05 est entre 2e-9
+(16/16 effondrées) et 3e-9 (0/16) ; celle de lr 0,02 entre 3e-10 et 4e-10 : rapport 0,10 à 0,20 (<
+0,33 prédit ; la symétrie à x mis à l'échelle de c = 0,4 en donne 0,4 ; lr² en donne 0,16). Lecture
+POST HOC, un seul eps/lr, coupures encadrées à 1,3–1,5 près : x_c ∝ lr^p avec p ≈ 1,8–2,5, comme
+|D_d| (nœud) ∝ lr^2,1 à x fixé. Non testé : mécanisme, autre eps/lr, réseau complet.
+
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

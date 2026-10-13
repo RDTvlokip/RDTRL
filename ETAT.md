@@ -1,6 +1,35 @@
 # État du projet RDTRL — où on en est
 
-## Tour 64 (vraie critique de dipankarsarkar, 08/10/2026) — LETTRE PRÊTE
+## Tour 65 (vraie critique de dipankarsarkar, 13/10/2026) — LETTRE PRÊTE
+
+**Lettre** : `docs/REPONSE_ORDRE65.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 64
+est partie (sa critique du tour 65 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 13/10/2026 (tour 65, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : « oui sur la tendance, non sur la raison » : invariance d'échelle d'Adam (lr, eps,
+déplacement) → c·(…) avec gradient linéaire ; √v ∝ lr en est la trace ; à eps/lr égal tous les
+rapports valent 2,5 et L est identique ; prédit que l'effondrement à x = 1e-13 est au même eps/lr
+(eps_on(0,02) = 0,4·eps_on(0,05), 60 %, ±20 %). **Tous ses chiffres vérifiés** ; symétrie exacte sur
+jouet 2D (5e-16), cassée par un terme quadratique. Ses « cinq paires » ne sont pas à eps/lr égal
+(1,04 à 2,5×) : mesuré en vraies paires à eps/lr égal.
+**Acquis (prédictions poussées avant les runs)** : seuil d'effondrement au même eps/lr à x = 1e-13 et
+1e-11 (6,0–6,3e-7 pour les deux lr : il avait raison, mon intervalle 0,5–1 est manqué) ; à x = 1e-9 faux
+(lr 0,05 : 7e-7 ; lr 0,02 : aucun jusqu'à 5e-6) ; pas d'état r > 1 à x = 1e-13 (r max 0,78–0,88), mais
+nombreux à x ≥ 1e-8 (r = 1,36 / 3,43 / 6,92, 0/16 effondrées) ; à eps/lr égal et r > 1 : sd ratio
+2,9–3,9, |D_d| (nœud) ratio 7,0–7,7 (x fixé) ou 4,1–4,5 (x mis à l'échelle), pas 2,5 ; le tilt
+D_r/D_d (nœud) est le même pour les deux lr à 1–3 % ; paires à x = 1e-13 : sd 2,56 et |D_d| 2,504 seulement
+au sommet (eps/lr 5,2e-7), tilt faux d'un facteur 2,3, sd 3,4–3,9 en dessous ; coupure en x à eps/lr 8e-7 :
+rapport 0,10–0,20 (pas 0,4), POST HOC compatible avec lr². **Mes ratés** : P65-4, 5, 6, 8, 9, 11, 12, 15 ;
+P65-3 à moitié.
+**Limites** : réduction seule, un code (mur 23), un seul eps/lr pour la coupure en x, mécanisme non
+dérivé.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 65 ; attendre sa réponse (question : coupure en x ∝ lr² ? oui/non).
+2. Pourquoi sd ∝ lr^1,2–1,5 à eps/lr égal pour r > 1 alors que √v ∝ lr exactement ; pourquoi
+   |D_d| ∝ lr² à x fixé ; autre eps/lr pour x_c ; réseau complet.
+
+## Tour 64 (vraie critique de dipankarsarkar, 08/10/2026) — LETTRE PARTIE
 
 **Lettre** : `docs/REPONSE_ORDRE64.md` (gitignorée), PRÊTE À ENVOYER, première
 personne. La lettre 63 est partie (sa critique du tour 64 y répond) et reste figée.
