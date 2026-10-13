@@ -18368,6 +18368,14 @@ prédites x_c ∈ [1,96 ; 2,61]e-9 (lr 0,05 eps 5e-8), [2,28 ; 3,03]e-10 (lr 0,0
 1,4e-10 (dans le même ordre). Mise : 55 % que les huit soient justes. (Le tour 63 avait lr 0,05,
 eps 1e-7 effondré à x = 1e-9 et 1e-10 : cohérent, 1e-9 < 1,12e-9.)
 
+**Résultat : P66-9 ✗.** Les huit états sont effondrés (16/16 chacun), y compris les quatre prédits
+stables (3,6e-9 ; 4,2e-10 ; 2,1e-9 ; 1,4e-10). Les coupures à eps/lr ≥ 1e-6 sont plus hautes que le
+critère k·sd : lr 0,05 eps 5e-8 entre 3,6e-9 et 1e-8 (0/16 à 1e-8, tour 65), eps 1e-7 entre 2,1e-9 et 1e-8 ;
+lr 0,02 eps 2e-8 entre 4,2e-10 et 1e-9, eps 4e-8 entre 1,4e-10 et 1e-9. **H66-8 réfutée hors de l'eps/lr
+où elle a été lue** : à eps/lr ≥ 1e-6, D_d > 0 est plus grand (+2,1e-6 et +3,6e-6 à x = 1e-8 pour lr 0,05),
+et un critère qui l'ignore sous-estime la coupure. Une forme (écart − D_d)/sd ne se teste pas sans D_d
+mesuré au x de la coupure (D_d dépend de x) : non fait.
+
 Réponse dans `docs/REPONSE_ORDRE66.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

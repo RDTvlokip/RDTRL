@@ -1,8 +1,36 @@
 # État du projet RDTRL — où on en est
 
-## Tour 65 (vraie critique de dipankarsarkar, 13/10/2026) — LETTRE PRÊTE
+## Tour 66 (vraie critique de dipankarsarkar, 13/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE65.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 64
+**Lettre** : `docs/REPONSE_ORDRE66.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 65
+est partie (sa critique du tour 66 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 13/10/2026 (tour 66, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : symétrie exacte du pli (lr, eps, x, d) → (c lr, c² eps, c² x, c d) ; √v_e3 ∝ lr et
+l'ordre en x contredisent un pli 1-D ; la coordonnée des salves voit une force linéaire indépendante
+de x. Test : lr 0,02, eps et x × 0,16 ; a priori 25 % que √v lise 6,25. Question : quelle coordonnée
+porte le pli ?
+**Acquis (prédictions poussées avant chaque run)** : symétrie vérifiée sur la forme normale (5e-16),
+ses 54 % / 58 % non reproductibles sans ses paramètres. **Jacobien de la réduction : pli = mode mou
+sur z3 (99,1 %), ∝ √x ; mode raide sur u (99,1 %), J_uu = −1,12e-4 indépendant de x.** Paire du pli :
+√v 1,89–2,45 (pas 6,25), sd, |D_d| et coupure faux, tilt inchangé. **Les salves = bord de stabilité
+d'Adam sur u** : √v_e3/√v_l3 = 0,1329–0,1339 = J_zu/|J_uu| (0,1341) ; S = lr·2|J_uu|/(√v_l3+eps) =
+31,5–35,2 pour 38 ; à β1 = 0,8 S = 16,0 (seuil 18), à 0,95 S = 75,3 (seuil 78). Signe de D_d : fixé par
+eps/lr (zéro à 6,20e-7 et 6,11e-7 à x = 1e-8 = seuil d'effondrement à x = 1e-13) ; écart nœud–col
+0,2213 √x. **Mes ratés** : P66-1 (A, C sous 2,2), P66-7 (τ ne fixe pas le signe), P66-9 (critère
+écart < k·sd faux hors de l'eps/lr où il a été lu).
+**Limites** : réduction seule, un code, S/seuil ≠ 1 non dérivé, mécanisme du déplacement non dérivé,
+effondrements à β1 0,8 / 0,95 non expliqués.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 66 ; question : le zéro de D_d est-il à eps/lr fixe indépendant de lr dans son
+   image du pli ? (oui/non).
+2. Mesurer D_d au x de la coupure pour un critère d'effondrement qui inclut D_d ; dériver S/38 ;
+   vérifier le bord de stabilité sur u dans le réseau complet (√v des logits récepteurs).
+
+## Tour 65 (vraie critique de dipankarsarkar, 13/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE65.md` (gitignorée), partie, figée. La lettre 64
 est partie (sa critique du tour 65 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 13/10/2026 (tour 65, PAS simulée) », avant « ## 9. ».
 
