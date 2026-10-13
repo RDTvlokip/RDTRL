@@ -219,6 +219,13 @@ The exchange, including the errors it caught, is recorded in
 
 ---
 
+## Contact
+
+To reach the author, open an issue on this repository or use [rdtvlokip.fr](https://rdtvlokip.fr).
+The author email address stored in the commits made before 13 October 2026 is not a contact
+channel: it is part of the git history, not an invitation to write. Commercial or automated
+outreach sent to addresses harvested from commits will not be answered.
+
 ## License
 
 [MIT](LICENSE) — use, modify and redistribute freely, including for reproduction of these
