@@ -21,13 +21,15 @@ from hasard_reduction_tour59 import base_state
 from verifier_tour61_decomposition_d3 import PLI, d3_noeud, r4_noeud, pente_fn
 
 mp.dps = 60
-OFF = "-1e-13"
+import os
+OFF = os.environ.get("TOUR65_OFF", "-1e-13")  # tour 65 : decalage au pli ; defaut du tour 64
 
 if __name__ == "__main__":
     ks = [int(a) for a in np.random.default_rng(7).integers(0, 4444, 16)]
     s1 = base_state()
     d3_pli = float(d3_noeud(PLI - mpf("1e-30"))); r4_pli = float(r4_noeud(PLI - mpf("1e-30")))
     delta = float(PLI + mpf(OFF))
+    d3_nd = float(d3_noeud(PLI + mpf(OFF))); r4_nd = float(r4_noeud(PLI + mpf(OFF)))  # tour 65 : reference = noeud au delta mesure
     sl3, sl4 = pente_fn(d3_noeud, PLI + mpf(OFF)), pente_fn(r4_noeud, PLI + mpf(OFF))
     rho = sl4 / sl3
     print("lr     eps      sd_d3        |D_d|        L         med sqrt(v_e3)   moy sqrt(v_e3)   med sqrt(v_l3)   r_med=eps/sqrt(v)  gain=lr/sqrt(v)   vo3/ve3   ech.")
@@ -37,6 +39,7 @@ if __name__ == "__main__":
         eps = float(eps)
         rng = np.random.default_rng(11)
         sd, Dd, Dr, vm, vmean, vl, ratio_o, esc = [], [], [], [], [], [], [], 0
+        Dn, Drn = [], []
         for k in ks:
             w = redlib.copie(s1)
             redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=eps, cross=2.0, stop=False)
@@ -49,10 +52,11 @@ if __name__ == "__main__":
                 continue
             ex = 26.0 * np.exp(-rec[:, 1]); d3 = ex / (1.0 + ex)
             r4 = 1.0 / (1.0 + np.exp(rec[:, 2]) + w["Se"])
-            sd.append(d3.std()); Dd.append(np.median(d3) - d3_pli); Dr.append(np.median(r4) - r4_pli)
+            sd.append(d3.std()); Dd.append(np.median(d3) - d3_pli); Dr.append(np.median(r4) - r4_pli); Dn.append(np.median(d3) - d3_nd); Drn.append(np.median(r4) - r4_nd)
             vm.append(np.median(rec[:, 3])); vmean.append(rec[:, 3].mean()); vl.append(np.median(rec[:, 4]))
             ratio_o.append(np.sqrt(w["v"][1]) / np.sqrt(w["v"][0]))
         sd, Dd, Dr, vm, vmean, vl = map(np.array, (sd, Dd, Dr, vm, vmean, vl))
         L = (Dr.mean() / Dd.mean()) / rho
         print(f"{lr:5s} {eps:7.0e}  {sd.mean():.4e}  {abs(Dd.mean()):.4e}  {L:.5f}   {vm.mean():.4e}      {vmean.mean():.4e}      {vl.mean():.4e}      "
-              f"{eps / vm.mean():.4e}        {float(lr) / vm.mean():.4e}     {np.mean(ratio_o):.4f}   {esc}", flush=True)
+              f"{eps / vm.mean():.4e}        {float(lr) / vm.mean():.4e}     {np.mean(ratio_o):.4f}   {esc}   "
+              f"D_d(noeud) {np.mean(Dn):+.4e}  D_r(noeud) {np.mean(Drn):+.4e}", flush=True)

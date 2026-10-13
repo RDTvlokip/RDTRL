@@ -27,13 +27,15 @@ if __name__ == "__main__":
     redlib = importlib.import_module("reduction_numba_tour59" if lr == "0.05" else "reduction_numba_tour63_lr002")
     for eps in map(float, sys.argv[3:]):
         rng = np.random.default_rng(11)
-        avant = apres = 0
+        avant = apres = chauffe = 0
         premiers = []
         for k in ks:
             w = redlib.copie(s1)
-            redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=eps, cross=2.0, stop=False)
+            _, mxw, _, _ = redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=eps, cross=2.0, stop=False)
             w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
             _, mx0, _, _ = redlib.avancer_obs(w, delta, 10000, np.zeros((1, 7)), eps=eps)
+            if mxw > 0.9:
+                chauffe += 1
             if mx0 > 0.9:
                 avant += 1
                 continue
@@ -42,5 +44,5 @@ if __name__ == "__main__":
             if maxrb > 0.9:
                 apres += 1
                 premiers.append(first)
-        print(f"lr {lr} x {x} eps {eps:9.3e}  eps/lr {eps / float(lr):9.3e}  effondrees avant mesure {avant:2d} / pendant {apres:2d}  / 16 (total {avant + apres:2d})"
+        print(f"lr {lr} x {x} eps {eps:9.3e}  eps/lr {eps / float(lr):9.3e}  effondrees avant mesure {avant:2d} (dont deja pendant la chauffe a pli-1e-6 : {chauffe:2d}) / pendant {apres:2d}  / 16 (total {avant + apres:2d})"
               f"  premier pas median {np.median(premiers) if premiers else float('nan'):.0f}", flush=True)

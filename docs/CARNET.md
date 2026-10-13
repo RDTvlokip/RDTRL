@@ -18085,6 +18085,51 @@ lr 0,05 et lr 0,02 (donc eps_on(0,02) = 0,4 × eps_on(0,05)) ? Son a priori : 60
   mesuré (2,6e-8, r = 0,64) et le seuil, où r = eps/√v(e3) dépasse 1 sans effondrement. Mise : 45 %
   (c'est la condition pour que sa question « a reste à 1 pour r > 1 » ait un état).
 
+**Résultats (13/10) des runs précommis (`verifier_tour64_gain_et_r.py` pour les paires,
+`verifier_tour65_seuil_effondrement.py` pour le seuil ; réduction, 16 phases × 2e6 pas) :**
+```
+paires à eps/lr égal exact, x = 1e-13  (lr 0,05 | lr 0,02)
+eps/lr    sd ratio   √v ratio   |D_d| ratio   1-L (0,05 | 0,02)
+2,0e-9    3,414      2,470      1,051         0,0320 | 0,0335
+2,0e-8    3,656      2,479      1,202         0,0338 | 0,0368
+6,0e-8    3,883      2,486      1,463         0,0441 | 0,0380
+2,0e-7    3,625      2,492      1,979         0,0501 | 0,0299
+5,2e-7    2,562      2,495      2,504         0,0276 | 0,0122
+seuil d'effondrement (≥ 8 phases sur 16), eps/lr, lr 0,05 | lr 0,02
+x = 1e-13  entre 6,0e-7 et 6,3e-7 | entre 6,0e-7 et 6,3e-7  (15/16 et 16/16 à 6,3e-7)
+x = 1e-11  entre 6,0e-7 et 6,3e-7 (15/16 à 6,3e-7) | 6,3e-7 (16/16)
+x = 1e-9   entre 6,9e-7 et 7,3e-7 | aucun jusqu'à 5e-6 (0/16 à eps 1e-7)
+x = 1e-8, 1e-7  lr 0,05 : aucun jusqu'à eps 1e-7 (eps/lr 2e-6)
+```
+- **P65-4 réfutée, H65-3 (la sienne) confirmée à x = 1e-13** : le seuil est au même eps/lr à 5 %
+  près (grille de pas 1,05), donc eps_on(0,02) = 0,4·eps_on(0,05) ; mon intervalle [0,5 ; 1,0]
+  est manqué. H65-4 et H65-5 (les miennes) réfutées à x = 1e-13.
+- **P65-5 réfutée** (≥ 1,5 attendu, 1,16 mesuré pour lr 0,05 entre x = 1e-13 et 1e-9) ; mais
+  l'effondrement dépend bien de x, autrement : à x = 1e-9 le seuil de lr 0,02 disparaît (0/16 jusqu'à
+  eps/lr 5e-6) alors que celui de lr 0,05 est à 7e-7 ; à x ≥ 1e-8 lr 0,05 ne s'effondre plus
+  jusqu'à eps 1e-7. Le seuil à x = 1e-13 n'est donc pas une propriété d'eps/lr seul : la symétrie
+  est vraie à x = 1e-13 et fausse à x = 1e-9, ce que sa prémisse (x mis à l'échelle aussi) annonce.
+- **P65-1 ✓** (paire du haut : sd 2,562 dans [2,3 ; 2,7] ; 1−L 0,0276 | 0,0122, écart de L 0,0154 >
+  0,008 : le pli casse la symétrie du tilt). **P65-2 ✓** (paire du bas : sd 3,414 > 2,9 ; prédit
+  3,1). **P65-3 ✗ en partie** : |D_d| va de 1,05 (bas) à 2,504 (haut) : la partie « sans atteindre
+  2,5 » est fausse (2,504), à la paire exacte D_d obéit à l'échelle à 0,2 %, mieux que sd (2,5 %).
+  Son « D_d en dernier à obéir » est faux dans la réduction ; ce qui n'obéit pas est le tilt.
+- **P65-6 ✗ à x = 1e-13** : le plus grand r sans effondrement est 0,78–0,88 (lr 0,05 x = 1e-9,
+  eps 3,45e-8 : r = 0,876 ; lr 0,02 eps 1,38e-8 : 0,876). Mais au x où le seuil disparaît il y a
+  des états à r > 1 : lr 0,02, x = 1e-9, r = 1,36 / 2,27 / 3,42 / 6,92 (eps 2, 3, 4, 6e-8), sd 7,2e-7
+  → 2,3e-7, 0/16 effondrées (D_d de ces lignes mesuré contre le pli, donc pollué par le déplacement
+  du nœud à x = 1e-9 : non lisible).
+- Aussi : sd obéit à 2,5 de façon non monotone en eps/lr (3,41 ; 3,66 ; 3,88 ; 3,63 ; 2,56).
+
+**Prédictions précommises (13/10), second lot, avant les runs : paires à eps/lr égal à r > 1,
+x = 1e-8 (lr 0,05 : eps 5e-8, 1e-7, 1,5e-7 ; lr 0,02 : eps 2e-8, 4e-8, 6e-8 ; D mesurés contre le
+nœud au δ mesuré, nouvelles colonnes de `verifier_tour64_gain_et_r.py`) :**
+- P65-7 : aucune phase effondrée dans les 6 états. Mise : 80 %.
+- P65-8 : rapport sd (0,05/0,02) dans [2,3 ; 2,7] pour les trois paires. Mise : 60 %.
+- P65-9 : rapport |D_d| (nœud) dans [2,1 ; 2,9] pour les trois paires (son « a = 1 »). Mise : 50 %.
+- P65-10 : rapport D_r/D_d (nœud) des deux lr à 15 % de 1 pour les trois paires (son « L identique »).
+  Mise : 45 %.
+
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
