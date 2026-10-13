@@ -18185,6 +18185,14 @@ disparaît ; lr 0,05 : 6,0–6,3e-7 (1e-13), 6,3e-7 (1e-11), 6,9–7,3e-7 (1e-9)
 seuil : le seuil de lr 0,02 à x = 4e-10 est dans ±5 % de celui de lr 0,05 à x = 1e-9 (6,9–7,3e-7).
 Mise : 50 %. Mesure : lr 0,02, x = 4e-10, eps/lr 6,9 / 7,1 / 7,3 / 7,5 / 7,7 / 8,0e-7.
 
+**Résultat du cinquième lot : P65-15 ✗** — lr 0,02 à x = 4e-10 : aucun seuil jusqu'à 8,0e-7 (0/16 aux
+six eps), alors que lr 0,05 à x = 1e-9 s'effondre à 7,1e-7 ; à 3e-10 lr 0,02 s'effondrait à 8,0e-7. Le
+seuil de lr 0,02 disparaît donc entre x = 3e-10 et 4e-10 (à eps/lr 8e-7), celui de lr 0,05 entre
+1e-9 et 1e-8. **Prédiction précommise, sixième lot :** à eps/lr 8e-7 (lr 0,05, eps 4e-8), la
+coupure en x de lr 0,05 est entre 1,2e-9 et 1e-8, donc le rapport des coupures x_c(0,02)/x_c(0,05) est
+sous 0,33 (< 0,4 de plus de 15 %), pas égal à 0,4. Mise : 70 %. Mesure : x = 1,2e-9, 1,5e-9, 2e-9,
+3e-9, 5e-9.
+
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
