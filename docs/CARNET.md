@@ -18177,6 +18177,14 @@ mis à l'échelle) :**
 - P65-14 : lr 0,02 à x = 1e-10 : seuil entre 6,3e-7 et 7e-7 (le seuil quitte 6,1e-7 entre x = 1e-11
   et 1e-9 de façon continue). Mise : 40 %.
 
+**Résultats du quatrième lot (seuil lr 0,02, eps/lr) :** x = 1e-13 : 6,0–6,3e-7 ; 1e-11 : 6,3e-7 ;
+1e-10 : 6,6–6,9e-7 ; 3e-10 : 7,3–8,0e-7 ; 1e-9 et 4e-9 : aucun (0/16 jusqu'à 3e-6 à 4e-9). **P65-13 ✓,
+P65-14 ✓** (6,6–6,9e-7 dans [6,3 ; 7,0]e-7). Le seuil de lr 0,02 monte donc continûment avec x puis
+disparaît ; lr 0,05 : 6,0–6,3e-7 (1e-13), 6,3e-7 (1e-11), 6,9–7,3e-7 (1e-9), aucun à 1e-8.
+**Prédiction précommise (13/10), cinquième lot :** la symétrie complète (x mis à l'échelle) pour le
+seuil : le seuil de lr 0,02 à x = 4e-10 est dans ±5 % de celui de lr 0,05 à x = 1e-9 (6,9–7,3e-7).
+Mise : 50 %. Mesure : lr 0,02, x = 4e-10, eps/lr 6,9 / 7,1 / 7,3 / 7,5 / 7,7 / 8,0e-7.
+
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
