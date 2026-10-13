@@ -18260,6 +18260,43 @@ B (1e-8, 1e-13 | 1,6e-9, 1,6e-14) ; C (5e-8, 1e-8 | 8e-9, 1,6e-9) ; D (1e-9, 1e-
 - P66-5 : coupure en x au même eps (sa prédiction 0,16) : lr 0,02 eps 6,4e-9 ne s'effondre pas même à
   x = 1e-13 (eps/lr 3,2e-7 < 6e-7), donc pas de coupure à 0,16 × (2–3e-9). Mise : 85 %.
 
+**Résultats (13/10) :**
+```
+paire  lr    eps       x         sd_d3      sd_u      D_d(noeud)  D_r/D_d  √v_e3      √v_l3      √v_e3/√v_l3  S
+A      0,05  1,0e-7    1e-8      1,591e-6   1,91e-3   +3,618e-6   7,025    2,913e-8   2,179e-7   0,1337       35,24
+A      0,02  1,6e-8    1,6e-9    8,170e-7   9,90e-4   +4,904e-7   7,112    1,539e-8   1,150e-7   0,1339       34,22
+C      0,05  5,0e-8    1e-8      2,102e-6   2,38e-3   +2,065e-6   6,737    3,677e-8   2,752e-7   0,1336       34,46
+C      0,02  8,0e-9    1,6e-9    1,196e-6   1,06e-3   -7,434e-7   6,956    1,676e-8   1,252e-7   0,1338       33,64
+B      0,05  1,0e-8    1e-13     6,367e-6   2,76e-3   -8,597e-6   7,084    4,372e-8   3,272e-7   0,1336       33,22
+B      0,02  1,6e-9    1,6e-14   2,796e-6   1,13e-3   -5,475e-6   7,185    1,816e-8   1,357e-7   0,1338       32,63
+D      0,05  1,0e-9    1e-11     1,741e-5   2,94e-3   -6,811e-6   7,194    4,651e-8   3,500e-7   0,1329       31,92
+D      0,02  1,6e-10   1,6e-12   5,748e-6   1,16e-3   -5,751e-6   7,189    1,901e-8   1,422e-7   0,1337       31,48
+rapports (0,05/0,02)  √v_e3 : A 1,89  C 2,19  B 2,41  D 2,45 ;  sd : 1,95  1,76  2,28  3,03 ;
+|D_d| : 7,38  (signe opposé)  1,57  1,18 ;  tilt : 0,988  0,969  0,986  1,001
+coupure : lr 0,02 eps 6,4e-9 : 0/16 à x = 1e-13 et 0/16 à 4e-10
+```
+- **P66-1 ✗ en partie** : jamais près de 6,25 (✓), mais A (1,89) et C (2,19) sous 2,2. Explication
+  par H66-3, après coup mais sans paramètre libre : √v_l3 = lr·2|J_uu|/S − eps ; avec S ≈ 34,
+  lr 0,05 eps 1e-7 → 2,29e-7 (mesuré 2,18e-7), lr 0,02 eps 1,6e-8 → 1,16e-7 (1,15e-7), rapport
+  1,97 contre 1,89 mesuré : l'écart à 2,5 vient du « − eps », que la paire du pli ne met pas à
+  l'échelle par c.
+- **P66-2 ✓** (0,1329–0,1339 dans les huit états ; J_zu/|J_uu| = 0,1341). **P66-3 ✓** (S = 31,5–35,2,
+  83–93 % de 38 ; S monte avec eps/lr). **P66-4 ✓** (sd 1,76–3,03). **P66-5 ✓** (pas
+  d'effondrement : sa coupure à 0,16 n'existe pas).
+- Ses prédictions « pli » : √v 6,25 ✗, sd 2,5 ✗, |D_d| 2,5 ✗ (7,4 ; signe opposé ; 1,57 ; 1,18),
+  tilt inchangé ✓ (à 1–3 %), coupure à 0,16 ✗.
+- Vérification directe de « qui fait le gradient de e3 » : |J_zu|·sd_u = 1,502e-5 × 2,76e-3 = 4,1e-8
+  contre √v_e3 = 4,37e-8 (B, lr 0,05) ; |J_uu|·sd_u = 3,09e-7 contre √v_l3 = 3,27e-7. Le gradient
+  de e3 est dominé par les fluctuations de u (le mode raide), pas par z3 lui-même
+  (k3·sd_z3, sd_z3 = sd_d3/d3 ≈ 2,3e-3 → 4,7e-9, dix fois moins).
+
+**Prédiction précommise (13/10), test qui distingue H66-3 : changer β1** (modules
+`reduction_numba_tour66_b1_08.py` et `_b1_095.py`, lr 0,05). Si les salves sont le bord de
+stabilité d'Adam sur le mode raide, S suit 2(1+β1)/(1−β1) : 18 (β1 = 0,8), 38 (0,9), 78 (0,95).
+- P66-6 : à β1 = 0,8, S entre 13 et 18 ; à β1 = 0,95, S entre 60 et 78 (même fraction 0,83–0,93 du
+  seuil, à ±10 %), pour les états (eps 1e-8, x 1e-13) et (eps 1e-7, x 1e-8). √v_e3/√v_l3 reste
+  0,134 ± 0,004. Mise : 60 %. Ce qui la réfuterait : S indépendant de β1 (≈ 33).
+
 Réponse dans `docs/REPONSE_ORDRE66.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

@@ -11,6 +11,7 @@ raide, 0,1341), et le nombre de bord de stabilite S = lr * 2 |J_uu| / (mediane s
 """
 
 import importlib
+import os
 import sys
 import numpy as np
 from mpmath import mp, mpf
@@ -28,7 +29,9 @@ if __name__ == "__main__":
     print("lr    eps       x         sd_d3       sd_u        D_d(noeud)   D_r(noeud)   tilt     med sv_e3   med sv_l3   sv_e3/sv_l3   S      ech.")
     for arg in sys.argv[1:]:
         lr, eps, x = arg.split(":")
-        redlib = importlib.import_module("reduction_numba_tour59" if lr == "0.05" else "reduction_numba_tour63_lr002")
+        redlib = importlib.import_module(os.environ.get("TOUR66_REDLIB") or ("reduction_numba_tour59" if lr == "0.05" else "reduction_numba_tour63_lr002"))
+        if redlib.LR != float(lr):
+            raise SystemExit(f"le module {redlib.__name__} a LR = {redlib.LR}, pas {lr}")
         epsf = float(eps)
         delta = float(PLI - mpf(x))
         d3n = float(d3_noeud(PLI - mpf(x))); r4n = float(r4_noeud(PLI - mpf(x)))
