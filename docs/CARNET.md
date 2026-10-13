@@ -18297,6 +18297,42 @@ stabilité d'Adam sur le mode raide, S suit 2(1+β1)/(1−β1) : 18 (β1 = 0,8),
   seuil, à ±10 %), pour les états (eps 1e-8, x 1e-13) et (eps 1e-7, x 1e-8). √v_e3/√v_l3 reste
   0,134 ± 0,004. Mise : 60 %. Ce qui la réfuterait : S indépendant de β1 (≈ 33).
 
+**Résultat :**
+```
+β1     seuil 2(1+β1)/(1-β1)   état (eps, x)     S       S/seuil   √v_e3/√v_l3   sd_d3       √v_l3
+0,8    18                     1e-8, 1e-13       15,99   0,89      0,1328        1,884e-5    6,906e-7
+0,8    18                     1e-7, 1e-8        16/16 effondrées
+0,9    38                     1e-8, 1e-13       33,22   0,87      0,1336        6,367e-6    3,272e-7
+0,9    38                     1e-7, 1e-8        35,24   0,93      0,1337        1,591e-6    2,179e-7
+0,95   78                     1e-8, 1e-13       16/16 effondrées
+0,95   78                     1e-7, 1e-8        75,26   0,965     0,1335        1,465e-7    4,886e-8
+```
+**P66-6 ✓** sur les deux états mesurables (16,0 dans [13 ; 18], 75,3 dans [60 ; 78]) ; deux des quatre
+états s'effondrent (non prédit, non expliqué). S suit le seuil de momentum d'Adam sur un facteur 4,3
+(18 → 78) ; le rapport √v_e3/√v_l3 ne bouge pas (0,1328–0,1337). **H66-3 confirmée** : les salves sont le
+bord de stabilité d'Adam sur le mode raide (u), pas une dynamique du pli. Ce qui la ferait basculer :
+un autre mécanisme qui donne aussi √v ∝ lr·|J_uu|·(1−β1)/(1+β1) (par exemple un effet de la
+moyenne de m sans bord de stabilité) ; et S/seuil n'est pas 1 (0,87–0,965, croissant avec eps/lr et
+β1) : non dérivé.
+
+| H66-1 symétrie exacte du pli (c lr, c² eps, c² x, c d) | 13/10 (lui) | **confirmée** sur la forme normale (5e-16) ; ses 54 % / 58 % non reproduits (paramètres de base non donnés) |
+| H66-2 la coordonnée des salves voit une force linéaire indépendante de x | 13/10 (lui) | **confirmée** : c'est u (J_uu = −1,12e-4, variation < 0,1 % entre x = 1e-13 et 1e-8) |
+| H66-3 salves = bord de stabilité d'Adam sur le mode raide ; √v_e3 = 0,134 √v_l3 | 13/10 (moi) | **confirmée** (huit états à β1 = 0,9, deux à β1 = 0,8 et 0,95) |
+| H66-4 la variable d'eps pertinente est eps/√v_l3 | 13/10 (moi) | **soutenue** (√v_l3 = lr·2|J_uu|/S − eps explique les rapports 1,89 / 2,19) ; non testée sur le seuil d'effondrement |
+| Ses prédictions « pli » pour la paire (√v 6,25, sd 2,5, |D_d| 2,5, coupure 0,16) | 13/10 (lui) | **réfutées** ; tilt inchangé **confirmé** |
+
+**Observation POST HOC (`verifier_tour66_temps_mou.py`, 10 lignes déjà mesurées) :** temps de
+relaxation du mode mou en pas d'Adam, τ = √v_e3 / (2 lr |λ_mou|) (|λ_mou| ∝ √x, contrôle 7,34e-9 contre
+7,29e-9 calculé à 1e-8). D_d (nœud) est négatif pour τ = 48 933, 18 844, 5 121, 2 005, 143 et positif
+pour τ = 131, 79, 50, 50, 40. La frontière (131–143) repose sur deux lignes au même x (1,6e-9), qui ne
+diffèrent que par eps : elle peut aussi bien être un effet d'eps. Comme √v ∝ lr, τ ne dépend presque
+que de x et de eps. H66-6 (moi, non standard) : le signe du déplacement est fixé par l'ordre des
+échelles de temps, le pli plus lent que ~140 pas (il voit les salves comme un bruit rapide : D_d < 0)
+ou plus rapide (il les suit adiabatiquement : D_d > 0).
+**Prédiction précommise (13/10) :** lr 0,05 eps 1e-8 et lr 0,02 eps 4e-9 (même eps/lr 2e-7), à
+x = 3,9e-10 (τ ≈ 300 : D_d < 0) et x = 3,6e-9 (τ ≈ 100 : D_d > 0), quatre états. P66-7 : les quatre
+signes comme prédit. Mise : 60 %.
+
 Réponse dans `docs/REPONSE_ORDRE66.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
