@@ -18547,6 +18547,16 @@ salves à eps 1e-6) ; je n'en connais pas l'origine. S'il est retiré (à +1,0e-
 **Prédiction précommise (14/10) :** le terme lr-indépendant est-il un transitoire ? lr 0,005, x = 1e-8,
 eps/lr = 6,0e-7 avec 200 000 pas de mise en place au lieu de 10 000 (variable `TOUR67_SETTLE`) : D_d
 reste à ±5 % de +9,20e-9. Mise : 80 %.
+**Résultat : P67-10 ✓** : +9,1997e-9 avec 200 000 pas de mise en place contre +9,1962e-9 avec 10 000 :
+ce n'est pas un transitoire (temps de relaxation du mode mou ≈ 50 pas).
+
+| H67-1 D_d = lr² G(eps/lr)/λ, zéro à eps/lr fixe | 14/10 (lui) | **soutenue en pente** (×3,9 ; ×6,4 ; ×3,8 pour 4 ; 6,25 ; 4) ; **le zéro seul n'est pas fixe** (5,76 ; 6,10 ; 6,20 ; 6,19e-7 pour lr 0,01 ; 0,02 ; 0,05 ; 0,1) à cause d'un terme lr-indépendant D0 ≈ +1,0 à +1,6e-8 ; fixe à 1 % si D0 est retiré |
+| H67-2 le signe de G vit dans l'asymétrie d'eps de 26 entre e3 et o3 | 14/10 (lui) | **confirmée dans la réduction** : avec eps[1] = eps/26 plus de zéro, D_d < 0 partout, sd_d3 ×4 ; reste à vérifier dans le réseau complet (26 coordonnées o3) |
+| H67-3 Kapitza | 14/10 (lui) | **non testée** |
+| H67-4 le zéro est monotone en lr, 1 à 4 % | 14/10 (moi) | **réfutée** (non monotone en haut, 8 % de dérive) |
+| H67-5 le zéro est à r fixe plutôt qu'à eps/lr fixe | 14/10 (moi) | **non tranchée** (r au zéro 0,72 à 0,78 ; non distinguée) |
+| D0 est une erreur de référence (nœud fermé contre point fixe propre) | 14/10 (moi, post hoc) | **réfutée** : le point fixe propre est SOUS le nœud fermé de 6,06e-13/√x |
+| D0 est un transitoire | 14/10 (moi) | **réfutée** (200 000 pas de mise en place : même D_d à 0,04 %) |
 
 Réponse dans `docs/REPONSE_ORDRE67.md`.
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

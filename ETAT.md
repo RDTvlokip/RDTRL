@@ -1,8 +1,36 @@
 # État du projet RDTRL — où on en est
 
-## Tour 66 (vraie critique de dipankarsarkar, 13/10/2026) — LETTRE PRÊTE
+## Tour 67 (vraie critique de dipankarsarkar, 14/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE66.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 65
+**Lettre** : `docs/REPONSE_ORDRE67.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 66
+est partie (sa critique du tour 67 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 14/10/2026 (tour 67, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : la raison est dans mon code : `g[1] = -ge3/C`, donc le pas sur z3 est
+lr m0 [1/(s+eps) + 1/(s+26 eps)] et D_d = lr² G(eps/lr)/λ, zéro de D_d à eps/lr fixe indépendant de lr ;
+3 prédictions (zéro à 5 % de 6,15e-7 pour lr 0,01 et 0,1 ; |D_d| lr 0,1/0,05 dans [3,6 ; 4,8] ;
+eps[1] = eps[0]/26 déplace le zéro, a priori 40 %). Il ne pouvait pas me rejouer (état de base hors dépôt).
+**Acquis (prédictions poussées avant les runs)** : sa lecture du code exacte (1e-16, 1e-11/1e-13) ;
+état de base exporté en JSON dans le dépôt (`etat_base_reduction_mur23.json`) ; pente de D_d en eps/lr ∝ lr²
+à 5 % ; zéros 5,757 / 6,104 / 6,199 / 6,186e-7 (lr 0,01 / 0,02 / 0,05 / 0,1), sa prédiction ✓ sauf lr 0,01 ;
+**D_d contient un terme lr-indépendant D0 ≈ +1,0 à +1,6e-8 à x = 1e-8 (∝ 1/√x, présent sans salves, pas un
+transitoire, pas une erreur de référence : le point fixe propre est SOUS le nœud fermé de 6,06e-13/√x)** ;
+avec D0 = +1,0e-8 retiré le zéro est fixe à 1,1 % ; eps[1] = eps/26 supprime le zéro (D_d < 0 partout,
+sd ×4) ; lr 0,1 s'effondre à eps/lr 1e-6, x = 1e-8. **Mes ratés** : P67-2 (test impossible), ordre monotone
+du zéro, D0 = erreur de référence (P67-8, P67-9), S inchangé sous eps[1].
+**Limites** : réduction seule (o3 = moyenne des 26 concurrents avec un seul v ; le réseau complet en a 26),
+un code, origine de D0 inconnue, G inconnue.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 67 ; question : D0 est-il une force résiduelle du code du gradient (oui/non).
+2. Trouver D0 : résidu de gradient de la réduction (comparer ge3, ge4, g[4] aux dérivées exactes de
+   l'objectif complet au point fixe ; Sed/Se constants dans la réduction contre l'objectif réel).
+3. Tester l'asymétrie d'eps (o3) dans le réseau complet avec AdamMasque (26 coordonnées).
+4. Séparer eps/lr fixe de r fixe (eps[1] ≠ eps[0] et √v_e3 déplacé).
+
+## Tour 66 (vraie critique de dipankarsarkar, 13/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE66.md` (gitignorée), partie, figée. La lettre 65
 est partie (sa critique du tour 66 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 13/10/2026 (tour 66, PAS simulée) », avant « ## 9. ».
 
