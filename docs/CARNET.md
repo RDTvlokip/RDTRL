@@ -18019,6 +18019,74 @@ seule, et r est mesuré par la médiane de √v (dominée par l'état calme).
 
 Réponse dans `docs/REPONSE_ORDRE64.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 13/10/2026 (tour 65, PAS simulée)
+
+Il répond « oui sur la tendance, non sur la raison » : mon a(r) monte parce que les salves
+deviennent linéaires, pas parce que alpha sature sur sd. Son argument : avec un gradient linéaire,
+Adam est exactement invariant par (lr, eps, déplacement) → (c·lr, c·eps, c·déplacement) ; ma
+« deux boutons n'en font qu'un » (√v ∝ lr, rapport 2,46–2,49 dans 5 paires) en est la trace.
+À eps/lr égal : tous les rapports d'échelle valent 2,5 et L est identique ; D_d est 10 % court et
+l'inclinaison 1−L à un facteur 2 (paire du haut), ce qu'il attribue à la non-linéarité du pli.
+Il doute d'un état « salvé » à r > 1 (lr 0,05, eps 1e-7 : r ≥ 2,45, jusqu'à 3,67) : l'effondrement
+vient avant. Test demandé : le seuil d'effondrement à x = 1e-13 est-il au même eps/lr pour
+lr 0,05 et lr 0,02 (donc eps_on(0,02) = 0,4 × eps_on(0,05)) ? Son a priori : 60 %, à 20 % près.
+
+**Vérification de ses chiffres (`verifier_tour65_arithmetique_et_invariance.py`) :**
+- À lr fixe 0,05, eps 1e-10 → 1e-8 : sd ÷ 3,455 (il dit 3,45), |D_d| × 1,419 (1,42) ✓.
+- Paire du haut : sd 2,508 (2,51), √v 2,485 (2,49), |D_d| 2,252 (2,25), 1−L 0,0276 | 0,0134 (×2,06),
+  √v/sd 0,01538 | 0,01552 ✓ ; son « sd à 0,3 % » : +0,33 % ✓.
+- r pour eps 1e-7 : 2,45 et 3,67 (extrapolation linéaire de √v en eps) ✓.
+- Invariance d'échelle d'Adam : exacte pour un gradient linéaire (écart 5e-16 sur 2 000 pas, jouet
+  2D), cassée dès 200 pas (4–5 %) avec un terme quadratique ✓. L'écart de 1 % à 20 000 pas dans le
+  cas linéaire est l'amplification chaotique de l'arrondi, pas une violation.
+- **Ce qui ne tient pas dans sa lecture :** (a) ses « cinq paires » ne sont PAS à eps/lr égal : le
+  rapport d'eps/lr entre les deux membres vaut 2,50, 1,33, 1,20, 1,33 et 1,04 ; seule la paire du
+  haut s'en approche (4 %) ; or √v ∝ lr à 2,46–2,49 y vaut aussi pour des eps/lr différents,
+  donc ce n'est pas un test de la symétrie mais la même observation que le tour 64 (√v presque
+  indépendant de eps/lr : 8 % sur trois décades). (b) Le « sd à 0,3 % » sur la paire du haut est
+  à 4 % d'écart en eps/lr, et d ln sd / d ln eps = −0,92 y pèse 3,7 % : la coïncidence à 0,3 %
+  n'est pas un test à 0,3 %. Les paires à eps/lr égal n'ont pas été mesurées : c'est le test (1).
+- Sa conséquence pour x : l'invariance ne vaut qu'avec x mis à l'échelle aussi ; x = 1e-13 est
+  fixe. Si le déplacement qui déclenche l'effondrement va comme lr·f(eps/lr) et f ~ q^p, le
+  rapport d'eps d'effondrement vaut 0,4·2,5^(1/p) : 1 pour p = 1, 0,63 pour p = 2, 0,4 seulement
+  si x suit l'échelle (ou si le critère ne dépend pas de x).
+
+**Hypothèses (13/10) :**
+- H65-1 (la sienne) la symétrie d'échelle, linéaire, fait que L, sd, D_d à eps/lr égal sont
+  identiques à 2,5 près : exacte pour un gradient linéaire (✓ jouet), à tester dans la réduction.
+- H65-2 (la sienne) a(r) monte parce que les salves deviennent linéaires (petite amplitude), pas
+  parce que alpha sature : non testée ; ce qui la distingue : à eps/lr égal, le rapport sd est 2,5
+  seulement quand l'amplitude est assez petite pour être linéaire (donc aux grands eps/lr).
+- H65-3 (la sienne) le seuil d'effondrement à x = 1e-13 est au même eps/lr : eps_on(0,02) =
+  0,4·eps_on(0,05) à 20 % près.
+- H65-4 (moi) l'effondrement dépend de x (distance au pli), pas seulement de eps/lr : le rapport
+  des eps d'effondrement est entre 0,5 et 1, pas dans [0,32 ; 0,48].
+- H65-5 (moi, non standard) l'effondrement est piloté par le décalage du pli effectif (tour 59 :
+  −5,5e-9 à eps 1e-7 contre x = 1e-13), qui est un déplacement en δ et non en d3 : il va comme eps
+  (pas comme eps/lr), donc le seuil en eps est le MÊME pour les deux lr (rapport ≈ 1).
+
+**Prédictions précommises (13/10), avant les runs. Réduction numba, mur 23, 16 phases × 2e6 pas
+(+ 10 000 de mise en place), mêmes ks que le tour 64 :**
+- P65-1 : paire du haut à eps/lr égal exact (lr 0,05 eps 2,6e-8 | lr 0,02 eps 1,04e-8) : rapport sd
+  entre 2,3 et 2,7 (symétrie ~ vraie), mais L diffère de plus de 0,008 (son « identique » faux
+  dans la réduction : le pli casse la symétrie). Mise : 65 %.
+- P65-2 : paire du bas à eps/lr égal (lr 0,05 eps 1e-10 | lr 0,02 eps 4e-11) : rapport sd au-dessus
+  de 2,9 (extrapolation de mes lignes lr 0,02 : sd(4e-11) ≈ 7,0e-6, donc rapport ≈ 3,1). La
+  symétrie ne tient pas à petit eps/lr. Mise : 70 %.
+- P65-3 : rapport des |D_d| à eps/lr égal croît avec eps/lr de ~1 (bas) à ~2,2 (haut), sans
+  atteindre 2,5 : |D_d| ne suit pas l'échelle linéaire. Mise : 60 %.
+- P65-4 : eps d'effondrement (définition : plus petit eps de la grille géométrique, pas ≤ 1,26,
+  où au moins 8 phases sur 16 s'effondrent, x = 1e-13) : le rapport eps_on(0,02)/eps_on(0,05) est
+  entre 0,5 et 1,0 ; il ne tombe pas dans [0,32 ; 0,48]. Mise : 65 %.
+- P65-5 : le seuil dépend de x : à x = 1e-9 le seuil en eps est différent de celui à x = 1e-13
+  d'au moins un facteur 1,5 pour lr 0,05 (tour 63 : 16/16 effondrées à eps 1e-7, x = 1e-9 et
+  1e-10). Mise : 50 %.
+- P65-6 : il existe, pour lr 0,05 à x = 1e-13, un eps entre l'état non effondré le plus haut
+  mesuré (2,6e-8, r = 0,64) et le seuil, où r = eps/√v(e3) dépasse 1 sans effondrement. Mise : 45 %
+  (c'est la condition pour que sa question « a reste à 1 pour r > 1 » ait un état).
+
+Réponse dans `docs/REPONSE_ORDRE65.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
