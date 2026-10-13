@@ -18445,7 +18445,43 @@ pas, x = 1e-8, grille fine eps/lr = 5,9 ; 6,0 ; 6,1 ; 6,2 ; 6,3 ; 6,4 ; 6,5e-7) 
 - P67-3 : eps[1] = eps[0]/26 (diviseur 26, lr 0,05, x = 1e-8, même grille élargie à 4,5–8,5e-7) : le
   zéro bouge de plus de 5 % ; mise : 60 % (lui 40 %). S et √v_l3 inchangés à 1 % (85 %) : o3 n'a pas
   de voie vers u.
+**Résultats (14/10), grille fine eps/lr = 5,9 … 6,5e-7, x = 1e-8, D_d contre le nœud, ES sur 16 phases
+≤ 1e-9 relatif (le zéro est donc précis ; l'ES entre phases ne porte pas l'incertitude) :**
+```
+lr     zéro de D_d (eps/lr)    S au zéro   D_d à 5,9e-7    D_d à 6,5e-7    pente dD/d(eps/lr)·1e-8 autour du zéro
+0,01   pas de zéro (D>0 dès 5,9e-7)  33,95   +3,35e-9       +1,564e-8       2,2e-9
+0,02   6,104e-7                33,98       -1,857e-8       +3,240e-8       8,6e-9
+0,05   6,199e-7                34,02       -1,704e-7       +1,632e-7       5,5e-8
+0,1    6,186e-7                34,16       -6,278e-7       +7,886e-7       2,1e-7
+```
+Pentes : ×3,9 (0,01→0,02), ×6,4 (0,02→0,05), ×3,8 (0,05→0,1) pour des rapports de lr² de 4, 6,25, 4 :
+**la pente de D_d en eps/lr va comme lr² à 5 % ✓ (sa loi)**. Mais le zéro n'est pas fixe : il descend
+à bas lr (extrapolation linéaire pour lr 0,01 : 5,75e-7, −6,5 % par rapport à 6,15e-7), et il n'est
+pas monotone en haut (6,199 à lr 0,05, 6,186 à lr 0,1, écart 0,2 %, plus grand que l'incertitude
+statistique). eps/lr égal, S égal à 0,1 % : l'écart de zéro ne vient pas de S.
+- **P67-1 (la sienne) ✓ pour lr 0,02, 0,05 et 0,1 (6,10 ; 6,20 ; 6,19e-7, à 1 % de 6,15) ; ✗ pour
+  lr 0,01 (pas de zéro sur la grille, extrapolé 6,5 % en dessous).** Ma part (monotone, écart total 1 à
+  4 %) **✗** (non monotone, 0,2 % au sommet ; écart total 8 % si l'extrapolation tient).
+- **P67-2 : le point de test (eps/lr 1e-6, x = 1e-8) est effondré pour lr 0,1 (16/16)**, alors que lr 0,05
+  y tient (tour 66) : le test n'a pas pu être fait comme précommis (« sans effondrement » ✗, 80 %).
+  Rapports de |D_d| (0,1/0,05) aux points qui tiennent : 5,44 (6,3e-7), 4,88 (6,4e-7), 4,83 (6,5e-7) ;
+  3,64–3,69 à 5,9–6,0e-7 (près du zéro : sans signification). POST HOC : 4,83–5,44 > 4,8.
+- **P67-3 ✓ (60 %) ; sa prior de 40 % est fausse** : eps[1] = eps[0]/26 (lr 0,05, x = 1e-8, grille
+  4,5e-7 → 1,2e-6) : D_d reste négatif partout (−1,24e-6 à −1,61e-6), pas de zéro, sd(d3) ×4 (9,6e-6
+  contre 2,3e-6 à 6,2e-7), |D_d| ×10 à 100. S : 32,8 contre 34,0 (−3,5 %), √v_l3 3,10e-7 contre 2,98e-7
+  (+4 %) : **l'autre moitié de P67-3 ✗** (je prévoyais S et √v_l3 inchangés à 1 %). Le changement
+  d'eps de o3 agit donc aussi sur u, par le couplage de z3 (sd_d3 ×4).
+
 Réponse dans `docs/REPONSE_ORDRE67.md`.
+
+**Prédictions précommises (14/10), second lot :** le zéro dépend de lr à bas lr (le D_d à bas lr a une
+partie qui ne va pas comme lr², positive).
+- P67-4 : lr 0,01, grille 5,3 … 5,85e-7 : zéro encadré, entre 5,6 et 5,9e-7. Mise : 70 %.
+- P67-5 : lr 0,005, grille 4,6 … 5,8e-7 (pas 1e-8) : zéro, strictement sous celui de lr 0,01. Mise : 70 %.
+- P67-6 : x = 1e-7, eps/lr = 1e-6 et 1,5e-6 : lr 0,05 et lr 0,1 sans effondrement (75 %) ; rapport
+  de |D_d| (nœud) lr 0,1 / lr 0,05 dans [4,2 ; 5,2] (55 %), car 4,83–5,44 aux points voisins
+  (post hoc), et à eps/lr = 1e-6 et 1,5e-6 en ordre croissant de lr (lr 0,01 contre 0,02 à x = 1e-8 :
+  rapport de |D_d| dans [3,0 ; 4,5], sous 4 : 55 %).
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
