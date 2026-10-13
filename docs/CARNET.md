@@ -18130,6 +18130,26 @@ nœud au δ mesuré, nouvelles colonnes de `verifier_tour64_gain_et_r.py`) :**
 - P65-10 : rapport D_r/D_d (nœud) des deux lr à 15 % de 1 pour les trois paires (son « L identique »).
   Mise : 45 %.
 
+**Résultats du second lot (x = 1e-8, D contre le nœud au δ mesuré) :**
+```
+eps/lr   r (0,05 | 0,02)   sd ratio   |D_d| noeud ratio   D_r/D_d noeud (0,05 | 0,02)   effondrées
+1,0e-6   1,360 | 1,359     2,934      7,35               6,737 | 6,608                    0 / 0
+2,0e-6   3,433 | 3,436     3,838      7,70               7,025 | 6,867                    0 / 0
+3,0e-6   6,921 | 6,935     3,944      6,98               7,088 | 6,994                    0 / 0
+```
+P65-7 ✓ (0/16 dans les six états). **P65-8 ✗** (sd 2,93 / 3,84 / 3,94, hors [2,3 ; 2,7]).
+**P65-9 ✗** (|D_d| nœud 7,0–7,7, hors [2,1 ; 2,9]). **P65-10 ✓** (le tilt D_r/D_d, à 2 % entre les
+deux lr, à r et eps/lr égaux ; ρ = 7,46). Le rapport 7 ≈ 2,5^2,1 : |D_d| va comme lr² ici (exposant
+local contre sd : 1,85 / 1,52 / 1,42), ni 1 (ma lecture et la sienne) ni 0 : à x fixé, les sd ne
+suivent pas non plus l'échelle (2,9–3,9), et x n'est pas mis à l'échelle.
+
+**Prédictions précommises (13/10), troisième lot : l'invariance complète, x mis à l'échelle aussi :
+lr 0,05 à x = 1e-8 (lot précédent) contre lr 0,02 à x = 4e-9 (c = 0,4), eps 2e-8, 4e-8, 6e-8.**
+- P65-11 : rapport sd dans [2,25 ; 2,75] pour les trois paires (symétrie complète). Mise : 50 %.
+- P65-12 : rapport |D_d| (nœud) dans [2,1 ; 2,9] pour les trois paires. Mise : 35 %. Si le rapport
+  reste autour de 7, le déplacement n'est pas lié à x par l'échelle linéaire et sa lecture
+  (D exact seulement dans la limite linéaire) ne couvre pas ces états.
+
 Réponse dans `docs/REPONSE_ORDRE65.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
