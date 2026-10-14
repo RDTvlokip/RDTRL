@@ -50,7 +50,16 @@ if __name__ == "__main__":
     ks = [int(a) for a in np.random.default_rng(7).integers(0, 4444, 16)]
     delta = float(PLI - mpf(x))
     d3n = float(d3_noeud(PLI - mpf(x)))
-    print(f"module {mod} (lr {lr}) x {x} eps_o3 = eps/{div:g}")
+    if os.environ.get("TOUR69_DELTA"):
+        # tour 69 : reference = point fixe propre de la reduction (g_l3 = g_l4, z4 a la valeur de base, queue Se, Sed gelee)
+        from verifier_tour68_point_fixe_gl3_gl4 import racine, d3_de
+        z4b = mpf(s1["x"][2]) - mpf(s1["x"][3])
+        u_f = racine(PLI - mpf(x), mpf(s1["Se"]), mpf(s1["Sed"]), "egal", z4b)
+        d3_f = float(d3_de(u_f, PLI - mpf(x), mpf(s1["Se"]))[0])
+        print(f"reference : point fixe g_l3 = g_l4 (z4 base) = {d3_f:.12e}, nœud fermé = {d3n:.12e}, decalage {d3_f - d3n:+.4e}")
+        d3n = d3_f
+    NREC = int(os.environ.get("TOUR69_REC", "2000000"))
+    print(f"module {mod} (lr {lr}) x {x} eps_o3 = eps/{div:g} ; pas enregistres {NREC} ; mise en place {os.environ.get('TOUR67_SETTLE', '10000')}")
     print("eps/lr     eps         D_d(noeud) +- ES       sd_d3       med sqrt(v_l3)   S       effondrees")
     Dphases, Dmean = [], []
     for q in qs:
@@ -63,8 +72,8 @@ if __name__ == "__main__":
             redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=e, cross=2.0, stop=False)
             w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
             redlib.avancer_obs(w, delta, int(os.environ.get("TOUR67_SETTLE", "10000")), np.zeros((1, 7)), eps=e)
-            rec = np.zeros((2_000_000, 7))
-            first, maxrb, rb, done = redlib.avancer_obs(w, delta, 2_000_000, rec, eps=e)
+            rec = np.zeros((NREC, 7))
+            first, maxrb, rb, done = redlib.avancer_obs(w, delta, NREC, rec, eps=e)
             if maxrb > 0.9:
                 esc += 1
                 continue

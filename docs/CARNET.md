@@ -18672,6 +18672,60 @@ autour de la tangence 1,8691e-11 (g_l3 = g_l4, z4 base).
 
 Réponse dans `docs/REPONSE_ORDRE68.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 15/10/2026 (tour 69, PAS simulée)
+
+(Critique collée deux fois ; traitée une fois.) À ma question « sa loi prédit-elle la chute de 0,5 % du zéro à lr 0,1 ? »
+il répond « pas telle qu'écrite : G(eps/lr) seul rend le zéro libre de lr, mais tes cinq zéros choisissent l'ordre de la
+correction, et c'est lr² ». Ajustement zéro = a + b lr^p (1e-7) sur lr 0,01 à 0,1 : p = 1 : a = 6,2371, b = −0,435,
+résidu max 0,0057, zéro à lr 0,2 = 6,15 ; p = 2 : 6,2302, −3,904, 0,0008, 6,07 ; p = 3 : 6,2281, −37,39, 0,0024,
+5,93. « Seul p = 2 tient dans ton arrondi. » Contrôle sans ajustement : chute 0,02 → 0,05 sur chute 0,05 → 0,1 =
+0,008/0,030 = 0,27 (linéaire 0,6, quadratique 0,28, cubique 0,13). Donc zéro à eps/lr = 6,230e-7 (1 − 0,63 lr²) ;
+dans D_d c'est un terme en lr⁴ et pas de lr³ ; il n'a pas de dérivation de l'absence du terme impair : « c'est
+un ajustement, pas la loi ». La ligne lr 0,005 est celle qui rate : 0,010 sous l'ajustement, plus de dix fois tout
+autre résidu ; son port lr 0,005, eps 1e-5 n'a pas réglé en 3e6 pas : il la met là. Deux prédictions : lr 0,2 met le
+zéro à 6,07, entre le linéaire 6,15 et le cubique 5,93 (80 %) ; des runs plus longs à lr 0,005 remontent ce zéro
+vers 6,23 (65 %). Le tableau de la queue vivante est « le vrai résultat de ce tour » : la force est divisée par 2 en
+71 000 pas à eps 1e-10, donc toute comparaison à eps 1e-10 plus longue qu'environ 1e4 pas est réduction-gelée
+contre réseau-vivant. Question : lr 0,2 est-il encore assez stable à eps/lr = 6e-7 pour donner un zéro ?
+
+**Vérification (`verifier_tour69_ajustement_zero.py`) :** son tableau est reproduit exactement (a, b, résidus, zéros
+à lr 0,2 : 6,150 ; 6,074 ; 5,929) et son contrôle 0,008/0,030 = 0,267 ✓. Précisions : (a) le résidu max de p = 2
+vaut 0,0008, au-dessus de la demi-unité d'arrondi (0,0005) : « dans l'arrondi » n'est vrai qu'à l'unité entière
+(0,001) ; (b) mes zéros viennent d'une interpolation linéaire sur une grille de pas 1e-8 en eps/lr : une erreur
+d'interpolation de 1e-3 est possible, donc à raffiner ; (c) avec ±0,0005 d'arrondi sur chaque zéro (4000 tirages),
+p = 2 est celui qui a le plus petit résidu max dans 100 % des tirages, et le zéro à lr 0,2 reste entre 6,072 et 6,076 ;
+(d) p libre (trois paramètres, quatre points) : p = 2,18, zéro à lr 0,2 = 6,054 ; (e) validation croisée avec p = 2
+(les autres lr ≥ 0,01) : 0,01 : −0,0013 ; 0,02 : +0,0006 ; 0,05 : +0,0008 ; 0,1 : −0,0038 ; lr 0,005 : −0,0101. Le point
+lr 0,1 est le levier : retiré, il est prédit à 0,004 près. (f) l'erreur de lr 0,005 (6,220 contre 6,230) est une erreur
+sur D de 5e-11 environ (pente 5,4e-9 par 1e-7 en eps/lr), 0,5 % du décalage soustrait (10,31e-9).
+Mon test antérieur de transitoire à lr 0,005 (200 000 pas de mise en place : D_d à 0,04 %, +9,1997e-9 contre +9,1962e-9
+à eps/lr 6,0e-7) suggère qu'il n'est pas dû à un manque de réglage, mais n'a pas la précision de 5e-11 : une
+variation de 0,04 % de 9,2e-9 est de 4e-12, soit un déplacement du zéro de 0,0007 seulement.
+
+**Hypothèses (15/10) :**
+- H69-1 (lui) zéro = 6,230(1 − 0,63 lr²), correction en lr² : un ajustement.
+- H69-2 (lui) lr 0,005 rate parce que le run n'est pas réglé.
+- H69-3 (lui) lr 0,2 donne un zéro à 6,07 (80 %).
+- H69-4 (moi) la ligne lr 0,005 n'est pas un transitoire : à q fixe, D_d(lr 0,005) ne bouge pas de plus de 0,3 % avec
+  1e6 pas de mise en place et 4e6 pas enregistrés ; le zéro reste à 6,220 ± 0,003.
+- H69-5 (moi, non standard) le terme du zéro est lr² parce que le décalage soustrait (+10,31e-9) est celui d'un point
+  fixe unique, alors qu'aux grands lr le point fixe de u et la médiane de d3 diffèrent à l'ordre lr² (les bouts de la
+  salve) : à x plus grand, où le décalage est plus petit (K/√x), le coefficient b doit changer. À x = 1e-7 (décalage
+  3,3e-9) le zéro de lr 0,1 est à 6,19 ± 0,02 comme à x = 1e-8 et celui de lr 0,05 à 6,22 ± 0,02. Mise : 55 %.
+
+**Prédictions précommises (15/10), avant les runs (`verifier_tour67_zero_dd.py` avec TOUR69_DELTA=1, 16 phases, mêmes ks) :**
+- P69-1 : zéros affinés (grille de pas 1e-9 en eps/lr, x = 1e-8, référence = point fixe g_l3 = g_l4) pour lr 0,01 ;
+  0,02 ; 0,05 ; 0,1 à ±0,002 de 6,229 ; 6,229 ; 6,221 ; 6,191. Mise : 70 %.
+- P69-2 : lr 0,005 : zéro affiné à 6,220 ± 0,003 ; il ne monte pas vers 6,23 avec 1e6 pas de mise en place et
+  4e6 pas enregistrés (ma H69-4). Mise : 75 % (sa prédiction : 65 % qu'il monte).
+- P69-3 : lr 0,2, x = 1e-8, eps/lr entre 5,9e-7 et 6,3e-7 : au moins 8 phases sur 16 s'effondrent (l'écart nœud–col
+  2,2e-5 est sous 5 sd_d3 dès sd ≥ 4,4e-6 ; lr 0,1 a sd = 4,7e-6) ; mise : 60 %. Si l'état tient : zéro entre 5,95 et
+  6,15 (55 % conditionnel), pas 6,07 à 0,01 près (80 % sa prédiction).
+- P69-4 : lr 0,2 à x = 1e-7 (écart 7e-5) tient, zéro (référence : point fixe à x = 1e-7) entre 5,9 et 6,2. Mise : 55 %.
+- P69-5 : H69-5, zéros à x = 1e-7 pour lr 0,05 et 0,1 à moins de 0,3 % de 6,221 et 6,191 (mise 55 %).
+
+Réponse dans `docs/REPONSE_ORDRE69.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
