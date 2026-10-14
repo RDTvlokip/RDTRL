@@ -23,6 +23,7 @@ from mpmath import mp, mpf
 
 sys.path.insert(0, ".")
 from verifier_tour61_decomposition_d3 import PLI, d3_noeud
+from verifier_tour68_point_fixe_gl3_gl4 import racine, d3_de
 
 mp.dps = 50
 J_UU = 1.1204e-4
@@ -52,7 +53,6 @@ if __name__ == "__main__":
     d3n = float(d3_noeud(PLI - mpf(x)))
     if os.environ.get("TOUR69_DELTA"):
         # tour 69 : reference = point fixe propre de la reduction (g_l3 = g_l4, z4 a la valeur de base, queue Se, Sed gelee)
-        from verifier_tour68_point_fixe_gl3_gl4 import racine, d3_de
         z4b = mpf(s1["x"][2]) - mpf(s1["x"][3])
         u_f = racine(PLI - mpf(x), mpf(s1["Se"]), mpf(s1["Sed"]), "egal", z4b)
         d3_f = float(d3_de(u_f, PLI - mpf(x), mpf(s1["Se"]))[0])
@@ -66,17 +66,19 @@ if __name__ == "__main__":
         eps = q * lr
         e = np.full(6, eps); e[1] = eps / div
         rng = np.random.default_rng(11)
-        Dd, sd, vl, esc = [], [], [], 0
+        Dd, sd, vl, esc, z4m = [], [], [], 0, []
         for k in ks:
             w = redlib.copie(s1)
             redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=e, cross=2.0, stop=False)
             w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
             redlib.avancer_obs(w, delta, int(os.environ.get("TOUR67_SETTLE", "10000")), np.zeros((1, 7)), eps=e)
             rec = np.zeros((NREC, 7))
+            z4s = w["x"][2] - w["x"][3]
             first, maxrb, rb, done = redlib.avancer_obs(w, delta, NREC, rec, eps=e)
             if maxrb > 0.9:
                 esc += 1
                 continue
+            z4m.append(0.5 * (z4s + w["x"][2] - w["x"][3]))
             ex = 26.0 * np.exp(-rec[:, 1]); d3 = ex / (1.0 + ex)
             Dd.append(np.median(d3) - d3n); sd.append(d3.std()); vl.append(np.median(rec[:, 4]))
         if len(Dd) < 8:
@@ -84,6 +86,13 @@ if __name__ == "__main__":
             Dphases.append(None); Dmean.append(None)
             continue
         Dd = np.array(Dd)
+        if os.environ.get("TOUR69_Z4RUN"):
+            # tour 69 : z4 derive pendant le run (d4 ~ 1e-12 entre dans la force) ; reference = racine g_l3 = g_l4 au z4 moyen du run
+            z4bar = float(np.mean(z4m))
+            u_r = racine(PLI - mpf(x), mpf(s1["Se"]), mpf(s1["Sed"]), "egal", mpf(z4bar))
+            shift = float(d3_de(u_r, PLI - mpf(x), mpf(s1["Se"]))[0]) - d3n
+            print(f"      z4 moyen du run {z4bar:.5f} (base {float(z4b):.5f}) : decalage de la reference {shift:+.3e}")
+            Dd = Dd - shift
         S = lr * 2 * J_UU / (np.mean(vl) + eps)
         print(f"{q:.3e}  {eps:.3e}  {Dd.mean():+.4e} +- {Dd.std(ddof=1) / np.sqrt(len(Dd)):.1e}   {np.mean(sd):.4e}   {np.mean(vl):.4e}   {S:6.2f}   {esc}", flush=True)
         Dphases.append(Dd); Dmean.append(Dd.mean())

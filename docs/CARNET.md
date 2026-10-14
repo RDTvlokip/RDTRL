@@ -18724,6 +18724,40 @@ variation de 0,04 % de 9,2e-9 est de 4e-12, soit un déplacement du zéro de 0,0
 - P69-4 : lr 0,2 à x = 1e-7 (écart 7e-5) tient, zéro (référence : point fixe à x = 1e-7) entre 5,9 et 6,2. Mise : 55 %.
 - P69-5 : H69-5, zéros à x = 1e-7 pour lr 0,05 et 0,1 à moins de 0,3 % de 6,221 et 6,191 (mise 55 %).
 
+**Résultats (15/10) :** zéros affinés (grille de pas 1e-9 en eps/lr, x = 1e-8, référence = point fixe g_l3 = g_l4, z4 à la
+base ; bootstrap sur les phases à 2e-4 près) : lr 0,005 : 6,2234 ; 0,01 : 6,2295 ; 0,02 : 6,2302 ; 0,05 : 6,2214 ; 0,1 : 6,1896.
+**P69-1 ✓** (écarts à 6,229 ; 6,229 ; 6,221 ; 6,191 : +0,0005 ; +0,0012 ; +0,0004 ; −0,0014, tous < 0,002). Son
+ajustement refait avec les zéros affinés : p = 2 reste le meilleur (résidu max 0,0012 contre 0,0060 pour p = 1,
+0,0026 pour p = 3), a = 6,2311, b = −4,133, zéro à lr 0,2 = 6,066 ; p libre = 2,206 (zéro à lr 0,2 = 6,042) ;
+contrôle sans ajustement 0,009/0,032 = 0,277 (quadratique 0,28). Le résidu de lr 0,005 passe de −0,0101 à −0,0076.
+- **lr 0,2 est stable à eps/lr ≈ 6e-7** (réponse à sa question) : x = 1e-8 : 0/16 effondrées aux huit eps/lr, zéro =
+  6,0838e-7 ; x = 1e-7 : 0/16, zéro = 6,0752e-7 (référence au point fixe de x = 1e-7, décalage +3,235e-9). **P69-3 ✗**
+  (j'attendais ≥ 8 effondrées à x = 1e-8 ; sd_d3 = 9,3e-6 donc écart/sd = 2,4, et le critère « < 5 sd » du tour 66 se
+  trompe ici : il avait été lu à eps/lr = 8e-7 et lr ≤ 0,05). **P69-4 ✓** (6,0752 dans [5,9 ; 6,2]). Sa prédiction : 6,07 (6,074
+  avec mes anciens arrondis, 6,066 avec les zéros affinés) ; mesure 6,0838 (x = 1e-8) : +0,010 à +0,018 d'écart, 0,2 à 0,3 % ;
+  entre le linéaire 6,146 et le cubique 5,912 ✓, plus près du quadratique (écart 0,018) que du p libre (0,042), du linéaire
+  (0,062) ou du cubique (0,17). **Sa prédiction à 80 % (« entre linéaire et cubique, 6,07 ») est tenue à 0,3 % près.**
+- **P69-5 (H69-5) ✓ à 0,3 % près** : x = 1e-7 : lr 0,05 : 6,2197 (contre 6,2214 à x = 1e-8, −0,0017) ; lr 0,1 : 6,1823
+  (contre 6,1896, −0,0073, bootstrap 6,179 à 6,189 : écart de la grille), lr 0,2 : 6,0752 contre 6,0838. Le zéro dépend de x à
+  0,1 % : c'est un zéro de G, indépendant de x à ce niveau.
+- **Run long à lr 0,005 (mise en place 1e6, enregistré 4e6) : zéro 6,2142 (contre 6,2234 en court)**, c'est-à-dire plus loin de
+  6,23, pas plus près : **sa prédiction (« remonte vers 6,23 », 65 %) ✗ ; mon P69-2 (6,220 ± 0,003, ne monte pas) ✗ par
+  l'autre côté** (6,2142 est à 0,006 sous 6,220). D_d change de 3,7e-11 à 6,21e-7 (de −5,34e-11 à −1,67e-11) entre le
+  protocole court et le long, soit 0,4 % de D0 : le zéro de lr 0,005 dépend du protocole à 0,009 ; l'écart des autres lr à
+  p = 2 est de 0,001. **Le résidu de lr 0,005 est donc de −0,0076 (court) à −0,0159 (long) : un effet réel, pas un
+  transitoire de réglage.**
+
+H69-6 (moi, non standard) : la dérive de z4 pendant le run est ce qui dépend du protocole. d4 (~2,4e-12) entre dans la force
+par a4 = (1 + δ) s4, s4 = 1 − d4, à 1e-12 contre g_l = 3,5e-13 ; z4 dérive lentement (30,0231 à la base, 30,0261 après 3e6 pas
+à lr 0,05, 30,0234 à lr 0,005), donc la racine g_l3 = g_l4 que j'ai prise « à z4 base » se déplace au cours du run, et d'une
+façon qui dépend de lr (nombre de pas × lr). Si c'est le cas la référence doit être la racine à z4 moyen du run.
+**Prédictions précommises (15/10), cinquième lot** (`TOUR69_Z4RUN=1`, même script : référence = racine g_l3 = g_l4 au z4 moyen
+du run, par eps/lr) :
+- P69-6 : lr 0,005, protocole court et protocole long, zéros avec la référence corrigée : à ≤ 0,004 l'un de l'autre. Mise : 60 %.
+- P69-7 : l'écart max entre les cinq zéros (lr 0,005 à 0,1) passe de 0,041 (6,1896 à 6,2302) à < 0,025. Mise : 45 %.
+- P69-8 : l'ordre de la correction n'est plus lr² : le meilleur p de l'ajustement a + b lr^p (lr 0,01 à 0,1) change de 2 à
+  p ≠ 2 (p < 1,6 ou p > 2,6). Mise : 50 %.
+
 Réponse dans `docs/REPONSE_ORDRE69.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
