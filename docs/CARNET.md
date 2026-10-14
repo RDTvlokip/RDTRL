@@ -18559,6 +18559,76 @@ ce n'est pas un transitoire (temps de relaxation du mode mou ≈ 50 pas).
 | D0 est un transitoire | 14/10 (moi) | **réfutée** (200 000 pas de mise en place : même D_d à 0,04 %) |
 
 Réponse dans `docs/REPONSE_ORDRE67.md`.
+
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 15/10/2026 (tour 68, PAS simulée)
+
+« Non : ce n'est pas dans le code du gradient ni dans Adam, c'est dans la condition de point fixe. »
+Mon script `point_fixe` annule g_l3(u) ; le simulateur ne s'y arrête jamais : l3 et l4 sont deux
+coordonnées d'Adam avec leurs m et v, et u = l3 − l4 est immobile quand les deux pas sont égaux,
+g/(|g|+eps) égal des deux côtés, fonction strictement monotone, donc **g_l3 = g_l4** (pour tout lr et
+tout eps). Avec la queue gelée g_l3 + g_l4 = −g_queue = +6,99e-13, donc au point fixe g_l3 = g_l4 =
++3,495e-13, pas 0 ; la force que je ne plaçais pas est g_queue/2 : la forme fermée la jette, ma racine
+g_l3 = 0 met tout sur l4, la dynamique la partage en deux. À 60 chiffres (mon grad() + la ligne g5 de
+run(), état de base du JSON, z3 = X3(u), z4 = X4(u)) : d3 [g_l3 = 0] 2,7140650192e-3, d3 [g_l3 =
+g_l4] 2,7140820423e-3 (diff +1,70e-8, ×√x = 1,70e-12 ; 5,41e-8 / 1,71e-12 à 1e-9 ; 1,75e-7 / 1,75e-12
+à 1e-10) : mon 1,6e-12 contre le point fixe. Contre le nœud fermé, z4 tenu où le simulateur l'a (z4 =
+30,02, d4 = 2,4e-12, pas X4 = 41, d4 = 3e-17 : ge4 porte d4 et z4 bouge de 1e-15 par pas, n'y arrive
+jamais) : 1,03 ; 1,04 ; 1,09e-12 (mon 1,0e-12). Son (point fixe − nœud fermé)·√x reproduit mes −6,06 ;
+−6,05 ; −5,91e-13. Port float64 de run() ligne par ligne, 3e6 pas, x = 1e-8, depuis l'état de base :
+lr 0,005 eps 1e-6 et lr 0,05 eps 1e-5 ont d3 = 2,7140813844e-3 ; la racine g_l3 = g_l4 avec z4 tenu :
+2,7140813843e-3 ; lr 0,05 eps 1e-6 : 1,9e-12 au-dessus ; lr 0,005 eps 1e-5 pas réglé en 3e6 pas. Chaque
+run finit à g_l3 = g_l4 = +3,495e-13. Le pli bouge avec la condition (tangence à 60 chiffres, z4 à
+la base) : forme fermée en PLI exactement ; g_l3 = 0 en PLI + 1,2e-11 ; g_l3 = g_l4 en PLI − 1,9e-11 :
+**sous x = 1,9e-11 la réduction n'a plus de nœud**. Le port : réglé à 1,9e-11 et 2,5e-11, échappé à 1,5e-11
+(pas 851671), 1e-11 (554904), 1e-13 (379265), déterministe, eps 1e-6.
+Trois prédictions : (i) grad() + g5, racine g_l3 − g_l4 = 0, z4 à la base ; d3 contre le nœud fermé
++1,03e-8 ; +3,28e-8 ; +1,09e-7 à x = 1e-8, 1e-9, 1e-10 ; mes lignes sans salves du tour 63 : +3,3e-8 et
++1,1e-7 ; D_d contre ce point n'a plus de constante, zéros à 6,16–6,23e-7 pour tout lr, 90 % ; (ii) 16
+phases, eps 1e-6, lr 0,05, x = 1e-11 et 1e-13 : chaque phase s'échappe sans salve ; x = 3e-11 : chaque phase se
+règle, 85 % ; (iii) tout run sans salve réglé affiche m[4] = m[5] = +3,495e-13 et l3 + l4 dérive de
+2 lr 3,495e-13/eps = 3,5e-8 par pas à lr 0,05, eps 1e-6, 95 %. Pour le réseau complet : les 25 références
+bougent, le gradient softmax de la ligne 10 somme à zéro, u se tient là où pas_l3 = pas_l4 avec g_l3 +
+g_l4 = −gradient de queue vivant, pas +6,99e-13 gelé ; D0 de la réduction vaut ce que vaut le gel ; ma
+validation est à lr 0,05, eps 1e-10, où le terme lr² vaut 16 D0 aux bouts de ma grille ; à eps 1e-6 D0 est tout
+le déplacement. Question : à la fin de la phase 1 du réseau complet, que vaut la somme de g sur les 25
+logits de référence de la ligne 10, contre +6,99e-13 ? Se lit-elle dans le checkpoint ?
+
+**Lecture du checkpoint de phase 1 (`verifier_tour68_somme_gradient_queue.py`, MESURE faite avant d'écrire les
+prédictions ci-dessous, donc pas une prédiction) :** gradient autograd de l'objectif du réseau complet à
+δ = pli − 1e-6, paramètres du checkpoint (20 000 pas, lr 0,05, eps 1e-10). Convention de signe : la
+réduction suit g = ∇J (ascente), le script affiche ∇(−J). Ligne 10 du récepteur : g3 + g4 = +6,95854e-13 (en
+∇J), somme des 25 logits de queue = −6,95854e-13, somme des 27 = −3,5e-18 (le softmax somme à zéro ✓). Réduction
+au même état : g[4] + g[5] = +6,98276e-13. Rapport 0,9965 : **le gel est exact à 0,35 % à ce point** ; la valeur
+de dipankarsarkar (6,99e-13) est celle du point fixe, 0,1 % au-dessus de la mienne. Moments d'Adam du
+checkpoint sur la queue : somme de m = +6,9577e-13 (m a rejoint g). Les 25 gradients de queue valent
+2,76 à 3,02e-14 chacun, dix mille fois sous eps = 1e-10 : leur pas Adam est lr·m/(√v+eps) ≈ 0,05 × 2,8e-14/
+1e-10 ≈ 1,4e-5 par logit et par pas, vers le bas (gradient de queue négatif en ∇J).
+
+**Hypothèses (15/10) :**
+- H68-1 (lui) la condition de point fixe de la réduction est g_l3 = g_l4, pas g_l3 = 0, et D0 = (g_queue/2)/λ.
+- H68-2 (lui) sous x = 1,9e-11 la réduction n'a plus de nœud ; l'échappement à eps 1e-6 est déterministe.
+- H68-3 (lui) D0 dans le réseau complet n'est pas celui de la réduction si le gradient de queue dérive.
+- H68-4 (moi, non standard) dans le réseau complet à eps 1e-10 la queue n'est PAS gelée : chaque logit
+  de queue descend de lr·g/eps ≈ 1,4e-5 par pas, la queue se vide comme 1/(1 + 1,4e-5 t), donc la somme
+  du gradient de queue et D0 décroissent en 1/t sur 2e6 pas ; à eps 1e-6 (pas 1,4e-9 par pas) le gel tient
+  et la réduction est juste. Donc D0 ne se mesure dans le réseau complet qu'à grand eps.
+
+**Prédictions précommises (15/10), avant les runs :**
+- P68-1 : mon calcul indépendant de sa racine g_l3 = g_l4 (z3 = X3(u), z4 à la base, Se, Sed du JSON) donne
+  d3 − d3(nœud fermé) = +1,03e-8 à 3 %, et ×√x constant à 5 % de x = 1e-8 à 1e-10. Mise : 75 %.
+- P68-2 : D_d contre ce point fixe : zéros pour lr 0,005 ; 0,01 ; 0,02 ; 0,05 ; 0,1 dans [6,15 ; 6,30]e-7 (sa
+  prédiction), mise : 70 %.
+- P68-3 : 16 phases, eps 1e-6, lr 0,05 : x = 3e-11 règle les 16 ; x = 1e-11 et 1e-13 échappent les 16 (mon
+  protocole : chauffe 20 000 + k pas à pli − 1e-6 puis perturbation 1e-9, pas son état de base brut).
+  Mise : 65 %.
+- P68-4 : run réglé sans salve (lr 0,05, eps 1e-6, x = 1e-8, état de base brut, 3e6 pas) : m[4] et m[5] à
+  +3,495e-13 à 0,5 %, et l3 + l4 dérive de 3,5e-8 par pas à 5 %. Mise : 85 %.
+- P68-5 (réseau complet, `verifier_tour68_queue_dynamique.py`, depuis le checkpoint, x = 1e-8) : à eps
+  1e-10 la somme du gradient de queue passe sous la moitié de sa valeur initiale en moins de 100 000 pas ;
+  à eps 1e-6 elle reste à 5 % de sa valeur initiale pendant 100 000 pas. Mise : 70 %.
+
+Réponse dans `docs/REPONSE_ORDRE68.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
