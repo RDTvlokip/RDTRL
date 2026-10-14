@@ -24,7 +24,8 @@ def zero(q, d):
 
 
 if __name__ == "__main__":
-    refs = (("noeud ferme (Delta = 0)", 0.0), ("point fixe propre (Delta = -6,06e-9)", -6.0557), ("Delta = +10e-9 (hypothese refutee)", 10.0))
+    refs = (("noeud ferme (Delta = 0)", 0.0), ("point fixe propre (Delta = -6,06e-9)", -6.0557), ("Delta = +10e-9 (hypothese refutee)", 10.0),
+            ("g_l3 = g_l4, z4 base (+10,31e-9, tour 68)", 10.31))
     print("zero de D_d - Delta, en eps/lr (1e-7) ; 'hors grille' = pas de changement de signe sur la grille mesuree")
     print(f"{'lr':>6s}  " + "  ".join(f"{n:>38s}" for n, _ in refs))
     for lr, (q, d) in DATA.items():

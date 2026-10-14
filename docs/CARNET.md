@@ -18627,6 +18627,41 @@ checkpoint sur la queue : somme de m = +6,9577e-13 (m a rejoint g). Les 25 gradi
   1e-10 la somme du gradient de queue passe sous la moitié de sa valeur initiale en moins de 100 000 pas ;
   à eps 1e-6 elle reste à 5 % de sa valeur initiale pendant 100 000 pas. Mise : 70 %.
 
+**Résultats (15/10) :**
+- Sa racine, recalculée par moi (`verifier_tour68_point_fixe_gl3_gl4.py`, 60 chiffres, mon `grad()` + g5) : d3
+  [g_l3 = 0] 2,7140650192e-3 ; [g_l3 = g_l4, z4 = X4] 2,7140820423e-3 (diff +1,702e-8, ×√x = 1,702e-12 ; 5,405e-8 /
+  1,709e-12 à 1e-9 ; 1,752e-7 / 1,752e-12 à 1e-10) ; [g_l3 = g_l4, z4 base] moins nœud fermé : +1,031e-8, +3,281e-8,
+  +1,087e-7, soit 1,031 ; 1,038 ; 1,087e-12 ×√x ; g_l3 = g_l4 = +3,4950e-13 ✓ ; tangence à 60 chiffres (z4 base) :
+  g_l3 = 0 en PLI + 1,2171e-11, g_l3 = g_l4 en PLI − 1,8691e-11 ✓. **Tous ses nombres tiennent à 4 chiffres.**
+  (Ma première bissection sur l'existence de la racine donnait 9,8e-12 et 1,87e-11 : l'échec de findroot n'est pas
+  la disparition de la racine ; remplacée par la résolution de F = 0, ∂F/∂u = 0.)
+- **P68-1 ✓** (+1,031e-8 à 0,1 % de 1,03e-8 ; ×√x 1,031 → 1,087e-12, variation de 5,4 % de x = 1e-8 à 1e-10 :
+  au bord de ma fenêtre de 5 %). **P68-2 ✓** : zéros de D_d − 10,31e-9 en eps/lr (1e-7) pour lr 0,005 / 0,01 / 0,02 /
+  0,05 / 0,1 : 6,220 / 6,229 / 6,229 / 6,221 / 6,191, fixes à 0,6 % (la grille ne contenait pas de zéro pour lr 0,005
+  contre le nœud fermé : le décalage le met dedans).
+- **P68-4 ✓** (`verifier_tour68_etat_regle.py`, état de base brut, x = 1e-8, 3e6 pas, eps 1e-6) : lr 0,05 : d3 =
+  2,7140813863e-3 contre la racine 2,7140813843e-3 (+2,0e-12) ; lr 0,005 : 2,7140813844e-3 (+1,3e-13) ; g_l3 = g_l4 =
+  +3,4950e-13 ; m4 = m5 = +3,49499e-13 ; dérive de l3 + l4 : 3,49499e-8 par pas à lr 0,05 (attendu 3,49500e-8),
+  3,49497e-9 à lr 0,005. Son port float64 et mon numba coïncident.
+- **P68-3, moitié ✓** : eps 1e-6, lr 0,05, mon protocole (chauffe 20 000 + k pas à pli − 1e-6, perturbation 1e-9) :
+  x = 3e-11 : 0/16 effondrées ; x = 1e-11 : 16/16. x = 1e-13 et la suite : voir ci-dessous.
+- **P68-5 ✓** (`verifier_tour68_queue_dynamique.py`, réseau complet depuis le checkpoint, x = 1e-8) : à eps 1e-10 la
+  somme du gradient de queue (convention J, g3 + g4) passe de +6,9586e-13 à 6,083e-13 (10 000 pas), 5,381e-13
+  (20 000), 4,392e-13 (40 000), 3,442e-13 (70 000, 49,5 %), 2,830e-13 (100 000, 40,7 %) : sous la moitié vers
+  71 000 pas ; le modèle 1/(1 + 1,4e-5 t) donne 0,50 à 70 000 pas. Se réel : 4,89e-11 → 2,06e-11 ; logit de queue
+  moyen − l4 : −26,96 → −27,82 (prédit −ln(1 + 1,4) = −0,88 : mesuré −0,86). À eps 1e-6 : +6,9586e-13 → 6,9322e-13
+  (99,6 %) sur 100 000 pas, d3 = 2,71408137e-3 (le point fixe de la réduction).
+**Lecture : dans le réseau complet à eps 1e-10 la queue n'est pas gelée ; son gradient (donc D0 et la position du pli
+de la réduction) décroît en 1/(1 + 1,4e-5 t) sur la durée des runs (÷ 29 à 2e6 pas). Le gel de la réduction est exact
+à 0,35 % à t = 0 (phase 1) et à eps 1e-6 sur 1e5 pas, faux à eps 1e-10 au-delà de ~1e4 pas.**
+
+**Prédiction précommise (15/10), P68-6 :** eps 1e-6, lr 0,05, mon protocole : x = 1,5e-11 : 16/16 effondrées ;
+x = 1,9e-11 et 2,5e-11 : 0/16 (tangence à 1,869e-11) ; x = 1e-13 : 16/16. Mise : 70 %. (J'avais écrit un
+second test sur eps 1e-10 sans salves à lr 0,0005 : mal posé, les salves existent à tout lr — √v ∝ lr — ; retiré avant
+tout run.) Constat à garder en tête : les états des tours 59–66 à eps 1e-10 et x = 1e-13 (sd 2,2e-5, survie sur
+2e6 pas) sont, dans la réduction, sous x = 1,869e-11 donc SANS nœud ; ils tiennent par les salves, comme on l'a vu
+aux tours 61–63 (D_c, états sous le pli), pas autour d'un point fixe.
+
 Réponse dans `docs/REPONSE_ORDRE68.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
