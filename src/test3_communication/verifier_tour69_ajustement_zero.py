@@ -56,6 +56,14 @@ if __name__ == "__main__":
     out = np.array(out)
     print(f"\narrondi +-0,0005 sur chaque zero, 4000 tirages : p retenu (plus petit residu max) : " + ", ".join(f"p = {p} : {np.mean(out[:, 0] == p):.0%}" for p in (1, 2, 3)) +
           f" ; zero a lr 0,2 avec p = 2 : {np.percentile(out[:, 1], 5):.3f} a {np.percentile(out[:, 1], 95):.3f}")
+    # cinq points (0,005 a 0,1) puis comparaison a lr 0,2 mesure (argument 0.2=...)
+    lr5 = np.array([l for l in sorted(zs) if l <= 0.1]); z5 = np.array([zs[l] for l in lr5])
+    print(f"\najustement sur {len(lr5)} points (lr {lr5.min()} a {lr5.max()}) :")
+    for p in (1, 2, 3):
+        (a, b), res = ajuste(lr5, z5, p)
+        pred = a + b * 0.2 ** p
+        mes = f", mesure {zs[0.2]:.4f} (ecart {zs[0.2] - pred:+.4f})" if 0.2 in zs else ""
+        print(f"   p = {p} : a = {a:.4f} b = {b:+.3f} residus {np.round(res, 4)} residu max {np.abs(res).max():.4f} ; predit a lr 0,2 : {pred:.4f}{mes}")
     # tous les sous-ensembles de trois lr, p = 2 libre non, juste le test : p = 2 predit-il le quatrieme ?
     print("\nvalidation croisee, p = 2 : on retire un lr (parmi 0,01 ; 0,02 ; 0,05 ; 0,1 ; 0,005) et on le predit avec les autres :")
     toutes = sorted(zs)

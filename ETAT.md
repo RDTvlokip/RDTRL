@@ -1,8 +1,34 @@
 # État du projet RDTRL — où on en est
 
-## Tour 68 (vraie critique de dipankarsarkar, 15/10/2026) — LETTRE PRÊTE
+## Tour 69 (vraie critique de dipankarsarkar, 15/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE68.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 67
+**Lettre** : `docs/REPONSE_ORDRE69.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 68
+est partie (sa critique du tour 69 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 15/10/2026 (tour 69, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : le zéro de D_d est libre de lr dans G(eps/lr) seul, mais mes cinq zéros choisissent la
+correction : zéro = 6,230e-7 (1 − 0,63 lr²) (ajustement, p = 2 ; lr⁴ dans D_d, pas de lr³) ; lr 0,005 rate de 0,010 (run non
+réglé, selon lui) ; prédictions : lr 0,2 à 6,07 (80 %), runs longs à lr 0,005 remontent vers 6,23 (65 %) ; question :
+lr 0,2 est-il stable ? Le tableau de la queue vivante est « le vrai résultat » du tour 68.
+**Acquis (prédictions poussées avant les runs)** : son tableau reproduit au chiffre ; zéros affinés (pas 1e-9) :
+6,2234 / 6,2295 / 6,2302 / 6,2214 / 6,1896 (lr 0,005 → 0,1) ; **lr 0,2 stable, zéro 6,0838e-7 (x = 1e-8) et 6,0752e-7
+(x = 1e-7), sa prédiction tenue à 0,3 %** ; run long à lr 0,005 : le zéro descend à 6,2142 (il prédisait une
+remontée) ; **cause : dérive de z4 (d4 ~ 2e-12 dans la force à côté de g_l = 3,5e-13), z4 moyen du run 30,056 (court) /
+30,117 (long) contre 30,0231 à la base ; avec la référence à z4 du run : lr 0,005 court 6,2285, long 6,2287 ; p = 2
+résidu max 0,0005 (quatre points), 0,0022 (cinq), p libre 2,07** ; lr 0,2 à +0,017 au-dessus du quadratique.
+**Mes ratés** : P69-2 (6,220 ± 0,003 : 6,2142 long), P69-3 (lr 0,2 s'effondre : non), P69-7 (écart des zéros < 0,025 :
+0,041), P69-8 (p ≠ 2 : p = 2,07).
+**Limites** : réduction seule, un code, pas de dérivation de l'absence du terme impair, le z4 du réseau complet n'est
+pas la dérive de la réduction, l'excès à lr 0,2 testé sur un seul lr.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 69 ; question : l'excès à lr 0,2 est-il le terme suivant c lr⁴ avec c positif ? (oui/non).
+2. lr 0,3 / 0,4 pour contraindre c, si stables (collapse à surveiller).
+3. Refaire les tours 59–66 sensibles au gel de la queue et à z4 avec la référence « z4 du run » (D0 corrigé).
+
+## Tour 68 (vraie critique de dipankarsarkar, 15/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE68.md` (gitignorée), partie, figée. La lettre 67
 est partie (sa critique du tour 68 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 15/10/2026 (tour 68, PAS simulée) », avant « ## 9. ».
 

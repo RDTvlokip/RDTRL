@@ -18758,6 +18758,27 @@ du run, par eps/lr) :
 - P69-8 : l'ordre de la correction n'est plus lr² : le meilleur p de l'ajustement a + b lr^p (lr 0,01 à 0,1) change de 2 à
   p ≠ 2 (p < 1,6 ou p > 2,6). Mise : 50 %.
 
+**Résultats du cinquième lot (`TOUR69_Z4RUN=1`) :** z4 moyen du run = 30,056 pour tous les lr en protocole court (2e6 pas
+enregistrés), 30,1166 en protocole long, contre 30,0231 à la base : la dérive de z4 par pas ne dépend pas de lr à eps/lr
+égal. Décalage de la référence : +2,14e-11 (court), +5,86e-11 (long). Après correction, D_d de lr 0,005 à eps/lr 6,21e-7 :
+−7,5e-11 (court) et −7,5e-11 (long), contre −5,3e-11 et −1,7e-11 avant : la différence de 3,7e-11 que j'avais trouvée
+entre les deux protocoles est exactement la différence des décalages (3,72e-11). **H69-6 ✓.** Zéros corrigés (1e-7) : lr 0,005
+court 6,2285, long 6,2287 (**P69-6 ✓** : 0,0002) ; 0,01 : 6,2308 ; 0,02 : 6,2305 ; 0,05 : 6,2214 ; 0,1 : 6,1896. L'écart max entre
+cinq zéros reste 0,041 (6,1896 à 6,2308) : **P69-7 ✗**. Ajustement a + b lr^p sur lr 0,01 à 0,1 (corrigé) : p = 1 : résidu
+max 0,0057 ; **p = 2 : a = 6,2318, b = −4,211, résidu max 0,0005 (dans l'arrondi, cette fois)** ; p = 3 : 0,0031 ; p libre
+= 2,068 ; sur cinq points (lr 0,005 à 0,1) p = 2 : 6,2308, −4,098, résidu max 0,0022 (lr 0,005), p = 3 : 0,0028, p = 1 : 0,0068.
+**P69-8 ✗** (p reste 2). Prédiction à lr 0,2 : 6,067 (p = 2, cinq points), 6,063 (quatre), 6,056 (p libre), 6,151 (p = 1), 5,910
+(p = 3) ; mesure 6,0838 (x = 1e-8) ou 6,0752 (x = 1e-7) : +0,017 / +0,008 au-dessus de p = 2, entre p = 1 et p = 3 comme il
+l'annonçait, à 0,3 % de 6,07. L'excès est de signe positif : la correction suivante (lr⁴ dans le zéro, lr⁶ dans D_d)
+si elle existe est positive ; non testé sur un autre lr.
+
+| H69-1 zéro = 6,230 (1 − 0,63 lr²), correction en lr² | 15/10 (lui) | **confirmée comme ajustement** : p libre = 2,07, résidu max 0,0005 sur quatre points et 0,0022 sur cinq ; lr 0,2 mesuré à +0,017 au-dessus |
+| H69-2 lr 0,005 rate parce que le run n'est pas réglé | 15/10 (lui) | **réfutée comme telle** : un run plus long descend à 6,2142 au lieu de remonter ; la cause est la dérive de z4 (H69-6), pas le réglage |
+| H69-3 lr 0,2 donne un zéro à 6,07 (80 %) | 15/10 (lui) | **tenue à 0,3 %** (6,0838 à x = 1e-8, 6,0752 à x = 1e-7) |
+| H69-4 la ligne lr 0,005 n'est pas un transitoire | 15/10 (moi) | **vraie pour le réglage**, fausse sur la précision (le zéro bouge de 0,009 avec le protocole) ; **expliquée** par la dérive de z4 |
+| H69-5 le zéro dépend de x à moins de 0,3 % | 15/10 (moi) | **confirmée** : 6,2214 → 6,2197 (lr 0,05), 6,1896 → 6,1823 (lr 0,1), 6,0838 → 6,0752 (lr 0,2) pour x = 1e-8 → 1e-7 |
+| H69-6 la dérive de z4 (d4 dans la force) fait dépendre le zéro du protocole | 15/10 (moi, non standard) | **confirmée** : décalage de référence +2,14e-11 / +5,86e-11, protocoles court et long à 0,0002 |
+
 Réponse dans `docs/REPONSE_ORDRE69.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
