@@ -1,8 +1,35 @@
 # État du projet RDTRL — où on en est
 
-## Tour 67 (vraie critique de dipankarsarkar, 14/10/2026) — LETTRE PRÊTE
+## Tour 68 (vraie critique de dipankarsarkar, 15/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE67.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 66
+**Lettre** : `docs/REPONSE_ORDRE68.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 67
+est partie (sa critique du tour 68 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 15/10/2026 (tour 68, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : D0 n'est ni dans le gradient ni dans Adam, il est dans la condition de point fixe : u est
+immobile à g_l3 = g_l4 (pas g_l3 = 0), donc la force de queue gelée +6,99e-13 est partagée en deux,
+g_l3 = g_l4 = +3,495e-13, D0 = (g_queue/2)/λ ; le pli suit la condition (g_l3 = g_l4 : PLI − 1,9e-11) donc la
+réduction n'a pas de nœud sous x = 1,9e-11 ; question : somme de g sur les 25 références de la ligne 10 en fin
+de phase 1 ?
+**Acquis (prédictions poussées avant les runs)** : tous ses nombres reproduits à 4 chiffres (racines 60 chiffres,
+tangence PLI + 1,2171e-11 / PLI − 1,8691e-11) ; D_d − 10,31e-9 s'annule à 6,19–6,23e-7 pour lr 0,005 → 0,1 ; état
+réglé : m4 = m5 = +3,495e-13, dérive de l3 + l4 conforme, d3 à 2e-12 de la racine ; échappements à eps 1e-6 :
+règle à x ≥ 1,9e-11, s'effondre à ≤ 1,5e-11. **Checkpoint de phase 1 : somme de la queue = 6,9586e-13 contre
+6,9828e-13 gelé (0,35 %). Mais dans le réseau complet à eps 1e-10 la queue n'est PAS gelée : 1/(1 + 1,4e-5 t),
+moitié à ~71 000 pas, 40,7 % à 1e5, donc D0 et le pli de la réduction dérivent ; à eps 1e-6 gel exact.** Les états
+des tours 59–66 à eps 1e-10 et x = 1e-13 sont sans nœud dans la réduction (tenus par les salves).
+**Limites** : réseau complet à eps ~3e-8 (zéro de D_d) non testé ; G inconnue ; dérive de 0,5 % du zéro à lr 0,1
+inexpliquée.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 68 ; question : sa loi prédit-elle la chute de 0,5 % du zéro à lr 0,1 ? (oui/non).
+2. Rendre la queue vivante dans la réduction (une coordonnée de plus avec Adam à eps) et revalider contre le
+   réseau complet à eps 1e-10 (D_c, sd, D_d) ; ou valider à eps 3e-8 où le gel tient.
+3. Revoir les conclusions des tours 59–66 sensibles à D0 et à la position du pli à eps 1e-10 (D_d, tilt, seuil).
+
+## Tour 67 (vraie critique de dipankarsarkar, 14/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE67.md` (gitignorée), partie, figée. La lettre 66
 est partie (sa critique du tour 67 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 14/10/2026 (tour 67, PAS simulée) », avant « ## 9. ».
 

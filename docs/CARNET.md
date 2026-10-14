@@ -18661,6 +18661,14 @@ second test sur eps 1e-10 sans salves à lr 0,0005 : mal posé, les salves exist
 tout run.) Constat à garder en tête : les états des tours 59–66 à eps 1e-10 et x = 1e-13 (sd 2,2e-5, survie sur
 2e6 pas) sont, dans la réduction, sous x = 1,869e-11 donc SANS nœud ; ils tiennent par les salves, comme on l'a vu
 aux tours 61–63 (D_c, états sous le pli), pas autour d'un point fixe.
+**Résultat P68-6 ✓** (16 phases, eps 1e-6, lr 0,05) : x = 1,5e-11 : 16/16 effondrées ; 1,9e-11 : 0/16 ; 2,5e-11 :
+0/16 ; 1e-13 : 16/16. Avec les x = 3e-11 (0/16) et 1e-11 (16/16) : la bascule est entre 1,5e-11 et 1,9e-11,
+autour de la tangence 1,8691e-11 (g_l3 = g_l4, z4 base).
+
+| H68-1 la condition de point fixe est g_l3 = g_l4 ; D0 = (g_queue/2)/λ | 15/10 (lui) | **confirmée** : racine à 4 chiffres, 1,031e-12/√x ; D_d − 10,31e-9 s'annule à 6,19–6,23e-7 pour lr 0,005 → 0,1 ; état réglé à 2e-12 de la racine |
+| H68-2 sous x = 1,9e-11 la réduction n'a pas de nœud | 15/10 (lui) | **confirmée** (tangence PLI − 1,8691e-11 ; échappements déterministes à 1,5e-11, 1e-11, 1e-13 ; règle à 1,9e-11 → 3e-11) |
+| H68-3 D0 du réseau complet n'est pas celui de la réduction si la queue dérive | 15/10 (lui) | **confirmée à eps 1e-10** (queue ÷ 2 en ~71 000 pas) ; faux à eps 1e-6 (99,6 % à 1e5 pas) |
+| H68-4 la queue se vide en 1/(1 + 1,4e-5 t) à eps 1e-10 | 15/10 (moi) | **confirmée** (0,50 prédit, 0,495 mesuré à 70 000 pas ; logit −0,88 prédit, −0,86 mesuré) |
 
 Réponse dans `docs/REPONSE_ORDRE68.md`.
 
