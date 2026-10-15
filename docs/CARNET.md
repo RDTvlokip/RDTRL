@@ -18922,6 +18922,14 @@ approchant du seuil par le haut (197 à 0,315 contre 149 à 0,32). À lr 0,31, r
 t = 4584 (dernier pas > 0,9) : une excursion tardive sans effondrement.
 Pas encore fait : seuil précis, exposants, mise à l'échelle des moments (P71-2).
 
+**Prédictions précommises (17/10), second lot** (`verifier_tour71_seuil_lr.py`, module `reduction_numba_tour71_lrvar.py`, lr en argument) :
+- P71-4 : au-dessus du seuil lr*, le temps d'installation ne diverge pas : la pente log t / log (lr − lr*) sur des décalages de 1e-7 à 1e-2
+  est comprise entre −0,3 et +0,3 (pas −0,5), et t reste sous 1000 pas pour tous les décalages jusqu'à 1e-2. Mise : 60 %.
+- P71-5 : au-dessous du seuil, le temps de retour (dernier pas avec rb > 0,9) croît quand lr → lr* par le bas (loi de puissance, pente
+  entre −1,5 et −0,2 sur les décalages qui ont une excursion tardive). Mise : 55 %.
+- P71-6 : avec moments mis à l'échelle (m × lr/0,05, v × (lr/0,05)²), le seuil monte à au moins 0,47 (facteur 1,5) ou disparaît jusqu'à
+  lr 0,5. Mise : 55 %.
+
 Réponse dans `docs/REPONSE_ORDRE71.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
