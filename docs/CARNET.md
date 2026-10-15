@@ -18781,6 +18781,54 @@ si elle existe est positive ; non testé sur un autre lr.
 
 Réponse dans `docs/REPONSE_ORDRE69.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 16/10/2026 (tour 70, PAS simulée)
+
+« Pas encore. » Avec lr 0,2 seul point au-dessus de 0,1, c est ce que lr 0,2 dit. Il reconnaît lr 0,005 : « le zéro n'a pas
+bougé vers le haut et ce n'était pas un run non réglé ; une référence qui dérive avec z4 est la meilleure explication,
+court 6,2285 contre long 6,2287 est le reçu. » Ajustement a + b lr² + c lr⁴ de mes zéros à x = 1e-8 : lr 0,01–0,1 : c =
+−19,6, résidu max 0,0005 ; 0,01–0,2 : c = +17,1, 0,0006 ; 0,005–0,2 : c = +13,8, 0,0023. Sous 0,1 les données veulent c
+négatif ou rien (lr⁴ vaut 1e-4 à 0,1, même c = 20 ne bouge le zéro que de 0,002, b absorbe) ; le +17 vient de lr 0,2 seul et
+une fois b refait il est au-dessus de mon 5 à 11. La parité non plus : a + b lr² + d lr³ ajuste lr 0,01–0,2 avec d = +5,1,
+résidu 0,0007 : l'excès de lr 0,2 rouvre la question du terme impair. x est l'autre confondant : le décalage en x à
+lr 0,2 est 0,0086, la moitié des 0,017 à expliquer ; trois points à x = 1e-7 (lr 0,05 ; 0,1 ; 0,2) donnent c = 38, les mêmes à
+x = 1e-8 donnent 19. Deux runs séparent : lr 0,3 sépare la parité (ajustement lr⁴ : 5,976 ; lr³ : 5,944 ; quadratique pur :
+5,853) ; lr 0,15 teste seulement s'il y a un terme en plus (6,142 contre 6,137). Son pari si lr 0,3 garde un zéro à
+x = 1e-8 : au-dessus de 5,96, série paire, 55 % (« proche de pas d'avis »). Question : lr 0,3 reste-t-il hors effondrement à
+eps/lr = 6e-7, ou lr 0,2 est-il le plafond ?
+
+**Vérification (`verifier_tour70_ajustement_pair_impair.py`) :** tous ses nombres reproduits : c = −19,587 (0,0005) ;
++17,076 (0,0006) ; +13,773 (0,0023) ; d = +5,111 (0,0007) ; lr 0,15 : 6,1419 (c) et 6,1370 (pur, plage 0,01–0,1) ; lr 0,3 :
+5,9755 (c, 0,01–0,2), 5,9445 (d), 5,8528 (pur) ; trois points : c = 37,78 (x = 1e-7), 19,02 (x = 1e-8) ; décalage en x −0,0086.
+Précisions : (a) l'excès de lr 0,2 sur le quadratique de lr 0,01–0,1 est +0,0205 avec les zéros corrigés (il dit 0,017, qui
+était l'écart au quadratique à cinq points : +0,0169) ; (b) le quadratique pur sur lr 0,01–0,2 laisse un résidu de 0,0038
+contre 0,0005 sur lr 0,01–0,1 : l'excès existe ; (c) ses lr 0,15 diffèrent de 0,005 (6,142 / 6,137), mes zéros ont une
+résolution de 2e-4 (bootstrap), donc le test est faisable ; (d) l'identifiabilité : c = −19,6 à +17 selon qu'on inclut lr
+0,2 est la preuve qu'un seul point ne contraint pas la série : il a raison.
+
+**Hypothèses (16/10) :**
+- H70-1 (lui) l'excès de lr 0,2 est le terme suivant d'une série paire (c lr⁴) ; ou impair (d lr³) ; non identifiable avec
+  un seul point au-dessus de 0,1.
+- H70-2 (lui) x est un confondant de c (19 à 38).
+- H70-3 (moi) il y a un terme au-delà de lr² : à lr 0,15, le zéro est au-dessus du quadratique pur de lr 0,01–0,1 (6,1370)
+  d'au moins 0,001.
+- H70-4 (moi, non standard) le décalage en x (zéro à 1e-7 moins zéro à 1e-8) vaut −0,0017, −0,0073, −0,0086 à lr 0,05 ; 0,1 ;
+  0,2 : il sature au lieu de croître en lr², ce qui fait que x n'explique pas la moitié de l'excès : la partie
+  x-dépendante du zéro est liée à la mise à l'échelle de l'écart nœud–col (0,2213 √x) par sd_d3, et non à lr seul.
+
+**Prédictions précommises (16/10), avant les runs** (`verifier_tour67_zero_dd.py`, TOUR69_DELTA=1, TOUR69_Z4RUN=1, 16 phases,
+`reduction_numba_tour70_lr015.py`, `_lr030.py`, `_lr040.py`) :
+- P70-1 : lr 0,15, x = 1e-8 : zéro entre 6,138 et 6,146 (donc au-dessus du quadratique pur 6,1370 d'au moins 0,001).
+  Mise : 65 %.
+- P70-2 : lr 0,3 : x = 1e-8 : au moins 9 phases sur 16 restent hors effondrement aux eps/lr proches du zéro : 45 % ;
+  x = 1e-7 : 75 %. (Écart/sd à lr 0,3 : 2,2e-5/1,4e-5 = 1,6 à x = 1e-8 ; 4,9 à x = 1e-7.)
+- P70-3 : lr 0,3 zéro à x = 1e-8, s'il existe, entre 5,90 et 5,99 (55 %) : mes ajustements donnent 5,936 à 5,976 hors
+  quadratique pur 5,853 ; le quadratique pur est exclu (zéro > 5,89 : 75 %).
+- P70-4 : lr 0,4 s'effondre à x = 1e-8 (au moins 9 phases sur 16, aux eps/lr proches de 5,5–6,1e-7) : 70 % ; à x = 1e-7,
+  zéro entre 5,7 et 6,0 : 50 %.
+- P70-5 (H70-4) : à lr 0,3 le décalage en x (1e-7 moins 1e-8) est entre −0,005 et −0,015 : 55 %.
+
+Réponse dans `docs/REPONSE_ORDRE70.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
