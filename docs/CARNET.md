@@ -18866,6 +18866,54 @@ eps/lr ≈ 6e-7, marche et non pente (0/16 puis 16/16 ; S = 35,1 à lr 0,3). Cau
 
 Réponse dans `docs/REPONSE_ORDRE70.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 17/10/2026 (tour 71, PAS simulée)
+
+(Critique collée deux fois ; traitée une fois.) « Non : le bord de stabilité sur u ne met pas de plafond à 0,35, et tes marges le
+disent. » S = 34,0 (lr 0,05), 34,6 (0,2), 35,1 (0,3) : 0,92 de 38, +0,5 par 0,1, atteint 38 vers lr 0,9. Écart/sd à x = 1e-8 : 2,4
+(lr 0,2) à environ 1,6 (0,3), droite vers zéro à lr 0,5 ; à x = 1e-7 lr 0,3 est à 4,9 et lr 0,35 s'effondre. Rien de local
+n'avertit ; 0/16 à 16/16 est une marche que l'image linéaire ne fait pas. L'amplitude seule n'est pas le déclencheur : mes
+salves avaient déjà porté d3 à 3,9× l'écart nœud–jumeau sous le pli sans casser. Reste deux formes déjà vues en delta : un pli
+(loi du fantôme du 27/09, ~700 + 0,182/√(δ−δ_c)) ou ma crise H11 (la branche ne s'affaiblit pas, son bassin se déplace).
+Un balayage les sépare : un pli en lr allonge le temps d'effondrement juste au-dessus du plafond en exposant 1/2 ; une crise
+n'a pas de raison de choisir 1/2. Question : à lr 0,31 à 0,35 le temps d'effondrement croît-il comme 1/√(lr − lr_c) ?
+
+**Vérification de ses chiffres :** S : pente (35,14 − 34,63)/0,1 = 5,1 par unité de lr, 38 atteint à lr 0,86 ✓ (« près de 0,9 ») ;
+écart/sd = 2,38 (lr 0,2) et 1,63 (lr 0,3), zéro de la droite à lr 0,52 ✓ ; à x = 1e-7, lr 0,3 : écart/sd = 5,2 (il cite 4,9, qui
+était mon estimation du carnet du tour 70, avec sd = 1,4e-5 ; le calcul avec sd = 1,341e-5 mesuré donne 5,2) ✓ à 6 %. Le « 3,9× »
+est dans mon carnet du 27/09 : d3 dépasse la coordonnée du jumeau instable jusqu'à 3,9× l'écart (pli − 1e-8, eps 1e-10, réseau
+complet) ✓. La loi ~700 + 0,182/√(δ−δ_c) : même endroit, 759, 805, 881, 1033, 1274 pas de +1e-7 à +1e-5 ✓.
+
+**Observation faite avant d'écrire les prédictions (donc pas une prédiction) :** le test de temps d'effondrement a d'abord été
+lancé avec mon protocole habituel (chauffe de 20 000 + k pas à pli − 1e-6 depuis l'état de base, puis bascule à x) ; à lr 0,35
+les 6 phases sont déjà « effondrées » pendant la chauffe (rb > 0,9 avant même la bascule). Trace de la chauffe seule
+(`verifier_tour71_trace_chauffe.py`, eps/lr = 5,95e-7, état de base brut, 20 000 pas à pli − 1e-6) :
+lr 0,05 : rb entre 0,8132 et 0,8170, jamais > 0,9 ; lr 0,3 : rb = 0,816 ; 0,787 ; 0,927 ; 0,813 ; … à t = 0 ; 1 ; 2 ; 3, puis 0,66
+à t = 10, 0,813 à t = 100 et ensuite, 5 pas > 0,9, dernier à t = 14 : **un dépassement transitoire qui revient** ; lr 0,35 : rb = 0,816 ;
+0,780 ; 0,943 ; 0,857 ; 0,987 ; … 0,793 à t = 100 puis 1,0000 à t = 1000 et 10 000, 19 340 pas > 0,9 : **effondrement durable décidé
+dans les 100 premiers pas.** Depuis l'état de base brut à pli − 1e-6 (x = 1e-6) : lr 0,3 et 0,35 ont rb > 0,9 au pas 2 (8/8),
+lr 0,05 jamais (8/8, 3e6 pas). **Lecture :** l'état de base a été fait à lr 0,05 : ses moments ont √v ∝ lr = 0,05 ; passer à lr 0,3 ou 0,35
+sans les remettre à l'échelle donne un premier pas ~6 à 7× trop grand (S initial ≈ 34 × lr/0,05 = 200–240 contre 38) ; la chauffe de 20 000 pas
+n'y change rien parce que le coup est dans les 100 premiers pas. Le « plafond » est donc l'effet d'un démarrage, pas une propriété de
+l'état stationnaire à lr 0,35.
+
+**Hypothèses (17/10) :**
+- H71-1 (lui) plafond = pli en lr (temps ∝ 1/√(lr − lr_c)) ou crise (pas de 1/2).
+- H71-2 (moi, non standard) le plafond est un artefact de protocole : le transitoire du démarrage (moments de lr 0,05 appliqués à un lr
+  plus grand) franchit le bassin ; avec m et v mis à l'échelle de lr/0,05 (√v ∝ lr, m ∝ lr) le plafond disparaît ou monte nettement.
+- H71-3 (moi) l'issue (effondrement durable oui/non) est une marche monotone en lr dont le seuil est entre 0,3 et 0,35 et qui se joue dans les
+  200 premiers pas.
+
+**Prédictions précommises (17/10), avant les runs** (trace de chauffe `verifier_tour71_trace_chauffe.py`, modules lr 0,305 à 0,345 par pas
+de 0,005, 0,3 ; 0,35 ; 0,4, eps/lr = 5,95e-7, avec et sans `TOUR71_ECHELLE=1`) :
+- P71-1 : sans mise à l'échelle, l'issue (rb final > 0,9 après 20 000 pas) est monotone en lr (il existe un lr* entre 0,3 et 0,35 tel que tout
+  lr < lr* revient sur le nœud et tout lr > lr* s'effondre), et pour chaque lr qui s'effondre le dernier pas avec rb < 0,85 est avant le
+  pas 300. Mise : 65 %.
+- P71-2 : avec mise à l'échelle, lr 0,35 reste sur le nœud (rb final < 0,85, aucun pas > 0,9 après le pas 50) : 65 % ; lr 0,4 : 50 %.
+- P71-3 : sa question (temps d'effondrement divergeant en 1/√(lr − lr_c)) : non, aucun temps d'effondrement ne dépasse 300 pas dans la
+  bande 0,305–0,345, donc rien à ajuster : 80 %.
+
+Réponse dans `docs/REPONSE_ORDRE71.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
