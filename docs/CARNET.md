@@ -18930,6 +18930,28 @@ Pas encore fait : seuil précis, exposants, mise à l'échelle des moments (P71-
 - P71-6 : avec moments mis à l'échelle (m × lr/0,05, v × (lr/0,05)²), le seuil monte à au moins 0,47 (facteur 1,5) ou disparaît jusqu'à
   lr 0,5. Mise : 55 %.
 
+**Résultats du second lot :**
+- **Seuil lr\* = 0,314002321** (bissection, état de base brut, eps/lr = 5,95e-7, pas de mise à l'échelle) : retour sur le nœud en dessous,
+  effondrement durable au-dessus.
+- **Temps d'installation au-dessus : logarithmique, pas en 1/√.** Dernier pas avec rb ≤ 0,9, en fonction de δ = lr − lr\* :
+  695 (1e-7), 638 (3e-7), 574 (1e-6), 515 (3e-6), 449 (1e-5), 388 (3e-5), 320 (1e-4), 259 (3e-4), 198 (1e-3), 153 (3e-3), 177 (1e-2). Par
+  décade : −121, −125, −129, −122 pas (1e-7 → 1e-3), soit t = a − 125·log10 δ, constante de temps de dépassement
+  λ = ln 10/125 = 0,0184 par pas (54 pas d'e-fold). La pente log-log vaut −0,138 sur les 11 points. **P71-4 ✓** (pente dans [−0,3 ; +0,3],
+  t ≤ 695 < 1000).
+- **Au-dessous du seuil : temps de retour constant** = 17 pas (16 à δ = −1e-2) de 1e-7 à 3e-3. **P71-5 ✗** (je prédisais une croissance
+  en loi de puissance) : l'excursion au-dessus de 0,9 ne s'allonge pas en s'approchant du seuil par le bas.
+- **Avec moments mis à l'échelle (m × lr/0,05, v × (lr/0,05)²) : le plafond disparaît.** lr 0,3 ; 0,35 ; 0,4 ; 0,45 ; 0,5 ; 0,6 ; 0,8 ; 1,0 ;
+  1,5 ; 2,0 : retour sur le nœud, aucun pas avec rb > 0,9 pendant les 20 000 pas ; lr 3,0 : effondrement durable, installé au pas 4611 (pas
+  dans les 100 premiers : autre mécanisme). **P71-6 ✓** (« disparaît jusqu'à 0,5 »). **P71-2 ✓** (lr 0,35 et 0,4 restent sur le nœud).
+- **H71-2 ✓ : le plafond lr 0,3–0,35 des runs du tour 70 est un effet de démarrage**, pas de l'état stationnaire. Les 0/16 → 16/16 de
+  lr 0,3 → 0,35 aux 8 et 11 eps/lr (tour 70) venaient de la chauffe, pas de la dynamique stationnaire.
+  **Conséquence à tester : les zéros de lr 0,4 ; 0,5 ; 0,7 ; 1,0 sont mesurables avec des moments mis à l'échelle.**
+**Prédictions précommises (17/10), troisième lot** (`verifier_tour67_zero_dd.py` avec `TOUR71_ECHELLE=1`, x = 1e-8, 16 phases, TOUR69_DELTA et
+TOUR69_Z4RUN) :
+- P71-7 : l'échelle ne change pas le zéro de lr 0,3 (5,9721 ± 0,002) : 80 %.
+- P71-8 : lr 0,4 : zéro entre 5,90 et 6,00 (série paire : 5,955) : 55 %.
+- P71-9 : lr 0,5 : zéro à plus de 0,05 sous la série paire (6,170), donc sous 6,12 : 65 % ; il existe (pas d'effondrement) : 70 %.
+
 Réponse dans `docs/REPONSE_ORDRE71.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

@@ -69,6 +69,9 @@ if __name__ == "__main__":
         Dd, sd, vl, esc, z4m = [], [], [], 0, []
         for k in ks:
             w = redlib.copie(s1)
+            if os.environ.get("TOUR71_ECHELLE"):
+                # tour 71 : l'etat de base a ete fait a lr 0,05 ; sqrt(v) et m vont comme lr : on les met a l'echelle de lr/0,05 avant la chauffe
+                w["m"] = w["m"] * (lr / 0.05); w["v"] = w["v"] * (lr / 0.05) ** 2
             redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + k, eps=e, cross=2.0, stop=False)
             w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
             redlib.avancer_obs(w, delta, int(os.environ.get("TOUR67_SETTLE", "10000")), np.zeros((1, 7)), eps=e)
