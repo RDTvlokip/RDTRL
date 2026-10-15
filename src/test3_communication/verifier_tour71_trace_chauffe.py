@@ -36,4 +36,7 @@ if __name__ == "__main__":
     sup = np.nonzero(r > 0.9)[0]
     print(f"{mod} lr {lr} eps/lr {q:.2e} : {n} pas a pli-1e-6")
     print(f"   rb initial {r[0]:.5f}  max {r.max():.5f}  final {r[-1]:.5f}  premier rb > 0,9 : {sup[0] if len(sup) else 'jamais'}  nb de pas > 0,9 : {len(sup)}  dernier : {sup[-1] if len(sup) else '-'}")
+    sous = np.nonzero(r <= 0.9)[0]
+    dernier_sous = int(sous[-1]) if len(sous) else -1
+    print(f"   dernier pas avec rb <= 0,9 : {dernier_sous}  (rb final {'> 0,9 : effondrement durable, installe au pas ' + str(dernier_sous + 1) if r[-1] > 0.9 else '<= 0,9 : revenu sur le noeud'})")
     print("   rb a t = 0,1,2,3,10,100,1000,10000 :", [round(float(r[t]), 4) for t in (0, 1, 2, 3, 10, 100, 1000, min(10000, n - 1))])

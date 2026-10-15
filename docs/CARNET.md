@@ -18912,6 +18912,16 @@ de 0,005, 0,3 ; 0,35 ; 0,4, eps/lr = 5,95e-7, avec et sans `TOUR71_ECHELLE=1`) :
 - P71-3 : sa question (temps d'effondrement divergeant en 1/√(lr − lr_c)) : non, aucun temps d'effondrement ne dépasse 300 pas dans la
   bande 0,305–0,345, donc rien à ajuster : 80 %.
 
+**Résultats du premier lot (trace de chauffe, un seul trajet déterministe par lr, état de base brut, eps/lr = 5,95e-7) :**
+effondrement durable (rb final > 0,9) à lr 0,315 ; 0,32 ; … ; 0,345 ; retour sur le nœud à lr 0,305 ; 0,31 ; 0,311 ; 0,312 ; 0,313 ; 0,314.
+**Seuil entre 0,314 et 0,315, marche monotone : P71-1 ✓ (monotone).** Dernier pas avec rb ≤ 0,9 (installation de l'effondrement) :
+197 (0,315), 149 (0,32), 185 (0,325), 240 (0,33), 315 (0,335), 411 (0,34), 530 (0,345) : tous < 300 jusqu'à 0,33, mais 315 à 0,335,
+411 à 0,34 et 530 à 0,345 dépassent 300 : **la moitié de P71-1 (« avant le pas 300 ») ✗** et **P71-3 (« aucun temps ne dépasse 300 pas
+dans la bande 0,305–0,345 ») ✗ à partir de 0,335** ; le temps est non monotone (197 → 149 → 185 …) : il n'augmente pas en
+approchant du seuil par le haut (197 à 0,315 contre 149 à 0,32). À lr 0,31, rb retombe à 0,813 mais un dépassement a lieu à
+t = 4584 (dernier pas > 0,9) : une excursion tardive sans effondrement.
+Pas encore fait : seuil précis, exposants, mise à l'échelle des moments (P71-2).
+
 Réponse dans `docs/REPONSE_ORDRE71.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
