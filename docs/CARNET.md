@@ -18827,6 +18827,40 @@ résolution de 2e-4 (bootstrap), donc le test est faisable ; (d) l'identifiabili
   zéro entre 5,7 et 6,0 : 50 %.
 - P70-5 (H70-4) : à lr 0,3 le décalage en x (1e-7 moins 1e-8) est entre −0,005 et −0,015 : 55 %.
 
+**Résultats (16/10) :** zéros (1e-7), référence = racine g_l3 = g_l4 au z4 moyen du run :
+```
+lr      x = 1e-8   x = 1e-7   décalage en x    effondrées
+0,15    6,1413     6,1383     −0,0030         0 / 0
+0,2     6,0838     6,0777     −0,0061         0 / 0
+0,3     5,9721     5,9579     −0,0142         0 / 0   (0/16 aux 11 eps/lr, 5,80 à 6,10e-7)
+0,4     effondré   effondré   —               16/16 aux 11 eps/lr (5,50 à 6,10e-7), aux deux x
+```
+(0,05 : 6,2214 | 6,2223 ; 0,1 : 6,1896 | 6,1786 ± 0,003, phases bimodales à x = 1e-7 : points d'ES jusqu'à 3e-10.)
+- **P70-1 ✓** : lr 0,15 à 6,1413 dans [6,138 ; 6,146], 0,0043 au-dessus du quadratique pur de lr 0,01–0,1 (6,1370) : il y a un
+  terme en plus. Les prédictions de ses ajustements : c (0,01–0,2) 6,1419 (écart 0,0006), d (0,01–0,2) 6,1429 (0,0016), pur
+  (0,01–0,2) 6,1474 (0,006), pur (0,01–0,1) 6,1370 (0,0043).
+- **P70-2 ✓** : lr 0,3 ne s'effondre pas, ni à x = 1e-8 (0/16 aux 11 eps/lr) ni à x = 1e-7. **P70-3 ✓** : zéro lr 0,3 à x = 1e-8 =
+  5,9721, dans [5,90 ; 5,99] ; le quadratique pur (5,853) est exclu. Ses prédictions : lr⁴ (0,01–0,2) 5,9755 (écart 0,0034),
+  lr³ 5,9445 (0,0276), pur 5,8528 (0,119) : **son pari (au-dessus de 5,96, série paire, 55 %) ✓.**
+- **P70-4 : ✓ à x = 1e-8, ✗ à x = 1e-7** : lr 0,4 s'effondre à 16/16 aux 11 eps/lr (5,50 à 6,10e-7) aux deux x ; j'attendais
+  un zéro entre 5,7 et 6,0 à x = 1e-7 (50 %). Le plafond est entre 0,3 et 0,4 à eps/lr ≈ 6e-7 (réponse à sa question).
+- **P70-5 ✓** : décalage en x à lr 0,3 = −0,0142 dans [−0,015 ; −0,005]. Il croît avec lr : +0,0009 ; −0,0110 (bimodal) ;
+  −0,0030 ; −0,0061 ; −0,0142 pour 0,05 ; 0,1 ; 0,15 ; 0,2 ; 0,3.
+- Ajustements avec les sept zéros 0,01–0,3 à x = 1e-8 : a + b lr² + c lr⁴ : a = 6,2318, b = −4,370, c = +16,50, résidu max
+  0,0006 ; a + b lr² + d lr³ : d = +7,93, résidu max 0,0016 ; quadratique pur : 0,0212. Cinq zéros 0,05–0,3 à x = 1e-7 : c
+  = +15,95 (résidu max 0,0072 dû à lr 0,1) ; d : résidus 0,0062. **c est stable : 13,8 (0,005–0,2), 17,1 (0,01–0,2), 16,5
+  (0,01–0,3), 15,9 (x = 1e-7)** ; son c = 38 à x = 1e-7 sortait de trois points dont lr 0,1 bimodal ; avec les cinq
+  points du bon x, c est le même qu'à x = 1e-8. **H70-1 : série paire ✓ ; lr 0,3 sépare la parité en faveur de c** (résidu 2,7 fois
+  plus petit que d, et 0,0034 contre 0,0276 sur l'extrapolation de lr 0,2).
+
+| H70-1 l'excès de lr 0,2 est c lr⁴ (série paire) | 16/10 (lui) | **confirmée** par lr 0,15 (6,1413 contre 6,1419) et lr 0,3 (5,9721 contre 5,9755) ; d lr³ à 0,0276 près à lr 0,3 |
+| H70-2 x est un confondant de c | 16/10 (lui) | **réfutée** : c = 16,5 (x = 1e-8, 7 points) et 15,9 (x = 1e-7, 5 points) ; son c = 38 vient d'un lr 0,1 bimodal |
+| H70-3 il y a un terme au-delà de lr² | 16/10 (moi) | **confirmée** : lr 0,15 est 0,0043 au-dessus du quadratique pur |
+| H70-4 le décalage en x croît avec lr | 16/10 (moi) | **confirmée** : −0,0030 (0,15), −0,0061 (0,2), −0,0142 (0,3) |
+
+**Prédiction précommise (16/10) :** plafond de lr : lr 0,35 à x = 1e-7 et 1e-8, eps/lr 5,6 à 6,1e-7 (huit valeurs) :
+effondrement à x = 1e-8 pour au moins 6 des 8 eps/lr (65 %) ; à x = 1e-7 zéro existant (55 %).
+
 Réponse dans `docs/REPONSE_ORDRE70.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

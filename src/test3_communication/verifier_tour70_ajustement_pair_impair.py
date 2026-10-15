@@ -50,6 +50,13 @@ if __name__ == "__main__":
         lrs = [0.05, 0.1, 0.2]
         coef, _ = fit(lrs, [Z[l] for l in lrs], (2, 4))
         print(f"   {nom} : a = {coef[0]:.4f} b = {coef[1]:+.3f} c = {coef[2]:+.2f}")
+    lr7 = sorted(Z7)
+    if len(lr7) >= 4:
+        print(f"\nx = 1e-7, tous les points ({lr7}) :")
+        for titre, puis in (("a + b lr^2 + c lr^4", (2, 4)), ("a + b lr^2 + d lr^3", (2, 3))):
+            coef, res = fit(lr7, [Z7[l] for l in lr7], puis)
+            print(f"   {titre} : a = {coef[0]:.4f} coef {np.round(coef[1:], 3)} residus {np.round(res, 4)} residu max {np.abs(res).max():.4f}")
+    print(f"\ndecalage en x (1e-7 moins 1e-8) par lr : " + ", ".join(f"{l}: {Z7[l] - Z8[l]:+.4f}" for l in lr7 if l in Z8))
     lr_b = [l for l in sorted(Z8) if 0.01 <= l <= 0.1]
     cb, _ = fit(lr_b, [Z8[l] for l in lr_b], (2,))
     print(f"   decalage en x a lr 0,2 (1e-7 moins 1e-8) : {Z7[0.2] - Z8[0.2]:+.4f} ; exces de lr 0,2 sur le quadratique de lr 0,01-0,1 : {Z8[0.2] - predit(cb, (2,), 0.2):+.4f}")
