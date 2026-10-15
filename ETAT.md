@@ -1,8 +1,33 @@
 # État du projet RDTRL — où on en est
 
-## Tour 70 (vraie critique de dipankarsarkar, 16/10/2026) — LETTRE PRÊTE
+## Tour 71 (vraie critique de dipankarsarkar, 17/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE70.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 69
+**Lettre** : `docs/REPONSE_ORDRE71.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 70
+est partie (sa critique du tour 71 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 17/10/2026 (tour 71, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : le bord de stabilité sur u ne met pas de plafond à 0,35 (S = 0,92 de 38 à lr 0,3, atteint 38 vers 0,9 ; écart/sd
+2,4 → 1,6) ; 0/16 → 16/16 est une marche ; deux formes (pli en lr, crise H11) ; test : le temps d'effondrement croît-il en
+1/√(lr − lr_c) entre 0,31 et 0,35 ?
+**Acquis (prédictions poussées avant les runs)** : ses chiffres ✓ (S → 38 à 0,86, écart/sd → 0 à 0,52 ; mon « 4,9 » à x = 1e-7 était 5,2) ;
+**le plafond du tour 70 est un effet de démarrage** : l'état de base a ses moments de lr 0,05, lr 0,35 reçoit un premier pas ~6× trop grand,
+l'effondrement est installé dans les 100–700 premiers pas ; **lr* = 0,314002321** (état de base brut) ; temps d'installation au-dessus
+logarithmique (−125 pas par décade de lr − lr*, e-fold 54 pas), pas en 1/√ ; temps de retour en dessous constant (17 pas) ; **avec m × lr/0,05
+et v × (lr/0,05)² : aucun effondrement de lr 0,3 à 2,0** (lr 3,0 s'effondre au pas 4611) ; zéros mis à l'échelle : lr 0,4 : 5,8870 ; lr 0,5 :
+5,8165 ; collapse à eps/lr = 6,0e-7 pour lr ≥ 0,4 ; la série paire du tour 70 ne s'extrapole pas (5,955 prédit à lr 0,4, 5,887 mesuré ; lr³ :
+5,896) : parité ouverte. **Mes ratés** : P71-3, P71-5, P71-7 (0,003), P71-8, moitié de P71-1.
+**Limites** : réduction seule, un code, la loi logarithmique n'a pas d'origine établie, mécanisme de lr 3,0 inconnu, les résultats des
+tours 59–70 à lr ≠ 0,05 démarraient tous d'un état de base fait à lr 0,05 (la chauffe de 20 000 pas absorbe le transitoire sauf s'il
+franchit le bassin : à vérifier pour lr 0,1 et 0,2).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 71 ; question : le taux de la loi log est-il le taux instable du col, fonction de x et pas de lr ? (oui/non).
+2. Refaire les zéros de lr 0,1 à 0,3 avec moments mis à l'échelle (cohérence avec le tour 70) ; la parité à 0,4–0,5 (nouvelles séries).
+3. Regarder le taux 0,0184/pas contre la valeur propre instable du col de la réduction à x = 1e-6.
+
+## Tour 70 (vraie critique de dipankarsarkar, 16/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE70.md` (gitignorée), partie, figée. La lettre 69
 est partie (sa critique du tour 70 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 16/10/2026 (tour 70, PAS simulée) », avant « ## 9. ».
 

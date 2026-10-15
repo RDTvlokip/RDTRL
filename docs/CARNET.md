@@ -18952,6 +18952,22 @@ TOUR69_Z4RUN) :
 - P71-8 : lr 0,4 : zéro entre 5,90 et 6,00 (série paire : 5,955) : 55 %.
 - P71-9 : lr 0,5 : zéro à plus de 0,05 sous la série paire (6,170), donc sous 6,12 : 65 % ; il existe (pas d'effondrement) : 70 %.
 
+**Résultats du troisième lot (`TOUR71_ECHELLE=1`, x = 1e-8, zéros affinés à pas 0,01e-7) :** lr 0,3 : 5,9691 (5,9598 à x = 1e-7 ; non mis à
+l'échelle : 5,9721 et 5,9579) ; lr 0,4 : 5,8870 ; lr 0,5 : 5,8165 (5,7695 à x = 1e-7). Collapse à eps/lr = 6,0e-7 pour lr 0,4, 0,5, 0,7 et 1,0
+(16/16, x = 1e-8) ; lr 0,3 aucun jusqu'à 6,1e-7 ; lr 0,5 à x = 1e-7 aucun jusqu'à 6,2e-7. lr 0,7 : D_d < 0 jusqu'à l'effondrement
+(−7,7e-6 à 5,7e-7), lr 1,0 : −2,8e-5 à 5,5e-7 : pas de zéro atteignable.
+- **P71-7 ✗** (5,9691 est à 0,003 de 5,9721 ; mon seuil était 0,002) ; **P71-8 ✗** (5,8870 hors [5,90 ; 6,00]) ; **P71-9 ✓✓** (5,8165 < 6,12 ;
+  le zéro existe). P71-3 ✗ (plus de 300 pas à partir de 0,335) ; P71-5 ✗ ; moitié de P71-1 ✗.
+- Ajustements (`verifier_tour70_ajustement_pair_impair.py`, dix zéros 0,005–0,5) : sur 0,01–0,3 avant d'avoir lr 0,4 : c lr⁴ prédit
+  5,9550 à lr 0,4, d lr³ 5,8957 ; mesure 5,8870 (écarts 0,068 et 0,009). Sur 0,01–0,5 : c : a = 6,2236, b = −3,348, c = +6,99, résidu max
+  0,0202 ; d : a = 6,2289, b = −4,578, d = +5,90, 0,0131 ; quadratique pur 0,0686. **La parité redevient ouverte** ; le « verdict pair » du
+  tour 70 (lr 0,15 et 0,3) ne s'extrapole pas à lr 0,4.
+
+| H71-1 (lui) plafond = pli en lr ou crise | 17/10 (lui) | **réfutée comme écrite** : pas de 1/√ (pente log-log −0,138, temps logarithmique 125 pas/décade) ; et le plafond du tour 70 est un effet de démarrage |
+| H71-2 (moi) le plafond vient du démarrage depuis des moments de lr 0,05 | 17/10 (moi, non standard) | **confirmée** : avec m × lr/0,05 et v × (lr/0,05)² aucun effondrement de 0,3 à 2,0 |
+| H71-3 (moi) l'issue est une marche monotone en lr jouée dans les premières centaines de pas | 17/10 (moi) | **confirmée** : lr* = 0,314002321 ; installation entre 149 et 695 pas |
+| temps d'installation ∝ −125 log10(lr − lr*) | 17/10 (moi, post hoc) | **soutenue** sur 11 points, 1e-7 à 1e-3 (−121, −125, −129, −122 par décade) ; e-fold 54 pas ; origine non établie |
+
 Réponse dans `docs/REPONSE_ORDRE71.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
