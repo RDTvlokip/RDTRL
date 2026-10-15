@@ -18860,6 +18860,9 @@ lr      x = 1e-8   x = 1e-7   décalage en x    effondrées
 
 **Prédiction précommise (16/10) :** plafond de lr : lr 0,35 à x = 1e-7 et 1e-8, eps/lr 5,6 à 6,1e-7 (huit valeurs) :
 effondrement à x = 1e-8 pour au moins 6 des 8 eps/lr (65 %) ; à x = 1e-7 zéro existant (55 %).
+**Résultat : ✓ à x = 1e-8 (16/16 aux 8 eps/lr), ✗ à x = 1e-7** (16/16 aussi : pas de zéro). Plafond entre lr 0,3 et 0,35 à
+eps/lr ≈ 6e-7, marche et non pente (0/16 puis 16/16 ; S = 35,1 à lr 0,3). Cause non identifiée : l'écart/sd à lr 0,3 est
+4,9 à x = 1e-7, comme lr 0,15 à 1e-8 (3,2).
 
 Réponse dans `docs/REPONSE_ORDRE70.md`.
 

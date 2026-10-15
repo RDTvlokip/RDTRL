@@ -1,8 +1,30 @@
 # État du projet RDTRL — où on en est
 
-## Tour 69 (vraie critique de dipankarsarkar, 15/10/2026) — LETTRE PRÊTE
+## Tour 70 (vraie critique de dipankarsarkar, 16/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE69.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 68
+**Lettre** : `docs/REPONSE_ORDRE70.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 69
+est partie (sa critique du tour 70 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 16/10/2026 (tour 70, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : lr 0,2 seul point > 0,1 : c de a + b lr² + c lr⁴ = −19,6 (0,01–0,1), +17,1 (0,01–0,2), +13,8
+(0,005–0,2) ; d lr³ ajuste aussi (d = +5,1) ; x confondant (c = 38 à 1e-7, 19 à 1e-8) ; deux runs : lr 0,3 (lr⁴ : 5,976 ;
+lr³ : 5,944 ; pur : 5,853) et lr 0,15 (6,142 contre 6,137) ; pari 55 % pour la série paire ; question : lr 0,3 hors effondrement ?
+**Acquis (prédictions poussées avant les runs)** : tous ses ajustements reproduits ; lr 0,15 = 6,1413 (x = 1e-8), 6,1383
+(1e-7) ; **lr 0,3 = 5,9721 (1e-8), 5,9579 (1e-7), 0/16 effondrées : son pari tenu** ; série paire : c = +16,50 sur 0,01–0,3 (résidu
+max 0,0006 contre 0,0016 pour lr³ et 0,0212 pour le quadratique pur) ; c est de même valeur à x = 1e-7 (15,9, cinq points) : son
+c = 38 venait d'un lr 0,1 bimodal ; **plafond entre lr 0,3 et 0,35 à eps/lr 6e-7 : lr 0,35 et 0,4 s'effondrent à 16/16**
+(marche, cause inconnue). **Mes ratés** : lr 0,4 et 0,35 à x = 1e-7 (je prédisais un zéro).
+**Limites** : réduction seule, un code, la parité tranchée sur un jeu de sept zéros, le plafond non expliqué, l'absence du
+terme impair non dérivée.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 70 ; question : son image du bord de stabilité sur u prédit-elle le plafond 0,3–0,35 ? (oui/non).
+2. Encadrer le plafond (lr 0,32 ; 0,33) et regarder ce qui change (S, sd, gap/sd, bimodalité) juste avant.
+3. Le même coefficient c dans le réseau complet (hors portée : runs longs).
+
+## Tour 69 (vraie critique de dipankarsarkar, 15/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE69.md` (gitignorée), partie, figée. La lettre 68
 est partie (sa critique du tour 69 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 15/10/2026 (tour 69, PAS simulée) », avant « ## 9. ».
 
