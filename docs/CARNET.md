@@ -19086,6 +19086,15 @@ peu). À δ = 1e-7 la valeur à t = 500 était 1,0197 (plus près de la sortie) 
 **Prédiction précommise (19/10), troisième lot — modèle du gain** (`verifier_tour73_modele_gain.py`, post hoc par construction mais calibré sur un seul point) : √v_e3 décroît comme
 exp(−t/2000) (b2 = 0,999 : v décroît d'un facteur 0,999 par pas) ; taux(t) = lr\* λ_s [1/(s(t)+eps) + 1/(s(t)+26 eps)], λ_s = 7,30e-5√x, s(200) mesuré ; on part de t(1e-6) = 476 mesuré
 (tol 0,02, au-dessus) et on intègre ∫ taux dt = ln 10 par décade. Prédit : t(1e-7), t(1e-8), t(1e-9), t(1e-10) à moins de 5 % de 600, 719, 833, 944. Mise : 50 %.
+**Résultat : ✗** : t prédit 580 (−3,3 %), 681 (−5,3 %), 778 (−6,6 %), 871 (−7,7 %) ; décades prédites 104, 101, 97, 93 contre mesurées 124, 119, 114, 111 : rapport constant 0,84 à 0,86 ; le
+modèle a la forme (raccourcissement lent) mais son taux est 16 à 20 % au-dessus de celui du jacobien (taux(200) = 0,01956 contre ln 1,01692 = 0,01678). Constante de temps mesurée de √v_e3 :
+1985 pas (1,262 ; 1,200 ; 1,142 ; 1,086 ; 1,033e-6 de t = 200 à 600), pour 2000 attendus de b2 = 0,999. **H73-2 ✓** (décroissance en exp(−t/2000)) pour la décroissance de √v ; raccourcissements
+mesurés 5, 5, 5, 3 pour les décades, de l'ordre de 3 à 6 % ✓.
+
+| H73-1 (lui) le coût d'une décade diminue quand δ → 0 | 19/10 (lui) | **confirmée** : 133, 129, 124, 119, 114, 111 (au-dessus, tol 0,02) jusqu'à δ = 1e-10 ; sa prédiction (moins de 124 à 1e-8) tenue (119) |
+| H73-2 (moi) √v_e3 décroît en exp(−t/2000) et les décades raccourcissent de 3 à 6 % | 19/10 (moi) | **confirmée** (1985 pas ; 5, 5, 5, 3 pas) |
+| le 12–15 % du tour 72 est un écart physique entre le jacobien et la pente | 18/10 (moi) | **réfutée** : fenêtre d'ajustement (pente 1e-7 à 1e-4 : taux 0,01760 contre 0,01742, 1 %) |
+| gain × λ_s(x) fixe le taux absolu | 18/10 (moi) | **partiellement réfutée** : bon à 16–20 % près, pas à 5 % (facteur 0,84 constant sur quatre décades) |
 
 Réponse dans `docs/REPONSE_ORDRE73.md`.
 

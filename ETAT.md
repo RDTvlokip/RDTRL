@@ -1,8 +1,28 @@
 # État du projet RDTRL — où on en est
 
-## Tour 72 (vraie critique de dipankarsarkar, 18/10/2026) — LETTRE PRÊTE
+## Tour 73 (vraie critique de dipankarsarkar, 19/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE72.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 71
+**Lettre** : `docs/REPONSE_ORDRE73.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 72
+est partie (sa critique du tour 73 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 19/10/2026 (tour 73, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : « oui » sur le taux (valeur propre du pas qu'Adam fait, préconditionneur qui bouge pendant le séjour) ; mon écart de 12–15 % venait de la fenêtre
+d'ajustement (pente 1e-7 à 1e-4 : −130,8, taux 0,01760 contre ln 1,01757 = 0,01742, 1 %) ; décades sous lr\* : 67, 133, 132, 127 ; au-dessus : 133, 129, 124 ; prédiction : δ = 1e-8
+coûte moins de 124 pas.
+**Acquis (prédictions poussées avant les runs)** : tous ses chiffres ✓ ; lr\* à 1e-15 = 0,314002321343052 ; décades au-dessus (tol 0,02) 133, 129, 124, **119**, 114, 111 jusqu'à δ = 1e-10
+(sa prédiction tenue) ; sous lr\* (tol 0,005) 133, 132, 127, 121, 116, 113 ; jacobien en fin de séjour (δ = 1e-10) 1,01855 (500), 1,01987 (700), 1,02195 (850), 1,02670 (920) ; √v_e3 décroît en
+exp(−t/2000) (1985 mesuré) ; modèle gain × λ_s : forme bonne, taux 16–20 % trop haut (décades 104, 101, 97, 93 contre 124, 119, 114, 111, rapport 0,84–0,86 constant).
+**Mes ratés** : modèle à 5 % (3 sur 4 hors), lead ≥ 1,0200 à t = 700 (1,01987), monotonie de la série sous lr\* à tol 0,02 (une excursion de 4641).
+**Limites** : réduction seule, un code, l'origine du facteur 0,84 inconnue (correction en x de λ_s ? terme 26 eps ?), réseau complet non testé.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 73 ; question : le 0,84 est-il la correction d'ordre x de λ_s à x = 1e-6 ? (oui/non).
+2. Calculer λ_s(x) exact au col (jacobien de la réduction à x = 1e-6, avec point fixe g_l3 = g_l4) ; vérifier le vecteur propre de 1,0177.
+3. Refaire x = 1e-5 avec le col de la réduction au lieu de la forme fermée.
+
+## Tour 72 (vraie critique de dipankarsarkar, 18/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE72.md` (gitignorée), partie, figée. La lettre 71
 est partie (sa critique du tour 72 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 18/10/2026 (tour 72, PAS simulée) », avant « ## 9. ».
 
