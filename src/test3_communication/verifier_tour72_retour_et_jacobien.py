@@ -46,6 +46,9 @@ def effondre(lr, q, xw):
     return trajet(lr, q, xw)[-1, 0] > 0.9
 
 
+TOL_BISSECTION = 1e-11  # tour 73 : 1e-15 pour des delta de 1e-10 ; module.TOL_BISSECTION
+
+
 def bissection(q, xw, lo=None, hi=None):
     """premier passage retour -> effondrement en balayant lr de 0,05 a 0,8 par pas de 0,01 (le plafond n'est pas monotone au-dela), puis bissection."""
     if lo is None:
@@ -63,7 +66,7 @@ def bissection(q, xw, lo=None, hi=None):
     c_lo, c_hi = effondre(lo, q, xw), effondre(hi, q, xw)
     if c_lo == c_hi:
         return None
-    while hi - lo > 1e-11:
+    while hi - lo > TOL_BISSECTION:
         mid = 0.5 * (lo + hi)
         if effondre(mid, q, xw) == c_hi:
             hi = mid

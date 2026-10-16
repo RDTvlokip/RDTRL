@@ -19036,6 +19036,35 @@ x = 1e-6 (**ma prédiction « à moins de 15 % de la formule » ✗**), 3 % au-d
 
 Réponse dans `docs/REPONSE_ORDRE72.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 19/10/2026 (tour 73, PAS simulée)
+
+« Oui. Le taux est la valeur propre dominante du pas qu'Adam fait réellement, et le préconditionneur bouge encore pendant le séjour. 0,0184 était un
+ajustement, jamais une constante. » Mes tableaux montrent la dérive et ferment l'écart de 12 à 15 %. Sous lr\*, tol 0,005, pas par décade de 1e-3 vers le bas : 67, 133,
+132, 127 ; ln 10/ln(lead) du jacobien sous lr\* : 132 à t = 350, 133 à t = 500. Le 67 est la chauffe : lead 1,032 à t = 100, soit 72 pas par décade ; mon ajustement
+−113,1 passe par là et par 3e-3. En n'ajustant que 1e-7 à 1e-4 : −130,8, taux 0,01760 par pas contre ln 1,01757 = 0,01742 : 1 %. Au-dessus de lr\*, tol 0,02, après
+1e-4 : 133, 129, 124 ; ln 10/ln(lead) à t = 200, 350, 500 : 137, 131, 118 : les décades tardives partent plus vite parce que le gain a monté. Donc l'écart venait de la
+fenêtre d'ajustement, pas du col. Il ne peut pas vérifier mon terme en 26 eps ; ce test n'en a pas besoin. Prédiction : si le gain continue de monter, δ = 1e-8 coûte
+moins de 124 pas pour sa décade au-dessus de lr\*. Question : est-ce le cas ?
+
+**Vérification de ses chiffres (`verifier_tour73_decades.py controle`) :** décades sous lr\* : [67, 133, 132, 127] ✓ ; au-dessus : [133, 129, 124] ✓ ; ln 10/ln(lead) : 132,2 ;
+133,1 ; 72,3 (t = 100) ; 137,2 ; 131,1 ; 118,0 ✓ ; pente 1e-7 à 1e-4 = −130,8, taux 0,01760, ln 1,01757 = 0,01742, écart 1,07 % ✓. **Tous ses chiffres sont corrects.** Les 12 à
+15 % que j'avais écrits étaient donc l'effet de la fenêtre (mon ajustement sur 1e-7 à 3e-3 traversait la chauffe), pas un écart physique : ma lecture « le jacobien est
+12–15 % sous la pente » est corrigée par la sienne. Réserve : ses 67 et 72 comparent deux choses différentes (une décade de temps de départ à 1e-3→1e-4, et le lead à t = 100
+au-dessus de lr\*) ; ils concordent à 7 %, ce qui est une cohérence, pas une identité.
+
+**Hypothèses (19/10) :**
+- H73-1 (lui) le coût d'une décade diminue quand δ → 0, parce que le gain Adam monte pendant le séjour (√v_e3 décroît).
+- H73-2 (moi, non standard) la décroissance de √v_e3 suit exp(−t/2000) (b2 = 0,999 : v décroît par facteur 0,999 par pas), donc le gain monte sans plafond jusqu'à la sortie ;
+  les décades successives raccourcissent de 3 à 6 % chacune, à partir de 124.
+
+**Prédictions précommises (19/10), avant le run** (`verifier_tour73_decades.py decades 5.95e-7 1e-6`, lr\* à 1e-15, δ = 1e-3 … 1e-10, tol 0,02 et 0,005) :
+- P73-1 : la décade 1e-7 → 1e-8 au-dessus de lr\* (tol 0,02) coûte entre 105 et 122 pas (sa prédiction : moins de 124). Mise : 60 %.
+- P73-2 : au-dessus, les décades suivantes (1e-8 → 1e-9, 1e-9 → 1e-10) raccourcissent chacune d'au moins 2 pas par rapport à la précédente. Mise : 55 %.
+- P73-3 : sous lr\*, tol 0,005, la décade 1e-7 → 1e-8 coûte entre 100 et 126 pas (précédente : 127). Mise : 55 %.
+- P73-4 : t(δ) reste monotone en δ jusqu'à 1e-10 (pas de bruit numérique à lr\* à 1e-15). Mise : 60 %.
+
+Réponse dans `docs/REPONSE_ORDRE73.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
