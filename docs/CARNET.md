@@ -19063,6 +19063,22 @@ au-dessus de lr\*) ; ils concordent à 7 %, ce qui est une cohérence, pas une i
 - P73-3 : sous lr\*, tol 0,005, la décade 1e-7 → 1e-8 coûte entre 100 et 126 pas (précédente : 127). Mise : 55 %.
 - P73-4 : t(δ) reste monotone en δ jusqu'à 1e-10 (pas de bruit numérique à lr\* à 1e-15). Mise : 60 %.
 
+**Résultats (19/10) :** lr\* = 0,314002321343052 (bissection à 1e-15), q = 5,95e-7, x de chauffe 1e-6. Temps de départ du col :
+```
+delta              1e-3  1e-4  1e-5  1e-6  1e-7  1e-8  1e-9  1e-10
+au-dessus tol 0,02  100   214   347   476   600   719   833   944      décades : 114, 133, 129, 124, 119, 114, 111
+au-dessus tol 0,005  78   143   275   407   533   654   771   884      décades :  65, 132, 132, 126, 121, 117, 113
+au-dessous tol 0,005 80   147   280   412   539   660   776   889      décades :  67, 133, 132, 127, 121, 116, 113
+au-dessous tol 0,02  95   235   371  4641   622   740   853   963      (4641 : excursion tardive isolée > 0,02 à δ = 1e-6)
+```
+**P73-1 ✓** (décade 1e-7 → 1e-8 au-dessus : 119, dans [105 ; 122] et < 124 : sa prédiction tenue) ; **P73-2 ✓** (114 puis 111, raccourcissements de 5 et 3) ;
+**P73-3 ✓** (121 dans [100 ; 126]) ; **P73-4 : ✓ sur trois séries, ✗ sur une** (sous lr\*, tol 0,02, δ = 1e-6 : t = 4641 au lieu de ~499, une excursion isolée de plus de 0,02 loin
+du séjour, bruit des salves ; la série n'est pas monotone). Les décades raccourcissent régulièrement d'environ 4 à 5 % : 133, 129, 124, 119, 114, 111 (au-dessus, tol 0,02) et
+132, 132, 126, 121, 117, 113 (tol 0,005), 133, 132, 127, 121, 116, 113 (sous lr\*).
+
+**Prédiction précommise (19/10), second lot :** le jacobien suit le gain jusqu'au bout du séjour : à δ = +1e-10 (TOUR73_TOL=1e-15), valeur propre dominante à t = 500, 700, 850, 920 :
+croissante, ≥ 1,0200 à t = 700, ≥ 1,0210 à t = 850, ≥ 1,0215 à t = 920 (ln 10/ln(lead) sous 110 à t = 920). Mise : 55 %.
+
 Réponse dans `docs/REPONSE_ORDRE73.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

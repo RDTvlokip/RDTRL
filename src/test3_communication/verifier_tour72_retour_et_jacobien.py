@@ -46,7 +46,8 @@ def effondre(lr, q, xw):
     return trajet(lr, q, xw)[-1, 0] > 0.9
 
 
-TOL_BISSECTION = 1e-11  # tour 73 : 1e-15 pour des delta de 1e-10 ; module.TOL_BISSECTION
+import os
+TOL_BISSECTION = float(os.environ.get("TOUR73_TOL", "1e-11"))  # tour 73 : TOUR73_TOL=1e-15 pour des delta de 1e-10
 
 
 def bissection(q, xw, lo=None, hi=None):
