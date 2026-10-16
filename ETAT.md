@@ -1,8 +1,30 @@
 # État du projet RDTRL — où on en est
 
-## Tour 71 (vraie critique de dipankarsarkar, 17/10/2026) — LETTRE PRÊTE
+## Tour 72 (vraie critique de dipankarsarkar, 18/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE71.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 70
+**Lettre** : `docs/REPONSE_ORDRE72.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 71
+est partie (sa critique du tour 72 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 18/10/2026 (tour 72, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : le taux de la loi log (125 pas/décade → 0,0184, multiplicateur 1,0186) est celui d'un col ; mais le col appartient à
+(x, lr\*(x)), un balayage à un x ne les sépare pas ; deux vérifications : (1) la loi des deux côtés (mes 17 pas ne comptent que rb > 0,9) ; (2) la valeur propre
+de l'application d'un pas à mi-séjour (1,0186 attendu). Question : sous lr\*, le temps de retour croît-il comme 125 log10(1/δ) ?
+**Acquis (prédictions poussées avant les runs)** : son arithmétique ✓ ; mon horloge (rb) était aveugle ; **le séjour est sur le col (jumeau) de la forme fermée :
+d3 = 2,837195e-3 = nœud + 0,2213√x à x = 1e-6** ; départ du col : −122 pas/décade au-dessus, −130 (tol 0,02) / −113 (tol 0,005) au-dessous : **oui** ; valeur
+propre 1,0177 (t = 350), 1,0172 (mi-séjour) : taux 4–8 % sous 1,0186, dérive le long du séjour 1,0169 → 1,0197 ≈ gain Adam ×1,12 ; pentes : peu de q (−14 %, −24 %),
+beaucoup de x (×2,4 à x ÷ 10, ×0,27 à x × 10) ; **formule : taux = lr\* λ_s(x) [1/(s+eps) + 1/(s+26 eps)], λ_s = 7,30e-5√x, dans 0,83–1,07 du taux mesuré sur quatre
+configurations**. **Mes ratés** : métrique rb de P72-1 ; q = 9e-7 à −24 % (limite 20) ; valeur propre à 15–19 % de la formule (limite 15) ; ma bissection sur [0,2 ; 0,45] a échoué à q = 5,95e-7
+(plafond non monotone).
+**Limites** : réduction seule, un code ; x = 1e-5 non testé (séjour décalé) ; vecteur propre de 1,0177 non vérifié ; l'état de base vient de lr 0,05.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 72 ; question : le taux du col est-il gain Adam × λ_s(x) ? (oui/non).
+2. x = 1e-5 : définir le col dans la réduction (point fixe g_l3 = g_l4 + z4 du run) au lieu de la forme fermée ; vérifier le vecteur propre.
+3. Reprendre les conclusions de lr 0,1–0,3 (tours 69–71) en tenant compte que le démarrage passe par le col.
+
+## Tour 71 (vraie critique de dipankarsarkar, 17/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE71.md` (gitignorée), partie, figée. La lettre 70
 est partie (sa critique du tour 71 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 17/10/2026 (tour 71, PAS simulée) », avant « ## 9. ».
 

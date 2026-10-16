@@ -19024,6 +19024,16 @@ répond à sa question : oui, sous lr\* le temps de retour au nœud croît comme
 tolérance 0,005 ne convient pas), le rapport taux prédit/taux mesuré (par la pente à tol 0,005) est entre 0,75 et 1,25. Mise : 55 %. Le taux mesuré par le jacobien à mi-séjour
 est à moins de 15 % du taux prédit. Mise : 60 %.
 
+**Résultats du second lot :** taux prédit | mesuré par la pente (tol 0,005), par pas, et rapport : q = 5,95e-7, x = 1e-6 : 0,01993 | 0,01930 (1,03) ; q = 3e-7 : 0,02419 |
+0,02264 (1,07) ; q = 9e-7 : 0,02791 | 0,02642 (1,06) ; q = 5,95e-7, x = 1e-7 : 0,00630 | 0,00760 (0,83) ; x = 1e-5 : **non obtenu** (aucun point du trajet à moins de 0,005 du
+col de la forme fermée ; le séjour y est décalé). **La formule est dans [0,75 ; 1,25] pour les quatre configurations qui ont tourné (✓ sur quatre, la cinquième n'a pas pu être testée).**
+Valeur propre de l'application d'un pas à mi-séjour (ln) : 0,01702 (t = 266), 0,01958 (228), 0,02298 (184), 0,00648 (593) : 12 à 15 % sous le taux de la pente, 15 à 19 % sous la formule à
+x = 1e-6 (**ma prédiction « à moins de 15 % de la formule » ✗**), 3 % au-dessus à x = 1e-7. La dérive de la valeur propre le long du séjour (1,0169 à t = 200, 1,0197 à t = 500 ; ln 0,0168 → 0,0195,
+×1,16) correspond à la croissance du gain Adam quand √v_e3 décroît (1,262e-6 → 1,086e-6 : 1/(s+eps) + 1/(s+26 eps) × 1,12) : à 4 % près.
+| H72-1 (lui) la loi log est un col : mêmes pentes des deux côtés ; valeur propre 1,0186 ; taux fonction de (x, lr\*(x)) | 18/10 (lui) | **confirmée** : séjour sur le col de la forme fermée (d3 = 2,837195e-3), pentes −122 / −130 / −113 ; valeur propre 1,0177 (4 à 8 % sous 1,0186 en taux) ; taux ∝ √x modulé par le gain Adam |
+| H72-2 (moi) le séjour sous lr\* existe, invisible à rb | 18/10 (moi) | **confirmée** (z3) |
+| H72-3 (moi) la valeur propre dominante est une propriété du produit (S, structure Adam), peu dépendante de q et de x | 18/10 (moi) | **réfutée** : elle dépend de x (×0,38 à x ÷ 10) et de q (×1,15 à 1,35) ; la formule gain × λ_s(x) la décrit à 15–19 % |
+
 Réponse dans `docs/REPONSE_ORDRE72.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
