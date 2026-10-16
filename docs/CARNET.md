@@ -19079,6 +19079,14 @@ du séjour, bruit des salves ; la série n'est pas monotone). Les décades racco
 **Prédiction précommise (19/10), second lot :** le jacobien suit le gain jusqu'au bout du séjour : à δ = +1e-10 (TOUR73_TOL=1e-15), valeur propre dominante à t = 500, 700, 850, 920 :
 croissante, ≥ 1,0200 à t = 700, ≥ 1,0210 à t = 850, ≥ 1,0215 à t = 920 (ln 10/ln(lead) sous 110 à t = 920). Mise : 55 %.
 
+**Résultat du jacobien en fin de séjour (δ = +1e-10, lr\* = 0,3140023213) :** valeur propre dominante 1,01855 (t = 500), 1,01987 (700), 1,02195 (850), 1,02670 (920) :
+croissante ✓ ; seuils précommis : ≥ 1,0200 à 700 **✗ de 1,3e-4**, ≥ 1,0210 à 850 ✓, ≥ 1,0215 à 920 ✓, ln 10/ln(lead) à 920 = 87 (< 110 ✓). Mise 55 % : tenue pour trois seuils sur quatre (le premier manqué de
+peu). À δ = 1e-7 la valeur à t = 500 était 1,0197 (plus près de la sortie) : à t égal l'état proche de la sortie a un lead plus grand.
+
+**Prédiction précommise (19/10), troisième lot — modèle du gain** (`verifier_tour73_modele_gain.py`, post hoc par construction mais calibré sur un seul point) : √v_e3 décroît comme
+exp(−t/2000) (b2 = 0,999 : v décroît d'un facteur 0,999 par pas) ; taux(t) = lr\* λ_s [1/(s(t)+eps) + 1/(s(t)+26 eps)], λ_s = 7,30e-5√x, s(200) mesuré ; on part de t(1e-6) = 476 mesuré
+(tol 0,02, au-dessus) et on intègre ∫ taux dt = ln 10 par décade. Prédit : t(1e-7), t(1e-8), t(1e-9), t(1e-10) à moins de 5 % de 600, 719, 833, 944. Mise : 50 %.
+
 Réponse dans `docs/REPONSE_ORDRE73.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
