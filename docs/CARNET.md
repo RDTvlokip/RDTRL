@@ -19001,6 +19001,29 @@ sur mon 17 pas : `verifier_tour71_seuil_lr.py` définit le retour par le dernier
 - P72-3 : à q = 3e-7 et 9e-7 (xw = 1e-6), la pente au-dessus du seuil change de moins de 20 % par rapport à 125 pas/décade. Mise : 45 %.
 - P72-4 : à xw = 1e-5 et 1e-7 (q = 5,95e-7), la pente change de plus de 20 %. Mise : 45 %.
 
+**Résultats du premier lot (18/10) — et correction de mon outil :** ma première mesure (sauf lr\* introuvable à q = 5,95e-7 par ma bissection sur
+[0,2 ; 0,45], le plafond n'étant pas monotone au-delà ; remplacée par un balayage de 0,05 à 0,8) comptait le retour par rb et une tolérance sur rb :
+l'horloge de rb est aveugle au séjour. Une exploration des trajets (z3, u, rb, √v) montre que, après un transitoire de ~100 pas, l'état s'installe à
+**z3 = 9,12, d3 = 2,837e-3 = le col (jumeau instable) de la forme fermée : 2,837195e-3 à x = 1e-6, soit nœud 2,615926e-3 + 0,2213√x**, y séjourne
+~500–700 pas puis part vers le nœud (z3 = 9,2016) en dessous de lr\*, vers l'effondrement au-dessus.
+`verifier_tour72_retour_et_jacobien.py retour`, temps de départ du col (dernier pas avec |z3 − z3_col| < tol), q = 5,95e-7, x de chauffe 1e-6, lr\* =
+0,31400232134 : au-dessus (tol 0,02) 600, 541, 476, 415, 347, 284, 214, 151, 100, 79 pas pour δ = 1e-7 … 3e-3 (pente −122,2 pas par décade) ;
+au-dessous 622, 564, 499, 438, 371, 307, 235, 165, 95, 58 (tol 0,02, pente −129,9 ; −113,1 à tol 0,005). **La loi tient des deux côtés, ce qui
+répond à sa question : oui, sous lr\* le temps de retour au nœud croît comme ~125 log10(1/δ).**
+- Pentes à d'autres (q, x de chauffe) — départ du col, au-dessus / au-dessous (tol 0,02) : q = 3e-7 : −105,4 / −109,7 (lr\* = 0,24194) ;
+  q = 9e-7 : −92,8 / −92,9 (lr\* = 0,27792) ; q = 5,95e-7 avec x = 1e-7 : −300,3 / (−12,1 : tolérance 0,02 comparable à la distance nœud–col 0,0257, métrique
+  inutilisable, lr\* = 0,305065) ; x = 1e-5 : −32,2 / −42,0 (lr\* = 0,47136). **P72-3 : q = 3e-7 −14 % ✓, q = 9e-7 −24 % ✗ (limite 20 %) ; P72-4 ✓** (×2,4 à x = 1e-7,
+  ÷3,8 à x = 1e-5) ; **P72-1 ✓ sur la bonne métrique** (z3, −130/−113 dans [−180 ; −70]) ; avec la métrique que j'avais écrite (rb) elle est fausse (plat à 17–20 pas).
+- Jacobien (différences finies centrées de l'application d'un pas dans (x, m, v), 18 dimensions, run à lr\* ± 1e-7) : valeur propre de plus grand module
+  1,03235 (t = 100, encore dans le transitoire), 1,01692 (200), **1,01772 (350)**, 1,01970 (500, juste avant la sortie) au-dessus ; 1,01691, 1,01757 en dessous ;
+  les autres valent 1,00000 (modes neutres). Sa prédiction 1,0186 ; **mesure 1,0177 à t = 350 : taux 0,0176 contre 0,0184 (−4 %)**. **P72-2 ✓** (dans [1,010 ; 1,030]).
+- Le taux dépend de x de façon forte (rapports de pentes ×2,4 puis ÷3,8) et de q peu : cohérent avec un taux fixé par la valeur propre molle du col, ∝ √x.
+
+**Prédiction précommise (18/10), second lot (formule du taux, mode `taux`)** : taux de départ du col = lr\* λ_s(x) [1/(s+eps) + 1/(s+26 eps)], λ_s = 7,30e-5 √x
+(jacobien du tour 66), s = médiane de √v_e3 sur les pas 150–350 du trajet à lr\* + 1e-7, eps = q lr\*. Pour les cinq configurations (q, x) ci-dessus (sauf x = 1e-7 si la
+tolérance 0,005 ne convient pas), le rapport taux prédit/taux mesuré (par la pente à tol 0,005) est entre 0,75 et 1,25. Mise : 55 %. Le taux mesuré par le jacobien à mi-séjour
+est à moins de 15 % du taux prédit. Mise : 60 %.
+
 Réponse dans `docs/REPONSE_ORDRE72.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
