@@ -18970,6 +18970,39 @@ l'échelle : 5,9721 et 5,9579) ; lr 0,4 : 5,8870 ; lr 0,5 : 5,8165 (5,7695 à x 
 
 Réponse dans `docs/REPONSE_ORDRE71.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 18/10/2026 (tour 72, PAS simulée)
+
+0,86 et 5,2 : pris. « Oui sur le taux. Non sur "de x et pas de lr", tel qu'énoncé. » 125 pas par décade = ln 10/125 = 0,0184 par pas, multiplicateur
+1,0186 ; une trajectoire à δ de la variété stable d'un col le quitte après (1/λ) ln(1/δ) + const : c'est ma loi ; la rupture à 1e-2 (177 après 153)
+est l'endroit où elle doit cesser. Mais le col appartient à l'application à lr\*, pas à x seul : son taux est fonction de (x, lr\*(x)) ; le long de la
+courbe de seuil cela se lit comme une fonction de x, donc un balayage à un x ne les sépare pas ; bisecter à un second eps/lr, la pente ne doit bouger
+que de ce que bouge le col. Deux vérifications feraient un col et pas seulement un log : (1) la loi doit tenir des deux côtés : sous lr\* la trajectoire
+passe le même col et doit s'y attarder les mêmes 125 pas par décade avant de revenir ; mes 17 pas comptent rb > 0,9 seulement ; si le séjour est sous
+0,9 cette horloge ne le voit pas ; le temps de retour à une tolérance du nœud doit croître ; s'il reste plat, la lecture col est en difficulté. (2) linéariser
+au séjour : le run 1e-7 à mi-chemin de son effondrement, différence finie d'un pas dans l'état complet (u, m, v), valeur propre dominante ; la lecture
+col prédit 1,0186. Question : sous lr\*, le temps de retour au nœud croît-il comme 125 log10(1/δ) ?
+
+**Vérification de son arithmétique :** ln 10/125 = 0,018421 ; exp(0,018421) = 1,01859 ✓ (1,0186) ; « 177 après 153 à 1e-2 » ✓ (mes données du tour 71). Il a raison
+sur mon 17 pas : `verifier_tour71_seuil_lr.py` définit le retour par le dernier pas avec rb > 0,9, pas par la distance au nœud.
+
+**Hypothèses (18/10) :**
+- H72-1 (lui) la loi log est un col : même taux 125 pas/décade des deux côtés ; valeur propre 1,0186 par différence finie ; taux fonction de (x, lr\*(x)).
+- H72-2 (moi) le séjour sous lr\* existe mais est invisible à la coupure rb > 0,9 : temps de retour à tolérance 1e-3 du nœud croît en log avec une pente
+  du même ordre (100 à 150 pas par décade).
+- H72-3 (moi, non standard) la valeur propre dominante de l'application d'un pas dans l'état complet (18 dimensions) est une propriété du produit
+  (S, structure Adam) et non du seul col de la fonction objectif : elle varie peu avec eps/lr et avec x de chauffe (moins de 20 % sur q de 3e-7 à 9e-7 et
+  xw de 1e-7 à 1e-5).
+
+**Prédictions précommises (18/10), avant les runs** (`verifier_tour72_retour_et_jacobien.py`, chauffe de 20 000 pas depuis l'état de base brut, un trajet) :
+- P72-1 : sous lr\*, le temps de retour (à tolérance 1e-3 sur rb) croît quand δ → 0 avec une pente comprise entre −180 et −70 pas par décade ; à tolérance 1e-1 la
+  croissance est plus faible qu'à 1e-3. Mise : 55 %.
+- P72-2 : valeur propre de plus grand module de l'application d'un pas, à mi-chemin du séjour du run 1e-7 (t = 350) : entre 1,010 et 1,030. Mise : 45 % (elle peut
+  être dominée par la raideur d'Adam et ne rien dire du col).
+- P72-3 : à q = 3e-7 et 9e-7 (xw = 1e-6), la pente au-dessus du seuil change de moins de 20 % par rapport à 125 pas/décade. Mise : 45 %.
+- P72-4 : à xw = 1e-5 et 1e-7 (q = 5,95e-7), la pente change de plus de 20 %. Mise : 45 %.
+
+Réponse dans `docs/REPONSE_ORDRE72.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
