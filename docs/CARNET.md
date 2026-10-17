@@ -19278,6 +19278,24 @@ décroît avec eps : 4,83 ; 4,85 ; 4,56 ; 3,96 (b1 = 0,9). Ce que le creux donne
 - P75-7 : pente de décroissance de ln E entre les salves (S_c < seuil – 1) : égale à ½ ln b1 à ±10 % : −0,0527 ± 0,0053 (b1 = 0,9), −0,1116 ± 0,011 (0,8), −0,02565 ± 0,0026 (0,95). Mise : 55 %.
 - P75-8 : le rejeu exact (6 coordonnées, x et v de l'état à l'instant du creux, jacobien en haute précision) donne un S_c qui diffère de mon interpolation de moins de 0,5 %. Mise : 70 %.
 
+**Résultats du second lot (20/10)** (mêmes six états ; `D:/tmp/t75b_*.log`) :
+```
+b1    eps    x       S_c a l'argmin de l'amplitude (rapport)   argmin - creux x3   pente de decroissance / (1/2 ln b1)   rejeu exact / interpole
+0,9   1e-9   1e-11   37,744 (0,9933)  [36,32 ; 38,21]            +5 pas             0,957                                 37,682/37,674 ; 37,848/37,840 ; 36,449/36,444 ; 37,845/37,838
+0,9   1e-8   1e-13   37,753 (0,9935)  [36,20 ; 38,28]            +7                 0,956                                 38,044/38,045 ; 36,279/36,281 ; ...
+0,9   5e-8   1e-8    36,762 (0,9674)  [36,36 ; 37,98]            −59                0,974                                 37,064/37,065 ; 36,441/36,442 ; ...
+0,9   1e-7   1e-8    36,765 (0,9675)  [36,46 ; 37,22]            −72                0,976                                 36,291/36,291 ; 36,620/36,620 ; ...
+0,8   1e-8   1e-13   18,395 (1,0220)  [18,36 ; 18,46]            +52                0,642                                 18,366/18,365 ; 18,386/18,385 ; ...
+0,95  1e-7   1e-8    77,822 (0,9977)  [77,68 ; 78,02]            +1                 0,955                                 77,827/77,826 ; 77,678/77,677 ; ...
+```
+**P75-8 ✓** (le rejeu exact avec x et les six v de l'état, jacobien en haute précision, reproduit mon interpolation à 2e-4 près : H75-7 **réfutée**, l'écart de 0,8 % n'est pas une erreur de modèle). **P75-7 : ✓ pour b1 = 0,9 et 0,95 (rapports 0,956–0,976 et 0,955, dans 10 %), ✗ à b1 = 0,8 (0,642 : −0,0716 contre −0,1116)**.
+**P75-6 ✗** pour cinq états sur six (seul b1 = 0,95 est dans ±0,4 % : 77,82 ; b1 = 0,9 : 37,74–37,75 pour eps 1e-9 et 1e-8, 36,76 pour 5e-8 et 1e-7 ; b1 = 0,8 : 18,395, au-dessus du seuil). **H75-6 (V anguleux, creux = argmin de l'amplitude) réfutée comme estimateur** : les 10–90 % de l'argmin sont larges (36,2–38,3), et il peut tomber
+60–70 pas avant (eps ≥ 5e-8) ou 52 pas après le franchissement (b1 = 0,8) : E = |Δ²u|/4 n'isole pas le mode raide ; la somme d'un mode raide qui décroît à ½ ln b1 et d'une composante plus lente a son minimum ailleurs que le franchissement (à b1 = 0,8 le mode raide décroît de e^{−39} par cycle, sous la composante lente, et doit
+repousser plus de 50 pas avant de la dépasser). Le « creux » de la fenêtre ×3 (37,65–37,69 à b1 = 0,9) tombe près du seuil mais n'est pas un estimateur indépendant non plus.
+
+**Prédiction précommise (20/10), troisième lot — l'estimateur par la croissance** (`verifier_tour75_salves_depart.py`, nouvelle sortie) : pendant la croissance (pente observée de ln E entre 0,08 et 0,35 par pas, E < 3e-4) l'application avec momentum donne S inféré = (1 + b1 + e^s + b1 e^{−s})/(1 − b1) (racine réelle μ = −e^s).
+- P75-9 : la médiane de S inféré − S_c(t) sur ces points est dans ±0,5 (b1 = 0,9, soit 1,3 %), ±0,25 (b1 = 0,8), ±1,0 (b1 = 0,95), pour les six états. Mise : 45 %.
+
 Réponse dans `docs/REPONSE_ORDRE75.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
