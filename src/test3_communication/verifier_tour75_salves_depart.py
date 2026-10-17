@@ -14,6 +14,7 @@ Usage : python verifier_tour75_salves_depart.py verifier
 
 import importlib
 import json
+import os
 import sys
 
 import numpy as np
@@ -84,9 +85,20 @@ def mode_salves(b1, eps, xs, nrun, nrec):
         ratio_e3 = float(np.median(s_e3 / s_l3))
         grille, sc_g, J = courbe_Sc(x6, delta, LR, eps, ratio_e3, float(np.median(s_l3)), b1)
         Sc = np.interp(np.log(s_l3), np.log(grille), sc_g)
+        # forme fermee a deux termes : S = - lr (p_u d_u + p_z a_z), p_u = 1/(sqrt(v_l3) + eps), p_z = 1/(sqrt(v_e3) + eps) + 1/(sqrt(v_e3) + 26 eps),
+        # a_z = dg_e3/dz3, d_u = coefficient de u dans g_l3 - g_l4 ; mon S_66 omettait le terme a_z p_z
+        a_z = float(J[0, 0]); d_u = float(J[4, 4] - J[5, 4])
+        S2 = -LR * (d_u / (s_l3 + eps) + a_z * (1.0 / (s_e3 + eps) + 1.0 / (s_e3 + 26.0 * eps)))
+        part_z = -LR * a_z * (1.0 / (s_e3 + eps) + 1.0 / (s_e3 + 26.0 * eps)) / S2
+        tous.setdefault("forme_sur_sc", []).append(float(np.median(S2 / Sc))); tous.setdefault("part_z", []).append(float(np.median(part_z)))
+        tous.setdefault("jdu", []).append((d_u, a_z))
         S66 = LR * 2 * J_UU / (s_l3 + eps)
-        A = np.abs(u[2:] - 2 * u[1:-1] + u[:-2]) / 4.0
-        E = np.maximum(A[:-1], A[1:])          # E[i] ~ pas i+1
+        D2 = u[2:] - 2 * u[1:-1] + u[:-2]
+        if os.environ.get("TOUR75_SONDE") == "alt":
+            E = np.abs(D2[1:] - D2[:-1]) / 8.0   # supprime la partie non alternee (tour 75, H75-8)
+        else:
+            A = np.abs(D2) / 4.0
+            E = np.maximum(A[:-1], A[1:])          # E[i] ~ pas i+1
         vis = 3e-4
         idx = np.nonzero(E > vis)[0]
         if len(idx) == 0:
@@ -155,6 +167,8 @@ def mode_salves(b1, eps, xs, nrun, nrec):
     print(f"   S_c a l'amplitude visible (> 3e-4) : mediane {np.median(q('sc_vis')):.3f} ; au pic : {np.median(q('sc_pic')):.3f} ; juste apres (min sur 60 pas) : {np.median(sc_apres):.3f}")
     print(f"   delai creux -> visible : mediane {np.median(q('dt_vis')):.0f} pas")
     print(f"   S_c mediane temporelle : {sc_med:.3f} ({sc_med / thr:.4f} du seuil) ; S_66 mediane (tour 66) : {s66_med:.3f} ({s66_med / thr:.4f}) ; moyenne geometrique creux x apres : {pred_med:.3f} ({pred_med / thr:.4f})")
+    d_u, a_z = tous["jdu"][0]
+    print(f"   forme fermee S = -lr (p_u d_u + p_z a_z) : rapport a S_c (mediane sur le run) {np.mean(tous['forme_sur_sc']):.5f} ; part du terme a_z p_z {np.mean(tous['part_z']):.4f} ; d_u = {d_u:.4e} (2 J_uu = {-2 * J_UU:.4e}), a_z = {a_z:.4e}")
     scm = q("sc_min")
     print(f"   S_c au minimum exact (argmin) : mediane {np.median(scm):.3f} ({np.median(scm) / thr:.4f} du seuil), 10-90 % [{np.percentile(scm, 10):.3f} ; {np.percentile(scm, 90):.3f}] ; argmin - creux (fenetre x3) : mediane {np.median(q('decal_min')):.0f} pas")
     print(f"   pente de decroissance de ln E entre les salves : mediane {np.median(q('pente')):.5f} ({len(tous['pente'])} salves) ; 1/2 ln b1 = {0.5 * np.log(b1):.5f} ; rapport {np.median(q('pente')) / (0.5 * np.log(b1)):.3f}")

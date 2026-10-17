@@ -1,9 +1,32 @@
 # État du projet RDTRL — où on en est
 
-## Tour 74 (vraie critique de dipankarsarkar, 20/10/2026) — LETTRE PRÊTE
+## Tour 75 (vraie critique de dipankarsarkar, 20/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE74.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 73
-est partie (sa critique du tour 74 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE75.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 74
+est partie (sa critique du tour 75 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 20/10/2026 (tour 75, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : oui, déplacer x seul ne sépare pas terme suivant du pli et momentum (les deux en √x) ; équation caractéristique redérivée à la main ; au second ordre μ − 1 = cJ (1 − b1 cJ/(1 − b1)), levier 4, 9, 19 ; mon S à
+0,87–0,965 du seuil est peut-être une dent de scie (trace du 23/09 : S_gap 32,4 après une salve, 38 vers 59040, 34,4 à la fin) ; deux lectures : S au démarrage des salves (38), profondeur de la dent contre eps/(√v+eps) ; question :
+à b1 = 0,8 et 0,95, les salves démarrent-elles à 18 et 78 ?
+**Acquis (prédictions poussées avant les runs)** : ses chiffres ✓ (je corrige mon « ordre cJ/(1−b1) » : le paramètre est b1 cJ/(1−b1), 0,825 contre 0,870 exact à b1 = 0,9) ; `verifier_tour75_salves_depart.py`, réduction lr 0,05, six
+états, 1 485–1 965 salves par état : S_c exact (valeur propre raide de lr P J6, seuil exact 2(1+b1)/(1−b1) pour v figé) ; **la croissance de l'amplitude suit l'application avec momentum à 0,01–0,03 % du seuil : les salves
+démarrent à 38, 18 et 78** ; rejeu exact à 2e-4 ; la médiane de S_c est la moyenne géométrique creux × après à 0,6–1,8 % ; profondeur de la dent 4,83 → 3,96 quand eps/(√v+eps) passe de 0,003 à 0,329 (mais égale entre 0,003 et 0,032) ;
+**mon S du tour 66 omettait un terme** : S = lr [2|J_uu| p_u + k3 p_z], k3 = 2,006e-6, p_z = 1/(√v_e3+eps) + 1/(√v_e3+26 eps), forme fermée à 0,04 % de S_c, terme de 1 à 10 % (13,4 % quand eps → 0) ; le manque 0,87–0,965 du tour 66 =
+(S_66/S_c : 0,90–0,99) × (dent : 0,932–0,978).
+**Mes ratés** : la sonde E = |Δ²u|/4 n'isole pas le mode raide (argmin de E biaisé de 0,3 à 0,8 %, pente à b1 = 0,8 : 0,642 de ½ ln b1), avec E_alt = |Δ²_t − Δ²_{t−1}|/8 : 0,975 ; mais pente 3–7 % plus lente que ½ ln b1 (0,933 à b1 = 0,95) :
+non expliqué ; P75-5 (égalité des deux premiers états), P75-6, P75-7 (b1 = 0,8), P75-10a (0,95), P75-10b.
+**Limites** : réduction seule ; pas de réseau complet ; le terme en z3 vaut 13,4 % (eps → 0) dans la réduction contre 4,7 % (S_max 39,74 / S_gap 37,91) dans la trace du 23/09 au delta réel (les 26 colonnes de l'émetteur fusionnées en o3 ?).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 75 ; question : les 4,7 % entre S_gap et S_max (trace du 23/09, delta réel) sont-ils le même couplage que mon terme k3 p_z, dilué par les 26 colonnes de l'émetteur ? (oui/non).
+2. Reproduire dans le réseau complet (torch, `verifier_tour58_bord_stabilite_salve.py`) le terme k3 p_z : S_max − S_gap contre eps ; ou construire une réduction à 26 colonnes d'émetteur.
+3. Expliquer la pente de décroissance entre salves (0,95–0,975 de ½ ln b1) : battements de E_alt pour S loin du seuil (θ ≠ π) ou vrai effet.
+4. Revoir les tours 58–70 qui utilisent S = lr 2|J_uu|/(√v_l3+eps) (S/seuil, 0,92 à lr 0,3, etc.) avec le terme k3 p_z.
+
+## Tour 74 (vraie critique de dipankarsarkar, 20/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE74.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 20/10/2026 (tour 74, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : le 0,84 n'est pas dû à l'échelle seule ; deux tests : (1) valeur propre molle de la forme fermée à x = 1e-6 / 7,30e-8 (0,84 : courbure ; 1,00 : le gain) ; (2) déplacer x

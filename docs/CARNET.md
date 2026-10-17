@@ -19309,6 +19309,34 @@ démarrage de la croissance coïncident ; ce que mes estimateurs de creux ne don
 - P75-10a : avec E_alt, la pente de décroissance de ln E entre les salves est égale à ½ ln b1 à ±5 % aux six états, y compris b1 = 0,8 (rapport 1,00 ± 0,05 ; 0,64 avant). Mise : 45 %.
 - P75-10b : avec E_alt, S_c à l'argmin est dans ±0,4 % du seuil (b1 = 0,9 : 37,85–38,15 ; 0,8 : 17,93–18,07 ; 0,95 : 77,7–78,3) pour au moins cinq états sur six. Mise : 40 %.
 
+**Résultats du quatrième lot (20/10)** (`TOUR75_SONDE=alt`, E_alt = |Δ²_t − Δ²_{t−1}|/8 ; `D:/tmp/t75d_*.log`) :
+```
+b1    eps    pente/(1/2 ln b1)   S_c a l'argmin (rapport)     croissance : S inferre - S_c
+0,9   1e-9   0,952              37,717 (0,9926) [37,17 ; 38,00]   -0,000
+0,9   1e-8   0,953              37,719 (0,9926) [37,19 ; 38,03]   -0,005
+0,9   5e-8   0,959              37,762 (0,9937) [37,30 ; 38,04]   -0,005
+0,9   1e-7   0,963              37,797 (0,9947) [37,43 ; 38,01]   -0,004
+0,8   1e-8   0,975              18,288 (1,0160) [17,13 ; 18,37]   +0,001
+0,95  1e-7   0,933              77,692 (0,9960) [76,89 ; 78,00]   -0,017
+```
+**H75-8 soutenue** : à b1 = 0,8 la pente passe de 0,642 (sonde E) à 0,975 (E_alt), la partie non alternée contaminait. **P75-10a : ✓ pour cinq états sur six** (0,952 à 0,975, dans 1,00 ± 0,05), **✗ à b1 = 0,95 (0,933)** : la décroissance entre salves est 3 à 7 % plus lente que ½ ln b1 (non expliqué ; piste : la
+sonde, car pour S loin du seuil les racines sont complexes avec θ ≠ π et E_alt a des battements). **P75-10b ✗** (0 état sur 6 dans ±0,4 % ; 0,9926–0,9947 à b1 = 0,9, 1,016 à 0,8, 0,9960 à 0,95) : l'argmin de l'amplitude reste un estimateur biaisé de 0,3 à 0,8 % ; la croissance (−0,017 à +0,001 en S) est l'estimateur qui tient.
+
+**Forme fermée de S (20/10)** (vérifiée à la main à 2 états avant le script : 37,63 contre S_c = 37,65 et 37,67 contre 37,68 ; déclarée après coup, pas précommise) : pour v figé, avec p_u = 1/(√v_l3 + eps), p_z = 1/(√v_e3 + eps) + 1/(√v_e3 + 26 eps) (o3 suit à l'opposé avec √v_o3 = √v_e3/26),
+**S = lr [2|J_uu| p_u + k3 p_z]**, J_uu = −1,1204e-4, k3 = −∂g_e3/∂z3 = 2,006e-6. Mon S_66 du tour 66 omettait le second terme. Rapport forme fermée / S_c exact (jacobien 6×6 diagonalisé) : 1,00029 (eps 1e-9), 1,00010 (1e-8), 1,00008 (5e-8), 1,00005 (1e-7), 1,00036 (b1 = 0,8, 1e-8),
+1,00005 (b1 = 0,95, 1e-7) : écart 0,005 à 0,04 %. Part du terme en k3 : 9,9 % (eps 1e-9), 6,2 % (1e-8), 3,5 % (5e-8), 2,3 % (1e-7), 7,4 % (b1 = 0,8), 1,3 % (b1 = 0,95). Quand eps → 0 elle tend vers (k3/|J_uu|)(√v_l3/√v_e3) = 0,0179 × 7,48 = 13,4 %.
+**Décomposition du manque de mes tableaux du tour 66** (médianes sur le run) : S_66/seuil = (S_66/S_c) × (S_c/seuil) : 0,840 = 0,901 × 0,932 (eps 1e-9) ; 0,874 = 0,938 × 0,932 (1e-8) ; 0,906 = 0,966 × 0,939 (5e-8) ; 0,928 = 0,978 × 0,949 (1e-7) ; 0,889 = 0,927 × 0,959 (b1 = 0,8) ; 0,965 = 0,987 × 0,978 (b1 = 0,95).
+Le premier facteur est mon erreur de formule (le terme en k3), le second est la dent de scie (0,932–0,978 du seuil, moyenne géométrique creux × après à 0,6–1,8 % près). La profondeur de la dent, S_c(creux) − S_c(après) : 4,83 ; 4,85 ; 4,56 ; 3,96 à b1 = 0,9 pour eps/(√v+eps) = 0,003 ; 0,032 ; 0,163 ; 0,329 ; remplissage de √v : 1,133 ; 1,138 ; 1,150 ; 1,160.
+
+| H75-1 (lui) dent de scie : la médiane est sous 38 par construction ; le démarrage est à 38 | 20/10 (lui) | **confirmée** : la croissance suit l'application avec momentum à 0,03 % près, démarrage à 38, 18 et 78 ; la dent explique 2 à 7 % |
+| H75-2 (lui) la dent est moins profonde quand eps/(√v+eps) augmente | 20/10 (lui) | **confirmée** (profondeur 4,83 → 3,96, soit 12,7 % → 10,4 % du seuil, de eps/(√v+eps) 0,003 à 0,329) mais seulement au-delà de eps/(√v+eps) ≈ 0,03 (0,0679 contre 0,0681 pour les deux premiers) |
+| H75-3 (moi) le démarrage exact est le creux de l'amplitude | 20/10 (moi) | **réfutée comme estimateur** (argmin biaisé de 0,3 à 0,8 %, creux ×3 de 0,8 %) ; **confirmée** par la croissance |
+| H75-4 (moi) une partie du manque de mes tableaux est l'erreur de ma formule S_66 | 20/10 (moi) | **confirmée** : le terme k3 p_z (1 à 10 %) ; forme fermée à 0,04 % |
+| H75-5 (moi) la médiane est la moyenne géométrique du creux et de l'après | 20/10 (moi) | **confirmée à 0,6–1,8 %** (toujours un peu basse) |
+| H75-6 (moi) V anguleux | 20/10 (moi) | **réfutée comme estimateur** (sonde E), partiellement rétablie avec E_alt (pente à 0,95–0,98 de ½ ln b1) |
+| H75-7 (moi) l'écart de 0,8 % est une erreur de modèle | 20/10 (moi) | **réfutée** (rejeu exact à 2e-4) |
+| H75-8 (moi) E contient la partie non alternée | 20/10 (moi) | **soutenue** (0,642 → 0,975 à b1 = 0,8) |
+
 Réponse dans `docs/REPONSE_ORDRE75.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
