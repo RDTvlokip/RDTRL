@@ -99,8 +99,13 @@ def mode_fermee():
 
 def analyser(q, xw, lr_delta, ts, ablation=False, j18=True):
     """sur le trajet a lr* + lr_delta : jacobien 18-dim (reference), A = I + lr P J6 (momentum lent), modele du tour 73, modele avec la valeur propre du col fermee."""
+    import importlib
+    import os
     import verifier_tour72_retour_et_jacobien as v72
-    import reduction_numba_tour71_lrvar as red
+    red = importlib.import_module(os.environ.get("TOUR74_MODULE", "reduction_numba_tour71_lrvar"))
+    v72.red = red   # bissection, trajet, pas et jacobien de verifier_tour72 utilisent le module choisi
+    b1 = red.B1
+    print(f"   module {red.__name__}, b1 = {b1}")
     ls = v72.bissection(q, xw)
     if ls is None:
         print(f"q = {q:.3e} xw = {xw} : pas de lr* dans [0,05 ; 0,8]")
@@ -130,6 +135,14 @@ def analyser(q, xw, lr_delta, ts, ablation=False, j18=True):
             ev = np.linalg.eigvals(A)
             return ev[np.argmax(ev.real)].real
         la = lead_A()
+        # application lineaire a 12 dimensions (x, m), v fige : m' = b1 m + (1 - b1) J x ; x' = x + lr P m'
+        Pm = np.diag(gains)
+        M12 = np.block([[np.eye(6) + lr * (1 - b1) * Pm @ J, lr * b1 * Pm], [(1 - b1) * J, b1 * np.eye(6)]])
+        ev12 = np.linalg.eigvals(M12)
+        l12 = ev12[np.argmax(ev12.real)].real
+        # equation caracteristique du mode scalaire : eps^2 + eps (1 - b1)(1 - cJ) - cJ (1 - b1) = 0, cJ = A - 1
+        cJ = la - 1.0
+        eps_c = 0.5 * (-(1 - b1) * (1 - cJ) + np.sqrt(((1 - b1) * (1 - cJ)) ** 2 + 4 * cJ * (1 - b1)))
         mod73 = lr * lam73 * (1.0 / (s[0] + eps) + 1.0 / (s[0] + 26 * eps))
         modcol = mod73 * lam_col / lam73
         l18 = None
@@ -139,16 +152,53 @@ def analyser(q, xw, lr_delta, ts, ablation=False, j18=True):
             l18 = float(np.max(np.abs(ev)))
         print(f"  t = {t:5d} : z3 = {float(x[0] - x[1]):.5f} ; sqrt(v) = " + " ".join(f"{si:.2e}" for si in s))
         print(f"      ln A = {np.log(la):.5f} ; jacobien 18-dim ln = {np.log(l18) if l18 else float('nan'):.5f} ; modele tour 73 = {mod73:.5f} ; modele avec lambda_s col = {modcol:.5f}")
+        print(f"      application 12-dim (x, m) : ln = {np.log(l12):.5f} ; equation caracteristique : ln = {np.log1p(eps_c):.5f} (rapport a ln A : {np.log1p(eps_c) / np.log(la):.4f})")
         print(f"      rapports : lnA / modele73 = {np.log(la) / mod73:.4f} ; lnA / modele col = {np.log(la) / modcol:.4f}" + (f" ; ln18 / modele73 = {np.log(l18) / mod73:.4f} ; ln18 / lnA = {np.log(l18) / np.log(la):.4f}" if l18 else ""), flush=True)
         if ablation:
             print("      ablation du gain de (l3, l4) x k : " + "  ".join(f"k={k:g}: {np.log(lead_A(k)) / mod73:.4f}" for k in (0.25, 1, 4, 16, 100, 1e4, 1e6)))
-        out.append((t, np.log(la), np.log(l18) if l18 else None, mod73))
+        out.append((t, np.log(la), np.log(l18) if l18 else None, mod73, np.log(l12), np.log1p(eps_c)))
     return out
+
+
+def b1_meme_etat(q, xw, lr_delta, t):
+    """P74-9 : l'etat du trajet a b1 = 0,9 (lr* + lr_delta) au pas t, puis jacobien 18-dim de l'application des trois modules (B1 = 0,8 ; 0,9 ; 0,95) EN CE MEME ETAT
+    (le sejour sur le col n'existe pas aux autres b1 : a b1 = 0,8 et 0,95 le trajet a lr* est au noeud, z3 = 19,0 et 9,205 a t = 200)."""
+    import importlib
+    import verifier_tour72_retour_et_jacobien as v72
+    mods = [importlib.import_module(n) for n in ("reduction_numba_tour74_b1_08", "reduction_numba_tour71_lrvar", "reduction_numba_tour74_b1_095")]
+    v72.red = mods[1]
+    ls = v72.bissection(q, xw)
+    lr = ls + lr_delta
+    eps = q * lr
+    delta = PLI - mpf(xw)
+    mods[1].LRV = lr
+    w = mods[1].copie(v72.S1)
+    mods[1].avancer(w, float(delta), t, eps=eps, cross=2.0, stop=False)
+    st = np.concatenate([w["x"], w["m"], w["v"]])
+    s = np.sqrt(w["v"])
+    x = [mpf(float(a)) for a in w["x"]]
+    J6 = jac6(x, delta)
+    J = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
+    A = np.eye(6) + lr * np.diag([1.0 / (si + eps) for si in s]) @ J
+    ev = np.linalg.eigvals(A)
+    la = ev[np.argmax(ev.real)].real
+    print(f"q = {q:.3e} xw = {xw} lr = {lr:.12f}, etat a t = {t} (b1 = 0,9) : z3 = {float(x[0] - x[1]):.5f}, ln A = {np.log(la):.5f}")
+    for mod in mods:
+        v72.red = mod
+        mod.LRV = lr
+        b1 = mod.B1
+        ev18 = np.linalg.eigvals(v72.jacobien(st, w["t"], lr, q, xw))
+        l18 = float(np.max(np.abs(ev18)))
+        cJ = la - 1.0
+        eps_c = 0.5 * (-(1 - b1) * (1 - cJ) + np.sqrt(((1 - b1) * (1 - cJ)) ** 2 + 4 * cJ * (1 - b1)))
+        print(f"   b1 = {b1} : jacobien 18-dim ln = {np.log(l18):.5f}, rapport a ln A = {np.log(l18) / np.log(la):.4f} ; equation caracteristique ln = {np.log1p(eps_c):.5f}, rapport {np.log1p(eps_c) / np.log(la):.4f}")
 
 
 if __name__ == "__main__":
     mode = sys.argv[1]
-    if mode == "fermee":
+    if mode == "b1etat":
+        b1_meme_etat(float(sys.argv[2]), sys.argv[3], float(sys.argv[4]), int(sys.argv[5]))
+    elif mode == "fermee":
         mode_fermee()
     elif mode == "precond":
         analyser(float(sys.argv[2]), sys.argv[3], float(sys.argv[4]), [int(a) for a in sys.argv[5:]], ablation=True)

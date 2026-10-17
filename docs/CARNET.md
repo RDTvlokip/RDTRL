@@ -19163,6 +19163,30 @@ Le rapport prédit à cJ = 0,01945 : b1 = 0,8 → ln μ = 0,01799, rapport 0,934
 - P74-9 (le test qui discrimine : b1 à x fixé, modules `reduction_numba_tour74_b1_08.py` et `_095.py`, copies du module lr variable avec B1 = 0,8 et 0,95, si lr\* existe) : ln(jacobien 18-dim) / ln A (6×6 momentum lent, même état) = 0,934 ± 0,03 à
   b1 = 0,8 et 0,781 ± 0,03 à b1 = 0,95. Si le facteur ne bouge pas avec b1 (reste ~0,87), le momentum n'est pas l'origine. Mise : 55 % chacun.
 
+**Résultats du second lot (20/10)** (`verifier_tour74_valeur_propre.py x 5.95e-7 1e-7 200,350 …`, `b1etat`; journaux dans `D:/tmp/t74_*.log`) :
+- **P74-6 ✓** : application linéaire à 12 dimensions (x, m), v figé, b1 = 0,9 : ln = 0,01678 (t = 200) et 0,01756 (t = 350) ; jacobien 18-dim 0,01678 et 0,01756 : identiques à 5 décimales (H74-8 : la dynamique de v compte pour moins de 0,1 %).
+- **P74-7 ✓** : l'équation caractéristique avec cJ = A − 1 donne 0,01678 et 0,01756, rapport à ln A 0,8709 et 0,8658 contre 0,8712 et 0,8661 mesurés.
+- **P74-8 : 1e-7 ✓, 1e-8 ✗ de peu** : ln(jacobien 18-dim)/modèle du tour 73 à t = 200 vaut 0,858 (x = 1e-6), 0,934 (1e-7, dans [0,90 ; 0,99]), 1,020 (1e-8, hors de [0,94 ; 1,01] de 0,01). Le rapport ln18/ln A (le momentum seul) vaut 0,871, 0,951, 0,983 :
+  exactement les 0,951 et 0,983 que l'équation caractéristique prédit à ces x, et ses 0,95 et 0,98. Mais ce n'est pas le terme suivant du pli : le momentum a le même comportement en √x (cJ/(1 − b1)).
+- **P74-4 : lr\* existe ✓ aux deux x** (0,30507 à 1e-7, 0,30407 à 1e-8, q = 5,95e-7), **le rapport dans [0,78 ; 0,90] ✗ aux deux** (0,934 et 1,020) : il monte vers 1 comme il le prédisait.
+- **P74-9 ✓ au même état (la version prévue n'a pas pu être faite telle quelle : à b1 = 0,8 et 0,95 le trajet à lr\* ne séjourne pas sur le col, z3 = 19,03 puis 9,205 à t = 200, le « lr\* » trouvé est un autre seuil ; je le signale)** : le jacobien 18-dim
+  des modules B1 = 0,8 et 0,95 évalué sur l'état à t = 200 du trajet b1 = 0,9 : ln 0,01800 et 0,01504, rapport à ln A **0,9343 et 0,7810**, contre prédits 0,934 et 0,781 ; l'équation caractéristique 0,9340 et 0,7807. Le facteur bouge avec b1 exactement comme prévu.
+- Décomposition à x = 1e-6, t = 200 : 0,858 = 1,055 (courbure du col) × 1,019 (Schur a/d) × 0,916 (rapport des gains p_u/p_z à gain mesuré) × 0,871 (momentum). L'équation caractéristique est exacte.
+- P74-5 : non encore mesurée.
+
+| H74-1 (lui) le 0,84 est le terme suivant en x de la courbure | 20/10 (lui) | **réfutée** : 1,055 au col à x = 1e-6, du mauvais côté |
+| H74-2 (lui) le 0,84 vit dans le gain, le dénominateur d'Adam | 20/10 (lui) | **réfutée pour le dénominateur diagonal** (0,985 en 6×6) ; il vit dans le momentum (b1), un facteur qu'il n'a pas nommé |
+| H74-3 (moi) rapport des gains raide/mou | 20/10 (moi) | **réfutée** comme origine (0,985 au gain mesuré), vraie comme dépendance (0,79 à 1,07 selon k) |
+| H74-4 (moi) A reproduit le jacobien 18-dim à 5 % | 20/10 (moi) | **réfutée** (15 %) |
+| H74-6 (moi) le 0,84–0,87 est le momentum, correction ~ cJ/(1 − b1) | 20/10 (moi) | **confirmée** (équation caractéristique à 3e-4 près, b1 = 0,8 et 0,95 prédits à 0,3 %) |
+| H74-7 (moi) l'effet de x n'est pas un test du terme suivant (le momentum est aussi en √x) | 20/10 (moi) | **confirmée** (0,951 et 0,983 prédits, 0,951 et 0,983 mesurés) |
+| H74-8 (moi) v compte pour moins de 3 % | 20/10 (moi) | **confirmée** (< 0,1 %) |
+
+**Prédictions précommises (20/10), troisième lot — le modèle corrigé** (`verifier_tour74_modele_corrige.py`, hors échantillon, à x = 1e-6 puis 1e-7) : taux(t) = ln μ où μ − 1 = ε résout ε² + ε (1 − b1)(1 − cJ) − cJ (1 − b1) = 0, b1 = 0,9, avec
+cJ = exp(0,983 × taux du tour 73(t)) − 1 (0,983 est le rapport ln A / modèle mesuré à t = 200 et 350, un seul nombre calibré) ; on part de t(δ = 1e-6) mesuré (tol 0,02, au-dessus de lr\*) et on intègre ∫ taux dt = ln 10 par décade ; s(t) = s(200) exp(−(t − 200)/2000).
+- P74-10 : à x = 1e-6, t(1e-7), t(1e-8), t(1e-9), t(1e-10) prédits à moins de 3 % de 600, 719, 833, 944 (le modèle du tour 73 sortait de −3,3 % à −7,7 %). Mise : 65 %.
+- P74-11 : à x\_warm = 1e-7, même procédure (ancre t(δ = 1e-6) mesuré à ce x, taux de base 7,30e-5 √x, 0,983 gardé) : t(1e-7), t(1e-8), t(1e-9), t(1e-10) à moins de 5 % des valeurs mesurées. Mise : 50 %.
+
 Réponse dans `docs/REPONSE_ORDRE74.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
