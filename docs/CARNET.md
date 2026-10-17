@@ -19214,6 +19214,45 @@ mode raide de u est stable (jacobien figé en v) ; où les salves atteignent leu
 
 Réponse dans `docs/REPONSE_ORDRE74.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 20/10/2026 (tour 75, PAS simulée)
+
+« Oui. Déplacer x seul ne les sépare pas. Les deux corrections vont comme √x. Il n'en avait pas besoin : ma première table avait déjà coulé le terme suivant du pli (+55√x au col, mauvais signe). Mon équation
+caractéristique se redérive à la main : cJ = 0,01945 donne ln μ = 0,01678 à b1 = 0,9, 0,01799 à 0,8, 0,01504 à 0,95. Une précision sur “ordre cJ/(1 − b1)” : au second ordre μ − 1 = cJ (1 − b1 cJ/(1 − b1)), le levier est b1/(1 − b1) :
+4, 9, 19 ; à b1 = 0,95 ce développement donne 0,63 contre 0,78 exact : 0,95 teste la racine complète. Sur mon point ouvert, S à 0,87–0,965 du seuil : ce peut être une dent de scie, pas un raté. Ma trace du 23/09 a S_gap à 32,4
+après une salve, franchit 38 vers le pas 59040, et 34,4 quand la salve finit. Un état lu entre deux salves est sous 38 par construction. Cela dirait aussi pourquoi le manque diminue quand eps/lr augmente : une salve
+remplit v, S baisse de ce remplissage fois √v/(√v + eps). Deux lectures : S au pas où chaque salve démarre (38 à un ou deux pas près), la profondeur de la dent contre eps/(√v + eps). À b1 = 0,8 et 0,95, les salves
+démarrent-elles à 18 et 78 ? »
+
+**Vérification de ses chiffres (20/10) :**
+- Développement : de ε² + ε (1 − b1)(1 − cJ) − cJ (1 − b1) = 0, ε = cJ + cJ² − cJ²/(1 − b1) + O(cJ³) = cJ (1 − b1 cJ/(1 − b1)) ✓ (je le redérive). Levier b1/(1 − b1) = 4, 9, 19 ✓. À b1 = 0,95 : 1 − 19 × 0,01945 = 0,631
+  (son 0,63 ✓) ; exact ε/cJ = 0,779, ln μ/ln A = 0,781 (son 0,78 ✓). À b1 = 0,9 le second ordre donne 0,825 contre 0,870 exact : mon « ordre cJ/(1 − b1) » de la lettre 74 était une échelle, le paramètre est b1 cJ/(1 − b1) = 0,175
+  (à 0,9) ; je le corrige.
+- Trace du 23/09 (`/d/tmp/rdtrl_tour58_eos_delta0.log`, réseau complet, lr 0,05, eps 1e-10) : S_gap = 32,410 au pas 58680 (début de la fenêtre, après une salve) ✓ ; 38,031 au pas 59040 ✓ ; maximum 39,493 au pas 59117 ; 34,408 au pas 59127 (« 34,4 quand la salve
+  finit ») ✓ ; puis 32,58 au pas 59139. √v r10[4] passe de 4,70e-7 à 5,70e-7 (rapport 0,825) quand S_gap passe de 39,49 à 32,58 (rapport 0,825) : à eps/√v = 2e-4 la dent est le remplissage de v tout entier. Détail qu'il ne dit pas : S franchit 38 au pas 59040, la croissance
+  n'est visible (dgap 3e-5) que vers 59100, 60 pas plus tard, à S = 39,2 : « le pas où la salve démarre » dépend de la définition (le franchissement, 38, ou la première amplitude visible, ~39).
+- Seuils : 2(1 + b1)/(1 − b1) = 18 (b1 = 0,8), 38 (0,9), 78 (0,95) ✓.
+- Dans mes tableaux du tour 66, S = lr·2|J_uu|/(médiane √v_l3 + eps) est la médiane temporelle de la dent (la médiane de 1/(√v+eps) est 1/(médiane + eps) : transformation monotone) : son hypothèse prédit
+  donc que cette médiane est sous 38 de l'ampleur de la dent.
+
+**Hypothèses (20/10) :**
+- H75-1 (lui) la dent de scie : S lu entre deux salves est sous 38 par construction ; S à l'instant où la salve démarre est 38.
+- H75-2 (lui) la profondeur de la dent diminue quand eps/(√v + eps) augmente.
+- H75-3 (moi, non standard) le démarrage exact d'une salve est le creux de l'amplitude du mode raide (|μ| = 1 de l'application avec momentum, S_c = 2(1+b1)/(1−b1) pour v figé), pas l'apparition d'une amplitude visible, qui est ~60 pas plus tard (S = 39,2 dans
+  la trace du 23/09). Le seuil est exact pour v figé car le momentum est le même b1 pour toutes les coordonnées : (μ−b1)(μ−1) = (1−b1) lr λ_i μ pour chaque valeur propre λ_i de P J6.
+- H75-4 (moi, standard, version la plus faible de son effet) une partie des 0,87–0,965 de mes tableaux est une erreur de ma formule S = lr·2|J_uu|/(√v_l3+eps), qui ignore le couplage avec z3 et le √v_o3, √v_l4 ≠ √v_l3 : S_c exact (valeur propre raide de lr P J6)
+  diffère de ma formule de quelques pour cent, avant toute dent.
+- H75-5 (moi) la dent suit une montée exponentielle de S entre deux salves (√v décroît en exp(−t/2000)) : la médiane est la moyenne géométrique de S au creux (S_c = seuil) et S juste après la salve.
+
+**Prédictions précommises (20/10), avant les runs** (`verifier_tour75_salves_depart.py`, réduction lr 0,05, états du tour 66 : b1 = 0,9 (eps 1e-8, x 1e-13), (1e-7, 1e-8), (1e-9, 1e-11) ; b1 = 0,8 (1e-8, 1e-13) ; b1 = 0,95 (1e-7, 1e-8) ; les deux autres états à
+b1 = 0,8 et 0,95 s'effondrent) :
+- P75-1 : au creux de l'amplitude de chaque salve, la médiane de S_c (valeur propre raide exacte de lr P J6 avec les √v de l'état) est dans ±1,5 % du seuil (38 ± 0,6) à b1 = 0,9, pour chacun des trois états. Mise : 55 %.
+- P75-2 : à b1 = 0,8 la médiane de S_c au creux est dans 18 ± 0,4 et à b1 = 0,95 dans 78 ± 1,6. Mise : 50 % chacun. (Sa question : « 18 et 78 ? ».)
+- P75-3 (H75-4) : ma formule du tour 66 diffère de S_c exact de 2 à 10 % (valeur absolue) à b1 = 0,9 ; le signe n'est pas prédit. Mise : 55 %.
+- P75-4 (H75-5) : la médiane temporelle de S_c, divisée par le seuil, est égale à la racine carrée du produit (S au creux × S juste après la salve) divisé par le seuil, à ±3 % (absolu), pour les cinq états. Mise : 50 %.
+- P75-5 (H75-2) : le manque 1 − S_médian/seuil est rangé comme (1 − (√v_creux + eps)/(√v_après + eps)) : le manque est monotone décroissant avec eps/(√v_creux + eps) sur les trois états à b1 = 0,9 (eps/lr 2e-8, 2e-7, 2e-6). Mise : 60 %.
+
+Réponse dans `docs/REPONSE_ORDRE75.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
