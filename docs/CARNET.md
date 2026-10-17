@@ -19251,6 +19251,33 @@ b1 = 0,8 et 0,95 s'effondrent) :
 - P75-4 (H75-5) : la médiane temporelle de S_c, divisée par le seuil, est égale à la racine carrée du produit (S au creux × S juste après la salve) divisé par le seuil, à ±3 % (absolu), pour les cinq états. Mise : 50 %.
 - P75-5 (H75-2) : le manque 1 − S_médian/seuil est rangé comme (1 − (√v_creux + eps)/(√v_après + eps)) : le manque est monotone décroissant avec eps/(√v_creux + eps) sur les trois états à b1 = 0,9 (eps/lr 2e-8, 2e-7, 2e-6). Mise : 60 %.
 
+**Résultats du premier lot (20/10)** (`verifier_tour75_salves_depart.py salves …`, 2 runs de 400 000 pas par état, 1 485 à 1 965 salves par état, aucune effondrée ; journaux `D:/tmp/t75_*.log`). Creux = milieu des pas où l'amplitude |Δ²u|/4 est à moins de ×3 de son minimum
+entre deux salves ; « visible » = première amplitude > 3e-4.
+```
+b1    eps     x      seuil  S_c creux (rapport)  S_c visible  S_c apres  S_66/S_c creux  S_c med./seuil  S_66 med./seuil  moy. geom. creux x apres /seuil  eps/(√v+eps)  remplissage √v
+0,9   1e-9    1e-11   38    37,694 (0,9919)      39,39        32,87      0,902           0,9321          0,8402           0,9262                             0,0030        1,133
+0,9   1e-8    1e-13   38    37,648 (0,9907)      39,41        32,80      0,939           0,9319          0,8742           0,9247                             0,0316        1,138
+0,9   5e-8    1e-8    38    37,691 (0,9919)      39,34        33,13      0,967           0,9387          0,9063           0,9299                             0,1626        1,150
+0,9   1e-7    1e-8    38    37,684 (0,9917)      39,20        33,73      0,978           0,9490          0,9276           0,9382                             0,3290        1,160
+0,8   1e-8    1e-13   18    17,942 (0,9968)      18,89        15,99      0,927           0,9589          0,8885           0,9410                             0,0148        1,109
+0,95  1e-7    1e-8    78    77,835 (0,9979)      78,77        74,50      0,987           0,9777          0,9651           0,9763                             0,6859        1,129
+```
+**P75-1 ✓** (S_c au creux 37,65–37,69, dans 38 ± 0,6, aux quatre états à b1 = 0,9). **P75-2 ✓** (17,94 dans 18 ± 0,4 ; 77,84 dans 78 ± 1,6) : **les salves démarrent à 18 et 78 (à 0,3 % et 0,2 %), et à 38 – 0,8 % à b1 = 0,9**. **P75-3 ✓** (S_66/S_c au creux : 0,902 à 0,978 à b1 = 0,9, soit 2,2 à
+9,8 % ; S_66 est toujours sous S_c, le signe n'était pas prédit) : **une partie du manque de mes tableaux du tour 66 est l'erreur de ma formule, pas une dent de scie** : S_66 médian/seuil allait de 0,840 à 0,928 selon eps (0,87–0,965 avec b1 = 0,8 et 0,95), S_c exact médian/seuil va de 0,932 à 0,949
+seulement (2e-8 à 2e-6 en eps/lr : 0,932 ; 0,932 ; 0,939 ; 0,949) : la tendance en eps de mes tableaux (0,84 → 0,93) était surtout celle de la formule. **P75-4 ✓** (moyenne géométrique creux × après : 0,9247–0,9763 contre 0,9319–0,9777 mesuré ; écarts 0,001 à 0,018, sous 0,03 ; elle est toujours un peu basse).
+**P75-5 ✗ de peu** : le manque 1 − S_c médian/seuil vaut 0,0679 (eps/(√v+eps) = 0,003), 0,0681 (0,032), 0,0613 (0,163), 0,0510 (0,329) : décroissant seulement au-delà de 0,03 ; les deux premiers sont égaux à 2e-4 (une égalité, pas une décroissance). La profondeur de la dent S_c creux – S_c après
+décroît avec eps : 4,83 ; 4,85 ; 4,56 ; 3,96 (b1 = 0,9). Ce que le creux donne : un décalage de 0,8 % sous le seuil à b1 = 0,9 (0,3 % à 0,8 ; 0,2 % à 0,95) et un délai creux → amplitude visible de 78 à 121 pas ; à l'amplitude visible S_c vaut 1,03–1,04 fois le seuil (b1 = 0,9), 1,049 (0,8), 1,010 (0,95).
+
+**Hypothèses ajoutées après avoir vu ces lignes (20/10) :**
+- H75-6 (moi) mon estimateur du creux est biaisé tôt : pour v figé, la racine dominante de μ² − (1 + b1 − (1 − b1) S) μ + b1 = 0 a |μ| = √b1 (complexe) tant que S est sous (1 + b1 + 2√b1)/(1 − b1) – ce qui donne 37,97 à b1 = 0,9 –, puis devient réelle et croît jusqu'à 1 en ΔS = 0,03
+  (1,5 pas) : le creux de ln E est un V anguleux (décroissance de ½ ln b1 = −0,0527 par pas, puis croissance 0,2 par pas), et ma fenêtre « ×3 du minimum » est asymétrique (20 pas à gauche, 5 à droite), d'où ~8–16 pas trop tôt. Le vrai creux est l'argmin de l'amplitude.
+- H75-7 (moi) l'écart de 0,8 % n'est pas physique (J6 pris à un seul état, √v_o3 et √v_l4 supposés) : le S_c exact du modèle complet (x, m, v de l'état) au creux vaut le seuil.
+
+**Prédictions précommises (20/10), second lot, avant ces runs** (mêmes six états, `verifier_tour75_salves_depart.py` après ajout de l'argmin, de la pente de décroissance et du rejeu exact) :
+- P75-6 : S_c au minimum exact de l'amplitude : médiane dans ±0,4 % du seuil (b1 = 0,9 : 37,85–38,15 ; 0,8 : 17,93–18,07 ; 0,95 : 77,7–78,3), pour les six états. Mise : 50 %.
+- P75-7 : pente de décroissance de ln E entre les salves (S_c < seuil – 1) : égale à ½ ln b1 à ±10 % : −0,0527 ± 0,0053 (b1 = 0,9), −0,1116 ± 0,011 (0,8), −0,02565 ± 0,0026 (0,95). Mise : 55 %.
+- P75-8 : le rejeu exact (6 coordonnées, x et v de l'état à l'instant du creux, jacobien en haute précision) donne un S_c qui diffère de mon interpolation de moins de 0,5 %. Mise : 70 %.
+
 Réponse dans `docs/REPONSE_ORDRE75.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
