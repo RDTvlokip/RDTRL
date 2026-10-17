@@ -19098,6 +19098,46 @@ mesurés 5, 5, 5, 3 pour les décades, de l'ordre de 3 à 6 % ✓.
 
 Réponse dans `docs/REPONSE_ORDRE73.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 20/10/2026 (tour 74, PAS simulée)
+
+« Non, pas par l'échelle seule. Le terme suivant d'un pli est d'ordre x : il corrige √x d'un facteur relatif a√x. À √x = 1e-3, 16 % demandent a près de 160, une
+échelle naturelle de x vers 4e-5 : possible, mais c'est une affirmation sur ma perte, pas sur les plis. Et la constante 0,84 ne peut pas trancher : elle tient sur quatre
+décades de δ, et δ n'est pas x ; chaque décade est mesurée au même x = 1e-6. Deux moyens bon marché : (1) la valeur propre molle de la forme fermée à x = 1e-6 divisée par
+7,30e-8 : proche de 0,84, la courbure porte le facteur ; proche de 1,00, le 0,84 vit dans le gain, le dénominateur d'Adam, pas dans le pli. (2) Déplacer x : une correction
+d'ordre suivant diminue comme √x, 0,84 à 1e-6 devient ~0,95 à x_warm = 1e-7 et ~0,98 à 1e-8 ; si ça reste 0,84, ce n'est pas le terme suivant. Sur 67 contre 72 : juste,
+cohérence et pas identité. À x = 1e-6, lequel : 0,84 ou 1,00 ? »
+
+**Vérification de ses chiffres (20/10) :** 0,16 / 1e-3 = 160 ✓ ; 1/160² = 3,9e-5 (« près de 4e-5 ») ✓ ; 7,30e-5 × 1e-3 = 7,30e-8 ✓ ; 1 − 0,16 √0,1 = 0,949 ✓ ; 1 − 0,16 × 0,1 = 0,984 ✓
+(« 0,98 ») ✓. Sa remarque « chaque décade est mesurée au même x = 1e-6 » : exacte, x_warm est fixé par le protocole (delta = pli − 1e-6 pour tous les δ de lr).
+
+**Test (1), fait avant d'écrire les prédictions (c'est la vérification de son premier test, `verifier_tour74_valeur_propre.py fermee` ; je le signale : ce résultat n'est pas précommis) :**
+jacobien 3×3 de (g_e3, g_e4, g_l3) en (z3, z4, u), forme fermée (racine de G à Se = 0, gradient avec Se, Sed de l'état de base). La ligne z4 est morte (d4 ~ 1e-12 : valeur propre nulle à
+1e-20), la valeur propre molle est la deuxième. À x = 1e-6 : **col +7,70e-8 (rapport à 7,30e-8 : 1,055), nœud −6,97e-8 (0,955)** ; à 1e-7 : 1,020 et 0,988 ; à 1e-8 : 1,009 et 0,999 ; à 1e-5 : 1,171
+et 0,854. Le jacobien du col vaut donc 1 + 55 √x environ (1 − 46 √x au nœud) : le terme suivant existe, mais il pousse du mauvais côté pour le col (le modèle devient 5 % de plus trop haut, 0,84 → 0,80 contre le modèle avec la valeur
+propre du col). La courbure ne porte pas le 0,84 : **pas 0,84, plutôt 1,00 (1,055)**. Reste à trouver où il vit.
+
+**Hypothèses (20/10) :**
+- H74-1 (lui) le 0,84 est le terme suivant en x de la valeur propre molle (courbure) : si oui, 0,84 à 1e-6 devient ~0,95 à 1e-7 et ~0,98 à 1e-8. **Réfutée par le test (1)** (1,055 au col à 1e-6) ; test (2) à faire.
+- H74-2 (lui, seconde branche) le 0,84 vit dans le gain, le dénominateur d'Adam.
+- H74-3 (moi, non standard) précisément : dans le **rapport des gains du mode raide u et du mode mou z3**, pas dans le gain de e3 seul. Un 2×2 (z, u) avec J = [[a, b], [c, d]] et
+  un préconditionneur diagonal P = diag(p_z, p_u) a une valeur propre molle ≈ p_z p_u det J / (p_z a + p_u d) : elle vaut p_z λ_s seulement si p_u d domine p_z a ET p_u ≫ p_z. Avec
+  a = −k3 ≈ −2,1e-6, d = J_uu = −1,12e-4, p_u / p_z = √v_e3 / √v_l3 = 0,134 : facteur r (a + d)/(a + r d) ≈ 0,89, du bon ordre (calcul à la main, non fait en 6×6).
+- H74-4 (moi, standard) le jacobien complet a un terme que le jacobien 3×3 n'a pas : le momentum (b1 = 0,9) : pour un mode lent (taux 0,017 ≪ 1 − b1) il ne change rien au premier ordre ; la valeur propre
+  de A = I + lr P J6 doit reproduire celle du jacobien 18-dim à moins de 5 %.
+- H74-5 (moi) le facteur est indépendant de x (il dépend du rapport r et de a/d, pas de √x) : il reste 0,84 ± 0,04 à x_warm = 1e-7 et 1e-8 (contre ses 0,95 et 0,98 pour un terme suivant).
+
+**Prédictions précommises (20/10), avant les runs** (`verifier_tour74_valeur_propre.py precond`, `x`, `ablation` ; `verifier_tour73_decades.py decades 5.95e-7 <xw>`) :
+- P74-1 : sur l'état du trajet à lr\* + 1e-7 (q = 5,95e-7, x = 1e-6), la valeur propre dominante de A = I + lr P J6 (momentum lent, 6 coordonnées brutes, P = 1/(√v_i + eps) mesurés) reproduit le jacobien
+  18-dim à moins de 5 % en ln : ln A ∈ [0,0159 ; 0,0176] à t = 200 (jacobien 18-dim : 0,01678). Mise : 65 %.
+- P74-2 : le rapport ln A / (taux du modèle du tour 73) est dans [0,80 ; 0,88] à t = 200 (c'est le 0,84, retrouvé en 6×6). Mise : 55 %.
+- P74-3 (ablation du gain de u) : en multipliant les gains de l3 et l4 par k (1/4, 1, 4, 16, 100, 10 000) à état et J6 fixés, ln A / modèle croît de façon monotone avec k et atteint 1,00 ± 0,07 pour k ≥ 100
+  (u adiabatiquement esclave : le facteur ne dépend plus que du pli, 1,055 attendu au col, plus 2 % de a/d). Mise : 60 %.
+- P74-4 (déplacer x) : lr\* existe (bissection 0,05 à 0,8, q = 5,95e-7) à x_warm = 1e-7 (mise 60 %) et 1e-8 (mise 45 %). S'il existe : le rapport (ln du jacobien 18-dim à t = 200) / (modèle avec 7,30e-5 √x et s mesuré à t = 200)
+  reste dans [0,78 ; 0,90] aux deux x, donc pas 0,95 ni 0,98 (mise : 55 % sachant que lr\* existe).
+- P74-5 : le coût de la décade au-dessus de lr\* (tol 0,02, 1e-6 → 1e-7 → 1e-8) à x_warm = 1e-7 est supérieur d'au moins 15 % à celui du modèle à ce x (même signe qu'à 1e-6 : le modèle va trop vite). Mise : 50 %.
+
+Réponse dans `docs/REPONSE_ORDRE74.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
