@@ -19187,6 +19187,15 @@ cJ = exp(0,983 × taux du tour 73(t)) − 1 (0,983 est le rapport ln A / modèle
 - P74-10 : à x = 1e-6, t(1e-7), t(1e-8), t(1e-9), t(1e-10) prédits à moins de 3 % de 600, 719, 833, 944 (le modèle du tour 73 sortait de −3,3 % à −7,7 %). Mise : 65 %.
 - P74-11 : à x\_warm = 1e-7, même procédure (ancre t(δ = 1e-6) mesuré à ce x, taux de base 7,30e-5 √x, 0,983 gardé) : t(1e-7), t(1e-8), t(1e-9), t(1e-10) à moins de 5 % des valeurs mesurées. Mise : 50 %.
 
+**Résultats du troisième lot (20/10)** (`verifier_tour74_modele_corrige.py 5.95e-7 1e-6` et `1e-7`, KA = 0,983, 7,30e-5 √x, ancre t(δ = 1e-6) mesuré ; journaux `D:/tmp/t74_corr_*.log`) :
+- **P74-10 ✓** à x = 1e-6 : t prédit 599, 718, 832, 942 contre 600, 719, 833, 944 mesurés (−0,1 à −0,2 %) ; le modèle du tour 73 sortait de −3,3 à −7,7 %.
+- **P74-11 ✓** à x = 1e-7 : t mesurés 1021 (ancre), 1314, 1580, 1825, 2052 ; prédits 1307, 1568, 1810, 2034 (−0,5 à −0,9 %) ; le modèle du tour 73 : −2,3 à −4,7 %. Décades mesurées à 1e-7 : 293, 266, 245, 227 (contre 124, 119, 114, 111 à 1e-6).
+Le résidu croît lentement dans la même direction (−0,1 → −0,2 % ; −0,5 → −0,9 %) : KA n'est pas tout à fait constant (0,985 à t = 200, 0,981 à 350 à x = 1e-6).
+
+**Prédiction précommise (20/10), quatrième lot — la fin du séjour** (`verifier_tour74_valeur_propre.py x 5.95e-7 1e-10 500,700,850,920 1e-6` avec TOUR73_TOL=1e-15, jacobien 18-dim déjà publié : 1,01855 ; 1,01987 ; 1,02195 ; 1,02670) :
+- P74-12 : l'équation caractéristique appliquée à cJ = A − 1 de la matrice 6×6 reproduit ces quatre valeurs propres à 3e-4 près (sur la valeur propre). Mise : 65 %.
+- P74-13 : le rapport ln A / taux du tour 73 passe de 0,983 à t = 200–350 à une valeur dans [0,95 ; 0,98] à t = 920 (il baisse, ce qui explique le signe du résidu de P74-10). Mise : 60 %.
+
 Réponse dans `docs/REPONSE_ORDRE74.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
