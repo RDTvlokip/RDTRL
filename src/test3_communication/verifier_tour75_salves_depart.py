@@ -65,7 +65,8 @@ def mode_salves(b1, eps, xs, nrun, nrec):
     delta = float(PLI - mpf(xs))
     ks = [int(a) for a in np.random.default_rng(7).integers(0, 4444, 16)]
     rng = np.random.default_rng(11)
-    tous = dict(sc_creux=[], sc_vis=[], sc_pic=[], sc_apres=[], s66_creux=[], v_creux=[], v_apres=[], mediane_sc=[], mediane_s66=[], dt_vis=[], plateau=[], nb=0)
+    tous = dict(sc_creux=[], sc_vis=[], sc_pic=[], sc_apres=[], s66_creux=[], v_creux=[], v_apres=[], mediane_sc=[], mediane_s66=[], dt_vis=[], plateau=[], nb=0,
+                sc_min=[], pente=[], replay=[], decal_min=[])
     esc = 0
     for k in ks[:nrun]:
         w = redlib.copie(S1)
@@ -73,6 +74,7 @@ def mode_salves(b1, eps, xs, nrun, nrec):
         w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
         redlib.avancer_obs(w, delta, 10000, np.zeros((1, 7)), eps=eps)
         x6 = w["x"].copy()
+        w0 = redlib.copie(w)
         rec = np.zeros((nrec, 7))
         first, maxrb, rb, done = redlib.avancer_obs(w, delta, nrec, rec, eps=eps)
         if maxrb > 0.9:
@@ -106,6 +108,31 @@ def mode_salves(b1, eps, xs, nrun, nrec):
             ok = np.nonzero(lm <= mn + np.log10(3.0))[0]
             t_creux = prev_end + 5 + int(np.median(ok))
             tous["plateau"].append(float(E[prev_end + 5:a].min() < 1e-14))
+            t_min = prev_end + 5 + int(np.argmin(lm))
+            tous["sc_min"].append(Sc[t_min + 1]); tous["decal_min"].append(t_min - t_creux)
+            # estimateur par la croissance : pente observee s de ln E entre 0,08 et 0,35, racine reelle mu = -exp(s) => S inferre
+            lE = np.log(E + 1e-300)
+            tt = np.arange(max(t_min - 100, prev_end + 8), a)
+            s_obs = (lE[tt + 2] - lE[tt - 2]) / 4.0
+            bon = (s_obs > 0.08) & (s_obs < 0.35) & (E[tt] < vis)
+            if np.any(bon):
+                s_ok = s_obs[bon]
+                s_inf = (1 + b1 + np.exp(s_ok) + b1 * np.exp(-s_ok)) / (1 - b1)
+                tous.setdefault("dS_croiss", []).extend((s_inf - Sc[tt[bon] + 1]).tolist())
+                tous.setdefault("Sinf_croiss", []).extend(s_inf.tolist())
+            deb = prev_end + 30
+            sel = np.arange(deb, t_min - 10)
+            sel = sel[Sc[sel + 1] < thr - 1.0] if len(sel) else sel
+            if len(sel) >= 20:
+                tous["pente"].append(float(np.polyfit(sel, np.log(E[sel] + 1e-300), 1)[0]))
+            if len(tous["replay"]) < 4 and k == ks[0]:
+                w1 = redlib.copie(w0)
+                redlib.avancer(w1, delta, t_min + 2, eps=eps, cross=2.0, stop=False)
+                J6 = jac6([mpf(float(a)) for a in w1["x"]], mpf(delta))
+                Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
+                sv = np.sqrt(w1["v"])
+                evr = np.linalg.eigvals(np.diag(1.0 / (sv + eps)) @ Jn)
+                tous["replay"].append((float(-LR * np.min(evr.real)), float(Sc[t_min + 1])))
             apres = min(b + 3, len(Sc) - 100)
             tous["sc_creux"].append(Sc[t_creux + 1]); tous["s66_creux"].append(S66[t_creux + 1])
             tous["sc_vis"].append(Sc[a + 1]); tous["sc_pic"].append(Sc[tp + 1])
@@ -128,6 +155,13 @@ def mode_salves(b1, eps, xs, nrun, nrec):
     print(f"   S_c a l'amplitude visible (> 3e-4) : mediane {np.median(q('sc_vis')):.3f} ; au pic : {np.median(q('sc_pic')):.3f} ; juste apres (min sur 60 pas) : {np.median(sc_apres):.3f}")
     print(f"   delai creux -> visible : mediane {np.median(q('dt_vis')):.0f} pas")
     print(f"   S_c mediane temporelle : {sc_med:.3f} ({sc_med / thr:.4f} du seuil) ; S_66 mediane (tour 66) : {s66_med:.3f} ({s66_med / thr:.4f}) ; moyenne geometrique creux x apres : {pred_med:.3f} ({pred_med / thr:.4f})")
+    scm = q("sc_min")
+    print(f"   S_c au minimum exact (argmin) : mediane {np.median(scm):.3f} ({np.median(scm) / thr:.4f} du seuil), 10-90 % [{np.percentile(scm, 10):.3f} ; {np.percentile(scm, 90):.3f}] ; argmin - creux (fenetre x3) : mediane {np.median(q('decal_min')):.0f} pas")
+    print(f"   pente de decroissance de ln E entre les salves : mediane {np.median(q('pente')):.5f} ({len(tous['pente'])} salves) ; 1/2 ln b1 = {0.5 * np.log(b1):.5f} ; rapport {np.median(q('pente')) / (0.5 * np.log(b1)):.3f}")
+    if tous.get("dS_croiss"):
+        dS = np.array(tous["dS_croiss"])
+        print(f"   estimateur par la croissance ({len(dS)} points) : S inferre - S_c : mediane {np.median(dS):+.3f} ({100 * np.median(dS) / thr:+.2f} % du seuil), 10-90 % [{np.percentile(dS, 10):+.3f} ; {np.percentile(dS, 90):+.3f}]")
+    print("   rejeu exact (S_c complet, S_c interpole) : " + " ; ".join(f"{a:.3f} / {b_:.3f}" for a, b_ in tous["replay"]))
     print(f"   manque 1 - S_c mediane/seuil = {1 - sc_med / thr:.4f} ; eps/(sqrt(v_l3 creux) + eps) = {f_eps:.4f} ; sqrt(v) creux {np.median(q('v_creux')):.3e} -> apres {np.median(q('v_apres')):.3e} (remplissage {np.median(q('v_apres')) / np.median(q('v_creux')):.3f})")
 
 

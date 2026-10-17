@@ -19296,6 +19296,19 @@ repousser plus de 50 pas avant de la dépasser). Le « creux » de la fenêtre �
 **Prédiction précommise (20/10), troisième lot — l'estimateur par la croissance** (`verifier_tour75_salves_depart.py`, nouvelle sortie) : pendant la croissance (pente observée de ln E entre 0,08 et 0,35 par pas, E < 3e-4) l'application avec momentum donne S inféré = (1 + b1 + e^s + b1 e^{−s})/(1 − b1) (racine réelle μ = −e^s).
 - P75-9 : la médiane de S inféré − S_c(t) sur ces points est dans ±0,5 (b1 = 0,9, soit 1,3 %), ±0,25 (b1 = 0,8), ±1,0 (b1 = 0,95), pour les six états. Mise : 45 %.
 
+**Résultats du troisième lot (20/10)** (`D:/tmp/t75c_*.log` ; 81 000 à 132 000 points de croissance par état) : S inféré (à partir de la pente observée de ln E, 0,08 à 0,35 par pas, c'est-à-dire S entre 38,14 et 39,5 à b1 = 0,9) moins S_c(t) :
+médiane +0,005 (b1 = 0,9, eps 1e-8), +0,004 (1e-7), +0,004 (5e-8), +0,012 (1e-9), +0,005 (b1 = 0,8), −0,013 (b1 = 0,95), soit 0,01 à 0,03 % du seuil ; 10–90 % [−0,2 ; +2,6] à b1 = 0,9 (la queue haute est la fin de la croissance, hors linéaire), [−0,29 ; +0,02] à b1 = 0,8. **P75-9 ✓ aux six états,
+de loin** (tolérance ±0,5, ±0,25, ±1,0) : la croissance observée suit l'application avec momentum et le S_c exact au 1/3000 : S_c franchit le seuil au pas où la croissance démarre à moins de 0,2 pas près (S monte de 0,05 % par pas). **Réponse à sa lecture 1 : oui, les salves démarrent à 38, 18 et 78**, le franchissement du seuil et le
+démarrage de la croissance coïncident ; ce que mes estimateurs de creux ne donnaient pas (37,65 ; 36,8 ; 18,4) venait de la sonde E, pas du seuil.
+
+**Hypothèse ajoutée (20/10) :**
+- H75-8 (moi) E = |Δ²u|/4 additionne le mode raide alterné et la queue lente des autres modes de la salve (non alternée), dont le Δ² est plus faible mais décroît plus lentement : à b1 = 0,8 le mode raide perd e^{−39} par cycle et passe sous la queue (d'où la pente −0,0716 au lieu de −0,1116 et l'argmin à S_c = 18,4 > 18). Une sonde qui supprime la partie non alternée,
+  E_alt = |Δ²_t − Δ²_{t−1}|/8, l'isole.
+
+**Prédictions précommises (20/10), quatrième lot :**
+- P75-10a : avec E_alt, la pente de décroissance de ln E entre les salves est égale à ½ ln b1 à ±5 % aux six états, y compris b1 = 0,8 (rapport 1,00 ± 0,05 ; 0,64 avant). Mise : 45 %.
+- P75-10b : avec E_alt, S_c à l'argmin est dans ±0,4 % du seuil (b1 = 0,9 : 37,85–38,15 ; 0,8 : 17,93–18,07 ; 0,95 : 77,7–78,3) pour au moins cinq états sur six. Mise : 40 %.
+
 Réponse dans `docs/REPONSE_ORDRE75.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
