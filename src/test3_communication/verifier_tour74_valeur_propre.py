@@ -140,6 +140,8 @@ def analyser(q, xw, lr_delta, ts, ablation=False, j18=True):
         M12 = np.block([[np.eye(6) + lr * (1 - b1) * Pm @ J, lr * b1 * Pm], [(1 - b1) * J, b1 * np.eye(6)]])
         ev12 = np.linalg.eigvals(M12)
         l12 = ev12[np.argmax(ev12.real)].real
+        gros = ev12[np.argsort(-np.abs(ev12))][:3]
+        print("      plus grands modules de l'application 12-dim (mode raide de u) : " + ", ".join(f"{z.real:+.4f}{z.imag:+.4f}i (|.| = {abs(z):.4f})" for z in gros))
         # equation caracteristique du mode scalaire : eps^2 + eps (1 - b1)(1 - cJ) - cJ (1 - b1) = 0, cJ = A - 1
         cJ = la - 1.0
         eps_c = 0.5 * (-(1 - b1) * (1 - cJ) + np.sqrt(((1 - b1) * (1 - cJ)) ** 2 + 4 * cJ * (1 - b1)))

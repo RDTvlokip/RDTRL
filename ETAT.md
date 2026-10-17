@@ -1,9 +1,31 @@
 # État du projet RDTRL — où on en est
 
-## Tour 73 (vraie critique de dipankarsarkar, 19/10/2026) — LETTRE PRÊTE
+## Tour 74 (vraie critique de dipankarsarkar, 20/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE73.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 72
-est partie (sa critique du tour 73 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE74.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 73
+est partie (sa critique du tour 74 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 20/10/2026 (tour 74, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : le 0,84 n'est pas dû à l'échelle seule ; deux tests : (1) valeur propre molle de la forme fermée à x = 1e-6 / 7,30e-8 (0,84 : courbure ; 1,00 : le gain) ; (2) déplacer x
+(un terme suivant donne 0,95 à 1e-7, 0,98 à 1e-8). Question : « 0,84 ou 1,00 ? ».
+**Acquis (prédictions poussées avant les runs, sauf le test (1), signalé)** : ses chiffres ✓ ; valeur propre molle fermée à 1e-6 : col +7,70e-8 (**1,055**), nœud −6,97e-8 (0,955) → pas 0,84 ;
+le dénominateur diagonal d'Adam non plus (A = I + lr P J6 donne 0,985 du modèle) ; **le 0,84–0,87 est le MOMENTUM** : équation caractéristique (μ−b1)(μ−1) = (1−b1) cJ μ, cJ = A−1, reproduit le
+jacobien 18-dim à 2e-5 en ln sur tout le séjour (0,01678 à t = 200 … 0,02635 à t = 920) ; l'application à 12 dimensions (x, m) à 5 décimales ; le facteur va de 0,871 à 0,813 ; b1 = 0,8 et 0,95 sur le
+même état : 0,9343 et 0,7810 prédits 0,934 et 0,781 ; x = 1e-7 et 1e-8 : lr\* existe (0,305065 ; 0,304070), ln18/ln A = 0,951 et 0,983 (ses 0,95 et 0,98, mais par le momentum, qui va aussi en √x :
+son test (2) ne tranche pas) ; modèle corrigé hors échantillon : t(δ) à −0,2 % (x = 1e-6), −0,9 % (x = 1e-7), contre −3,3 à −7,7 % avant. Décomposition à 1e-6, t = 200 : 0,858 = 1,055 × 1,019 × 0,916 × 0,871.
+**Mes ratés** : A reproduit mon modèle (0,985), pas le jacobien (P74-1, P74-2) ; plafond d'ablation 1,075 (P74-3) ; rapport à 1e-7 et 1e-8 hors de [0,78 ; 0,90] (0,934 ; 1,020) ; coût de la décade à
+1e-7 +10 % au lieu de +15 % (P74-5) ; ln A/modèle monte vers 1,27 à t = 920 au lieu de baisser (P74-13). Retiré : « le taux est gain × λ_s » (lettres 72 et 73) : c'est cJ, le taux en est la racine.
+**Limites** : réduction seule ; le dwell n'existe pas à b1 = 0,8 et 0,95 (test sur un même état, pas sur un séjour) ; le facteur 0,916 est numérique ; réseau complet non testé.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 74 ; question : le déplacement de x seul ne tranche pas entre un terme suivant du pli et le momentum, b1 à état fixé le fait (oui/non).
+2. Dériver 0,916 en forme fermée (vecteur nul gauche avec les gains) ; pourquoi A reste à 1,5 % du modèle.
+3. Revoir les tours 59–72 où le facteur de momentum (cJ/(1−b1), ~13 %) a pu être confondu avec autre chose (« taux 16–20 % trop haut »).
+4. Où les salves atteignent leur bord de stabilité (le mode raide de u est stable sur le séjour avec v figé).
+
+## Tour 73 (vraie critique de dipankarsarkar, 19/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE73.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 19/10/2026 (tour 73, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : « oui » sur le taux (valeur propre du pas qu'Adam fait, préconditionneur qui bouge pendant le séjour) ; mon écart de 12–15 % venait de la fenêtre

@@ -19196,6 +19196,22 @@ Le résidu croît lentement dans la même direction (−0,1 → −0,2 % ; −0,
 - P74-12 : l'équation caractéristique appliquée à cJ = A − 1 de la matrice 6×6 reproduit ces quatre valeurs propres à 3e-4 près (sur la valeur propre). Mise : 65 %.
 - P74-13 : le rapport ln A / taux du tour 73 passe de 0,983 à t = 200–350 à une valeur dans [0,95 ; 0,98] à t = 920 (il baisse, ce qui explique le signe du résidu de P74-10). Mise : 60 %.
 
+**Résultats du quatrième lot (20/10)** (lr = lr\* + 1e-10, TOUR73_TOL=1e-15 ; `D:/tmp/t74_fin_sejour.log`) :
+```
+t                          200      500      700      850      920
+ln jacobien 18-dim        0,01678  0,01838  0,01967  0,02172  0,02635     (publié : ln 1,01855 = 0,01838 ; ln 1,01987 = 0,01968 ; ln 1,02195 = 0,02171 ; ln 1,02670 = 0,02635)
+ln équation caractér.     0,01677  0,01837  0,01966  0,02171  0,02634
+ln A (6x6, sans momentum) 0,01926  0,02135  0,02307  0,02585  0,03240
+ln18 / ln A (momentum)    0,871    0,861    0,853    0,840    0,813
+ln A / modèle du tour 73  0,985    0,977    0,981    1,041    1,272
+z3                        9,1202   9,1202   9,1201   9,1178   9,1091
+```
+**P74-12 ✓** (l'équation caractéristique reproduit les quatre valeurs propres publiées à 2e-5 près en ln, bien sous les 3e-4 précommis). **P74-13 ✗** (le rapport ln A / modèle ne baisse pas jusqu'à [0,95 ; 0,98] : 0,977 à 500, 0,981 à 700, puis il **monte**,
+1,041 à 850 et 1,272 à 920, quand z3 quitte le col : 9,1178 puis 9,1091 contre 9,1202 : l'état n'est plus au col de la forme fermée ; le signe du résidu de P74-10 ne vient donc pas d'une baisse de KA). Le facteur du momentum n'est pas
+constant : 0,871 → 0,813 le long du séjour, il décroît avec le taux, comme prévu par cJ/(1 − b1) ; le « 0,84 » du tour 73 en était la moyenne. **P74-5 ✗** : le coût de la décade mesuré à x = 1e-7 (293, 266, 245, 227) dépasse celui du modèle du
+tour 73 (263, 241, 223, 207) de 11, 10, 10, 10 %, pas d'au moins 15 %. Pas de mode raide ≥ 1 dans l'application 12-dim aux deux instants testés (le plus grand module est le mode mou : 1,0169 à t = 200, 1,0177 à t = 350) : sur le séjour le
+mode raide de u est stable (jacobien figé en v) ; où les salves atteignent leur bord de stabilité, je ne l'ai pas cherché ici.
+
 Réponse dans `docs/REPONSE_ORDRE74.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
