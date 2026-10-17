@@ -19136,6 +19136,33 @@ propre du col). La courbure ne porte pas le 0,84 : **pas 0,84, plutôt 1,00 (1,0
   reste dans [0,78 ; 0,90] aux deux x, donc pas 0,95 ni 0,98 (mise : 55 % sachant que lr\* existe).
 - P74-5 : le coût de la décade au-dessus de lr\* (tol 0,02, 1e-6 → 1e-7 → 1e-8) à x_warm = 1e-7 est supérieur d'au moins 15 % à celui du modèle à ce x (même signe qu'à 1e-6 : le modèle va trop vite). Mise : 50 %.
 
+**Résultats du premier lot (20/10)** (`verifier_tour74_valeur_propre.py precond 5.95e-7 1e-6 1e-7 200 350 700`, lr\* = 0,314002321339, lr = lr\* + 1e-7). À t = 200 : modèle du tour 73 = 0,01956 ;
+**A = I + lr P J6 (momentum lent) : ln A = 0,01926** ; jacobien 18-dim : ln = 0,01678. À t = 350 : modèle 0,02068, ln A = 0,02028, jacobien 18-dim 0,01756. (t = 700 : l'état a déjà quitté le col, z3 = −3,14 ;
+non pertinent.) **P74-1 ✗** (0,01926 hors de [0,0159 ; 0,0176] : la matrice 6×6 préconditionnée reproduit mon MODÈLE à 1,5 % (0,985), pas le jacobien complet, qui est 13 % plus bas). **P74-2 ✗** (ln A / modèle = 0,985, pas
+dans [0,80 ; 0,88]). **P74-3 : monotone ✓, plafond ✗ de peu** : ln A / modèle en fonction du facteur k sur les gains de (l3, l4) : 0,789 (1/4), 0,985 (1), 1,051 (4), 1,069 (16), 1,074 (100), 1,0748 (10⁴ et plus) ; croissante
+et saturée, mais à 1,075 et non dans 1,00 ± 0,07 (1,055 de la courbure du col × 1,02 de a/d : le plafond est le facteur de la forme fermée, 1,055, plus la correction de Schur). **H74-3 (rapport des gains raide/mou) réfutée comme
+origine du 0,84** : le rapport des gains déplace le facteur de 0,79 à 1,07, mais au gain mesuré il vaut 0,985. **H74-4 réfutée** : A et le jacobien 18-dim diffèrent de 15 % (ln 0,01926 contre 0,01678 ; rapport 0,871 à t = 200 et
+0,866 à t = 350), constant. Le 0,84 n'est ni dans le pli (1,055) ni dans le préconditionneur diagonal (0,985) : il est dans ce que la matrice A omet, le **momentum**.
+
+**Dérivation après coup (20/10, après avoir vu P74-1 manquer ; calcul à la main d'abord, puis dans le script) :** pour un mode linéaire, x\_{t+1} = x\_t + c m\_{t+1}, m\_{t+1} = b1 m\_t + (1 − b1) J x\_t, avec c J = e^{0,01926} − 1 = 0,01945
+(la valeur de A), l'équation caractéristique est (μ − b1)(μ − 1) = (1 − b1) c J μ. Avec ε = μ − 1 : ε² + ε (1 − b1)(1 − cJ) − cJ (1 − b1) = 0, soit à b1 = 0,9 : ε = 0,016915, ln μ = 0,016775 : **le jacobien 18-dim
+mesuré est 0,01678** et le rapport ln μ / ln A = 0,871 (mesuré 0,871). La correction est de l'ordre de cJ/(1 − b1) : le taux (0,019) n'est pas petit devant 1 − b1 = 0,1. Elle varie comme √x : pour x = 1e-7 (cJ = 0,0061) le même calcul
+donne un rapport 0,951, et pour x = 1e-8 (cJ = 0,00194) 0,983 : **exactement ses 0,95 et 0,98**. Son test (2) ne distingue donc pas un terme suivant du pli d'une correction de momentum : les deux vont comme √x. Ce qui distingue : b1.
+Le rapport prédit à cJ = 0,01945 : b1 = 0,8 → ln μ = 0,01799, rapport 0,934 ; b1 = 0,95 → ln μ = 0,01504, rapport 0,781.
+
+**Hypothèses ajoutées (20/10) :**
+- H74-6 (moi, non standard) le facteur 0,84–0,87 est l'effet du momentum sur un mode dont le taux n'est pas petit devant 1 − b1 (correction ~ cJ/(1 − b1)), pas une propriété du pli ni du préconditionneur diagonal.
+- H74-7 (moi) l'effet de x n'est donc pas un test du terme suivant : il est en √x aussi (0,95 et 0,98 prédits par le momentum seul).
+- H74-8 (moi, standard) la dynamique de v (le jacobien 18-dim contient v, A le fige) compte pour moins de 3 % du taux.
+
+**Prédictions précommises (20/10), second lot, avant ces runs** (le calcul à la main à b1 = 0,9, 0,016775, est déjà fait ; les runs dans le script `verifier_tour74_valeur_propre.py` ne le sont pas) :
+- P74-6 : l'application linéaire à 12 dimensions (x, m) avec v figé et b1 = 0,9 donne un ln de valeur propre dominante à moins de 2 % du jacobien 18-dim : ∈ [0,0164 ; 0,0171] à t = 200, ∈ [0,0172 ; 0,0179] à t = 350. Mise : 75 %.
+- P74-7 : l'équation caractéristique ci-dessus, avec cJ = A − 1 pris de la matrice 6×6, donne le ln du jacobien 18-dim à moins de 3 % aux deux instants. Mise : 75 %.
+- P74-8 : à x\_warm = 1e-7 et 1e-8 (si lr\* existe, cf. P74-4), ln(jacobien 18-dim à t = 200) / modèle du tour 73 est dans [0,90 ; 0,99] à 1e-7 et [0,94 ; 1,01] à 1e-8 : il monte vers 1, comme il l'avait annoncé, mais par le
+  momentum et le pli ensemble. Mise : 55 %.
+- P74-9 (le test qui discrimine : b1 à x fixé, modules `reduction_numba_tour74_b1_08.py` et `_095.py`, copies du module lr variable avec B1 = 0,8 et 0,95, si lr\* existe) : ln(jacobien 18-dim) / ln A (6×6 momentum lent, même état) = 0,934 ± 0,03 à
+  b1 = 0,8 et 0,781 ± 0,03 à b1 = 0,95. Si le facteur ne bouge pas avec b1 (reste ~0,87), le momentum n'est pas l'origine. Mise : 55 % chacun.
+
 Réponse dans `docs/REPONSE_ORDRE74.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

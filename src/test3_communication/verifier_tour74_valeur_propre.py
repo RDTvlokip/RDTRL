@@ -97,17 +97,25 @@ def mode_fermee():
         print(f"   1e{e:+5.1f} : {res[(e, -1)] / res[(e, 1)]:+.4f}")
 
 
-def mode_precond(q, xw, lr_delta, ts):
+def analyser(q, xw, lr_delta, ts, ablation=False, j18=True):
+    """sur le trajet a lr* + lr_delta : jacobien 18-dim (reference), A = I + lr P J6 (momentum lent), modele du tour 73, modele avec la valeur propre du col fermee."""
     import verifier_tour72_retour_et_jacobien as v72
     import reduction_numba_tour71_lrvar as red
     ls = v72.bissection(q, xw)
+    if ls is None:
+        print(f"q = {q:.3e} xw = {xw} : pas de lr* dans [0,05 ; 0,8]")
+        return None
     lr = ls + lr_delta
-    print(f"q = {q:.3e} xw = {xw} : lr* = {ls:.12f}, lr = {lr:.12f}")
+    print(f"q = {q:.3e} xw = {xw} : lr* = {ls:.12f}, lr = {lr:.12f}", flush=True)
     red.LRV = lr
     w = red.copie(v72.S1)
     delta = PLI - mpf(xw)
     eps = q * lr
+    lam_col = valeurs_propres_3x3(delta, -1)[0][0].real
+    lam73 = 7.30e-5 * float(mpf(xw)) ** 0.5
+    print(f"   lambda_s col (forme fermee) = {lam_col:.4e}, 7,30e-5 sqrt(x) = {lam73:.4e}, rapport {lam_col / lam73:.4f}")
     t_prec = 0
+    out = []
     for t in sorted(ts):
         red.avancer(w, float(delta), t - t_prec, eps=eps, cross=2.0, stop=False)
         t_prec = t
@@ -115,23 +123,36 @@ def mode_precond(q, xw, lr_delta, ts):
         s = [float(np.sqrt(a)) for a in w["v"]]
         J6 = jac6(x, delta)
         J = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
-        P = np.diag([1.0 / (si + eps) for si in s])
-        A = np.eye(6) + lr * P @ J
-        ev = np.linalg.eigvals(A)
-        lead = ev[np.argmax(np.abs(ev))]
-        ev_g = np.linalg.eigvals(J)
-        soft = ev_g[np.argmin(np.abs(ev_g))]
-        # la valeur propre molle du jacobien non preconditionne en coordonnees brutes, et les gains
-        print(f"  t = {t:5d} : z3 = {float(x[0] - x[1]):.5f} ; sqrt(v) = " + " ".join(f"{si:.2e}" for si in s)
-              + f" ; A dominante = {lead.real:.5f} (ln = {np.log(abs(lead)):.5f}) ; J6 plus petit module = {soft.real:+.3e}", flush=True)
-        # modele de ma lettre : lr lambda_s [1/(s_e3 + eps) + 1/(s_e3 + 26 eps)] avec lambda_s = 7,30e-5 sqrt(x)
-        lam = 7.30e-5 * float(mpf(xw)) ** 0.5
-        print(f"           modele du tour 73 (gain z3 x 7,30e-5 sqrt x) : {lr * lam * (1.0 / (s[0] + eps) + 1.0 / (s[0] + 26 * eps)):.5f}")
+        gains = np.array([1.0 / (si + eps) for si in s])
+        def lead_A(k=1.0):
+            g = gains.copy(); g[4] *= k; g[5] *= k
+            A = np.eye(6) + lr * np.diag(g) @ J
+            ev = np.linalg.eigvals(A)
+            return ev[np.argmax(ev.real)].real
+        la = lead_A()
+        mod73 = lr * lam73 * (1.0 / (s[0] + eps) + 1.0 / (s[0] + 26 * eps))
+        modcol = mod73 * lam_col / lam73
+        l18 = None
+        if j18:
+            st = np.concatenate([w["x"], w["m"], w["v"]])
+            ev = np.linalg.eigvals(v72.jacobien(st, w["t"], lr, q, xw))
+            l18 = float(np.max(np.abs(ev)))
+        print(f"  t = {t:5d} : z3 = {float(x[0] - x[1]):.5f} ; sqrt(v) = " + " ".join(f"{si:.2e}" for si in s))
+        print(f"      ln A = {np.log(la):.5f} ; jacobien 18-dim ln = {np.log(l18) if l18 else float('nan'):.5f} ; modele tour 73 = {mod73:.5f} ; modele avec lambda_s col = {modcol:.5f}")
+        print(f"      rapports : lnA / modele73 = {np.log(la) / mod73:.4f} ; lnA / modele col = {np.log(la) / modcol:.4f}" + (f" ; ln18 / modele73 = {np.log(l18) / mod73:.4f} ; ln18 / lnA = {np.log(l18) / np.log(la):.4f}" if l18 else ""), flush=True)
+        if ablation:
+            print("      ablation du gain de (l3, l4) x k : " + "  ".join(f"k={k:g}: {np.log(lead_A(k)) / mod73:.4f}" for k in (0.25, 1, 4, 16, 100, 1e4, 1e6)))
+        out.append((t, np.log(la), np.log(l18) if l18 else None, mod73))
+    return out
 
 
 if __name__ == "__main__":
     mode = sys.argv[1]
     if mode == "fermee":
         mode_fermee()
-    else:
-        mode_precond(float(sys.argv[2]), sys.argv[3], float(sys.argv[4]), [int(a) for a in sys.argv[5:]])
+    elif mode == "precond":
+        analyser(float(sys.argv[2]), sys.argv[3], float(sys.argv[4]), [int(a) for a in sys.argv[5:]], ablation=True)
+    elif mode == "x":
+        # usage : x <q> <lr_delta> <t1,t2,..> <xw1> <xw2> ...
+        for xw in sys.argv[5:]:
+            analyser(float(sys.argv[2]), xw, float(sys.argv[3]), [int(a) for a in sys.argv[4].split(",")], ablation=True)
