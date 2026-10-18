@@ -19339,6 +19339,36 @@ Le premier facteur est mon erreur de formule (le terme en k3), le second est la 
 
 Réponse dans `docs/REPONSE_ORDRE75.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 21/10/2026 (tour 76, PAS simulée)
+
+« Pas à partir de ces deux nombres. Tels que donnés, ils pointent vers un autre mécanisme. Dans ta réduction le terme z3 s'ajoute : le mode partenaire est près de zéro, la valeur propre raide est proche de la trace du bloc : gap plus z3. Prends le bloc du 23/09
+(gap, ligne 3 de l'émetteur) comme un 2 × 2 symétrique, 37,91 la diagonale propre du gap, 4,9 % le poids du vecteur propre sur l'émetteur. Les équations propres donnent (S_max − d_gap)/(S_max − d_émetteur) = 0,049/0,951 = 0,0515. Un décalage de 1,83 impose alors
+d_émetteur = 4,22, un partenaire à 2,39 et un couplage de 8,06. C'est une répulsion de niveaux, pas une somme. Une somme pure au même poids lirait d_émetteur = 0,049 × 39,74 = 1,95 et S_gap = 37,79. La lecture qui tranche est donc la diagonale propre de la ligne émetteur de lr P H dans cette trace, et
+la seconde valeur propre du bloc. Près de 1,95 avec le partenaire près de 0 : le même couplage que ton terme k3, et la dilution est l'histoire. Près de 4,2 avec le partenaire près de 2,4 : autre chose, et 13,4 vers 4,7 n'est pas un facteur de dilution. Le poids de 4,9 % est-il pris dans les
+coordonnées brutes ou dans P^(1/2) H P^(1/2) ? Mon arithmétique ne tient que dans la seconde. »
+
+**Vérification de ses chiffres (21/10) :** rapport 0,049/0,951 = 0,0515 ✓ ; S_max − d_gap = 39,74 − 37,91 = 1,83 ✓ ; S_max − d_s = 1,83/0,0515 = 35,52 ✓ ; d_s = 4,223 ✓ ; partenaire = 37,91 + 4,223 − 39,74 = 2,393 ✓ ; couplage √(1,83 × 35,52) = 8,062 ✓ ;
+somme pure : d_s = 0,049 × 39,74 = 1,947 ✓, S_gap = 37,793 ✓. **Réponse à sa question :** dans `verifier_tour58_bord_stabilite_salve.py`, `M(w)` (lignes 63–66) renvoie `dmh * H(dmh * w)` avec dmh = (√v + eps)^(−1/2) : l'itération de puissance est sur P^(−1/2) H P^(−1/2), et `part_gap`
+(ligne 87) et `part e3` sont les carrés des composantes du vecteur propre unitaire de cette matrice : **la seconde coordonnée**, son arithmétique s'applique. (S_gap est le quotient de Rayleigh de la même matrice sur la direction du gap, ligne 75.)
+Les lignes du journal au pas de démarrage : pas 59536, S_gap = 37,912, S_max = 39,739, part gap = 0,951, part e3 = 0,0491 ; avec ces valeurs (S − d_gap = 1,827 ; w_s/w_g = 0,05163) : d_s = 4,35, partenaire 2,52, couplage 8,04.
+
+**Hypothèses (21/10) :**
+- H76-1 (lui) le couplage du 23/09 est une répulsion de niveaux avec un partenaire non nul (d_émetteur ≈ 4,2, partenaire ≈ 2,4, couplage ≈ 8,1), pas une somme avec un partenaire proche de zéro.
+- H76-2 (moi, non standard) c'est la même structure que dans la réduction : le partenaire est le MODE MOU du pli. Mon terme k3 p_z est la trace du bloc quand le partenaire est nul (x → 0) ; au delta réel du 23/09, x = pli − δ = 4,1e-4, la valeur propre molle est ∝ √x (1 + a√x), avec le gain d'Adam de la ligne émetteur (p_z ~ 10^7),
+  elle vaut quelques unités de S et n'est plus négligeable ; S_max = (T + √(T² − 4 det))/2 = T − partenaire, T = d_gap + d_z. Donc répulsion et somme sont les deux limites d'un même bloc, et la dilution est à lire sur d_z et le partenaire séparément.
+- H76-3 (moi, standard) la valeur propre dominante du 23/09 n'est pas dans le bloc 2 × 2 (gap, émetteur) : une autre direction (ligne 5 de l'émetteur, S ≈ 38 en permanence) se mélange.
+
+**Prédictions précommises (21/10), avant les runs** (`verifier_tour76_bloc_2x2.py` : `arithmetique`, `reseau` = rejeu du réseau complet au delta réel du 23/09 (checkpoint `rdtrl_tour58_checkpoint_mur23_g77777_k3_delta0.013026615_pas54000.pt`), `reduction` = bloc (u, z3) de la réduction à plusieurs x) :
+- P76-1 : son arithmétique se refait (4,22 ; 2,39 ; 8,06 ; 1,95 ; 37,79 à ±0,01). Mise : 95 %.
+- P76-2 : le rejeu du réseau complet reproduit, aux pas 59530–59540, S_gap = 37,91 ± 0,05, S_max = 39,74 ± 0,1 et part e3 = 0,049 ± 0,003. Mise : 65 %.
+- P76-3 : dans le réseau complet, au pas où le mode gap-émetteur domine, le bloc 2 × 2 (direction du gap, direction du vecteur propre sur l'émetteur) de P^(−1/2) H P^(−1/2) × lr a d_émetteur dans [3,5 ; 5,0] et son second niveau dans [1,5 ; 3,5] (la branche « répulsion »),
+  et la plus grande valeur propre du bloc reproduit S_max à 0,15 près. Mise : 50 %.
+- P76-4 : dans la réduction à x = 4,106e-4 (eps 1e-10, lr 0,05, b1 = 0,9), au pas où S_c franchit 38 : d_z = lr k3 p_z dans [1,5 ; 6,5], le second niveau du bloc (u, z3) dans [0,5 ; 5], et le poids de z3 (26 concurrents fusionnés en o3, coordonnées symétrisées) dans le vecteur propre raide dans [2 % ; 12 %].
+  Mise : 40 %.
+- P76-5 : dans la réduction, partenaire/S_max croît de façon monotone avec x sur {1e-13, 1e-8, 1e-6, 1e-5, 1e-4, 4,106e-4}, sous 1e-3 pour x ≤ 1e-8 et au-dessus de 3 % à 4,106e-4. Mise : 65 %.
+
+Réponse dans `docs/REPONSE_ORDRE76.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
