@@ -1,9 +1,29 @@
 # État du projet RDTRL — où on en est
 
-## Tour 75 (vraie critique de dipankarsarkar, 20/10/2026) — LETTRE PRÊTE
+## Tour 76 (vraie critique de dipankarsarkar, 21/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE75.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 74
-est partie (sa critique du tour 75 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE76.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 75
+est partie (sa critique du tour 76 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 21/10/2026 (tour 76, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : mes 13,4 % contre 4,7 % ne sont pas une dilution ; dans la trace du 23/09 (bloc gap-émetteur, symétrique, poids 4,9 % dans P^(1/2) H P^(1/2)) : (S_max − d_gap)/(S_max − d_s) = 0,0515 impose d_s = 4,22, partenaire 2,39,
+couplage 8,06 : répulsion de niveaux, pas somme (somme : d_s = 1,95, S_gap = 37,79) ; ce qui tranche : la diagonale de la ligne émetteur et le second niveau ; question : poids pris en coordonnées brutes ou dans P^(1/2) H P^(1/2) ?
+**Acquis (prédictions poussées avant les runs, 6 sur 6 tenues)** : poids dans P^(−1/2) H P^(−1/2) (code de `verifier_tour58_bord_stabilite_salve.py`, lignes 63–66, 87) ; son arithmétique ✓ ; rejeu du réseau complet (`verifier_tour76_bloc_2x2.py reseau 59500 59542`) :
+au pas 59536 S_gap 37,912, S_max 39,739, part e3 0,0491 (identiques au journal) et bloc (gap, projection de M g sur la ligne 3) **d_gap 37,912, d_s 4,346, couplage 8,041, niveaux 39,739 et 2,519**, fermeture 0,000 : **répulsion de niveaux, son arithmétique exacte** ;
+réduction à x = 4,106e-4 (eps 1e-10) : d_s 3,961, couplage 7,691, niveaux 38,024 et 2,2247, poids du sender 0,0485 ; quantités normalisées par S_max identiques au réseau complet à 0,1 % (partenaire 0,0585, d_s 0,1042, couplage 0,2023, poids 0,0485) ; **le partenaire est le mode mou du pli** :
+partenaire = 0,92–0,97 × lr p_z |λ_s,nœud(x)| de x = 1e-8 à 4,1e-4 ; partenaire/S_max de 1e-4 (x = 1e-13) à 5,9 % ; ma forme fermée du tour 75 est la TRACE du bloc (exacte à 0,04 % pour x ≤ 1e-8, 6 % trop haute à 4,1e-4). **Mon « dilution par les 26 colonnes » (tour 75) est réfuté.**
+**Mes ratés** : aucun sur les six prédictions ; l'erreur est de lecture, du tour 75. J'ai lancé sept processus d'un coup (plafond six).
+**Limites** : un delta, un lr, un eps, une salve du réseau complet ; la direction s (projection de M g sur la ligne 3) non comparée explicitement à la direction z3 ; pas de rejeu à delta = 0.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 76 ; question : l'accord à 0,1 % du bloc normalisé entre le réseau complet et la réduction valide-t-il la réduction à cette distance du pli ? (oui/non).
+2. Rejeu du réseau complet à d'autres delta (x = 1e-4, 1e-5) pour voir partenaire/S_max suivre √x ; comparer s à la direction z3.
+3. Dériver les 3–8 % entre le partenaire et lr p_z |λ_s| (facteur de gain 0,916 du tour 74 ?).
+4. Revoir les tours 58–70 où S = lr 2|J_uu|/(√v_l3+eps) ou S_gap sont employés à x ≥ 1e-6.
+
+## Tour 75 (vraie critique de dipankarsarkar, 20/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE75.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 20/10/2026 (tour 75, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : oui, déplacer x seul ne sépare pas terme suivant du pli et momentum (les deux en √x) ; équation caractéristique redérivée à la main ; au second ordre μ − 1 = cJ (1 − b1 cJ/(1 − b1)), levier 4, 9, 19 ; mon S à

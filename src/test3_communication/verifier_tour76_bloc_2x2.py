@@ -182,7 +182,13 @@ def mode_reduction(b1, eps, xs, nrec):
         redlib.avancer(w1, delta, t_c + 2, eps=eps, cross=2.0, stop=False)
         J6 = jac6([mpf(float(q)) for q in w1["x"]], mpf(delta))
         Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
-        res.append(bloc_sym(Jn, w1["v"], eps, LR))
+        bl = bloc_sym(Jn, w1["v"], eps, LR)
+        s_e = math.sqrt(w1["v"][0])
+        pz = 1.0 / (s_e + eps) + 1.0 / (s_e + 26.0 * eps)
+        from verifier_tour74_valeur_propre import valeurs_propres_3x3
+        lam_noeud = valeurs_propres_3x3(PLI - mpf(xs), +1)[0][0].real
+        bl["pred_soft"] = LR * pz * abs(lam_noeud)
+        res.append(bl)
     if not res:
         print(f"b1 = {b1} eps = {eps:.1e} x = {xs} : aucun franchissement trouve")
         return
@@ -191,6 +197,7 @@ def mode_reduction(b1, eps, xs, nrec):
     sec = np.mean([r_["second"] for r_ in res], axis=0)
     print(f"b1 = {b1} eps = {eps:.1e} x = {xs} ({len(res)} salves) : S_max(6x6) = {f('S_max'):.3f} ; second niveau du 6x6 = {sec[0]:.4f} ; asymetrie de J symetrise {f('asym'):.1e}")
     print(f"   bloc (gap, sender) : d_gap = {f('d_gap'):.3f} ; d_s = {f('d_s'):.3f} ; couplage = {f('c'):.3f} ; niveaux {nv[1]:.3f} et {nv[0]:.4f} ; partenaire/S_max = {nv[0] / f('S_max'):.4f} ; fermeture {f('ferm'):.4f}")
+    print(f"   mode mou (H76-4) : lr p_z |lambda_s,noeud(x)| = {f('pred_soft'):.4f} ; second niveau du 6x6 / cette valeur = {sec[0] / f('pred_soft'):.3f} ; partenaire du bloc / cette valeur = {nv[0] / f('pred_soft'):.3f}")
     print(f"   poids du vecteur propre raide : gap {f('part_gap'):.4f} ; sender (e3, sqrt26 o3) {f('part_s'):.4f} ; e4/o4 {f('part_autre'):.1e} ; d_s / S_max = {f('d_s') / f('S_max'):.4f}")
 
 

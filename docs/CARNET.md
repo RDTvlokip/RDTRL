@@ -19371,8 +19371,8 @@ Les lignes du journal au pas de démarrage : pas 59536, S_gap = 37,912, S_max = 
 - **P76-1 ✓** : 4,223 ; 2,393 ; 8,062 ; 1,947 ; 37,793 avec ses nombres arrondis ; avec le journal au pas 59536 (S_gap 37,912, S_max 39,739, part e3 0,0491) : d_s = 4,356, partenaire 2,529, couplage 8,040.
 - **P76-2 ✓, à tous les chiffres** : le rejeu du réseau complet donne au pas 59536 S_gap = 37,912, S_max = 39,739, part gap 0,951, part e3 0,0491, identiques au journal du 23/09 (même graine, déterministe).
 - **P76-3 ✓** : bloc 2 × 2 (direction du gap, projection de M g sur la ligne 3 de l'émetteur) de lr P^(−1/2) H P^(−1/2) au pas 59536 : **d_gap = 37,912, d_s = 4,346, couplage = 8,041, niveaux 39,739 et 2,519**, fermeture 0,000 (M g est exactement dans le bloc) : le plus grand niveau du bloc
-  est S_max à 0,000. **Son arithmétique à partir du poids est exacte : 4,356 ; 2,529 ; 8,040 prédits, 4,346 ; 2,519 ; 8,041 mesurés.** Le bloc est une répulsion de niveaux, avec un partenaire à 2,5, pas une somme. Avant le pic (pas 59500, S_max = 38,53 → 38,85 au bloc ... 59534) : d_s 4,04 → 4,23, partenaire 2,27 → 2,42,
-  couplage 7,85 → 8,01 : le partenaire reste entre 2 et 2,9 sur toute la salve (il suit le pas).
+  est S_max à 0,000. **Son arithmétique à partir du poids est exacte : 4,356 ; 2,529 ; 8,040 prédits, 4,346 ; 2,519 ; 8,041 mesurés.** Le bloc est une répulsion de niveaux, avec un partenaire à 2,5, pas une somme. Du pas 59500 (niveau du bloc 38,85 ; l'itération de puissance n'a pas encore convergé : 38,53) au pas 59534 :
+  d_s 4,04 → 4,23, partenaire 2,27 → 2,42, couplage 7,85 → 8,01 ; le partenaire reste entre 2,0 et 2,9 sur la salve jusqu'au pas 59540.
 - **P76-4 ✓ (trois conditions)** : réduction à x = 4,106e-4, eps 1e-10, au franchissement S_c = 38 (3 salves) : d_gap = 36,287, **d_s = 3,961**, couplage 7,691, **niveaux 38,024 et 2,2247**, poids du vecteur propre : gap 0,9515, **sender 0,0485** (réseau complet : 0,0484–0,0491), fermeture 0,0000. Au même niveau de S_max (38,85 dans le réseau : d_s 4,04, partenaire 2,27, couplage 7,85) la réduction et le réseau
   complet diffèrent de 2 à 4 %. À eps 1e-9 : d_s = 2,943, partenaire 1,674, sender 3,5 %.
 - Autres x (eps 1e-9, 3 salves) : x = 1e-4 : S_max 38,033, d_gap 35,715, d_s 3,361, couplage 8,966, partenaire 1,043 (2,74 % de S_max), poids sender 6,27 % ; x = 1e-5 : partenaire 0,3735 (0,98 %), sender 8,59 % ; x = 1e-6 : partenaire 0,1224 (0,32 %), sender 9,40 %.
@@ -19386,6 +19386,29 @@ Les lignes du journal au pas de démarrage : pas 59536, S_gap = 37,912, S_max = 
 **Prédiction précommise (21/10), second lot** (le même script, avec en plus lr p_z |λ_s,nœud| imprimé ; états x = 1e-13 et 1e-8 à eps 1e-9 en plus des précédents) :
 - P76-6 : le second niveau du bloc divisé par lr p_z |λ_s,nœud(x)| est dans [0,85 ; 1,15] à x = 1e-6 et 1e-5, et dans [0,6 ; 1,6] à x = 1e-4 et 4,106e-4 (la courbure du pli n'est plus un développement à ces x). Mise : 50 %.
 - P76-5 (reprise) : partenaire/S_max monotone croissant sur {1e-13, 1e-8, 1e-6, 1e-5, 1e-4, 4,106e-4}, sous 1e-3 pour x ≤ 1e-8 et au-dessus de 3 % à 4,106e-4 (eps 1e-10 : 5,85 % ; à 1e-9 : 4,41 % ✓ déjà vu). Reste à mesurer 1e-13 et 1e-8.
+
+**Résultats du second lot (21/10)** (`D:/tmp/t76b_red_*.log`, eps 1e-9 sauf mention, 3 salves par état ; **sept processus lancés d'un coup, un de trop pour le plafond de six**) :
+```
+x            S_max(6x6)  d_gap    d_s     couplage  partenaire  partenaire/S_max  lr p_z |lambda_noeud|  partenaire / cela  poids sender
+1e-13        38,028      34,311   3,722   11,293    0,0049      0,0001            0,0000 (λ ≈ 2e-10)     --                 0,0978
+1e-8         38,032      34,324   3,721   11,280    0,0125      0,0003            0,0135                 0,926              0,0975
+1e-6         38,030      34,467   3,686   11,063    0,1224      0,0032            0,1329                 0,921              0,0940
+1e-5         38,024      34,789   3,608   10,551    0,3735      0,0098            0,4027                 0,928              0,0859
+1e-4         38,033      35,715   3,361   8,966     1,0429      0,0274            1,1023                 0,946              0,0627
+4,106e-4     37,937      36,668   2,943   6,664     1,6742      0,0441            1,7276                 0,969              0,0350
+4,106e-4 (eps 1e-10) 38,024  36,287  3,961  7,691   2,2247      0,0585            2,3251                 0,957              0,0485
+```
+**P76-6 ✓** (rapport 0,921 et 0,928 à 1e-6 et 1e-5 dans [0,85 ; 1,15] ; 0,946 et 0,969 à 1e-4 et 4,1e-4 dans [0,6 ; 1,6]) : **le partenaire est le mode mou du pli**, à 3–8 % près (le défaut est du même ordre que le facteur de gain 0,916 du tour 74). **P76-5 ✓** (monotone en x ; 1,3e-4 et 3,3e-4 sous 1e-3 à x ≤ 1e-8 ;
+4,4 % puis 5,9 % au-dessus de 3 % à 4,1e-4). **H76-1 ✓** (le bloc du réseau complet est une répulsion de niveaux : d_s 4,35, partenaire 2,52, couplage 8,04). **H76-2 ✓**, **H76-4 ✓** : somme (partenaire → 0, x → 0, ma forme fermée du tour 75 = trace du bloc) et répulsion (partenaire = mode mou ∝ √x) sont les deux limites du même bloc. **H76-3 réfutée**
+(fermeture 0,000 : M g est dans le bloc, aucune autre direction ne se mélange).
+**Réduction contre réseau complet, quantités normalisées par le niveau haut du bloc** (réseau : pas 59500, niveau 38,846 ; réduction : x = 4,106e-4, eps 1e-10, niveau 38,024 au franchissement) : partenaire/S_max 0,05844 contre 0,05851 ; d_s/S_max 0,10405 contre 0,10416 ; couplage/S_max 0,2022 contre 0,2023 ; poids du sender 0,0484 contre 0,0485 ;
+d_gap/S_max 0,9544 contre 0,9543 : **0,1 % d'écart sur les cinq**. Le niveau absolu diffère de 2 % (38,85 contre 38,02) parce que l'instant n'est pas le même dans la salve. Ma lecture du tour 75 (« 13,4 % contre 4,7 % = dilution par les 26 colonnes ») est fausse et retirée.
+
+| H76-1 (lui) répulsion de niveaux, partenaire non nul | 21/10 (lui) | **confirmée** (d_s 4,346 ; partenaire 2,519 ; couplage 8,041 mesurés contre 4,356 ; 2,529 ; 8,040 prédits par son arithmétique) |
+| H76-2 (moi) somme et répulsion = deux limites du même bloc | 21/10 (moi) | **confirmée** (partenaire/S_max de 1e-4 à 5,9 % selon x) |
+| H76-3 (moi) mélange avec la ligne 5 | 21/10 (moi) | **réfutée** (fermeture 0,000) |
+| H76-4 (moi) le partenaire est le mode mou du pli | 21/10 (moi) | **confirmée** (rapport 0,92–0,97 à lr p_z |λ_s,nœud|, sur cinq décades de x) |
+| mon tour 75 : 13,4 % → 4,7 % est une dilution par les 26 colonnes | 20/10 (moi) | **réfutée** (la réduction à x = 4,1e-4 donne 4,85 % sans dilution) |
 
 Réponse dans `docs/REPONSE_ORDRE76.md`.
 
