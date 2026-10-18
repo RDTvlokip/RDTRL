@@ -19367,6 +19367,26 @@ Les lignes du journal au pas de démarrage : pas 59536, S_gap = 37,912, S_max = 
   Mise : 40 %.
 - P76-5 : dans la réduction, partenaire/S_max croît de façon monotone avec x sur {1e-13, 1e-8, 1e-6, 1e-5, 1e-4, 4,106e-4}, sous 1e-3 pour x ≤ 1e-8 et au-dessus de 3 % à 4,106e-4. Mise : 65 %.
 
+**Résultats du premier lot (21/10)** (`verifier_tour76_bloc_2x2.py arithmetique`, `reseau 59500 59542`, `reduction 0.9 <eps> <x>` ; journaux `D:/tmp/t76_*.log`) :
+- **P76-1 ✓** : 4,223 ; 2,393 ; 8,062 ; 1,947 ; 37,793 avec ses nombres arrondis ; avec le journal au pas 59536 (S_gap 37,912, S_max 39,739, part e3 0,0491) : d_s = 4,356, partenaire 2,529, couplage 8,040.
+- **P76-2 ✓, à tous les chiffres** : le rejeu du réseau complet donne au pas 59536 S_gap = 37,912, S_max = 39,739, part gap 0,951, part e3 0,0491, identiques au journal du 23/09 (même graine, déterministe).
+- **P76-3 ✓** : bloc 2 × 2 (direction du gap, projection de M g sur la ligne 3 de l'émetteur) de lr P^(−1/2) H P^(−1/2) au pas 59536 : **d_gap = 37,912, d_s = 4,346, couplage = 8,041, niveaux 39,739 et 2,519**, fermeture 0,000 (M g est exactement dans le bloc) : le plus grand niveau du bloc
+  est S_max à 0,000. **Son arithmétique à partir du poids est exacte : 4,356 ; 2,529 ; 8,040 prédits, 4,346 ; 2,519 ; 8,041 mesurés.** Le bloc est une répulsion de niveaux, avec un partenaire à 2,5, pas une somme. Avant le pic (pas 59500, S_max = 38,53 → 38,85 au bloc ... 59534) : d_s 4,04 → 4,23, partenaire 2,27 → 2,42,
+  couplage 7,85 → 8,01 : le partenaire reste entre 2 et 2,9 sur toute la salve (il suit le pas).
+- **P76-4 ✓ (trois conditions)** : réduction à x = 4,106e-4, eps 1e-10, au franchissement S_c = 38 (3 salves) : d_gap = 36,287, **d_s = 3,961**, couplage 7,691, **niveaux 38,024 et 2,2247**, poids du vecteur propre : gap 0,9515, **sender 0,0485** (réseau complet : 0,0484–0,0491), fermeture 0,0000. Au même niveau de S_max (38,85 dans le réseau : d_s 4,04, partenaire 2,27, couplage 7,85) la réduction et le réseau
+  complet diffèrent de 2 à 4 %. À eps 1e-9 : d_s = 2,943, partenaire 1,674, sender 3,5 %.
+- Autres x (eps 1e-9, 3 salves) : x = 1e-4 : S_max 38,033, d_gap 35,715, d_s 3,361, couplage 8,966, partenaire 1,043 (2,74 % de S_max), poids sender 6,27 % ; x = 1e-5 : partenaire 0,3735 (0,98 %), sender 8,59 % ; x = 1e-6 : partenaire 0,1224 (0,32 %), sender 9,40 %.
+  Le partenaire croît avec x (×3,05 de 1e-6 à 1e-5, ×2,79 de 1e-5 à 1e-4, ×1,6 de 1e-4 à 4,1e-4) comme √x qui sature ; le poids du sender baisse quand x monte (9,4 % → 3,5–4,9 %).
+- Lecture : mon « 13,4 % contre 4,7 % = dilution par les 26 colonnes » (tour 75) était fausse. 13,4 % est la limite x → 0 où le partenaire (le niveau mou) tend vers 0 et où S_max = d_gap + d_s ; au delta réel du 23/09 (x = 4,1e-4) le partenaire vaut 2,2–2,5, S_max = d_gap + d_s − partenaire, et la
+  réduction reproduit le poids de 4,9 % sans aucun facteur de dilution. Ma forme fermée du tour 75 est la trace du bloc : exacte à 0,04 % pour x ≤ 1e-8 (partenaire < 1e-3 de S), fausse de 6 % à x = 4,1e-4 (eps 1e-10 : somme 40,25 contre 38,02).
+
+**Hypothèse ajoutée (21/10) :**
+- H76-4 (moi, non standard) le partenaire est le mode mou du pli, rendu en unités de S par le gain de la ligne émetteur : partenaire ≈ lr p_z |λ_s,nœud(x)|, p_z = 1/(√v_e3 + eps) + 1/(√v_e3 + 26 eps), λ_s,nœud(x) = valeur propre molle du jacobien 3 × 3 fermé au nœud (−6,97e-8 à x = 1e-6).
+
+**Prédiction précommise (21/10), second lot** (le même script, avec en plus lr p_z |λ_s,nœud| imprimé ; états x = 1e-13 et 1e-8 à eps 1e-9 en plus des précédents) :
+- P76-6 : le second niveau du bloc divisé par lr p_z |λ_s,nœud(x)| est dans [0,85 ; 1,15] à x = 1e-6 et 1e-5, et dans [0,6 ; 1,6] à x = 1e-4 et 4,106e-4 (la courbure du pli n'est plus un développement à ces x). Mise : 50 %.
+- P76-5 (reprise) : partenaire/S_max monotone croissant sur {1e-13, 1e-8, 1e-6, 1e-5, 1e-4, 4,106e-4}, sous 1e-3 pour x ≤ 1e-8 et au-dessus de 3 % à 4,106e-4 (eps 1e-10 : 5,85 % ; à 1e-9 : 4,41 % ✓ déjà vu). Reste à mesurer 1e-13 et 1e-8.
+
 Réponse dans `docs/REPONSE_ORDRE76.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
