@@ -19521,6 +19521,22 @@ lr     eps      eps/lr   partenaire/niveau  poids sender  d_s/niveau  √v_e3   
 - P78-7 : le réseau complet à lr 0,05, eps 2e-10, x = 4,106e-4 (construction native) a partenaire/niveau ∈ [0,0540 ; 0,0575] (la réduction : 0,05571). Mise : 50 %.
 - P78-6 (reprise, précisée) : le réseau complet à lr 0,1, eps 2e-10, x = 4,106e-4 (construction native à lr 0,1, Adam de la suite à lr 0,1) : partenaire/niveau ∈ [0,0555 ; 0,0615], poids ∈ [0,0455 ; 0,0515], fermeture < 0,02, √v_e3 (entrée e(3,10)) entre 1,7 et 2,3 fois celui du réseau à lr 0,05, eps 1e-10. Mise : 35 %.
 
+**Résultats du second lot (23/10)** (`D:/tmp/t78_redE_*.log`, `t78_reseau_*.log` ; réduction avec moments à l'échelle ; réseau complet reconstruit nativement, au franchissement montant de 38,0 ; les lignes FRANCHISSEMENT à partenaire/niveau 0,07–0,09 sont des rebonds pendant la salve, exclues) :
+```
+                                   eps/lr  partenaire/niveau  poids    d_s/niveau  √v_e3       √v_l3        fermeture
+réduction lr 0,1 (échelle)         2e-9    0,05875            0,04875  0,10464     3,603e-8    6,658e-7     0,0000
+réduction lr 0,2 (échelle)         2e-9    0,05937            0,04936  0,10580     7,119e-8    1,332e-6     0,0000
+réduction lr 0,3 (échelle)         2e-9    0,05951            0,04948  0,10604     1,065e-7    1,998e-6     0,0000
+réseau lr 0,05 eps 1e-10 (pas 59456)  2e-9  0,05852            0,04851  0,10419     1,811e-8    3,331e-7     0,0000
+réseau lr 0,05 eps 2e-10 (59032, 59497, 60000)  4e-9  0,05572  0,04579  0,09896     1,800e-8    3,320e-7     0,0000
+réseau lr 0,1 eps 2e-10 (59084, 59505, 59935)   2e-9  0,05875 ; 0,05874 ; 0,05874  0,04874  0,10462  3,605e-8  6,661e-7  0,0000
+```
+**P78-4b ✓** (0,05875 ; 0,05937 ; 0,05951 ∈ [0,0570 ; 0,0600] ; √v_e3 = 1,99 ; 3,93 ; 5,88 fois celui de lr 0,05, dans 2,0 ± 0,2, 4,0 ± 0,5, 6,0 ± 0,8 ; aucun effondrement avec les moments mis à l'échelle). **P78-7 ✓** (0,05572 ∈ [0,0540 ; 0,0575], la réduction 0,05571). **P78-6 ✓, et à 0,02 %** (0,05874 ∈ [0,0555 ; 0,0615] ; poids 0,04874 ∈ [0,0455 ; 0,0515] ; fermeture 0,0000 ;
+√v_e3 = 3,605e-8, soit 1,99 fois 1,811e-8). Le réseau et la réduction s'accordent à quatre chiffres sur le partenaire/niveau à lr 0,1 (0,05874 contre 0,05875), à lr 0,05 eps 2e-10 (0,05572 contre 0,05571) et à lr 0,05 eps 1e-10 (0,05852 contre 0,05851). L'invariance d'échelle n'est pas exacte : partenaire/niveau passe de 0,0585 (lr 0,05) à 0,0595 (lr 0,3), +1,7 %,
+lr p_z de 5,16e6 à 5,26e6 (+2 %), √v_e3 en 1,99 ; 3,93 ; 5,88 fois (un peu sous c). Sur « x plutôt que delta » : le delta est le même (0,013026615) et le pli de la forme fermée ne dépend pas de lr ; l'accord à 0,02 % du réseau à lr 0,1 avec la réduction à x = 4,106e-4 borne le déplacement du x effectif du réseau à lr 0,1 à moins de 0,05 % de x (le partenaire va comme √x ou un peu plus vite).
+
+**Prédiction précommise (23/10), troisième lot :** le rapport √v_e3/√v_l3, 0,134 aux x ≤ 1e-8 (tour 66) et 0,054 à x = 4,1e-4, décroît de façon monotone avec x sur {1e-8, 1e-6, 1e-5, 1e-4, 4,106e-4} (lr 0,05, eps 1e-9 ou 1e-10), avec √v_e3 passant de ~4e-8 (x ≤ 1e-8, eps 1e-9) à 1,8e-8. Mise : 70 %.
+
 Réponse dans `docs/REPONSE_ORDRE78.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
