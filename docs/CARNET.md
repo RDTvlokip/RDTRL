@@ -19436,6 +19436,27 @@ Même delta, même lr, eps 1e-9, une salve : le réseau complet tombe-t-il sur 0
 - P77-4 : le rapport partenaire(1e-10)/partenaire(1e-9) dans le réseau complet est dans [1,2 ; 1,45] (la réduction : 1,327). Mise : 40 %.
 - P77-5 : dans la réduction à x = 4,106e-4 (lr 0,05, b1 = 0,9), partenaire/S_max décroît de façon monotone avec eps sur {1e-11, 1e-10, 1e-9, 1e-8}, ≤ 0,065 à 1e-11 et ≤ 0,02 à 1e-8. Mise : 60 %.
 
+**Résultats du premier lot (22/10)** (`verifier_tour77_bloc_eps.py reseau …`, `verifier_tour76_bloc_2x2.py reduction …` ; journaux `D:/tmp/t77_*.log`) :
+```
+                                  niveau   d_gap    d_s     couplage  partenaire  part./niveau  poids   d_s/niveau  d_gap/niveau  fermeture
+réseau eps 1e-10, pas 59456       38,003   36,267   3,959   7,687     2,224       0,05852       0,04851  0,10419     0,95433      0,0000
+réduction eps 1e-10 (x = 4,106e-4) 38,024  36,287   3,961   7,691     2,2247      0,0585        0,0485   0,1042      0,9543       0,0000
+réseau eps 1e-9, pas 59009        38,015   36,744   2,948   6,677     1,677       0,04412       0,03498  0,07756     0,96656      0,0000
+réseau eps 1e-9, pas 59462        38,006   36,735   2,948   6,675     1,677       0,04412       0,03499  0,07756     0,96656      0,0000
+réduction eps 1e-9                 37,937  36,668   2,943   6,664     1,6742      0,0441        0,0350   0,0776      0,9665       0,0000
+```
+(le réseau à eps 1e-9 est reconstruit nativement : `construire_mur23(adam_eps=1e-9)` puis 59 000 pas pondérés au delta réel ; deux franchissements montants du niveau 38,0, aux pas 59009 et 59462 ; les lignes « FRANCHISSEMENT » aux pas 59094 et 59547 sont des rebonds du niveau pendant la salve, hors franchissement montant, valeurs 0,0576 et 0,0566, non retenues.)
+**P77-1 ✓** (1,00003 ; 0,05845 ; 0,04843). **P77-2 ✓** (0,05852 ∈ [0,0570 ; 0,0600] ; 0,04851 ∈ [0,0470 ; 0,0500] ; 0,10419 ∈ [0,1030 ; 0,1055]). **P77-3 ✓, et bien au-delà de la tolérance : le réseau complet tombe sur 0,0441 (0,04412)**, poids 0,0350 (0,03499), d_s/niveau 0,0776 (0,07756), sur deux salves.
+**P77-4 ✓** (rapport partenaire/niveau eps 1e-10 sur 1e-9 : 0,05852/0,04412 = 1,326, la réduction 1,327). **P77-5 : monotone ✓, ≤ 0,065 à 1e-11 ✓ (0,0616), ≤ 0,02 à 1e-8 ✗ (0,0242)** (réduction : 0,0616 ; 0,0585 ; 0,0441 ; 0,0242 pour eps 1e-11, 1e-10, 1e-9, 1e-8 ; poids 0,0516 ; 0,0485 ; 0,0350 ; 0,0181).
+**H77-1 réfutée** (le réseau suit la réduction à eps 1e-9). **H77-2 soutenue** (le partenaire suit p_z : le rapport au mode mou reste 0,954 à 0,985 de eps 1e-11 à 1e-8). **H77-3 réfutée** (fermeture 0,0000 aux deux eps). À niveau égal (38,00 des deux côtés, ce que le tour 76 n'avait pas) les cinq grandeurs absolues
+s'accordent à 0,05–0,5 % à eps 1e-10 (d_gap 36,267 contre 36,287 ; d_s 3,959 contre 3,961 ; couplage 7,687 contre 7,691 ; partenaire 2,224 contre 2,2247) et à 0,2 % à eps 1e-9. Les deux nombres libres, d_gap/niveau et d_s/niveau, s'accordent à quatre chiffres aux deux eps (0,95433 contre 0,9543 et 0,10419 contre 0,1042 ; 0,96656 contre 0,96655 et 0,07756 contre 0,07758) :
+quatre accords indépendants, deux eps.
+Pendant la salve à eps 1e-9 le partenaire/niveau passe de 0,035 à 0,058 en quelques pas (pas 59094–59100) ; entre salves il reste à 0,0436–0,0462.
+
+**Prédictions précommises (22/10), second lot — d'autres delta** (`verifier_tour77_bloc_eps.py reseau 1e-9 <début> <fin> <delta>`, réseau reconstruit nativement ; réduction du tour 76, eps 1e-9 : x = 1e-4 : partenaire/S_max 0,0274, poids 0,0627, d_s/S_max 0,0884, d_gap/S_max 0,9391 ; x = 1e-5 : 0,0098 ; 0,0859 ; 0,0949 ; 0,9141) :
+- P77-6 : au franchissement montant de 38,0, à x = 1e-4 (delta = pli − 1e-4), le réseau complet donne partenaire/niveau ∈ [0,0258 ; 0,0290], poids ∈ [0,0580 ; 0,0675], d_s/niveau ∈ [0,0830 ; 0,0940] (± 6 % de la réduction), fermeture < 0,02. Mise : 45 %.
+- P77-7 : à x = 1e-5, partenaire/niveau ∈ [0,0090 ; 0,0106], poids ∈ [0,0800 ; 0,0920], d_s/niveau ∈ [0,0890 ; 0,1010], fermeture < 0,02. Mise : 35 %.
+
 Réponse dans `docs/REPONSE_ORDRE77.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
