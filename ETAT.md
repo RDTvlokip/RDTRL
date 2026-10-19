@@ -1,9 +1,28 @@
 # État du projet RDTRL — où on en est
 
-## Tour 76 (vraie critique de dipankarsarkar, 21/10/2026) — LETTRE PRÊTE
+## Tour 77 (vraie critique de dipankarsarkar, 22/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE76.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 75
-est partie (sa critique du tour 76 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE77.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 76
+est partie (sa critique du tour 77 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 22/10/2026 (tour 77, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : mes cinq accords du tour 76 sont deux nombres libres (d_gap/S_max, d_s/S_max), le reste en découle (arithmétique 2 × 2) ; l'échelle (38,85 contre 38,02) a raté ; à ce x, eps déplace le bloc de 33 % (réduction : partenaire/S_max 0,0441 à eps 1e-9, 0,0585 à 1e-10) et le réseau n'a été lancé qu'à 1e-10 ;
+question : à eps 1e-9, même delta, même lr, une salve, le réseau complet tombe-t-il sur 0,0441 ?
+**Acquis (prédictions poussées avant les runs)** : son arithmétique ✓ (1,00003 ; 0,05845 ; 0,0484 ; couplage 0,2021) et son compte (deux nombres libres) ✓ ; `verifier_tour77_bloc_eps.py reseau` : **réseau reconstruit nativement à eps 1e-9 : partenaire/niveau 0,04412 sur deux salves (pas 59009 et 59462), poids 0,03499, d_s/niveau 0,07756,
+d_gap/niveau 0,96656, fermeture 0,0000** ; eps 1e-10 au franchissement du niveau 38,0 (pas 59456) : 0,05852 ; 0,04851 ; 0,10419 (même niveau des deux côtés, ce que le tour 76 n'avait pas : grandeurs absolues à 0,05–0,5 %) ; rapport des eps 1,326 (réduction 1,327) ; autres x à eps 1e-9 : x = 1e-4 partenaire/niveau 0,02743, poids 0,06269,
+d_s 0,08840 ; x = 1e-5 : 0,00982 ; 0,08591 ; 0,09489, identiques à la réduction à 1e-4 près (trois franchissements chacun) ; balayage d'eps de la réduction à x = 4,1e-4 : partenaire/S 0,0616 ; 0,0585 ; 0,0441 ; 0,0242 pour eps 1e-11, 1e-10, 1e-9, 1e-8.
+**Mes ratés** : P77-5 (borne ≤ 0,02 à eps 1e-8 : 0,0242). Mes mises (35–45 %) étaient basses et ont toutes tenu. Écart à tes règles : `python -c` et un heredoc vide pour refaire de l'arithmétique avant de la mettre dans le script.
+**Limites** : un lr (0,05), un b1 ; une construction du réseau par eps ; seul le bloc (gap, ligne 3) est testé (les lignes 5 et 8 ne sont pas dans le bloc) ; s non comparée à la direction z3.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 77 ; question : le bloc suit-il la réduction quand lr change à eps/lr fixé (lr 0,1, eps 2e-10) ? (oui/non).
+2. Tester lr 0,1 (module `reduction_numba_tour71_lr10`/lrvar) contre le réseau complet à lr 0,1 (reconstruction native avec lr changé).
+3. Les lignes 5 et 8 de l'émetteur (S ≈ 38 en permanence à eps 1e-10) : même bloc ?
+4. Modifications locales non commitées par moi : `.gitignore` (ajout `.tmp.driveupload`), de l'utilisateur.
+
+## Tour 76 (vraie critique de dipankarsarkar, 21/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE76.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 21/10/2026 (tour 76, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : mes 13,4 % contre 4,7 % ne sont pas une dilution ; dans la trace du 23/09 (bloc gap-émetteur, symétrique, poids 4,9 % dans P^(1/2) H P^(1/2)) : (S_max − d_gap)/(S_max − d_s) = 0,0515 impose d_s = 4,22, partenaire 2,39,

@@ -19457,6 +19457,21 @@ Pendant la salve à eps 1e-9 le partenaire/niveau passe de 0,035 à 0,058 en que
 - P77-6 : au franchissement montant de 38,0, à x = 1e-4 (delta = pli − 1e-4), le réseau complet donne partenaire/niveau ∈ [0,0258 ; 0,0290], poids ∈ [0,0580 ; 0,0675], d_s/niveau ∈ [0,0830 ; 0,0940] (± 6 % de la réduction), fermeture < 0,02. Mise : 45 %.
 - P77-7 : à x = 1e-5, partenaire/niveau ∈ [0,0090 ; 0,0106], poids ∈ [0,0800 ; 0,0920], d_s/niveau ∈ [0,0890 ; 0,1010], fermeture < 0,02. Mise : 35 %.
 
+**Résultats du second lot (22/10)** (`D:/tmp/t77_reseau_x1e-4.log`, `t77_reseau_x1e-5.log` ; réseau reconstruit nativement à eps 1e-9, fermeture 0,0000 à tous les pas imprimés) :
+```
+x         franchissement montant (pas)    niveau   d_gap/niveau  d_s/niveau  couplage/niveau  partenaire/niveau  poids sender    réduction (partenaire ; poids ; d_s ; d_gap)
+1e-4      58931 ; 59411 ; 59896           38,003-38,017  0,93903   0,08840    0,2358           0,02743 ; 0,02742 ; 0,02743   0,06269   0,0274 ; 0,0627 ; 0,0884 ; 0,9391
+1e-5      59139 ; 59591 ; 60033           38,001-38,014  0,91494   0,09489    0,2775           0,00982            0,08591    0,0098 ; 0,0859 ; 0,0949 ; 0,9141
+```
+(les autres lignes FRANCHISSEMENT, pas 59021, 59501, 59985 à x = 1e-4 et 59225 à x = 1e-5, sont des rebonds du niveau pendant la salve : partenaire/niveau 0,041–0,042 et 0,0244, hors franchissement montant.)
+**P77-6 ✓** (0,02743 ∈ [0,0258 ; 0,0290] ; 0,06269 ∈ [0,0580 ; 0,0675] ; 0,08840 ∈ [0,0830 ; 0,0940]) **et P77-7 ✓** (0,00982 ∈ [0,0090 ; 0,0106] ; 0,08591 ∈ [0,0800 ; 0,0920] ; 0,09489 ∈ [0,0890 ; 0,1010]) : trois salves chacun, à 0,03 % l'une de l'autre, et à 1 pour 10 000 de la réduction sur le partenaire, le poids et d_s. Mes mises (45 %, 35 %) étaient basses.
+Bilan des prédictions du tour 77 : P77-1 ✓ ; P77-2 ✓ ; P77-3 ✓ ; P77-4 ✓ ; P77-5 ✗ sur une borne (0,0242 contre ≤ 0,02 à eps 1e-8) ; P77-6 ✓ ; P77-7 ✓.
+Quatre x ou eps différents (x = 4,1e-4 aux deux eps, 1e-4, 1e-5) × trois salves environ : le réseau complet et la réduction donnent le même bloc au niveau 38,0, à 0,05–0,5 % sur les grandeurs absolues. Correction de compte (sa remarque) : mes « cinq accords » du tour 76 étaient deux nombres libres ; il y en a maintenant huit (d_gap/niveau et d_s/niveau en quatre états : x = 4,1e-4 à eps 1e-10 et 1e-9, x = 1e-4 et 1e-5 à eps 1e-9).
+
+| H77-1 (lui) l'accord n'est qu'à eps 1e-10 | 22/10 (lui) | **réfutée** : eps 1e-9 (0,0441 prédit, 0,04412 mesuré), x = 1e-4, x = 1e-5 |
+| H77-2 (moi) eps agit par p_z (26 eps ~ √v_e3), le réseau a la même ligne émetteur | 22/10 (moi) | **soutenue** (rapport au mode mou 0,95–0,985 de eps 1e-11 à 1e-8 ; le réseau suit à eps 1e-9) |
+| H77-3 (moi, standard) d'autres lignes se mélangent à eps 1e-9 ou à d'autres x | 22/10 (moi) | **réfutée** (fermeture 0,0000 partout) |
+
 Réponse dans `docs/REPONSE_ORDRE77.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
