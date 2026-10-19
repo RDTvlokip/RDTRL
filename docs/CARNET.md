@@ -19499,6 +19499,28 @@ Le niveau est bien 2(1 + b1)/(1 − b1) = 38 fixe. Sa phrase « 38 vaut (2 + 2 b
 - P78-5 (le contraste qui sépare les deux modèles) : à (lr 0,1 ; eps 1e-10), eps/lr = 1e-9, partenaire/niveau est entre 0,0590 et 0,0625 (au-dessus de 0,0585, car eps/lr est deux fois plus petit), et non en dessous de 0,0585. Mise : 55 %.
 - P78-6 : réseau complet à lr 0,1, eps 2e-10, x = 4,106e-4 : au franchissement 38,0, partenaire/niveau ∈ [0,0555 ; 0,0615], poids ∈ [0,0455 ; 0,0515], fermeture < 0,02, √v_e3 entre 1,7 et 2,3 fois celui à lr 0,05 (si la construction à lr 0,1 donne un état de même nature). Mise : 35 %.
 
+**Résultats du premier lot (23/10)** (`verifier_tour78_lr.py arithmetique`, `reduction <module> <eps> 4.10595e-4` ; journaux `D:/tmp/t78_red_*.log` ; réduction, b1 = 0,9, x = 4,106e-4, 3 salves, au franchissement S_c = 38) :
+```
+lr     eps      eps/lr   partenaire/niveau  poids sender  d_s/niveau  √v_e3        √v_l3        √v_e3/√v_l3  p_z        lr p_z
+0,05   1e-10    2e-9     0,05851            0,04850       0,10418     1,810e-8     3,329e-7     0,0544       1,033e8    5,16e6
+0,05   2e-10    4e-9     0,05571            0,04579       0,09895     1,799e-8     3,319e-7     0,0542       9,81e7     4,90e6
+0,1    2e-10    2e-9     0,05874            0,04873       0,10461     3,585e-8     6,627e-7     0,0541       5,21e7     5,21e6
+0,1    1e-10    1e-9     0,06041            0,05038       0,10775     3,614e-8     6,669e-7     0,0542       5,34e7     5,34e6
+0,2    4e-10    2e-9     effondré (état de base de lr 0,05, moments non mis à l'échelle)
+```
+**P78-1 ✓** (ses chiffres, `verifier_tour78_lr.py arithmetique` : 4,8412e7 ; 4,7000e7 ; 2,9 % ; 18,3 % ; 24,6 % ; pente 1,396 ; 0,0561). **P78-2 ✓ : √v_e3 à (0,1 ; 2e-10) vaut 1,98 fois celui à (0,05 ; 1e-10)** (3,585e-8 contre 1,810e-8 ; ma prédiction 2,0 ± 10 %). **P78-3 ✓** (0,05874 ∈ [0,0570 ; 0,0600] ; poids 0,04873 ∈ [0,0470 ; 0,0500]) ; son pari 0,056 ± 0,002
+([0,054 ; 0,058]) est manqué de 0,0007 : 0,05874. **P78-5 ✓** (0,06041 ∈ [0,0590 ; 0,0625] : à eps/lr = 1e-9 le partenaire monte). **P78-4 : lr 0,2 non testable tel quel (effondré)** ; refait ci-dessous avec les moments mis à l'échelle. Deux observations qui ne figuraient pas dans mes prédictions :
+- √v_e3 au franchissement à x = 4,1e-4 est 1,81e-8, pas 4e-8, et le rapport √v_e3/√v_l3 est 0,054, pas 0,134 : le 0,134 du tour 66 vaut à x ≤ 1e-8 ; à ce x le gradient de e3 est plus petit. Son « 4e-8 » était une hypothèse de chiffre, que la réduction contredit d'un facteur 2,2 ; l'argument en reste vrai (eps/lr n'est l'invariant que si √v_e3 double), et √v_e3 double.
+- À lr 0,05, eps 2e-10, le partenaire/niveau est **0,05571 : son 0,056 (extrapolé par la pente 1,4 de p_z) est juste pour un eps plus gros à lr fixé** (0,0561 prédit par lui contre 0,05571). Son raisonnement vaut à lr fixé ; ce qui change à lr 0,1 est √v_e3, qui double.
+
+| H78-1 (lui) √v_e3 reste ; eps 2e-10 est un eps plus gros ; 0,056 à lr 0,1 | 23/10 (lui) | **réfutée à lr 0,1** (√v_e3 double, 0,05874) ; **confirmée à lr 0,05** (0,05571 à eps 2e-10) |
+| H78-2 (moi) √v s'ajuste au bord de stabilité, invariance d'échelle | 23/10 (moi) | **confirmée à lr 0,1** (1,98×, 0,05874 contre 0,05851) |
+
+**Prédictions précommises (23/10), second lot** (après avoir vu les lignes ci-dessus ; `TOUR78_ECHELLE=1` met les moments de l'état de base à l'échelle (m × lr/0,05, v × (lr/0,05)²), tour 71) :
+- P78-4b : avec les moments à l'échelle, à eps/lr = 2e-9 : lr 0,1 (eps 2e-10) partenaire/niveau ∈ [0,0570 ; 0,0600] et √v_e3 = 2,0 ± 0,2 fois celui de lr 0,05 ; lr 0,2 (eps 4e-10) partenaire/niveau ∈ [0,0570 ; 0,0600] et √v_e3 = 4,0 ± 0,5 fois ; lr 0,3 (eps 6e-10) idem avec 6,0 ± 0,8 fois, sans effondrement. Mise : 50 %.
+- P78-7 : le réseau complet à lr 0,05, eps 2e-10, x = 4,106e-4 (construction native) a partenaire/niveau ∈ [0,0540 ; 0,0575] (la réduction : 0,05571). Mise : 50 %.
+- P78-6 (reprise, précisée) : le réseau complet à lr 0,1, eps 2e-10, x = 4,106e-4 (construction native à lr 0,1, Adam de la suite à lr 0,1) : partenaire/niveau ∈ [0,0555 ; 0,0615], poids ∈ [0,0455 ; 0,0515], fermeture < 0,02, √v_e3 (entrée e(3,10)) entre 1,7 et 2,3 fois celui du réseau à lr 0,05, eps 1e-10. Mise : 35 %.
+
 Réponse dans `docs/REPONSE_ORDRE78.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

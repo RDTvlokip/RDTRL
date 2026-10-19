@@ -27,12 +27,14 @@ def mode_arithmetique():
     print(f"eps 1e-10 / eps 1e-9 : partenaire {0.0585 / 0.0441:.3f} ; poids {0.0485 / 0.0350:.3f}")
 
 
-def mode_reseau(eps, debut, fin, delta=0.013026615):
+def mode_reseau(eps, debut, fin, delta=0.013026615, lr=0.05):
     import torch
     from replay_mur23_referent3 import BETA, construire_mur23
     from representable_atteignable_stable import activer, parametres
     from verifier_prior_asymetrique import objectif_pondere
-    from sauver_checkpoints_mur23_tour58 import reprendre, poids_pour, LR
+    from sauver_checkpoints_mur23_tour58 import reprendre, poids_pour
+    from replay_mur23_referent3 import replay, monter_avec_eps_adam
+    LR = lr   # tour 78 : lr du reseau (construction native a ce lr)
     torch.set_num_threads(1)
     t0 = time.time()
 
@@ -75,12 +77,19 @@ def mode_reseau(eps, debut, fin, delta=0.013026615):
         ferm = (torch.sqrt(dot(res, res)) / torch.sqrt(dot(Mg, Mg))).item()
         return LR * d_gap, LR * d_s, LR * c2, ferm
 
-    if eps == 1e-10 and debut >= 54000 and delta == 0.013026615:
+    if eps == 1e-10 and debut >= 54000 and delta == 0.013026615 and lr == 0.05:
         e, r, opt, poids = reprendre(delta)
         depart = 54000
     else:
         poids = poids_pour(delta)
-        e, r = construire_mur23(adam_eps=eps)
+        if lr == 0.05:
+            e, r = construire_mur23(adam_eps=eps)
+        else:
+            # meme recette que construire_mur23 (10 000 pas a lr 0,05, perturbation de e[4,10], 40 000 pas) avec l'Adam de la suite a lr et eps donnes
+            e, r = replay(77777, 3, 10000)
+            with torch.no_grad():
+                e.p[0][4, 10] += 30.0
+            monter_avec_eps_adam(e, r, BETA, 40000, lr, eps)
         activer(e, r)
         opt = torch.optim.Adam(parametres(e, r), lr=LR, eps=eps)
         depart = 0
@@ -95,7 +104,10 @@ def mode_reseau(eps, debut, fin, delta=0.013026615):
         ev, vec = np.linalg.eigh(B)
         top, part = ev[1], ev[0]
         wv = vec[:, 1]
-        ligne = f"  {pas}  {top:7.3f}  {d_gap:7.3f} {d_s:7.3f} {c:8.3f}  {part:8.3f}   {part / top:.5f}      {wv[1] ** 2:.5f}       {d_s / top:.5f}    {d_gap / top:.5f}     {ferm:.4f}"
+        sp = parametres(e, r)
+        sv_e3 = opt.state[sp[0]]["exp_avg_sq"][3, 10].sqrt().item()
+        sv_l3 = opt.state[sp[1]]["exp_avg_sq"][10, 3].sqrt().item()
+        ligne = f"  {pas}  {top:7.3f}  {d_gap:7.3f} {d_s:7.3f} {c:8.3f}  {part:8.3f}   {part / top:.5f}      {wv[1] ** 2:.5f}       {d_s / top:.5f}    {d_gap / top:.5f}     {ferm:.4f}   sqrt(v_e3) = {sv_e3:.3e}  sqrt(v_l3) = {sv_l3:.3e}"
         if prec is not None and prec < 38.0 <= top:
             ligne += "   <== FRANCHISSEMENT 38,0"
         if (pas - debut) % 10 == 0 or "FRANCH" in ligne:
@@ -109,4 +121,4 @@ if __name__ == "__main__":
     if mode == "arithmetique":
         mode_arithmetique()
     else:
-        mode_reseau(float(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), float(sys.argv[5]) if len(sys.argv) > 5 else 0.013026615)
+        mode_reseau(float(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), float(sys.argv[5]) if len(sys.argv) > 5 else 0.013026615, float(sys.argv[6]) if len(sys.argv) > 6 else 0.05)
