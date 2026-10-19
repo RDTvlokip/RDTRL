@@ -19537,6 +19537,11 @@ lr p_z de 5,16e6 à 5,26e6 (+2 %), √v_e3 en 1,99 ; 3,93 ; 5,88 fois (un peu so
 
 **Prédiction précommise (23/10), troisième lot :** le rapport √v_e3/√v_l3, 0,134 aux x ≤ 1e-8 (tour 66) et 0,054 à x = 4,1e-4, décroît de façon monotone avec x sur {1e-8, 1e-6, 1e-5, 1e-4, 4,106e-4} (lr 0,05, eps 1e-9 ou 1e-10), avec √v_e3 passant de ~4e-8 (x ≤ 1e-8, eps 1e-9) à 1,8e-8. Mise : 70 %.
 
+**Résultats du troisième lot (23/10)** (`D:/tmp/t78_ratio_*.log`, réduction lr 0,05, eps 1e-9, 3 salves) : √v_e3 au franchissement = 4,314e-8 (x = 1e-8), 4,176e-8 (1e-6), 3,844e-8 (1e-5), 2,887e-8 (1e-4), 1,760e-8 (4,106e-4) ; √v_l3 = 3,25e-7, 3,25e-7, 3,25e-7, 3,24e-7, 3,29e-7 ; rapport 0,1325 ; 0,1285 ; 0,1185 ; 0,0891 ; 0,0536. **P78-8 ✓**
+(monotone ; ~4e-8 aux petits x, 1,8e-8 au delta réel). Son « environ 4e-8 » est donc juste pour x ≤ 1e-6 et faux de 2,2 au delta réel ; le raisonnement reste vrai. √v_l3 est proportionnel à lr à 0,03 % : 3,329e-7, 3,329e-7, 3,330e-7, 3,330e-7 par facteur lr/0,05 (lr 0,05, 0,1, 0,2, 0,3, eps/lr = 2e-9) : la dérive de 2 % du bloc
+est dans √v_e3/√v_l3 (0,0544 ; 0,0541 ; 0,0534 ; 0,0533), pas dans le terme −eps.
+Bilan du tour 78 : P78-1 ✓ ; P78-2 ✓ ; P78-3 ✓ ; P78-4 non testable (effondré sans moments à l'échelle), P78-4b ✓ ; P78-5 ✓ ; P78-6 ✓ ; P78-7 ✓ ; P78-8 ✓ ; son pari 0,056 ± 0,002 à lr 0,1 : 0,05874, hors (0,0007).
+
 Réponse dans `docs/REPONSE_ORDRE78.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

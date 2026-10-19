@@ -1,9 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 77 (vraie critique de dipankarsarkar, 22/10/2026) — LETTRE PRÊTE
+## Tour 78 (vraie critique de dipankarsarkar, 23/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE77.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 76
-est partie (sa critique du tour 77 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE78.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 77
+est partie (sa critique du tour 78 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 23/10/2026 (tour 78, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : l'accord à eps 1e-9 compte (quatre accords libres à deux eps) ; sur lr il ne s'attend pas à ce que eps/lr soit l'invariant : lr n'entre pas dans p_z, 38 ne bouge pas, √v_e3 reste ~4e-8 donc eps 2e-10 est un eps plus gros (p_z −3 %, pente log 1,4 → partenaire/niveau ≈ 0,056) ;
+pari 0,056 ± 0,002 à 55 % ; question : que vaut √v_e3 au franchissement à lr 0,1 ?
+**Acquis (prédictions poussées avant les runs)** : ses chiffres ✓ (4,84e7 ; 4,70e7 ; 2,9 % ; 18 % ; 25 % ; 1,396 ; 0,0561) ; **√v_e3 au franchissement : 3,585e-8 (réduction), 3,605e-8 (réseau complet) à lr 0,1, eps 2e-10, soit 1,98–1,99 fois 1,81e-8 à lr 0,05** ; partenaire/niveau 0,05874 (réseau) et 0,05875 (réduction), poids 0,04874 ;
+√v_l3 proportionnel à lr à 0,03 % (invariance d'échelle du bord S_c = 38) ; lr 0,2 et 0,3 avec moments à l'échelle : 0,05937 et 0,05951 (dérive +1,7 %, dans le rapport √v_e3/√v_l3 : 0,0544 → 0,0533) ; son 0,056 est **exact à lr fixé** : lr 0,05, eps 2e-10 : 0,05572 (réseau), 0,05571 (réduction) ; à eps/lr = 1e-9 : 0,06041 ;
+√v_e3 vaut ~4e-8 pour x ≤ 1e-6 et 1,8e-8 au delta réel (rapport 0,134 → 0,054). **Mes ratés** : lr 0,2 effondré sans moments à l'échelle ; je n'avais pas prédit la valeur absolue de √v_e3. Son pari raté de 0,0007.
+**Limites** : b1 = 0,9 ; le réseau complet jusqu'à lr 0,1 seulement ; l'origine de la dérive de 2 % du rapport √v_e3/√v_l3 non trouvée.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 78 ; question : eps/lr est-il l'invariant du bloc à 2 % de lr 0,05 à 0,3 ? (oui/non).
+2. Expliquer la dérive du rapport √v_e3/√v_l3 avec lr (0,0544 → 0,0533) et sa chute avec x (0,134 → 0,054).
+3. Réseau complet à lr 0,2–0,3 (moments à l'échelle) ; b1 = 0,8 et 0,95 : le bord (18, 78) et le bloc.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 77 (vraie critique de dipankarsarkar, 22/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE77.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 22/10/2026 (tour 77, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : mes cinq accords du tour 76 sont deux nombres libres (d_gap/S_max, d_s/S_max), le reste en découle (arithmétique 2 × 2) ; l'échelle (38,85 contre 38,02) a raté ; à ce x, eps déplace le bloc de 33 % (réduction : partenaire/S_max 0,0441 à eps 1e-9, 0,0585 à 1e-10) et le réseau n'a été lancé qu'à 1e-10 ;
