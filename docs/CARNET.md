@@ -19474,6 +19474,33 @@ Quatre x ou eps différents (x = 4,1e-4 aux deux eps, 1e-4, 1e-5) × trois salve
 
 Réponse dans `docs/REPONSE_ORDRE77.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 23/10/2026 (tour 78, PAS simulée)
+
+« Celle-là compte. La réduction a engagé 0,0441 avant le run, le réseau a donné 0,04412, à un second eps. Quatre accords libres à deux eps, c'est une validation à ce x ; les cinq du tour dernier n'en étaient pas. Sur lr : non, pas tel que posé. Je ne m'attends pas à ce que eps/lr soit l'invariant. Dans ta formule eps ne rencontre que √v_e3 : 26 eps contre
+environ 4e-8. lr n'entre jamais dans p_z. Et 38 vaut (2 + 2 b1)/(1 − b1) à b1 = 0,9, donc le niveau par lequel tu normalises ne bouge pas non plus avec lr. Dans partenaire/niveau, lr s'annule. eps/lr fixé ne tient donc le bloc que si √v_e3 au franchissement double quand lr double. Rien dans la réduction ne dit cela. Si √v_e3 reste près de 4e-8, eps 2e-10 est juste un eps plus gros.
+Avec √v_e3 = 4e-8, p_z passe de 4,84e7 à 1e-10 à 4,70e7 à 2e-10, environ 3 % de moins. Ton pas de 1e-10 à 1e-9 a transformé une baisse de p_z de 18 % en une baisse de partenaire de 25 %, une pente log près de 1,4. Cela met partenaire/niveau près de 0,056, pas 0,0585. Deux choses à tenir ou à journaliser : x plutôt que delta, au cas où le pli bouge avec lr,
+et √v_e3 au franchissement, qui est le nombre qui décide. Mon pari : lr 0,1, eps 2e-10 tombe à 0,056 ± 0,002, si √v_e3 reste à 10 % de 4e-8. 55 %. Que vaut √v_e3 au franchissement à lr 0,1 ? »
+
+**Vérification de ses chiffres (23/10) :** p_z = 1/(√v + eps) + 1/(√v + 26 eps) à √v = 4e-8 : 4,841e7 (eps 1e-10), 4,700e7 (2e-10), 3,954e7 (1e-9) ✓ ; baisse 2,9 % (1e-10 → 2e-10) ✓ ; 18,3 % (1e-10 → 1e-9) ✓ ; baisse du partenaire 0,0441/0,0585 − 1 = −24,6 % ✓ ; pente log ln(0,754)/ln(0,817) = 1,396 ✓ ; extrapolation 0,0585 × (0,9708)^1,396 = 0,0561 ✓. Sur « lr s'annule dans partenaire/niveau » : le partenaire est lr p_z |λ_s| (en unités de S), lr y est un facteur ; ce qui s'annule, c'est lr dans le produit lr p_z si √v ∝ lr.
+Le niveau est bien 2(1 + b1)/(1 − b1) = 38 fixe. Sa phrase « 38 vaut (2 + 2 b1)/(1 − b1) » ✓ (c'est la même quantité).
+**Ce que je sais déjà de √v en fonction de lr** (tour 66, « H66-3 confirmée ») : au bord de stabilité, √v_l3 = lr·2|J_uu|/S − eps, donc √v ∝ lr à eps/lr fixé, et √v_e3 = 0,134 √v_l3 (J_zu/|J_uu|, indépendant de lr). Plus précisément la condition S_c(lr, √v_l3, eps) = 38 est invariante par (lr, √v, eps) → (c lr, c √v, c eps) : P = 1/(√v + eps) se divise par c quand lr se multiplie par c, l'application avec momentum aussi (g ne dépend que de l'état). Si vrai,
+√v_e3 au franchissement vaut 2 × celui de lr 0,05, c'est-à-dire ≈ 8e-8 et non 4e-8, et le bloc normalisé est le même à (lr 0,1, eps 2e-10) qu'à (0,05 ; 1e-10). Son modèle suppose que √v_e3 est fixé (gradient g de e3 donné) alors que √v est précisément la variable qui s'ajuste pour que S reste au bord.
+
+**Hypothèses (23/10) :**
+- H78-1 (lui) lr n'entre pas dans p_z ; √v_e3 au franchissement reste près de 4e-8 à lr 0,1 ; eps 2e-10 est un eps plus gros ; partenaire/niveau ≈ 0,056 ± 0,002.
+- H78-2 (moi, non standard) le bord de stabilité fixe √v (S_c = 38 est la condition qui détermine √v_l3, donc √v_e3 = 0,134 √v_l3) : √v ∝ lr à eps/lr fixé, l'invariance d'échelle (lr, √v, eps) → (c lr, c √v, c eps) est exacte pour le bloc, partenaire/niveau = 0,0585 à lr 0,1, eps 2e-10.
+- H78-3 (moi, standard) le pli bouge avec lr : le x effectif d'un réseau à lr 0,1 diffère (D_d, tours 67–70) ; partenaire ∝ √x change.
+
+**Prédictions précommises (23/10), avant les runs** (`verifier_tour78_lr.py` : `arithmetique`, `reduction <module> <eps> <x>` : bloc au franchissement S_c = 38, avec √v_e3 et √v_l3 ; `reseau <lr> <eps> <début> <fin> <delta>` : réseau reconstruit nativement avec Adam à ce lr) :
+- P78-1 : ses chiffres se refont (4,84e7 ; 4,70e7 ; 2,9 % ; 18 % ; 25 % ; pente 1,4 ; 0,056). Mise : 95 %.
+- P78-2 : dans la réduction à x = 4,106e-4, √v_e3 au franchissement à (lr 0,1 ; eps 2e-10) vaut 2,0 fois (à ± 10 %) celui à (lr 0,05 ; eps 1e-10). Mise : 65 %.
+- P78-3 : partenaire/niveau à (lr 0,1 ; eps 2e-10) = 0,0585 ± 0,0015, et pas dans 0,056 ± 0,002 ; poids du sender 0,0485 ± 0,0015. Mise : 60 %.
+- P78-4 : l'invariance tient sur lr 0,05 / 0,1 / 0,2 avec eps/lr = 2e-9 : partenaire/niveau dans 0,0585 ± 0,002 aux trois lr (réduction). Mise : 50 %.
+- P78-5 (le contraste qui sépare les deux modèles) : à (lr 0,1 ; eps 1e-10), eps/lr = 1e-9, partenaire/niveau est entre 0,0590 et 0,0625 (au-dessus de 0,0585, car eps/lr est deux fois plus petit), et non en dessous de 0,0585. Mise : 55 %.
+- P78-6 : réseau complet à lr 0,1, eps 2e-10, x = 4,106e-4 : au franchissement 38,0, partenaire/niveau ∈ [0,0555 ; 0,0615], poids ∈ [0,0455 ; 0,0515], fermeture < 0,02, √v_e3 entre 1,7 et 2,3 fois celui à lr 0,05 (si la construction à lr 0,1 donne un état de même nature). Mise : 35 %.
+
+Réponse dans `docs/REPONSE_ORDRE78.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
