@@ -19412,6 +19412,32 @@ d_gap/S_max 0,9544 contre 0,9543 : **0,1 % d'écart sur les cinq**. Le niveau ab
 
 Réponse dans `docs/REPONSE_ORDRE76.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 22/10/2026 (tour 77, PAS simulée)
+
+« Non, pas en soi. Ce sont deux accords, pas cinq, et les deux sont à un seul eps. Les cinq rapports viennent d'un seul 2 × 2 symétrique. d_gap, d_s et le couplage fixent les niveaux et le poids, et diviser par S_max enlève l'échelle : deux nombres sont libres. À partir de ta ligne du réseau :
+(0,9544 + 0,10405)/2 + √(0,42518² + 0,2022²) = 1,0000, ce qui laisse un partenaire de 0,0584 et un poids de 0,0485. Une fois les trois autres accordés, le partenaire et le poids sont de l'arithmétique. L'échelle est la partie qui a raté, 38,85 contre 38,02, et les rapports la divisent. À ce x, eps déplace
+le bloc plus que tout ce que tu as tenu fixe. Tes deux lignes de réduction à 4,106e-4 : eps 1e-9 : partenaire/S_max 0,0441, poids 0,0350 ; eps 1e-10 : 0,0585, 0,0485. 33 % de partenaire en plus à 1e-10 qu'à 1e-9, par eps seul, et le réseau n'a été lancé qu'à 1e-10. La réduction s'est donc déjà engagée sur un nombre que tu n'as pas mesuré.
+Même delta, même lr, eps 1e-9, une salve : le réseau complet tombe-t-il sur 0,0441 ? »
+
+**Vérification de ses chiffres (22/10) :** (0,9544 + 0,10405)/2 = 0,52923 ; √(0,42518² + 0,2022²) = 0,47081 ; somme 1,00004 ✓ ; partenaire = d_gap + d_s − 1 = 0,05845 ✓ (la trace du bloc normalisé moins le niveau haut) ; poids du sender = r/(1 + r), r = (1 − d_gap)/(1 − d_s) = 0,05090 → 0,04843 ✓ ; couplage
+√((1 − d_gap)(1 − d_s)) = 0,2021 contre 0,2022 mesuré ✓. **Il a raison sur le compte : deux nombres libres (d_gap/S_max, d_s/S_max), les trois autres en sont dérivés.** Mes « cinq accords à 0,1 % » du tour 76 étaient deux accords (0,9544 contre 0,9543, 0,10405 contre 0,10416) répétés par la structure.
+0,0585/0,0441 = 1,327 ✓ (33 %) ; poids 0,0485/0,0350 = 1,386. L'échelle : le niveau absolu du bloc (38,85 dans le réseau au pas 59500, 38,02 au franchissement dans la réduction) n'est pas le même instant de la salve : je l'ai dit dans la lettre 76 ; je le corrige ici en comparant au franchissement du niveau 38,0 des deux côtés.
+
+**Hypothèses (22/10) :**
+- H77-1 (lui) l'accord du tour 76 est un point (eps 1e-10) ; à eps 1e-9 la réduction a un partenaire de 0,0441 et le réseau complet peut ne pas le suivre.
+- H77-2 (moi, non standard) eps agit par le gain de la ligne émetteur : p_z = 1/(√v_e3 + eps) + 1/(√v_e3 + 26 eps) avec √v_e3 ~ 4e-8 : à eps = 1e-9, 26 eps = 2,6e-8 est du même ordre que √v_e3, p_z baisse, et le partenaire (lr p_z |λ_s|) et le poids du sender baissent avec lui ; le réseau complet a la même ligne émetteur, donc le même effet. Le nombre 0,0441 n'est pas un engagement arbitraire de la réduction :
+  il sort de p_z et de λ_s(x), que le réseau complet contient aussi.
+- H77-3 (moi, standard) à eps 1e-9 d'autres lignes de l'émetteur (la ligne 5, la ligne 8) ou l'ordre des salves modifient le bloc (gap, ligne 3) : la fermeture n'est plus 0,000 ; ou la trajectoire (chaotique, tour 57) donne une salve qui n'est pas le même mode.
+
+**Prédictions précommises (22/10), avant les runs** (`verifier_tour77_bloc_eps.py` : `arithmetique`, `reseau <eps> <pas_debut> <pas_fin>` = réseau complet reconstruit nativement à cet eps (`construire_mur23(adam_eps=eps)`, puis les pas pondérés au delta réel 0,013026615), bloc 2 × 2 à chaque pas, relevé au premier pas où son niveau haut franchit 38,0 ; `reduction` = balayage d'eps à x = 4,106e-4) :
+- P77-1 : son arithmétique (1,0000 ± 0,0002 ; 0,0584 ; 0,0485 à 0,0001). Mise : 95 %.
+- P77-2 : à eps 1e-10, relevé au franchissement du niveau 38,0 (même niveau que la réduction), le réseau complet donne partenaire/S_max dans [0,0570 ; 0,0600], poids du sender dans [0,0470 ; 0,0500], d_s/S_max dans [0,1030 ; 0,1055]. Mise : 55 %.
+- P77-3 (la lecture qu'il demande) : à eps 1e-9, réseau complet reconstruit à cet eps, au franchissement 38,0 : partenaire/S_max dans [0,0397 ; 0,0485] (0,0441 ± 10 %), poids dans [0,0315 ; 0,0385] (0,0350 ± 10 %), d_s/S_max dans [0,0737 ; 0,0815] (0,0776 ± 5 %), sur au moins une salve. Mise : 40 %.
+- P77-4 : le rapport partenaire(1e-10)/partenaire(1e-9) dans le réseau complet est dans [1,2 ; 1,45] (la réduction : 1,327). Mise : 40 %.
+- P77-5 : dans la réduction à x = 4,106e-4 (lr 0,05, b1 = 0,9), partenaire/S_max décroît de façon monotone avec eps sur {1e-11, 1e-10, 1e-9, 1e-8}, ≤ 0,065 à 1e-11 et ≤ 0,02 à 1e-8. Mise : 60 %.
+
+Réponse dans `docs/REPONSE_ORDRE77.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
