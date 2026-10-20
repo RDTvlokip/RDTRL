@@ -19664,6 +19664,23 @@ x      lr    salves  durée  amplitude max  période  remplissage √v_l3  rempl
 - P80-6 : à x = 1e-4 : élasticité de d_s/niveau en lr p_z de lr 0,1 à 0,15 : 1,00 ± 0,06 ; de 0,15 à 0,2 : 1,21 ± 0,25. À x = 1e-6 : de 0,1 à 0,15 : 1,10 ± 0,12 ; de 0,15 à 0,2 : 2,4 ± 0,6. Mise : 35 %.
 - P80-7 : remplissage de √v_l3 à lr 0,15 : x = 1e-4 dans [1,08 ; 1,12] ; x = 1e-6 dans [1,045 ; 1,085]. Mise : 45 %.
 
+**Résultats du second lot (25/10)** (lr 0,15, eps 3e-10, `D:/tmp/t80_blk_*`, `t80_dur_lr0.15_*`) :
+```
+x      lr    niveau   d_s/niveau  lr p_z    rapport  remplissage √v_l3  période
+1e-4   0,15  38,027   0,11195     3,2736e6  0,0884   1,1068             360
+1e-6   0,15  38,038   0,11889     2,3399e6  0,1241   1,0764             304
+```
+Élasticités de d_s/niveau en lr p_z : x = 1e-4 : 0,1 → 0,15 : 1,022 ; 0,15 → 0,2 : 0,963. x = 1e-6 : 0,1 → 0,15 : 0,987 ; 0,15 → 0,2 : **0,173**, parce que lr p_z (2,3399e6 à lr 0,15) est SUPÉRIEUR à lr p_z à lr 0,2 (2,3297e6). **P80-7 ✓** (1,1068 ∈ [1,08 ; 1,12] ; 1,0764 ∈ [1,045 ; 1,085]). **P80-6 ✗** (x = 1e-4 : 1,022 ✓ et 0,963 ✓ de justesse pour 1,21 ± 0,25 mais la valeur centrale est manquée ; x = 1e-6 : 0,987 ✓, 0,173 contre 2,4 ± 0,6 ✗✗). **H80-4 (une courbe à une variable) réfutée** par ces deux points
+(prédits 0,17 et 1,4 pour e − 1 ; mesurés −0,04 et −0,83).
+**Cause probable, qui touche aussi ses élasticités (non précommise, trouvée en regardant la non-monotonie de lr p_z)** : mon relevé est « 2 pas après le premier pas où S_c interpolé ≥ 38 », et le niveau exact de S_max à ce pas va de 37,770 (lr 0,3, x = 1e-6) à 38,210 selon l'état : jusqu'à 0,6 % sous 38, soit une douzaine de pas dans le cycle. Le long du cycle, p_z (1/√v_e3) monte de ~0,044 %/pas
+alors que d_s/niveau est presque indépendant de la phase (p_z monte, le niveau monte aussi) : un écart de phase de 0,3–0,6 % déplace lr p_z de 0,3–0,5 % et d_s/niveau de ~0,07 %. Or le dernier pas de lr ne bouge lr p_z que de +0,13 % (x = 1e-6) et +0,26 % (x = 1e-4) : **la variation de lr p_z au pas du haut est du même ordre que l'erreur de phase de mon relevé**, et l'élasticité (d_s/niveau)/(lr p_z) y est un rapport de deux petites quantités dont une est du bruit de phase.
+Le rapport d_s/rapport (−0,845 à −0,996) n'est pas affecté (le rapport √v_e3/√v_l3 ne dépend pas de la phase : les deux √v décroissent ensemble).
+
+**Prédictions précommises (25/10), troisième lot — relevé au niveau exact** (`TOUR80_NIVEAU=1` : balayage de ±14 pas autour du franchissement interpolé, bloc à chaque pas, interpolation linéaire des grandeurs au niveau S_max = 38,000 ; lr 0,05 / 0,1 / 0,15 / 0,2 / 0,3 à x = 1e-6 et 1e-4, eps/lr = 2e-9) :
+- P80-8 : avec le relevé au niveau exact, lr p_z est monotone croissant avec lr aux deux x (plus de lr p_z(0,15) > lr p_z(0,2)), et l'élasticité de d_s/niveau en lr p_z aux deux derniers pas (0,1 → 0,2 et 0,2 → 0,3), à chaque x, est entre 0,8 et 1,4 (la cassure à 1,3 / 3,8 / 2,6 disparaît). Mise : 45 %.
+- P80-9 : le rapport d_s/rapport reste entre −0,80 et −1,05 à chaque pas aux deux x. Mise : 70 %.
+- P80-10 : si P80-8 est faux (élasticité > 2 au dernier pas), la cassure est réelle et suit le remplissage comme il le dit. Mise sur P80-8 vrai : 45 %.
+
 Réponse dans `docs/REPONSE_ORDRE80.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
