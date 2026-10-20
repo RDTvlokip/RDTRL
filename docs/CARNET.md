@@ -19638,6 +19638,32 @@ S'il est déjà près de 1,02 à lr 0,2, le cycle n'est pas ce qui découple le 
 - P80-4 : à x = 1e-4, lr 0,3 : remplissage < 1,05 ou salves fusionnées. Mise : 60 %.
 - P80-5 : l'amplitude maximale médiane des salves à x = 1e-4 croît comme lr^(0,69 ± 0,2) entre lr 0,05 et 0,3. Mise : 45 %.
 
+**Résultats du premier lot (25/10)** (`lancer_tour80.sh`, `D:/tmp/t80_dur_*.log` ; réduction, eps/lr = 2e-9, moments à l'échelle, 400 000 pas) :
+```
+x      lr    salves  durée  amplitude max  période  remplissage √v_l3  remplissage √v_e3
+1e-4   0,05  854     92     2,182e-2       465      1,1806             1,1806
+1e-4   0,1   935     107    4,118e-2       424      1,1480             1,1481
+1e-4   0,2   1341    123    6,505e-2       295      1,0677             1,0680
+1e-4   0,3   859     138    7,315e-2       199      1,0050             1,0055
+1e-5   0,05  864     92     2,169e-2       460      1,1782             1,1782
+1e-5   0,1   975     107    4,009e-2       407      1,1379             1,1382
+1e-5   0,2   1673    124    5,647e-2       234      1,0361             1,0362
+1e-5   0,3   0 salve (pas d'oscillation d'amplitude > 3e-4)
+1e-6   0,05/0,1/0,2/0,3  (tour 79) : 875/1016/1744/50 salves ; périodes 453/389/206/2124 ; remplissages 1,1750/1,1288/1,0195/1,0047
+```
+**P80-1 ✓** (ses élasticités refaites : 0,985 ; 0,997 ; 2,583 ; 1,008 ; 1,015 ; 1,297 ; 3,789 ; hausses +0,26 ; +0,13 ; +0,68 ; +0,51 % ; d_s/rapport de −0,845 à −0,996). **P80-2 : sa moitié ✗, la mienne ✓, sa seconde moitié ✓** : à x = 1e-4, lr 0,2, le remplissage de √v_l3 est 1,0677 (il pariait > 1,10 ; je donnais [1,00 ; 1,08]) ; à lr 0,3, 1,0050 (< 1,05 ✓), les salves restent séparées (859, période 199).
+**P80-3 ✗** (périodes à x = 1e-4 : 465, 424, 295 contre 453, 389, 206 à x = 1e-6 : +2,6 %, +9 %, +43 % : le cycle dépend de x à lr élevé). **P80-4 ✓** (1,005). **P80-5 ✓** (amplitude maximale ∝ lr^0,68 : ln(0,07315/0,02182)/ln 6 = 0,676).
+**H80-2 (le cycle est presque indépendant de x) réfutée** : à lr 0,2 le remplissage de √v_l3 vaut 1,0195 (x = 1e-6), 1,0361 (1e-5), 1,0677 (1e-4) : le cycle s'effondre plus tard quand x monte, dans le sens qu'il avait prédit, mais pas assez pour dépasser 1,10 à lr 0,2.
+**Observation post hoc (calculée sur les tableaux du tour 79 et ci-dessus, pas précommise)** : l'élasticité de d_s/niveau en lr p_z, moins 1, contre le remplissage moyen de √v_l3 sur le pas (moyenne des deux bouts, moins 1), est une courbe à une variable sur les sept pas disponibles, tous x confondus :
+(0,164 ; −0,015), (0,158 ; +0,008), (0,152 ; +0,015), (0,108 ; −0,003), (0,074 ; +0,297), (0,0365 ; +1,583), (0,012 ; +2,789) [x = 1e-4 0,05→0,1 ; 1e-5 0,05→0,1 ; 1e-6 0,05→0,1 ; 1e-4 0,1→0,2 ; 1e-6 0,1→0,2 ; 1e-4 0,2→0,3 ; 1e-6 0,2→0,3]. Monotone. **Sa lecture (« tant que les salves se séparent, la cassure suit le cycle ») tient mieux que l'indépendance en x de mon H80-2** ; son seuil (1,10) était trop haut, la cassure commence quand le remplissage moyen passe sous ~0,10 (élasticité 1,00 à 0,108, 1,30 à 0,074).
+
+**Hypothèse ajoutée (25/10) :**
+- H80-4 (lui, reprise après coup, à tester) l'élasticité de d_s/niveau en lr p_z est une fonction du seul remplissage moyen de √v_l3 (1 + f(r̄ − 1)), f décroissante : 0 pour r̄ − 1 ≥ 0,11, ~0,3 à 0,074, ~1,6 à 0,0365, ~2,8 à 0,012.
+
+**Prédictions précommises (25/10), second lot** (courbe ci-dessus interpolée linéairement par morceaux ; lr 0,15, `reduction_numba_tour70_lr015`, eps 3e-10, mêmes moments à l'échelle ; remplissage de √v_l3 à lr 0,15 interpolé en ln lr entre lr 0,1 et 0,2 : 1,101 ± 0,02 à x = 1e-4, 1,065 ± 0,02 à x = 1e-6) :
+- P80-6 : à x = 1e-4 : élasticité de d_s/niveau en lr p_z de lr 0,1 à 0,15 : 1,00 ± 0,06 ; de 0,15 à 0,2 : 1,21 ± 0,25. À x = 1e-6 : de 0,1 à 0,15 : 1,10 ± 0,12 ; de 0,15 à 0,2 : 2,4 ± 0,6. Mise : 35 %.
+- P80-7 : remplissage de √v_l3 à lr 0,15 : x = 1e-4 dans [1,08 ; 1,12] ; x = 1e-6 dans [1,045 ; 1,085]. Mise : 45 %.
+
 Réponse dans `docs/REPONSE_ORDRE80.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
