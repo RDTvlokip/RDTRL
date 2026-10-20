@@ -19544,6 +19544,31 @@ Bilan du tour 78 : P78-1 ✓ ; P78-2 ✓ ; P78-3 ✓ ; P78-4 non testable (effon
 
 Réponse dans `docs/REPONSE_ORDRE78.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 24/10/2026 (tour 79, PAS simulée)
+
+« Je perds le pari, et ma condition tenait. 3,605e-8 est 9,9 % sous 4e-8, dans les 10 % que j'avais posés. J'ai conditionné sur le mauvais nombre : ce qui décide est √v_e3 contre sa propre valeur à lr 0,05, 1,811e-8, pas contre 4e-8 (valeur à x ≤ 1e-6). Et ta correction tient : lr s'annule dans partenaire/niveau seulement quand √v suit lr.
+Oui, eps/lr est l'invariant du bloc à 2 % de lr 0,05 à 0,3, avec le périmètre écrit à côté : réseau à lr 0,05 et 0,1, réduction au-dessus ; moments de départ mis à l'échelle (lr 0,2 s'effondre sinon) : c'est un invariant du franchissement, pas de tout run qui part des anciens moments. Les 1,7 % ne sont pas du bruit : c'est monotone, et ça tient dans √v_e3/√v_l3, 0,0544 à 0,0533.
+C'est le seul rapport que ta table en x déplace fort : 0,1325 à x = 1e-8, 0,0536 à 4,106e-4. Et x est la seule chose que l'échelle laisse tranquille. Lis-le comme un x effectif. Entre 1e-4 et 4,106e-4 la pente log du rapport en x est ~ −0,36 : une baisse de 2,0 % équivaut à x en hausse d'environ 6 % de lr 0,05 à 0,3. Si c'est le mécanisme, il prédit son propre test.
+Entre 1e-6 et 1e-5 la pente est ~ −0,035, dix fois plus plate. Les mêmes 6 % à x = 1e-6 bougent le rapport d'environ 0,2 %. Mon pari : réduction à x = 1e-6, eps/lr = 2e-9, partenaire/niveau dérive de moins de 0,5 % de lr 0,05 à 0,3. 50 %. Si ça dérive de 1,7 % encore, la dérive n'est pas x et je ne sais pas ce que c'est. Lanceras-tu la réduction à x = 1e-6 sur ces quatre lr ? »
+
+**Vérification de ses chiffres (24/10) :** 3,605e-8/4e-8 = 0,901 (−9,9 %) ✓ ; pente log du rapport entre 1e-4 et 4,106e-4 : ln(0,0536/0,0891)/ln(4,106) = −0,360 ✓ ; entre 1e-6 et 1e-5 : ln(0,1185/0,1285)/ln 10 = −0,0352 ✓ (dix fois plus plate) ; 2,0 %/0,36 = 5,6 % ✓ ; 0,035 × 6 % = 0,21 % ✓. Il a raison de se rétracter sur le périmètre : l'invariant est celui du franchissement, avec les moments mis à l'échelle.
+**Le motif de la dérive contredit une simple translation de x, sur les quatre grandeurs du bloc** (calcul sur mes tableaux du tour 78 et du tour 76) : dérive lr 0,05 → 0,3 à x = 4,106e-4, eps/lr = 2e-9 : partenaire/niveau +1,71 %, poids du sender +2,02 %, d_s/niveau +1,79 %, d_gap/niveau −0,09 %. Une hausse de 6 % de x, avec la pente locale de mon balayage en x (réduction, lr 0,05, eps 1e-9, de 1e-4 à 4,106e-4 : partenaire +60,9 %, poids −44,2 %, d_s −12,2 %, d_gap +2,9 %, soit des pentes log 0,337 ; −0,412 ; −0,092 ; +0,020),
+donnerait partenaire +2,0 %, poids −2,4 %, d_s −0,55 %, d_gap +0,12 % : les signes du poids et de d_s sont faux. Une baisse d'eps de 0,31 décade (balayage d'eps à lr 0,05, x = 4,106e-4, par décade de 1e-10 à 1e-11 : +5,3 % ; +6,4 % ; +5,6 % ; −0,6 %) donnerait +1,65 % ; +2,0 % ; +1,75 % ; −0,19 % : le motif observé. C'est le motif d'une hausse du gain du sender, lr p_z, de ~2 % :
+lr p_z passe de 5,16e6 à 5,26e6 (+1,9 %) parce que √v_e3 est 2 % sous la proportionnalité à lr (1,81e-8 ; 1,80e-8 ; 1,78e-8 ; 1,775e-8 par facteur lr/0,05), et p_z ≈ 1/√v_e3 (26 eps/√v_e3 = 0,15). Le rapport √v_e3/√v_l3 est donc bien la variable, comme il le dit, mais ce n'est pas x qui la déplace.
+
+**Hypothèses (24/10) :**
+- H79-1 (lui) la dérive de 1,7 % est un x effectif en hausse de ~6 % de lr 0,05 à 0,3 ; à x = 1e-6 elle disparaît (partenaire/niveau sous 0,5 %, rapport ~0,2 %).
+- H79-2 (moi, non standard) c'est une hausse du gain du sender (lr p_z, via √v_e3 qui reste 2 % sous la proportionnalité à lr) : motif (+, +, +, −) du bloc, et elle persiste à x = 1e-6 avec le rapport √v_e3/√v_l3 en baisse de 1 à 2,5 % ; la relation d_s/niveau ≈ −0,9 × (dérive du rapport) y tient.
+- H79-3 (moi, standard) la dérive est l'effet de la profondeur de la dent de scie ou de l'amplitude des salves, qui dépendent de lr (la trajectoire n'est pas invariante d'échelle : √v_e3 est la moyenne quadratique du gradient de e3 sur le cycle).
+
+**Prédictions précommises (24/10), avant les runs** (`lancer_tour79.sh` : réduction, `verifier_tour78_lr.py reduction`, moments à l'échelle, eps/lr = 2e-9, lr 0,05 / 0,1 / 0,2 / 0,3 aux x = 1e-6, 1e-5, 1e-4 ; et lr 0,05, eps 1e-10 à x = 4,35e-4 (= 1,06 × 4,106e-4) pour tester le x effectif directement) :
+- P79-1 : ses chiffres (0,901 ; −0,360 ; −0,0352 ; 5,6 % ; 0,21 %). Mise : 95 %.
+- P79-2 (le test direct du x effectif) : lr 0,05 à x = 4,35e-4 contre x = 4,106e-4 : partenaire/niveau +1,5 à +2,5 %, poids −1,5 à −3,5 %, d_s/niveau −0,2 à −1,0 %, rapport √v_e3/√v_l3 −1,5 à −2,5 % : les signes du poids et de d_s sont l'inverse de la dérive en lr. Mise : 65 %.
+- P79-3 (sa demande) : à x = 1e-6, de lr 0,05 à 0,3, le rapport √v_e3/√v_l3 dérive de −0,8 à −2,5 %, et non d'environ −0,2 % ; d_s/niveau et poids dérivent de +0,7 à +2,5 % ; partenaire/niveau dérive de plus de 0,5 %. Mise : 40 % pour le rapport, 40 % pour partenaire/niveau > 0,5 %.
+- P79-4 : à x = 1e-5 et 1e-4 la dérive de d_s/niveau vaut −0,9 ± 0,25 fois la dérive du rapport √v_e3/√v_l3. Mise : 55 %.
+
+Réponse dans `docs/REPONSE_ORDRE79.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
