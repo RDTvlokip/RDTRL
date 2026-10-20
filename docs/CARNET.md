@@ -19598,6 +19598,23 @@ Note : le niveau au pas de relevé varie (37,77 à 38,04) parce que je relève 2
 - P79-5b : la durée médiane de la salve croît avec lr, avec des accroissements par doublement de lr (0,05 → 0,1 et 0,1 → 0,2) positifs et dans un rapport inférieur à 1,6. Mise : 40 %.
 - P79-5c : le remplissage relatif de √v_e3 par salve baisse de façon monotone quand lr monte, alors que celui de √v_l3 reste constant à 1 %. Mise : 35 %.
 
+**Résultats du second lot (24/10)** (`verifier_tour79_duree_salves.py`, x = 1e-6, eps/lr = 2e-9, moments à l'échelle, 400 000 pas ; `D:/tmp/t79_dur_*.log`) :
+```
+lr    salves   durée médiane   amplitude max médiane   période médiane   remplissage √v_l3   remplissage √v_e3   rapport des remplissages
+0,05  875      92 pas          2,150e-2                453 pas           1,1750              1,1750              1,0000
+0,1   1016     107             3,910e-2                389               1,1288              1,1289              1,0001
+0,2   1744     126             5,157e-2                206               1,0195              1,0196              1,0001
+0,3   50       2312            7,451e-2                2124              1,0047              1,0023              0,9976     (les salves ne sont plus séparées : oscillation quasi continue)
+```
+**P79-5b ✓ pour lr 0,05 / 0,1 / 0,2** (92 → 107 → 126 : accroissements +15 et +19, rapport 1,27 < 1,6 ; à lr 0,3 le regroupement ne sépare plus les salves). **P79-5a ✗** (l'amplitude maximale va comme lr^0,69 : 0,0215 ; 0,0391 ; 0,0516 ; 0,0745, exposant local 0,86 puis 0,40, au lieu de 1,0 ± 0,15). **P79-5c : monotone ✓, « √v_l3 constant à 1 % » ✗** : les deux remplissages baissent ensemble (1,175 ; 1,129 ; 1,020 ; 1,005) et sont égaux à 1e-4 près.
+Ce que cela dit : (1) le rapport √v_e3/√v_l3 n'est pas modifié par une salve (les deux √v sont multipliés du même facteur, et décroissent tous deux en exp(−t/2000) entre salves) : il est fixé par le rapport des gradients de e3 et de l3 pendant la salve ; (2) le cycle en dents de scie change énormément avec lr à eps/lr fixé (période 453 → 389 → 206 pas, remplissage 17,5 % → 13 % → 2 %, puis quasi-continu à lr 0,3), et pourtant le bloc au franchissement ne bouge que de 2 à 5 % : l'invariant est celui du franchissement, pas du cycle ;
+(3) l'amplitude de saturation ne suit pas lr (exposant 0,69), donc ma H79-4 telle qu'écrite (A_sat ∝ lr) est fausse ; la durée de salve croît lentement avec lr, comme ln lr à peu près, la dérive du rapport (fractions 0, 0,38, 0,84, 1 pour lr 0,05 / 0,1 / 0,2 / 0,3) aussi (ln 2/ln 6 = 0,39 ; ln 4/ln 6 = 0,77 ; 1) : cohérent, non démontré. La dérive du rapport contre l'amplitude maximale : Δrapport/ΔA = −0,10 ; −0,13 ; −0,09 : approximativement linéaire à 30 %, mais ne distingue pas ln lr de A.
+
+| H79-1 (lui) la dérive de 1,7 % est un x effectif | 24/10 (lui) | **réfutée** (x = 1e-6 : −3,7 % au lieu de −0,2 % ; motif du bloc à 4,1e-4 inverse ; test direct à 1,06 × x) |
+| H79-2 (moi) hausse du gain du sender, motif (+,+,+,−) | 24/10 (moi) | **confirmée pour le motif** (d_s/rapport = −0,89 à −0,93 à quatre x) ; origine ouverte |
+| H79-3 (moi, standard) amplitude et profondeur de la dent de scie dépendent de lr | 24/10 (moi) | **vraie mais ne suffit pas** : le cycle change fortement, le rapport est invariant par salve, le bloc au franchissement ne bouge que de 2–5 % |
+| H79-4 (moi) A_sat ∝ lr et durée en ln lr | 24/10 (moi) | **A_sat ∝ lr réfutée** (exposant 0,69) ; durée en ~ ln lr compatible |
+
 Réponse dans `docs/REPONSE_ORDRE79.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur

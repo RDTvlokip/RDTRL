@@ -1,9 +1,29 @@
 # État du projet RDTRL — où on en est
 
-## Tour 78 (vraie critique de dipankarsarkar, 23/10/2026) — LETTRE PRÊTE
+## Tour 79 (vraie critique de dipankarsarkar, 24/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE78.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 77
-est partie (sa critique du tour 78 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE79.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 78
+est partie (sa critique du tour 79 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 24/10/2026 (tour 79, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : il perd son pari (conditionné sur 4e-8 au lieu de 1,811e-8) ; oui, eps/lr est l'invariant du bloc à 2 % de lr 0,05 à 0,3, avec le périmètre (réseau à lr 0,05 et 0,1, réduction au-dessus, moments mis à l'échelle ; c'est un invariant du franchissement) ; la dérive de 1,7 % est dans √v_e3/√v_l3 (0,0544 → 0,0533), qui dépend de x (pente
+−0,36 entre 1e-4 et 4,106e-4, −0,035 entre 1e-6 et 1e-5) : x effectif +6 % ; test : à x = 1e-6, eps/lr = 2e-9, partenaire/niveau dérive de moins de 0,5 % de lr 0,05 à 0,3 (50 %) ; question : lancer la réduction à x = 1e-6 sur les quatre lr ?
+**Acquis (prédictions poussées avant les runs)** : ses chiffres ✓ ; **x = 1e-6 : la dérive est plus grande** (rapport −3,7 %, partenaire/niveau +5,1 % relatif, d_s et poids +3,3 %, lr p_z +2,6 %), x = 1e-4 : rapport −2,7 %, x = 1e-5 (lr 0,05 → 0,1) −1,2 % ; **le motif du bloc (+,+,+,−) est celui d'une hausse de lr p_z (gain du sender)**, pas d'un
+décalage de x (test direct à 1,06 × x, lr 0,05 : partenaire +1,9 %, poids −3,2 %, d_s −0,4 %, rapport −3,3 %) ; rapport des dérives d_s/niveau sur rapport = −0,89 à −0,93 à quatre x ; √v_e3 ∝ lr^0,986 (x = 1e-6) ; les salves : le rapport √v_e3/√v_l3 est invariant par salve (remplissages égaux à 1e-4 près) ; le cycle change énormément
+(période 453 → 389 → 206 pas, remplissage 17,5 → 13 → 2 %, quasi-continu à lr 0,3) alors que le bloc au franchissement ne bouge que de 2–5 %.
+**Mes ratés** : rapport à 1,06 × x (−3,3 contre −1,5 à −2,5 %) ; amplitudes des dérives à x = 1e-6 ; amplitude de salve ∝ lr^0,69 et non lr ; remplissage de √v_l3 non constant. H79-4 (A_sat ∝ lr) fausse.
+**Limites** : réduction seule (lr ≥ 0,2) ; origine de la dépendance en lr du rapport des gradients de e3 et l3 pendant la salve non trouvée ; x = 1e-5 à lr 0,2 et 0,3 : « aucun franchissement » non examiné ; régime quasi continu à lr 0,3, x = 1e-6.
+Écart à tes règles : un `python -c` pour refaire des pentes avant de les mettre dans un script.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 79 ; question : le bloc dépend-il du franchissement S = 38 et du gain du sender seulement, pas du cycle ? (oui/non).
+2. Chercher pourquoi le rapport des gradients de e3 et l3 en salve dépend de lr (nonlinéarités en l'amplitude ? durée en ln lr ?) ; regarder x = 1e-5 à lr 0,2 et 0,3.
+3. Réseau complet à lr 0,2 (moments à l'échelle) et b1 = 0,8 / 0,95.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 78 (vraie critique de dipankarsarkar, 23/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE78.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 23/10/2026 (tour 78, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : l'accord à eps 1e-9 compte (quatre accords libres à deux eps) ; sur lr il ne s'attend pas à ce que eps/lr soit l'invariant : lr n'entre pas dans p_z, 38 ne bouge pas, √v_e3 reste ~4e-8 donc eps 2e-10 est un eps plus gros (p_z −3 %, pente log 1,4 → partenaire/niveau ≈ 0,056) ;
