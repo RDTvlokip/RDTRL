@@ -19567,6 +19567,37 @@ lr p_z passe de 5,16e6 à 5,26e6 (+1,9 %) parce que √v_e3 est 2 % sous la prop
 - P79-3 (sa demande) : à x = 1e-6, de lr 0,05 à 0,3, le rapport √v_e3/√v_l3 dérive de −0,8 à −2,5 %, et non d'environ −0,2 % ; d_s/niveau et poids dérivent de +0,7 à +2,5 % ; partenaire/niveau dérive de plus de 0,5 %. Mise : 40 % pour le rapport, 40 % pour partenaire/niveau > 0,5 %.
 - P79-4 : à x = 1e-5 et 1e-4 la dérive de d_s/niveau vaut −0,9 ± 0,25 fois la dérive du rapport √v_e3/√v_l3. Mise : 55 %.
 
+**Résultats du premier lot (24/10)** (`lancer_tour79.sh`, `D:/tmp/t79_red_*.log` ; réduction, moments à l'échelle, eps/lr = 2e-9, 3 salves par état, fermeture 0,0000 partout) :
+```
+x         lr    niveau   partenaire/niveau  poids    d_s/niveau  d_gap/niveau  √v_e3       √v_l3        rapport  lr p_z
+1e-6      0,05  38,037   0,00376            0,11222  0,11556     0,88821       4,2655e-8   3,3260e-7    0,1282   2,2743e6
+1e-6      0,1   38,030   0,00380            0,11368  0,11705     0,88676       8,4207e-8   6,6642e-7    0,1264   2,3032e6
+1e-6      0,2   37,895   0,00389            0,11536  0,11880     0,88509       1,6644e-7   1,3401e-6    0,1242   2,3297e6
+1e-6      0,3   37,770   0,00395            0,11592  0,11940     0,88454       2,4932e-7   2,0183e-6    0,1235   2,3328e6
+1e-5      0,05  38,030   0,01160            0,10386  0,11425     0,89735       3,9328e-8   3,3177e-7    0,1185   2,4606e6
+1e-5      0,1   38,027   0,01171            0,10502  0,11550     0,89621       7,7788e-8   6,6442e-7    0,1171   2,4873e6
+1e-5      0,2 et 0,3   aucun franchissement trouvé
+1e-4      0,05  38,028   0,03371            0,07949  0,11052     0,92319       2,9641e-8   3,3058e-7    0,0897   3,2320e6
+1e-4      0,1   38,031   0,03389            0,07998  0,11116     0,92273       5,8921e-8   6,6144e-7    0,0891   3,2510e6
+1e-4      0,2   38,032   0,03426            0,08101  0,11249     0,92177       1,1639e-7   1,3242e-6    0,0879   3,2900e6
+1e-4      0,3   37,921   0,03454            0,08153  0,11326     0,92128       1,7410e-7   1,9935e-6    0,0873   3,2987e6
+4,35e-4   0,05  38,030   0,05962            0,04693  0,10375     0,95587       1,7535e-8   3,3311e-7    0,0526   5,3186e6     (eps 1e-10, x = 1,06 × 4,106e-4)
+```
+**Son pari est perdu, et son mécanisme aussi** : à x = 1e-6, de lr 0,05 à 0,3, partenaire/niveau passe de 0,00376 à 0,00395 (**+5,1 %** relatif, 0,019 point de pourcentage), le rapport √v_e3/√v_l3 de 0,1282 à 0,1235 (**−3,7 %**, il prédisait −0,2 %), d_s/niveau et le poids de +3,3 %, lr p_z de +2,6 % : la dérive est PLUS grande à x = 1e-6 qu'à x = 4,106e-4 (rapport −2,0 %). À x = 1e-4 : rapport −2,7 %, d_s +2,5 %, partenaire +2,5 %. À x = 1e-5, de lr 0,05 à 0,1 : rapport −1,2 %, d_s +1,1 %.
+Le rapport de dérive d_s/niveau sur rapport √v_e3/√v_l3 : −0,89 (x = 1e-6), −0,93 (1e-5), −0,92 (1e-4), −0,90 (4,106e-4 : +1,79/−2,0) : constant. √v_e3 suit une loi de puissance en lr, d'exposant 0,986 à x = 1e-6 (ln 5,845/ln 6) et ~0,989 à 4,106e-4 ; √v_l3 ∝ lr^1,000 à 4,106e-4 mais +1,1 % à lr 0,3 à x = 1e-6.
+**Test direct du x effectif (x = 4,35e-4, lr 0,05, eps 1e-10), par rapport à x = 4,106e-4** : partenaire/niveau 0,05962 contre 0,05851 (+1,9 %), poids 0,04693 contre 0,04850 (−3,2 %), d_s/niveau 0,10375 contre 0,10418 (−0,4 %), rapport 0,0526 contre 0,0544 (−3,3 %). Le motif (+, −, −, ↓) est celui d'une hausse de x, et il n'est pas celui de la dérive en lr (+, +, +, ↓).
+**P79-1 ✓. P79-2 : partenaire ✓, poids ✓, d_s ✓, rapport ✗** (−3,3 % au lieu de −1,5 à −2,5 %). **P79-3 : sa demande est faite** ; direction ✓ (rapport en baisse, d_s et poids en hausse, partenaire > 0,5 %), amplitude ✗ (−3,7 % au lieu de −0,8 à −2,5 % ; +3,3 % au lieu de +0,7 à +2,5 %). **P79-4 ✓** (−0,93 à x = 1e-5, −0,92 à 1e-4, dans −0,9 ± 0,25).
+**H79-1 réfutée** (x = 1e-6 : −3,7 % et non −0,2 %, et le motif du bloc à 4,1e-4 est l'inverse). **H79-2 confirmée pour le motif** (la dérive du bloc est celle de lr p_z, via √v_e3 sous la proportionnalité à lr) ; son origine reste ouverte.
+Note : le niveau au pas de relevé varie (37,77 à 38,04) parce que je relève 2 pas après le franchissement interpolé ; sa part dans la dérive est de l'ordre de 0,2 % (le partenaire/niveau varie de 0,2 % par 10 pas), sous les dérives de 1 à 5 %.
+
+**Hypothèse ajoutée (24/10) :**
+- H79-4 (moi, non standard) la loi de puissance √v_e3 ∝ lr^0,986 vient du logarithme de la durée de salve : l'amplitude de saturation de u croît ∝ lr, le temps de croissance depuis le plancher est ln(A_sat/A_0)/taux, donc la durée de salve (et le remplissage de v_e3 par le gradient J_zu δu) croît comme ln lr, et √v_e3, qui est la moyenne quadratique du gradient de e3 sur le cycle, hérite d'une dépendance en ln lr. La violation de l'invariance d'échelle serait dans la dynamique non linéaire des salves, pas dans le franchissement.
+
+**Prédictions précommises (24/10), second lot** (`verifier_tour79_duree_salves.py` : x = 1e-6, eps/lr = 2e-9, moments à l'échelle, lr 0,05 / 0,1 / 0,2 / 0,3 ; pour chaque salve, durée = nombre de pas avec E > 3e-4, amplitude maximale de E, remplissage de √v_l3 et de √v_e3 sur la salve) :
+- P79-5a : l'amplitude maximale médiane de la salve croît comme lr^(1,0 ± 0,15). Mise : 45 %.
+- P79-5b : la durée médiane de la salve croît avec lr, avec des accroissements par doublement de lr (0,05 → 0,1 et 0,1 → 0,2) positifs et dans un rapport inférieur à 1,6. Mise : 40 %.
+- P79-5c : le remplissage relatif de √v_e3 par salve baisse de façon monotone quand lr monte, alors que celui de √v_l3 reste constant à 1 %. Mise : 35 %.
+
 Réponse dans `docs/REPONSE_ORDRE79.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
