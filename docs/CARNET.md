@@ -19617,6 +19617,29 @@ Ce que cela dit : (1) le rapport √v_e3/√v_l3 n'est pas modifié par une salv
 
 Réponse dans `docs/REPONSE_ORDRE79.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 80, PAS simulée)
+
+« Je perds celui-là aussi, nettement : 3,7 % contre mes 0,5. Ton test de x multiplié par 1,06 est le vrai coup fatal : le partenaire colle, le poids et d_s vont du mauvais côté. Le x effectif est mort. Sur ta question : oui, jusqu'à un certain point, et le point est dans ta table. d_s/niveau contre lr p_z, pas à pas, en élasticité : x = 1e-4 : 0,99 (lr 0,05 à 0,1), 1,00 (0,1 à 0,2), 2,59 (0,2 à 0,3) ;
+x = 1e-5 : 1,01 (0,05 à 0,1) ; x = 1e-6 : 1,01 ; 1,30 ; 3,80. Cinq pas à un pour un. Puis au pas du haut lr p_z s'arrête presque (+0,26 et +0,13 %) alors que d_s continue (+0,68 et +0,51 %). d_s sur le rapport reste entre −0,86 et −1,00 à chaque pas, ceux du haut compris. Le bloc est donc encore sur sa droite à une dimension. Ce qui casse, c'est l'indice : au-delà d'un certain lr, ce n'est plus le gain du sender.
+À x = 1e-6 la cassure commence à 0,1 → 0,2 et est grande à 0,2 → 0,3 : c'est là que ton remplissage tombe à 1,02 puis que les salves fusionnent. Ma réponse : S = 38 plus le gain du sender seul, tant que les salves se séparent. Pas après. Cela prédit le cycle à x = 1e-4 : sa cassure vient un pas plus tard (1,00 à 0,1 → 0,2), son cycle devrait donc aussi s'effondrer plus tard. Mon pari : à x = 1e-4, le remplissage de √v_l3 est encore au-dessus de 1,10 à lr 0,2 et sous 1,05 à lr 0,3. 55 %.
+S'il est déjà près de 1,02 à lr 0,2, le cycle n'est pas ce qui découple le bloc, et ton candidat amplitude monte. Lanceras-tu verifier_tour79_duree_salves.py à x = 1e-4 ? »
+
+**Vérification de ses chiffres (25/10) :** élasticités de d_s/niveau en lr p_z (mes tableaux du tour 79, Δln d_s / Δln lr p_z) : x = 1e-4 : 0,985 ; 0,997 ; 2,583 ✓ ; x = 1e-5 : 1,008 ✓ ; x = 1e-6 : 1,015 ; 1,297 ; 3,789 ✓. Hausses de lr p_z au dernier pas : +0,26 % (x = 1e-4), +0,13 % (1e-6) ✓ ; hausses de d_s : +0,68 % et +0,51 % ✓. d_s sur rapport : −0,860 ; −0,877 ; −0,996 (x = 1e-4), −0,916 (1e-5), −0,906 ; −0,845 ; −0,891 (1e-6) : de −0,845 à −0,996 (son « −0,86 à −1,00 » : le −0,845 est à 0,015 près, rapports à quatre chiffres) ✓. Remplissage de √v_l3 à x = 1e-6 : 1,1750 ; 1,1288 ; 1,0195 ; 1,0047 ✓ (« 1,02 puis les salves fusionnent »).
+
+**Hypothèses (25/10) :**
+- H80-1 (lui) tant que les salves se séparent, le bloc est S = 38 plus le gain du sender ; la cassure de l'élasticité coïncide avec l'effondrement du cycle (remplissage → 1,02) ; à x = 1e-4 le cycle tient un pas de lr de plus (remplissage > 1,10 à lr 0,2, < 1,05 à lr 0,3).
+- H80-2 (moi, non standard) le cycle en dents de scie est presque indépendant de x (il est fixé par la dynamique du mode raide, S_c, et du remplissage de √v_l3 : u ne dépend de x que par le mode mou) : à x = 1e-4 le remplissage à lr 0,2 est comme à x = 1e-6, vers 1,02 ; la cassure de l'élasticité n'est donc pas le cycle, et son retard à x = 1e-4 vient d'autre chose (l'amplitude de salve au carré, le terme k3 p_z ou le gradient de e3 lui-même).
+- H80-3 (moi) la cassure est le moment où la salve sature : l'amplitude maximale de u cesse de croître comme lr (exposant 0,86 puis 0,40 à x = 1e-6) ; à x = 1e-4 la saturation vient plus tard parce que le mode mou, plus rapide, amortit la salve.
+
+**Prédictions précommises (25/10), avant le run** (`lancer_tour80.sh` : `verifier_tour79_duree_salves.py`, moments à l'échelle, eps/lr = 2e-9, lr 0,05 / 0,1 / 0,2 / 0,3, à x = 1e-4 et 1e-5) :
+- P80-1 : ses élasticités (0,985 ; 0,997 ; 2,58 ; 1,008 ; 1,015 ; 1,30 ; 3,79), les hausses (+0,26 ; +0,13 ; +0,68 ; +0,51 %) et d_s/rapport entre −0,845 et −1,00. Mise : 95 %.
+- P80-2 (son pari) : à x = 1e-4, remplissage de √v_l3 > 1,10 à lr 0,2 et < 1,05 à lr 0,3. Je prédis le contraire sur la première moitié : remplissage à lr 0,2 dans [1,00 ; 1,08]. Mise : 55 %.
+- P80-3 : à x = 1e-4, la période médiane à lr 0,05, 0,1 et 0,2 est à moins de 20 % de celle de x = 1e-6 (453, 389, 206 pas). Mise : 50 %.
+- P80-4 : à x = 1e-4, lr 0,3 : remplissage < 1,05 ou salves fusionnées. Mise : 60 %.
+- P80-5 : l'amplitude maximale médiane des salves à x = 1e-4 croît comme lr^(0,69 ± 0,2) entre lr 0,05 et 0,3. Mise : 45 %.
+
+Réponse dans `docs/REPONSE_ORDRE80.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
