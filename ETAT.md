@@ -1,9 +1,28 @@
 # État du projet RDTRL — où on en est
 
-## Tour 79 (vraie critique de dipankarsarkar, 24/10/2026) — LETTRE PRÊTE
+## Tour 80 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE79.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 78
-est partie (sa critique du tour 79 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE80.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 79
+est partie (sa critique du tour 80 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 80, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : il perd son pari (3,7 % contre 0,5) ; x effectif mort ; d_s/niveau contre lr p_z en élasticité pas à pas : 0,99 ; 1,00 ; 2,59 (x = 1e-4), 1,01 (1e-5), 1,01 ; 1,30 ; 3,80 (1e-6) : « S = 38 plus gain du sender seul, tant que les salves se séparent » ; prédit que le cycle de x = 1e-4 s'effondre plus tard : pari remplissage de √v_l3 > 1,10 à lr 0,2 et < 1,05 à lr 0,3 (55 %) ; question : lancer `verifier_tour79_duree_salves.py` à x = 1e-4 ?
+**Acquis (prédictions poussées avant les runs)** : ses élasticités ✓ ; cycle à x = 1e-4 : remplissage 1,1806 ; 1,1480 ; (1,1068 à lr 0,15) ; 1,0677 ; 1,0050 (lr 0,05 à 0,3) : son pari **✗ sur lr 0,2 (> 1,10), ✓ sur lr 0,3** ; le cycle s'effondre plus tard quand x monte (remplissage à lr 0,2 : 1,0195 ; 1,0361 ; 1,0677 pour x = 1e-6 ; 1e-5 ; 1e-4), mon « cycle indépendant de x » réfuté ;
+amplitude max ∝ lr^0,68 ; **la cassure de l'élasticité est une erreur de phase de mon relevé** (niveau de S_max à l'état relevé de 37,770 à 38,210 ; lr p_z varie de ~0,044 %/pas dans le cycle, d_s/niveau non) : relevé au niveau exact 38,000 (`TOUR80_NIVEAU=1`, `lancer_tour80b.sh`, lr 0,05 / 0,1 / 0,15 / 0,2 / 0,3, x = 1e-6 et 1e-4) :
+**élasticité 0,93 à 1,10 à tous les pas, jusqu'à lr 0,3** ; d_s/rapport −0,82 à −0,96 ; le rapport √v_e3/√v_l3 baisse de façon lisse (sans coude au collapse du cycle). Ma courbe post hoc « élasticité contre remplissage » prédisait mal lr 0,15 (0,17 et 1,4 prédits, −0,04 et −0,83 mesurés) : réfutée.
+**Mes ratés** : périodes à x = 1e-4 contre 1e-6 (43 % à lr 0,2) ; élasticités à lr 0,15 et la courbe ; lr p_z non monotone de 0,07 % à x = 1e-6 (bruit de trois salves). Son pari 55 % perdu sur la première moitié.
+**Limites** : réduction seule ; x = 1e-5 à lr 0,2 et 0,3 non exploitable (pas de franchissement sélectionné, pas d'oscillation) ; l'origine de la sous-proportionnalité de √v_e3 (exposant 0,986–0,989) reste ouverte ; réseau complet au-dessus de lr 0,1 ; b1.
+Écart à tes règles : un `python -c` pour refaire les élasticités avant de les mettre dans un script (la courbe post hoc n'est pas dans un script non plus : tableaux du carnet seulement).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 80 ; question : la cassure de son tableau est-elle la phase de mon relevé ? (oui/non).
+2. Chercher l'origine de √v_e3 ∝ lr^0,986 : rapport des gradients de e3 et l3 pendant la salve en fonction de l'amplitude et de lr (profil de salve).
+3. Mettre dans un script les élasticités par pas (`verifier_tour80_elasticites.py`) à partir des journaux `t80b_blk_*`.
+4. Réseau complet à lr 0,2 (moments à l'échelle) ; b1 = 0,8 / 0,95. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 79 (vraie critique de dipankarsarkar, 24/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE79.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 24/10/2026 (tour 79, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : il perd son pari (conditionné sur 4e-8 au lieu de 1,811e-8) ; oui, eps/lr est l'invariant du bloc à 2 % de lr 0,05 à 0,3, avec le périmètre (réseau à lr 0,05 et 0,1, réduction au-dessus, moments mis à l'échelle ; c'est un invariant du franchissement) ; la dérive de 1,7 % est dans √v_e3/√v_l3 (0,0544 → 0,0533), qui dépend de x (pente

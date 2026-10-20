@@ -83,13 +83,38 @@ def mode_reduction(nom, eps, xs, nrec):
             continue
         t_c = prev_end + 5 + int(cand[0])
         w1 = redlib.copie(w0)
-        redlib.avancer(w1, delta, t_c + 2, eps=eps, cross=2.0, stop=False)
-        J6 = jac6([mpf(float(q)) for q in w1["x"]], mpf(delta))
-        Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
-        bl = bloc_sym(Jn, w1["v"], eps, lr)
-        bl["sv_e3"] = math.sqrt(w1["v"][0]); bl["sv_l3"] = math.sqrt(w1["v"][4])
-        bl["pz"] = pz(bl["sv_e3"], eps)
-        res.append(bl)
+        niveau_exact = bool(os.environ.get("TOUR80_NIVEAU"))
+        if not niveau_exact:
+            redlib.avancer(w1, delta, t_c + 2, eps=eps, cross=2.0, stop=False)
+            J6 = jac6([mpf(float(q)) for q in w1["x"]], mpf(delta))
+            Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
+            bl = bloc_sym(Jn, w1["v"], eps, lr)
+            bl["sv_e3"] = math.sqrt(w1["v"][0]); bl["sv_l3"] = math.sqrt(w1["v"][4])
+            bl["pz"] = pz(bl["sv_e3"], eps)
+            res.append(bl)
+        else:
+            # tour 80 : balayage de +-14 pas autour du franchissement interpole, bloc a chaque pas, interpolation lineaire des grandeurs au niveau S_max = thr
+            redlib.avancer(w1, delta, max(t_c - 14, 1), eps=eps, cross=2.0, stop=False)
+            suite = []
+            for _ in range(29):
+                redlib.avancer(w1, delta, 1, eps=eps, cross=2.0, stop=False)
+                J6 = jac6([mpf(float(q)) for q in w1["x"]], mpf(delta))
+                Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
+                bl = bloc_sym(Jn, w1["v"], eps, lr)
+                bl["sv_e3"] = math.sqrt(w1["v"][0]); bl["sv_l3"] = math.sqrt(w1["v"][4])
+                bl["pz"] = pz(bl["sv_e3"], eps)
+                bl["niv0"] = float(bl["niveaux"][0])
+                suite.append(bl)
+            ok = [i for i in range(len(suite) - 1) if suite[i]["S_max"] < thr <= suite[i + 1]["S_max"]]
+            if not ok:
+                continue
+            i = ok[0]
+            fr = (thr - suite[i]["S_max"]) / (suite[i + 1]["S_max"] - suite[i]["S_max"])
+            bl = {}
+            for k in ("S_max", "d_gap", "d_s", "c", "part_gap", "part_s", "part_autre", "ferm", "sv_e3", "sv_l3", "pz", "niv0"):
+                bl[k] = (1 - fr) * suite[i][k] + fr * suite[i + 1][k]
+            bl["niveaux"] = np.array([bl["niv0"], bl["S_max"]])
+            res.append(bl)
     if not res:
         print(f"{nom} lr = {lr} eps = {eps:.1e} x = {xs} : aucun franchissement")
         return

@@ -19681,6 +19681,31 @@ Le rapport d_s/rapport (−0,845 à −0,996) n'est pas affecté (le rapport √
 - P80-9 : le rapport d_s/rapport reste entre −0,80 et −1,05 à chaque pas aux deux x. Mise : 70 %.
 - P80-10 : si P80-8 est faux (élasticité > 2 au dernier pas), la cassure est réelle et suit le remplissage comme il le dit. Mise sur P80-8 vrai : 45 %.
 
+**Résultats du troisième lot (25/10)** (`lancer_tour80b.sh`, `TOUR80_NIVEAU=1`, niveau exactement 38,000 à tous les états ; `D:/tmp/t80b_blk_*.log` ; 3 salves par état sauf x = 1e-6, lr 0,3 : 1 salve) :
+```
+x      lr    partenaire/niveau  poids    d_s/niveau  d_gap/niveau  √v_e3       √v_l3        rapport  lr p_z
+1e-6   0,05  0,00376            0,11222  0,11556     0,88820       4,2697e-8   3,3292e-7    0,1282   2,2721e6
+1e-6   0,1   0,00380            0,11368  0,11705     0,88675       8,4273e-8   6,6694e-7    0,1264   2,3015e6
+1e-6   0,15  0,00386            0,11548  0,11889     0,88497       1,2440e-7   1,0024e-6    0,1241   2,3376e6
+1e-6   0,2   0,00388            0,11537  0,11880     0,88508       1,6598e-7   1,3364e-6    0,1242   2,3360e6
+1e-6   0,3   0,00391            0,11580  0,11926     0,88465       2,4805e-7   2,0057e-6    0,1237   2,3444e6
+1e-4   0,05  0,03371            0,07949  0,11052     0,92319       2,9663e-8   3,3082e-7    0,0897   3,2297e6
+1e-4   0,1   0,03389            0,07999  0,11117     0,92272       5,8968e-8   6,6197e-7    0,0891   3,2485e6
+1e-4   0,15  0,03411            0,08059  0,11195     0,92216       8,7808e-8   9,9357e-7    0,0884   3,2714e6
+1e-4   0,2   0,03426            0,08101  0,11249     0,92177       1,1649e-7   1,3253e-6    0,0879   3,2873e6
+1e-4   0,3   0,03440            0,08149  0,11309     0,92132       1,7369e-7   1,9889e-6    0,0873   3,3061e6
+```
+Élasticités Δln(d_s/niveau)/Δln(lr p_z), pas lr 0,05 → 0,1 → 0,15 → 0,2 → 0,3 : x = 1e-6 : 0,996 ; 1,002 ; 1,105 ; 1,076 (0,1 → 0,2 : 0,997) ; x = 1e-4 : 1,010 ; 0,995 ; 0,992 ; 0,933. **La cassure (1,30 ; 3,80 ; 2,59) était une erreur de phase de mon relevé**, qui a disparu : l'élasticité est entre 0,93 et 1,10 à tous les pas, jusqu'à lr 0,3 (à x = 1e-6 le cycle est quasi continu à lr 0,3 : une seule salve exploitable).
+d_s/rapport (rapports calculés avec √v_e3/√v_l3 à cinq chiffres) : x = 1e-4 : −0,874 ; −0,887 ; −0,848 ; −0,822 ; x = 1e-6 : −0,906 ; −0,849 ; ~−0,94 (variations de 0,1 %) ; −0,958.
+**P80-8 : l'élasticité ✓ (0,997 sur 0,1 → 0,2 et 1,076 sur 0,2 → 0,3 à x = 1e-6 ; 0,992 ... 0,933 à x = 1e-4, tous dans [0,8 ; 1,4]) ; la monotonie de lr p_z ✗ de 0,07 % à x = 1e-6 (2,3376e6 à lr 0,15 contre 2,3360e6 à 0,2, égalité dans le bruit de trois salves) ; à x = 1e-4 elle est monotone ✓. P80-9 ✓. P80-10 : P80-8 vrai : la cassure n'est pas réelle.**
+Le rapport √v_e3/√v_l3 continue à baisser de façon lisse avec lr (x = 1e-4 : −0,67 ; −0,79 ; −0,57 ; −0,65 % par pas, soit d ln rapport/d ln lr de −0,010 à −0,020 ; x = 1e-6 : −1,4 ; −1,8 ; +0,1 ; −0,4 %) : pas de coude au passage du remplissage de 1,15 à 1,005 à x = 1e-4. L'origine de la sous-proportionnalité de √v_e3 (exposant 0,986 / 0,989) reste ouverte, et n'est pas l'effondrement du cycle.
+Le relevé ancien (« 2 pas après le franchissement interpolé ») tombait à des niveaux de 37,770 à 38,210 ; mes tableaux du tour 79 sont donc entachés d'une erreur de phase de 0,3–0,6 % sur lr p_z (pas sur d_s/niveau ni sur le rapport), ce qui n'a pas changé mes conclusions du tour 79 (motif du gain du sender, pas un x effectif) mais a fait apparaître les élasticités de 1,30 ; 3,80 ; 2,59.
+
+| H80-1 (lui) la cassure de l'élasticité suit l'effondrement du cycle | 25/10 (lui) | **réfutée** : la cassure était une erreur de phase de mon relevé (élasticité 0,93–1,10 à niveau exact) |
+| H80-2 (moi) cycle presque indépendant de x | 25/10 (moi) | **réfutée** (remplissage à lr 0,2 : 1,0195 ; 1,0361 ; 1,0677 pour x = 1e-6, 1e-5, 1e-4) |
+| H80-3 (moi) la cassure est la saturation de l'amplitude | 25/10 (moi) | **sans objet** (la cassure n'existe pas) |
+| H80-4 (courbe élasticité contre remplissage) | 25/10 (post hoc) | **réfutée** (lr 0,15) et expliquée : bruit de phase |
+
 Réponse dans `docs/REPONSE_ORDRE80.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
