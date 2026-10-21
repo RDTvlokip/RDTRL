@@ -19764,6 +19764,29 @@ Limites de ce lot : deux départs (lr 0,1 et 0,125, ks[2]) écartés parce que S
 
 Réponse dans `docs/REPONSE_ORDRE81.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 27/10/2026 (tour 82, PAS simulée)
+
+« Oui sur le changement de pente. Pas encore sur la position du coude. Tes deux erreurs-types viennent de la comparaison de deux pas adjacents. Chaque pas repose sur deux moyennes et laisse tomber les quatre autres. Ajuste des segments sur les six moyennes de tes 28 départs : une seule loi de puissance, lr 0,1 à 0,3 : exposant 0,0206, chi2 21,3 sur 4 degrés de liberté. Rejetée. Segments disjoints : 0,0291 ± 0,0029 sur 0,1 à 0,15, 0,0082 ± 0,0036 sur 0,175 à 0,3. 4,5 erreurs-types d'écart.
+Loi de puissance brisée, coude balayé : chi2 0,8 pour 0,16 à 0,175, 1,9 à 0,15, 2,5 à 0,19, 4,3 à 0,2. Le changement est donc réel, le coude est près de 0,16 à 0,175, et six points ne distinguent pas un coude vif d'une courbure douce. Tes moyennes, écarts et exposants locaux se reproduisent à partir de la table des départs (0,0282 ; 0,0313 ; 0,0247 ; −0,0035 ; 0,0112). Les départs k2 écartés coupent dans l'autre sens que ce que tu craignais : dans ta table k2 est sous la moyenne du lr à 0,15, 0,2 et 0,3. S'il est bas aussi à 0,1 et 0,125, le segment bas se raidit et le coude grandit.
+Le point le moins cher qui discrimine est lr 0,25, cinq départs. Lecture coude : 2,348e6. Une loi de puissance depuis 0,175 : 2,358e6. 0,45 % d'écart, environ 3 erreurs-types d'une moyenne de cinq départs. Mon pari : sous 2,352e6. 70 %. Le coude est-il une affaire de x = 1e-6 ? Tes départs uniques à 1e-4 donnaient 0,012 puis 0,015. Cinq départs là-bas le diraient. »
+
+**Vérification de ses chiffres** : voir ci-dessous (script `verifier_tour82_ajustements.py`, à partir des 28 départs).
+
+**Hypothèses (27/10) :**
+- H82-1 (lui) le changement de pente du gain à x = 1e-6 est réel (4,5 erreurs-types entre segments disjoints), le coude est entre 0,16 et 0,175, et lr 0,25 le confirme (lr p_z < 2,352e6).
+- H82-2 (moi, standard) la « rupture » est la courbure douce d'une fonction lisse du seul rapport √v_e3/√v_l3 (qui baisse de 0,1262 à 0,1233 sur la plage) ; six moyennes ne distinguent pas un coude vif d'un coude doux ; la valeur de lr 0,25 est celle de l'interpolation entre 0,2 et 0,3 des moyennes (2,346e6), compatible avec sa lecture « coude » (2,348e6) et pas avec 2,358e6.
+- H82-3 (moi, non standard) le coude est propre à x = 1e-6 : à x = 1e-4 la seule loi de puissance (exposant ~0,013) est acceptable avec cinq départs par lr, parce que le gain y est tiré par un mode mou plus rapide qui lisse la dépendance en lr.
+- H82-4 (moi) les départs k2 écartés (lr 0,1 et 0,125) sont des départs ordinaires : recalibrés, ils tombent dans l'étendue des quatre autres départs.
+
+**Prédictions précommises (27/10), avant les runs et avant mes ajustements** (`verifier_tour82_ajustements.py` : moyennes, écarts-types de la moyenne = sd/√n, ajustements pondérés ; `lancer_tour82.sh` : `verifier_tour78_lr.py reduction reduction_numba_tour71_lrvar`, `TOUR82_CALIB=1`, `TOUR80_NIVEAU=1`, `TOUR81_FEN=30`, moments à l'échelle, eps/lr = 2e-9, départs ks[0..4] ; x = 1e-6 : lr 0,05, 0,075, 0,25 ; x = 1e-4 : lr 0,05, 0,1, 0,15, 0,2, 0,3, + 0,25) :
+- P82-1 : ses ajustements se reproduisent à partir de mes six moyennes et de leurs erreurs-types sd/√n : exposant d'une seule loi 0,0206 ± 0,0010 ; chi2 entre 17 et 26 sur 4 dof ; segments disjoints 0,0291 ± 0,0029 (à ± 0,0008) et 0,0082 ± 0,0036 (à ± 0,0010). Mise : 70 %.
+- P82-2 (sa mesure) : à x = 1e-6, lr 0,25, cinq départs, la moyenne de lr p_z est dans [2,340e6 ; 2,352e6] (sous 2,352e6 : son pari), et au moins deux erreurs-types sous 2,358e6. Mise : 70 %.
+- P82-3 (x = 1e-4) : cinq départs par lr, lr 0,05 / 0,1 / 0,15 / 0,2 / 0,3 : une seule loi de puissance est acceptable (chi2 < 7,8 sur 3 dof) avec un exposant dans [0,010 ; 0,018]. Mise : 50 %.
+- P82-4 : à x = 1e-6, avec lr 0,05 et 0,075 ajoutés (cinq départs chacun), l'exposant du segment bas (0,05 à 0,15) reste 0,029 ± 0,006 : le coude sépare deux lois, ce n'est pas une courbure qui s'accentue aux petits lr. Mise : 45 %.
+- P82-5 : avec la calibration de S_c corrigée (`TOUR82_CALIB`), les départs ks[2] à lr 0,1 et 0,125 donnent un relevé, dans l'étendue (min à max) des quatre autres départs du même lr. Mise : 55 %.
+
+Réponse dans `docs/REPONSE_ORDRE82.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
