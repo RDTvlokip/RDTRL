@@ -41,5 +41,18 @@ for a, b in zip(ls[:-1], ls[1:]):
 if 0.1 in moy and 0.2 in moy and 0.15 in moy:
     ligne = moy[0.1] * (moy[0.2] / moy[0.1]) ** (math.log(1.5) / math.log(2))
     print(f"droite log (moyennes lr 0,1 - 0,2) a lr 0,15 : {ligne:.4e} ; moyenne a 0,15 : {moy[0.15]:.4e} ({100 * (moy[0.15] / ligne - 1):+.2f} %)")
+# elasticite entre departs, a l'interieur de chaque lr (ecarts a la moyenne du lr), et agregee
+print("elasticite entre departs a lr fixe : pente de ln d_s/niveau contre ln lr p_z, et contre ln rapport")
+X, Y, Z = [], [], []
+for lr in LRS:
+    v = list(val[lr].values())
+    if len(v) < 3:
+        continue
+    lp = np.log([a[0] for a in v]); ld = np.log([a[1] for a in v]); lrat = np.log([a[2] for a in v])
+    lp0, ld0, lr0 = lp - lp.mean(), ld - ld.mean(), lrat - lrat.mean()
+    X += list(lp0); Y += list(ld0); Z += list(lr0)
+    print(f"   lr {lr:6s} : d_s sur lr p_z {np.sum(lp0 * ld0) / np.sum(lp0 ** 2):.3f} ; d_s sur rapport {np.sum(lr0 * ld0) / np.sum(lr0 ** 2):.3f} ; n = {len(v)}")
+X, Y, Z = map(np.array, (X, Y, Z))
+print(f"   agrege ({len(X)} departs) : d_s sur lr p_z {np.sum(X * Y) / np.sum(X ** 2):.3f} ; d_s sur rapport {np.sum(Z * Y) / np.sum(Z ** 2):.3f} ; correlation lr p_z / d_s {np.corrcoef(X, Y)[0, 1]:.4f}")
 if val["0.15"]:
     print("departs a lr 0,15 contre 2,3376e6 :", " ".join(f"k{k}:{100 * (a[0] / 2.3376e6 - 1):+.2f}%" for k, a in sorted(val["0.15"].items())))

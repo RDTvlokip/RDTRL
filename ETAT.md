@@ -1,9 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 80 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PRÊTE
+## Tour 81 (vraie critique de dipankarsarkar, 26/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE80.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 79
-est partie (sa critique du tour 80 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE81.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 80
+est partie (sa critique du tour 81 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 26/10/2026 (tour 81, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : la cassure était ma phase et sa lecture ; ses chiffres vérifient au troisième chiffre ; à x = 1e-6 lr 0,15 est 0,69 % au-dessus de la droite log (lr p_z 2,3376e6 contre 2,3216e6, d_s/niveau 0,11889 contre 0,11807) alors que x = 1e-4 est sur la droite à 0,008 % : « une valeur de gain que lr n'a pas mise là, et le bloc la suit » ; exposant du gain 0,026 puis 0,004 à 1e-6, 0,012 puis 0,015 à 1e-4 ; pari : la ligne est réelle (60 %), départs frais à lr 0,125 / 0,15 / 0,175 à 0,2 % de 2,3376e6 ; question : un run par lr ou plusieurs départs moyennés ?
+**Acquis (prédictions poussées avant les runs)** : **un seul départ par (lr, x) dans mes relevés**, 3 salves de la même trajectoire ; 28 départs frais (ks[0..4], six lr de 0,1 à 0,3, x = 1e-6, niveau exact) : sd entre départs de lr p_z 0,10 % (lr 0,1) à 0,41 % (lr 0,2) ; départs à lr 0,15 : 0,00 ; +0,15 ; −0,36 ; −0,47 ; −0,47 % par rapport à 2,3376e6 : **son pari ✗ (un départ sur quatre)** ; la ligne est à moitié un départ haut, à moitié une courbure réelle de la moyenne (+0,30 % au-dessus de la droite log des moyennes) ;
+coude de l'exposant du gain entre 0,175 et 0,2 (0,025–0,031 avant, ~0,005 après ; ≈ 2 écarts-types), pas à 0,15 ; **élasticité entre départs, à lr fixé : 0,986 agrégée (corrélation 0,998), 0,94 à 1,04 par lr** : le bloc suit le gain que le départ lui a donné ; contrôle : le module à lr runtime redonne exactement 2,3376e6 à lr 0,15, ks[0].
+**Mes ratés** : P81-3 (départs frais à 0,2 %), P81-5 (plateau à 0,4 %), la version « 0,125 et 0,175 dans la fenêtre » de son pari ; mon instrument écarte deux départs (lr 0,1 et 0,125, ks[2] : S_c interpolé ne franchit pas 38 — possible biais de sélection non testé).
+**Limites** : réduction seule ; x = 1e-6 seulement (pas de départs multiples à x = 1e-4) ; cause du coude du gain non trouvée ; réseau complet au-delà de lr 0,1.
+Écart à tes règles : l'élasticité de 0,986 vient du script permanent `verifier_tour81_stats.py` ; mais j'ai encore lancé quelques `python -c` pour refaire ses lignes et exposants avant de les mettre au carnet (non dans un script). Pas de Co-Authored-By, malgré le rappel d'attribution du système.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 81 ; question : le coude de l'exposant (0,03 → 0,005 entre lr 0,175 et 0,2, 2 écarts-types) est-il établi ? (oui/non).
+2. Départs multiples à x = 1e-4 et 1e-5 ; refaire les deux départs écartés avec une calibration de S_c meilleure (J à un état calme).
+3. Chercher l'origine de l'exposant du gain (0,03 puis ~0) : rapport des gradients de e3 et l3 pendant la salve, profil de salve, période.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 80 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE80.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 80, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : il perd son pari (3,7 % contre 0,5) ; x effectif mort ; d_s/niveau contre lr p_z en élasticité pas à pas : 0,99 ; 1,00 ; 2,59 (x = 1e-4), 1,01 (1e-5), 1,01 ; 1,30 ; 3,80 (1e-6) : « S = 38 plus gain du sender seul, tant que les salves se séparent » ; prédit que le cycle de x = 1e-4 s'effondre plus tard : pari remplissage de √v_l3 > 1,10 à lr 0,2 et < 1,05 à lr 0,3 (55 %) ; question : lancer `verifier_tour79_duree_salves.py` à x = 1e-4 ?

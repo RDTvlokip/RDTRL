@@ -19752,6 +19752,16 @@ Les 0,07 % de bruit que j'avais écrits étaient un écart entre salves d'un mê
 - P81-6 : l'élasticité entre départs, intra-lr, Δln d_s/niveau sur Δln lr p_z, est 1,0 ± 0,1 pour l'agrégat des six lr (régression sur les écarts à la moyenne de chaque lr), et entre 0,8 et 1,2 pour chacun des lr 0,15, 0,175, 0,2 et 0,3 pris seul. Mise : 70 % pour l'agrégat, 45 % pour les quatre.
 - P81-7 : la même régression, avec le rapport √v_e3/√v_l3 : Δln d_s/niveau sur Δln rapport entre −0,8 et −1,1 à l'agrégat. Mise : 65 %.
 
+**Résultats du second lot (26/10)** (`verifier_tour81_stats.py`, 28 départs) : élasticité entre départs, à lr fixé (écarts à la moyenne de chaque lr) de ln d_s/niveau sur ln lr p_z : lr 0,1 : 0,996 ; 0,125 : 1,011 ; 0,15 : 1,000 ; 0,175 : 0,998 ; 0,2 : 0,939 ; 0,3 : 1,037 ; **agrégé : 0,986 (corrélation 0,9980)**. Sur ln rapport : −0,705 ; −0,981 ; −0,857 ; −0,925 ; −0,795 ; −0,849 ; **agrégé −0,847**.
+**P81-6 ✓** (agrégé 0,986 ∈ [0,9 ; 1,1] ; lr 0,15, 0,175, 0,2, 0,3 : 1,000 ; 0,998 ; 0,939 ; 1,037 dans [0,8 ; 1,2]). **P81-7 ✓** (−0,847 ∈ [−1,1 ; −0,8]). **H81-4 confirmée** : le bloc suit une valeur du gain que lr n'a pas mise là, au pas de 0,1–0,4 % entre départs, avec la même élasticité 1,0 que dans le balayage en lr. C'est le test qu'il décrivait, et il tient mieux que le balayage lisse.
+Bilan du tour 81 : P81-1 ✓ ; P81-2 ✓ ; P81-3 ✗ ; P81-4 ma version ✓ sur ks[0], sa version ✗ ; P81-5 ✗ ; P81-6 ✓ ; P81-7 ✓. Son pari (60 %, départs frais dans 0,2 % de 2,3376e6) : perdu pour trois départs sur quatre ; mais la ligne est à moitié réelle (courbure de la moyenne +0,30 % au-dessus de la droite log des moyennes).
+Limites de ce lot : deux départs (lr 0,1 et 0,125, ks[2]) écartés parce que S_c interpolé ne franchit pas 38 dans les fenêtres inter-salves (état de calibration J mal choisi : max 38,14 ; 36,89) : c'est un biais de sélection possible si ces départs sont les atypiques (non testé) ; lr 0,3 ne donne qu'une à trois salves par départ.
+
+| H81-1 (lui) coude du gain à 0,15 aux petits x | 26/10 (lui) | **partielle** : courbure réelle de la moyenne (+0,30 %), départ haut pour le reste ; coude de l'exposant entre 0,175 et 0,2 (≈ 2 écarts-types), pas à 0,15 |
+| H81-2 (moi) la ligne est un départ particulier | 26/10 (moi) | **partielle** : k0 et k1 sont hauts, mais la moyenne est aussi au-dessus de la droite |
+| H81-3 (moi) le coude est la fin des salves bien séparées (période < ~300 pas) | 26/10 (moi) | **non tranchée** (période 304 à lr 0,15, coude plutôt à 0,175–0,2) |
+| H81-4 (lui) le bloc suit le gain entre départs | 26/10 (lui) | **confirmée** (0,986, corrélation 0,998) |
+
 Réponse dans `docs/REPONSE_ORDRE81.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
