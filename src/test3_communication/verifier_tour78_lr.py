@@ -41,18 +41,23 @@ def mode_arithmetique():
 def mode_reduction(nom, eps, xs, nrec):
     redlib = importlib.import_module(nom)
     lr = redlib.LR
+    if os.environ.get("TOUR81_LR"):
+        # tour 81 : module a lr runtime (reduction_numba_tour71_lrvar)
+        lr = float(os.environ["TOUR81_LR"])
+        redlib.LRV = lr
+    kidx = int(os.environ.get("TOUR81_K", "0"))   # indice du depart (graine d'echauffement et de perturbation)
     b1 = redlib.B1
     thr = 2 * (1 + b1) / (1 - b1)
     S1 = etat_base()
     delta = float(PLI - mpf(xs))
     ks = [int(a) for a in np.random.default_rng(7).integers(0, 4444, 16)]
-    rng = np.random.default_rng(11)
+    rng = np.random.default_rng(11 + kidx)
     w = redlib.copie(S1)
     if os.environ.get("TOUR78_ECHELLE"):
         # tour 71 : l'etat de base a ses moments de lr 0,05 ; m x lr/0,05 et v x (lr/0,05)^2 evitent le coup de depart
         w["m"] = w["m"] * (lr / 0.05)
         w["v"] = w["v"] * (lr / 0.05) ** 2
-    redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + ks[0], eps=eps, cross=2.0, stop=False)
+    redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + ks[kidx], eps=eps, cross=2.0, stop=False)
     w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
     redlib.avancer_obs(w, delta, 10000, np.zeros((1, 7)), eps=eps)
     x6 = w["x"].copy()
@@ -94,9 +99,10 @@ def mode_reduction(nom, eps, xs, nrec):
             res.append(bl)
         else:
             # tour 80 : balayage de +-14 pas autour du franchissement interpole, bloc a chaque pas, interpolation lineaire des grandeurs au niveau S_max = thr
-            redlib.avancer(w1, delta, max(t_c - 14, 1), eps=eps, cross=2.0, stop=False)
+            fen = int(os.environ.get("TOUR81_FEN", "14"))   # demi-fenetre du balayage (tour 81 : 30 pour retrouver le franchissement des departs ks[1], ks[2])
+            redlib.avancer(w1, delta, max(t_c - fen, 1), eps=eps, cross=2.0, stop=False)
             suite = []
-            for _ in range(29):
+            for _ in range(2 * fen + 1):
                 redlib.avancer(w1, delta, 1, eps=eps, cross=2.0, stop=False)
                 J6 = jac6([mpf(float(q)) for q in w1["x"]], mpf(delta))
                 Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
@@ -116,7 +122,7 @@ def mode_reduction(nom, eps, xs, nrec):
             bl["niveaux"] = np.array([bl["niv0"], bl["S_max"]])
             res.append(bl)
     if not res:
-        print(f"{nom} lr = {lr} eps = {eps:.1e} x = {xs} : aucun franchissement")
+        print(f"{nom} lr = {lr} eps = {eps:.1e} x = {xs} : aucun franchissement (S_c interpole : max {Sc.max():.3f}, seuil {thr:.0f}, {len(groupes)} groupes d'amplitude)")
         return
     f = lambda key: np.mean([r_[key] for r_ in res])
     nv = np.mean([r_["niveaux"] for r_ in res], axis=0)

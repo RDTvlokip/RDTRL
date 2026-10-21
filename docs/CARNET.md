@@ -19730,6 +19730,28 @@ Est-ce un run par lr dans le balayage au niveau exact, ou plusieurs départs moy
 - P81-4 (son pari, sur l'axe lr) : lr p_z à lr 0,125 et 0,175, départ ks[0], à 0,2 % de 2,3376e6 tous deux. Je prédis plutôt lr 0,125 sous cette fenêtre (entre 2,310e6 et 2,332e6) et lr 0,175 dans la fenêtre. Mise : 50 % pour ma version.
 - P81-5 : un plateau de lr 0,15 à 0,3 : lr p_z à lr 0,2 et 0,3 (départs ks[1], ks[2]) reste dans 2,3376e6 ± 0,4 %. Mise : 55 %.
 
+**Résultats du premier lot (26/10)** (`lancer_tour81.sh`, `lancer_tour81b.sh`, `verifier_tour81_stats.py` ; `D:/tmp/t81_lr*_k*.log` ; module à lr runtime `reduction_numba_tour71_lrvar`, x = 1e-6, niveau exact 38,000, moments à l'échelle, eps/lr = 2e-9, 3 salves par départ ; 5 départs ks[0..4] ; à lr 0,1 et 0,125 le départ ks[2] n'a pas de relevé : l'interpolation S_c de mon instrument ne franchit pas 38 dans les fenêtres inter-salves — max 38,140 puis 36,889 — défaut de l'instrument, pas de la dynamique) :
+```
+lr     n  lr p_z moyen   sd entre départs  min        max        d_s/niveau moyen  rapport moyen   départs (lr p_z en 1e6)
+0,1    4  2,3044e6        0,10 %           2,3015e6   2,3068e6   0,11720           0,1262          k0 2,3015  k1 2,3051  k3 2,3068  k4 2,3041
+0,125  4  2,3189e6        0,17 %           2,3145e6   2,3236e6   0,11794           0,1253          k0 2,3145  k1 2,3236  k3 2,3206  k4 2,3170
+0,15   5  2,3322e6        0,29 %           2,3265e6   2,3410e6   0,11861           0,1244          k0 2,3376  k1 2,3410  k2 2,3293  k3 2,3266  k4 2,3265
+0,175  5  2,3411e6        0,32 %           2,3320e6   2,3514e6   0,11907           0,1239          k0 2,3412  k1 2,3320  k2 2,3514  k3 2,3361  k4 2,3448
+0,2    5  2,3400e6        0,41 %           2,3251e6   2,3471e6   0,11903           0,1240          k0 2,3360  k1 2,3458  k2 2,3251  k3 2,3461  k4 2,3471
+0,3    5  2,3507e6        0,31 %           2,3425e6   2,3600e6   0,11958           0,1233          k0 2,3444  k1 2,3600  k2 2,3425  k3 2,3535  k4 2,3530
+```
+Exposants locaux de la moyenne (d ln lr p_z / d ln lr) : 0,1 → 0,125 : 0,0282 ; 0,125 → 0,15 : 0,0313 ; 0,15 → 0,175 : 0,0247 ; 0,175 → 0,2 : −0,0035 ; 0,2 → 0,3 : 0,0112. Droite log des moyennes de lr 0,1 et 0,2, évaluée à 0,15 : 2,3252e6 ; moyenne mesurée à 0,15 : 2,3322e6 (+0,30 %, sd de la moyenne ≈ 0,13 %). Départs à lr 0,15 contre 2,3376e6 : k0 0,00 %, k1 +0,15 %, k2 −0,36 %, k3 −0,47 %, k4 −0,47 %.
+**P81-1 ✓. P81-2 ✓** (module à lr runtime, départ ks[0], lr 0,15 : 2,3376e6 exactement, même trajectoire que le module compilé). **P81-3 ✗** (un départ sur quatre dans 0,2 % : k1 ; k2 −0,36 %, k3 et k4 −0,47 %). **P81-4 : ma version ✓ sur ks[0] (lr 0,125 : 2,3145e6 ∈ [2,310 ; 2,332]e6 ; lr 0,175 : 2,3412e6 dans la fenêtre), sa version ✗ (lr 0,125 à −1,0 %)** ; sur les cinq départs, lr 0,175 sort de la fenêtre à ks[1] (−0,24 %) et ks[2] (+0,59 %). **P81-5 ✗** (lr 0,2, ks[2] : −0,54 % ; lr 0,3, ks[1] : +0,96 %).
+Lecture : la dispersion entre départs (0,10 % à lr 0,1, 0,3–0,4 % à lr ≥ 0,15, écart-type) est de l'ordre de la moitié de la ligne de 0,69 %. La ligne était pour moitié un départ haut (k0 et k1, +0,15 %), pour moitié une courbure réelle de la moyenne (+0,30 % au-dessus de la droite log des moyennes), avec un coude de l'exposant du gain entre 0,175 et 0,2 (0,03 avant, 0,00 à 0,01 après) et pas à 0,15.
+Les 0,07 % de bruit que j'avais écrits étaient un écart entre salves d'un même départ et entre lr voisins ; l'écart entre départs, que je n'avais pas mesuré, est 2 à 6 fois plus grand.
+
+**Hypothèse ajoutée (26/10) :**
+- H81-4 (lui, test qu'il décrit : « une valeur de gain que lr n'a pas mise là, et le bloc la suit ») à lr fixé, les départs diffèrent par lr p_z de 0,1 à 0,4 % et d_s/niveau les suit : l'élasticité entre départs, à l'intérieur de chaque lr, vaut 1,0 ± 0,1 (agrégée sur les six lr après soustraction de la moyenne de chaque lr), indépendamment de la dépendance en lr.
+
+**Prédiction précommise (26/10), avant le calcul des élasticités intra-lr** (j'ai lu à l'œil l'élasticité entre k0..k4 à lr 0,15, ~1,0 ; les cinq autres lr et l'agrégat ne sont pas calculés) :
+- P81-6 : l'élasticité entre départs, intra-lr, Δln d_s/niveau sur Δln lr p_z, est 1,0 ± 0,1 pour l'agrégat des six lr (régression sur les écarts à la moyenne de chaque lr), et entre 0,8 et 1,2 pour chacun des lr 0,15, 0,175, 0,2 et 0,3 pris seul. Mise : 70 % pour l'agrégat, 45 % pour les quatre.
+- P81-7 : la même régression, avec le rapport √v_e3/√v_l3 : Δln d_s/niveau sur Δln rapport entre −0,8 et −1,1 à l'agrégat. Mise : 65 %.
+
 Réponse dans `docs/REPONSE_ORDRE81.md`.
 
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
