@@ -19708,6 +19708,30 @@ Le relevé ancien (« 2 pas après le franchissement interpolé ») tombait à d
 
 Réponse dans `docs/REPONSE_ORDRE80.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 26/10/2026 (tour 81, PAS simulée)
+
+« Oui. La cassure, c'était ta phase et ma lecture. J'ai calculé des élasticités sur un tableau qui n'était pas construit pour elles. J'ai refait ton tableau au niveau exact. Chaque pas vérifie au troisième chiffre : 0,996 ; 1,002 ; 1,105 ; 1,076 à x = 1e-6, et 1,010 ; 0,995 ; 0,992 ; 0,933 à 1e-4. Deux des pas à x = 1e-6 ne portent presque rien pourtant. 0,15 → 0,2 vaut −0,068 % en lr p_z contre −0,076 en d_s, les deux dans ton bruit de 0,07 de trois salves. 0,2 → 0,3 repose sur une salve.
+La meilleure preuve de ton oui est une ligne qui ressemble à une erreur. À x = 1e-6, lr 0,15 est 0,69 % au-dessus de la droite log de lr 0,1 à 0,2 en lr p_z (2,3376e6 contre 2,3216e6). d_s/niveau est 0,69 % au-dessus de sa propre droite (0,11889 contre 0,11807). À x = 1e-4 la même ligne est sur la droite à 0,008 %. Une valeur de gain que lr n'a pas mise là, et le bloc la suit du même 0,69 %. C'est un meilleur test de “le bloc est une fonction du gain” qu'un balayage lisse où lr pilote les deux.
+Cela déplace aussi la question ouverte. À x = 1e-6 l'exposant du gain en lr est 0,026 de 0,05 à 0,15, puis 0,004 de 0,15 à 0,3. À 1e-4 il est 0,012 puis 0,015, sans coude. Ton candidat amplitude ne peut pas le faire, puisque l'amplitude de salve va comme lr^0,69 à 1e-6 et lr^0,68 à 1e-4. Un mécanisme, un exposant, deux formes. Donc soit le run à lr 0,15 et x = 1e-6 est un départ étrange, soit le gain a un coude près de 0,15 aux petits x que rien dans le tableau de dents de scie ne marque. Mon pari : la ligne est réelle. 60 %. Des départs frais à x = 1e-6, lr 0,125, 0,15 et 0,175 gardent lr p_z à 0,2 % de 2,3376e6 à 0,15.
+Est-ce un run par lr dans le balayage au niveau exact, ou plusieurs départs moyennés ? »
+
+**Vérification de ses chiffres (26/10) :** 0,15 → 0,2 à x = 1e-6 : lr p_z −0,0684 %, d_s −0,0757 % ✓ ; droite log de lr 0,1 à 0,2 évaluée à lr 0,15 : lr p_z 2,3216e6 (mesure 2,3376e6 : +0,688 %) ✓, d_s/niveau 0,11807 (0,11889 : +0,694 %) ✓ ; à x = 1e-4, lr p_z 3,2711e6 contre 3,2714e6 mesuré : +0,008 % ✓ ; exposants du gain en lr à x = 1e-6 : 0,0259 (0,05 → 0,15), 0,0042 (0,15 → 0,3) ✓ ; à x = 1e-4 : 0,0117 et 0,0152 ✓ ; exposants d'amplitude 0,69 et 0,68 ✓.
+**Réponse à sa question :** **un seul départ par couple (lr, x)** (la graine ks[0] = premier élément de `default_rng(7).integers(0, 4444, 16)`, 20 000 + ks[0] pas d'échauffement, perturbation de 1e-9 de la graine 11, 10 000 pas de mise en régime), **dont on moyenne trois salves** de la même trajectoire (accord entre les trois salves 0,03 %). Aucun moyennage entre départs. Le bruit de 0,07 % que j'ai écrit est un écart entre salves ou entre lr voisins, pas un écart entre départs, que je n'ai jamais mesuré.
+
+**Hypothèses (26/10) :**
+- H81-1 (lui) la ligne lr 0,15 est réelle : le gain à x = 1e-6 a un coude près de 0,15 (exposant 0,026 avant, 0,004 après).
+- H81-2 (moi, standard) la ligne est un départ particulier (un seul départ par lr) : un autre départ à lr 0,15 donne lr p_z différent de plus de 0,3 % (la dynamique à x = 1e-6 est multi-valuée entre états de départ, comme le « lr 0,1 bimodal » des tours 61–70).
+- H81-3 (moi, non standard) le coude est la fin du régime de salves bien séparées à x = 1e-6 : lr p_z cesse de monter quand la période tombe sous ~300 pas (lr 0,15 : 304), avant l'effondrement du remplissage ; le tableau de dents de scie le marque, mais comme une pente continue (période 453, 389, 304, 206).
+
+**Prédictions précommises (26/10), avant les runs** (`lancer_tour81.sh` : `verifier_tour78_lr.py reduction reduction_numba_tour71_lrvar`, `TOUR81_LR` (lr runtime), `TOUR81_K` (indice du départ), niveau exact 38,000, moments à l'échelle, eps/lr = 2e-9, x = 1e-6 ; départs ks[0], ks[1], ks[2] ; lr 0,1 / 0,125 / 0,15 / 0,175 / 0,2 / 0,3) :
+- P81-1 : ses chiffres (2,3216e6 ; 0,11807 ; +0,69 % ; +0,008 % ; 0,026 ; 0,004 ; 0,012 ; 0,015). Mise : 95 %.
+- P81-2 (contrôle) : le module à lr runtime (`reduction_numba_tour71_lrvar`) à lr 0,15, départ ks[0], redonne lr p_z = 2,3376e6 à 0,1 % (même trajectoire que le module compilé à lr 0,15). Mise : 85 %.
+- P81-3 (son pari, sur l'axe départ) : à lr 0,15, x = 1e-6, les départs ks[1] et ks[2] donnent lr p_z à 0,2 % de 2,3376e6. Mise : 60 %.
+- P81-4 (son pari, sur l'axe lr) : lr p_z à lr 0,125 et 0,175, départ ks[0], à 0,2 % de 2,3376e6 tous deux. Je prédis plutôt lr 0,125 sous cette fenêtre (entre 2,310e6 et 2,332e6) et lr 0,175 dans la fenêtre. Mise : 50 % pour ma version.
+- P81-5 : un plateau de lr 0,15 à 0,3 : lr p_z à lr 0,2 et 0,3 (départs ks[1], ks[2]) reste dans 2,3376e6 ± 0,4 %. Mise : 55 %.
+
+Réponse dans `docs/REPONSE_ORDRE81.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
