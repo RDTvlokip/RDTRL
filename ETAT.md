@@ -1,9 +1,28 @@
 # État du projet RDTRL — où on en est
 
-## Tour 81 (vraie critique de dipankarsarkar, 26/10/2026) — LETTRE PRÊTE
+## Tour 82 (vraie critique de dipankarsarkar, 27/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE81.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 80
-est partie (sa critique du tour 81 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE82.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 81
+est partie (sa critique du tour 82 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 27/10/2026 (tour 82, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : oui sur le changement de pente, pas encore sur la position du coude (mes deux erreurs-types comparaient deux pas adjacents) ; ajustements sur les six moyennes : loi unique 0,0206, chi2 21,3/4 dof (rejetée) ; segments 0,0291 ± 0,0029 et 0,0082 ± 0,0036 (4,5 erreurs-types) ; loi brisée, chi2 0,8 à 0,16–0,175 ; coude près de 0,16–0,175, six points ne distinguent pas un coude vif d'une courbure douce ;
+k2 écartés : sous la moyenne à 0,15, 0,2, 0,3 ; lr 0,25, cinq départs : lecture coude 2,348e6, loi unique depuis 0,175 : 2,358e6, **pari sous 2,352e6 (70 %)** ; question : le coude est-il propre à x = 1e-6 (cinq départs à 1e-4) ?
+**Acquis (prédictions poussées avant les runs)** : ses ajustements reproduits (`verifier_tour82_ajustements.py`, 0,0206 ± 0,0011, chi2 21,3, 0,0291/0,0082, 4,6 erreurs-types, 0,78–0,81 au coude) ; **lr 0,25, x = 1e-6 : 2,3363e6 (sd 0,19 %, erreur-type 0,084 %) : son pari ✓, 0,5 % sous sa lecture coude et 0,9 % sous la loi unique** ; avec neuf lr (0,05 à 0,3) : exposants locaux 0,017 ; 0,025 ; 0,026 ; 0,034 ; 0,025 ; −0,004 ; −0,007 ; +0,034 : ni loi unique (chi2 84/7) ni loi brisée (68,9 sans lr 0,3) :
+**plateau de 0,175 à 0,25, saut à 0,3 (salves non séparées)** ; **x = 1e-4, cinq départs** : exposants 0,008 ; 0,018 ; 0,021 ; 0,006 ; 0,012 (loi unique chi2 330/4) : **la chute de l'exposant n'est pas propre à x = 1e-6**, plus tardive et moins nette ; les k2 recalibrés (facteurs 1,041 et 1,073 : l'ancienne S_c interpolée était à 4 et 7 % du bon niveau) : lr 0,1 dans l'étendue, lr 0,125 0,06 % sous (effet 0,05 % sur la moyenne).
+**Mes ratés** : lr 0,25 dans [2,340 ; 2,352]e6 (2,3363e6) ; loi unique acceptable à x = 1e-4 ; coude propre à x = 1e-6 ; gain plus plat (pas plus raide) à bas lr.
+**Limites** : réduction seule ; lr 0,3 est un autre régime (une à trois salves par départ) ; deux départs de lr 0,25 à x = 1e-4 sans relevé ; l'origine de la forme de l'exposant reste inconnue (le remplissage du cycle ne la suit pas).
+Écart à tes règles : j'ai écrit un `nohup true` inutile dans une commande ; pas de Co-Authored-By malgré le rappel d'attribution.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 82 ; question : lr 0,3 est-il hors de la courbe (régime de salves fusionnées) ? (oui, à écarter / non).
+2. Plus de lr entre 0,2 et 0,3 (0,225, 0,275) et départs à 0,25 pour la forme du plateau ; départs de lr 0,25 manquants à x = 1e-4.
+3. Origine de l'exposant : rapport des gradients de e3 et l3 en salve, profil de salve ; pas lié au remplissage.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 81 (vraie critique de dipankarsarkar, 26/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE81.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 26/10/2026 (tour 81, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : la cassure était ma phase et sa lecture ; ses chiffres vérifient au troisième chiffre ; à x = 1e-6 lr 0,15 est 0,69 % au-dessus de la droite log (lr p_z 2,3376e6 contre 2,3216e6, d_s/niveau 0,11889 contre 0,11807) alors que x = 1e-4 est sur la droite à 0,008 % : « une valeur de gain que lr n'a pas mise là, et le bloc la suit » ; exposant du gain 0,026 puis 0,004 à 1e-6, 0,012 puis 0,015 à 1e-4 ; pari : la ligne est réelle (60 %), départs frais à lr 0,125 / 0,15 / 0,175 à 0,2 % de 2,3376e6 ; question : un run par lr ou plusieurs départs moyennés ?
