@@ -80,6 +80,17 @@ def mode_reduction(nom, eps, xs, nrec):
     coupe = np.nonzero(np.diff(idx) > 30)[0]
     debuts = np.concatenate([[0], coupe + 1]); fins = np.concatenate([coupe, [len(idx) - 1]])
     groupes = [(idx[a], idx[b]) for a, b in zip(debuts, fins)]
+    if os.environ.get("TOUR82_CALIB") and len(groupes) > 2:
+        # tour 82 : l'interpolation S_c est construite avec le jacobien d'un seul etat (apres la mise en regime), parfois mal place (max 36,9 ou 38,1 contre un seuil 38) ;
+        # on la recale par un facteur multiplicatif pour que S_c(t_cal) soit le niveau exact du bloc complet, t_cal = fin de la deuxieme salve + 150 pas
+        t_cal = groupes[1][1] + 150
+        w1c = redlib.copie(w0)
+        redlib.avancer(w1c, delta, t_cal + 2, eps=eps, cross=2.0, stop=False)
+        J6c = jac6([mpf(float(q)) for q in w1c["x"]], mpf(delta))
+        Jc = np.array([[float(J6c[i, j]) for j in range(6)] for i in range(6)])
+        facteur = bloc_sym(Jc, w1c["v"], eps, lr)["S_max"] / Sc[t_cal + 1]
+        print(f"   calibration S_c : facteur {facteur:.5f}")
+        Sc = Sc * facteur
     res = []
     for g in range(1, min(len(groupes), 4)):
         prev_end = groupes[g - 1][1]; a = groupes[g][0]
