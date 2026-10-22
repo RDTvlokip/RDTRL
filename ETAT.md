@@ -1,9 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 83 (vraie critique de dipankarsarkar, 28/10/2026) — LETTRE PRÊTE
+## Tour 84 (vraie critique de dipankarsarkar, 29/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE83.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 82
-est partie (sa critique du tour 83 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE84.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 83
+est partie (sa critique du tour 84 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 29/10/2026 (tour 84, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : non, garder 0,25 et écarter seulement 0,3 (son split a perdu : −0,03) ; trois raisons : le rejet de la loi unique n'utilise pas les enregistrements fusionnés (chi2 64,8/5 sur 0,05–0,2 ; 48,6/3 sur 0,05–0,15) ; pas de bord net (0,2 : 64 % en oscillation, 0,225 : 84 %, groupes 1329, 784, 169) ; x = 1e-4 est le contrôle (575–713 groupes à 0,3 ; exposant 0,0214 puis 0,0058 ; prolongation de 0,15 → 0,2 : 0,25 sous de 0,35 %, 3,0 ET ; 1e-6 : 0,42 %, 2,1 ET) ; point faible : 1e-4 à 0,25 est n = 3 ; pourquoi les deux départs sans lecture ?
+**Ajout de l'utilisateur (29/10)** : « pourquoi garder 0,25 alors que si on met d'autres valeurs ça peut tout changer, tu aurais la réponse ou pas ? » : j'ai calculé la sensibilité à la coupure, au départ retiré, au lr retiré et à un plancher d'erreur.
+**Acquis (prédictions poussées avant les runs)** : les deux départs sans lecture = **échec de mon instrument** (S_c interpolé ne franchit pas 38 dans les fenêtres : max 35,1 ; 38,7 ; 40,3 ; 38,6), récupérés par lecture directe (`TOUR84_ROBUSTE=1`) et **ce sont les deux plus hauts** (3,2991 et 3,3066 contre 3,2929–3,3025) : le ralentissement à 0,25 passe de 0,35 % (3,0 ET selon lui, 2,2 en propageant) à **0,28 % (1,8 ET)** avec cinq départs ; sa chaîne en deux pas vaut **1,2 ET (x = 1e-6) et 1,8 (x = 1e-4)** ; test de segments (bas 0,1–0,15 contre haut 0,175–coupure) à x = 1e-6 : coupure 0,2 : 1,8 σ ; 0,225 : 3,0 ; **0,25 : 6,5** ; 0,275 : 6,4 ; 0,3 : 5,8 ; 0,35 : 5,3 ; plancher 0,1 % : 4,6 à 0,25 ; 0,2 % : 2,9 ; retrait d'un départ : 5,2–6,7 σ ; sans lr 0,25 : 3,0 σ ; **x = 1e-4 sans fusion : bas 0,1–0,2 : +0,0180, haut 0,2–0,3 : +0,0076, 3,5 σ** (2,3 à plancher 0,1 %) ; départs à x = 1e-4 non indépendants à bas lr (1 à 3 valeurs distinctes) ; **fusion à x = 1e-4 : lr 0,35 (79–112 groupes) et 0,4 (8–22)** ; lecture en régime fusionné bruitée de ±1 % **sans signe fixe** (lr 0,35 à 1e-4 : −1,2 % ; lr 0,3 à 1e-6 : +0,6 %).
+**Mes ratés** : ses chi2 à ± 3 (68,9 et 52,3) ; signification à coupure 0,2 (1,8 σ) ; plancher 0,1 % ne la fait pas passer sous 2 σ ; 4 valeurs distinctes à x = 1e-4, lr 0,25 ; ET à n = 5 sous 2 ; lr 0,35 déjà fusionné à x = 1e-4.
+**Limites** : réduction seule ; pas d'estimateur du gain indépendant des salves ; mécanisme du ralentissement inconnu (le cycle ne le montre pas) ; départs non indépendants à bas lr à x = 1e-4.
+Écarts à tes règles : un heredoc `python` vide lancé par erreur (sans effet) ; pas de Co-Authored-By malgré le rappel d'attribution du système.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 84 ; question : abandonner la chaîne en deux pas et garder le test de segments comme affirmation ? (oui/non).
+2. Estimateur du gain indépendant des salves pour le régime fusionné ; plancher d'incertitude systématique mesuré (rejouer la même lecture avec deux fenêtres, deux pas de balayage).
+3. Mécanisme du ralentissement de l'exposant du gain vers lr 0,2.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 83 (vraie critique de dipankarsarkar, 28/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE83.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 28/10/2026 (tour 83, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : oui, laisser lr 0,3 hors de l'ajustement, mais pour une raison vérifiable ; plateau 0,175 / 0,2 / 0,25 = 2,3379e6 (chi2 1,8/2) ; 0,3 à +0,55 % (3,5 ET) ; loi unique chi2 80,6/7 avec 0,3 et 80,55/6 sans ; le saut tombe là où les salves cessent de se séparer ; lr p_z lu par salve : l'estimateur peut changer sans que le gain change ; les cinq départs à 0,3 se scindent (2,3425 et 2,3444 / 2,3530, 2,3535, 2,3600) ; pari : la paire basse a gardé trois salves séparées, les hauts ont fusionné (65 %) ; à x = 1e-4 le pas 0,25 → 0,3 est +0,22 % contre +0,62 % ; questions : les salves fusionnent-elles aussi là ; combien de salves séparées par départ à lr 0,3 ?

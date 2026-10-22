@@ -97,12 +97,21 @@ def mode_reduction(nom, eps, xs, nrec):
         print(f"   calibration S_c : facteur {facteur:.5f}")
         Sc = Sc * facteur
     res = []
-    for g in range(1, min(len(groupes), 4)):
+    robuste = bool(os.environ.get("TOUR84_ROBUSTE"))   # tour 84 : lecture directe par balayage exact avant le debut de chaque groupe, sans interpolation S_c
+    pas_bal = int(os.environ.get("TOUR84_PAS", "1"))
+    for g in range(1, min(len(groupes), 12 if robuste else 4)):
+        if robuste and len(res) >= 3:
+            break
         prev_end = groupes[g - 1][1]; a = groupes[g][0]
-        cand = np.nonzero(Sc[prev_end + 5:a] >= thr)[0]
-        if len(cand) == 0:
-            continue
-        t_c = prev_end + 5 + int(cand[0])
+        if robuste:
+            if a - 140 < 1:
+                continue
+            t_c = a - 70
+        else:
+            cand = np.nonzero(Sc[prev_end + 5:a] >= thr)[0]
+            if len(cand) == 0:
+                continue
+            t_c = prev_end + 5 + int(cand[0])
         w1 = redlib.copie(w0)
         niveau_exact = bool(os.environ.get("TOUR80_NIVEAU"))
         if not niveau_exact:
@@ -116,10 +125,12 @@ def mode_reduction(nom, eps, xs, nrec):
         else:
             # tour 80 : balayage de +-14 pas autour du franchissement interpole, bloc a chaque pas, interpolation lineaire des grandeurs au niveau S_max = thr
             fen = int(os.environ.get("TOUR81_FEN", "14"))   # demi-fenetre du balayage (tour 81 : 30 pour retrouver le franchissement des departs ks[1], ks[2])
+            if robuste:
+                fen = 70
             redlib.avancer(w1, delta, max(t_c - fen, 1), eps=eps, cross=2.0, stop=False)
             suite = []
-            for _ in range(2 * fen + 1):
-                redlib.avancer(w1, delta, 1, eps=eps, cross=2.0, stop=False)
+            for _ in range((2 * fen) // pas_bal + 1):
+                redlib.avancer(w1, delta, pas_bal, eps=eps, cross=2.0, stop=False)
                 J6 = jac6([mpf(float(q)) for q in w1["x"]], mpf(delta))
                 Jn = np.array([[float(J6[i, j]) for j in range(6)] for i in range(6)])
                 bl = bloc_sym(Jn, w1["v"], eps, lr)
