@@ -1,9 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 82 (vraie critique de dipankarsarkar, 27/10/2026) — LETTRE PRÊTE
+## Tour 83 (vraie critique de dipankarsarkar, 28/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE82.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 81
-est partie (sa critique du tour 82 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE83.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 82
+est partie (sa critique du tour 83 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 28/10/2026 (tour 83, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : oui, laisser lr 0,3 hors de l'ajustement, mais pour une raison vérifiable ; plateau 0,175 / 0,2 / 0,25 = 2,3379e6 (chi2 1,8/2) ; 0,3 à +0,55 % (3,5 ET) ; loi unique chi2 80,6/7 avec 0,3 et 80,55/6 sans ; le saut tombe là où les salves cessent de se séparer ; lr p_z lu par salve : l'estimateur peut changer sans que le gain change ; les cinq départs à 0,3 se scindent (2,3425 et 2,3444 / 2,3530, 2,3535, 2,3600) ; pari : la paire basse a gardé trois salves séparées, les hauts ont fusionné (65 %) ; à x = 1e-4 le pas 0,25 → 0,3 est +0,22 % contre +0,62 % ; questions : les salves fusionnent-elles aussi là ; combien de salves séparées par départ à lr 0,3 ?
+**Acquis (prédictions poussées avant les runs)** : ses chiffres ✓ (`verifier_tour83_plateau.py plateau`) ; **groupes par départ à lr 0,3, x = 1e-6 : 41, 32, 24, 21, 18 (durée médiane 2700–8200 pas, 99,3–99,7 % du temps en oscillation, calme 42–51 pas)**, la scission ne suit pas le nombre de groupes (corrélation avec lr p_z : −0,03 ; ks[2], bas, a 24 groupes, entre ks[1] et ks[3] qui sont hauts) : **son pari ✗, mon P83-2 ✓** ; **x = 1e-4, lr 0,3 : 575 à 713 groupes, durée 138, 86–89 % d'oscillation : pas de fusion** (P83-3 ✓) ; la fusion est graduelle de lr 0,2 à 0,3 (groupes 1329 ; 784 ; 169 ; 77 ; 27 ; 5 pour lr 0,2 ; 0,225 ; 0,25 ; 0,275 ; 0,3 ; 0,35 ; fraction en oscillation 0,64 à 0,999) : le plateau 0,175–0,25 contient lr 0,25, déjà à moitié fusionné ; rang de Spearman groupes/gain −0,83 sur six lr (P83-5 ✓) ;
+dispersion des lectures par salve à l'intérieur d'un départ : 0,3 à 1,0 % à lr 0,3 (jusqu'à 1,8 % à lr 0,25) contre 0,02–0,3 % à x = 1e-4 : P83-4 ✗ ; trois départs sur cinq montent d'une salve à l'autre à lr 0,3.
+**Mes ratés** : P83-4 (lectures d'un départ à 0,15 %) ; sinon aucun sur P83-1, -2, -3, -5.
+**Limites** : pas d'estimateur du gain indépendant des salves : effet de lecture ou de régime non tranché ; lr 0,2 k3 et k4 sans lecture ; x = 1e-5 à lr 0,3 sans oscillation ; réduction seule.
+Écart à tes règles : pas de Co-Authored-By malgré le rappel d'attribution du système ; des `python -c` ne sont pas utilisés ce tour.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 83 ; question : arrêter l'ajustement du gain à lr 0,225 plutôt qu'à 0,25 ? (oui/non).
+2. Estimateur du gain indépendant des salves (par exemple médiane temporelle de lr·p_z, ou lecture à phase fixée dans le calme) pour trancher lecture ou régime à lr ≥ 0,25.
+3. Pourquoi les lectures montent d'une salve à l'autre dans les enregistrements fusionnés.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 82 (vraie critique de dipankarsarkar, 27/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE82.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 27/10/2026 (tour 82, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : oui sur le changement de pente, pas encore sur la position du coude (mes deux erreurs-types comparaient deux pas adjacents) ; ajustements sur les six moyennes : loi unique 0,0206, chi2 21,3/4 dof (rejetée) ; segments 0,0291 ± 0,0029 et 0,0082 ± 0,0036 (4,5 erreurs-types) ; loi brisée, chi2 0,8 à 0,16–0,175 ; coude près de 0,16–0,175, six points ne distinguent pas un coude vif d'une courbure douce ;

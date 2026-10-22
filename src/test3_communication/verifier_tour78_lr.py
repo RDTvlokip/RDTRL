@@ -80,6 +80,11 @@ def mode_reduction(nom, eps, xs, nrec):
     coupe = np.nonzero(np.diff(idx) > 30)[0]
     debuts = np.concatenate([[0], coupe + 1]); fins = np.concatenate([coupe, [len(idx) - 1]])
     groupes = [(idx[a], idx[b]) for a, b in zip(debuts, fins)]
+    if os.environ.get("TOUR83_DETAIL"):
+        # tour 83 : degre de fusion des salves dans l'enregistrement (groupes d'amplitude E > 3e-4 coupes a 30 pas de calme)
+        dur_g = np.array([b_ - a_ + 1 for a_, b_ in groupes])
+        calme_g = np.array([groupes[i][0] - groupes[i - 1][1] for i in range(1, len(groupes))]) if len(groupes) > 1 else np.array([0])
+        print(f"   groupes : N = {len(groupes)} ; duree mediane {np.median(dur_g):.0f} (p10 {np.percentile(dur_g, 10):.0f}, p90 {np.percentile(dur_g, 90):.0f}) ; calme median {np.median(calme_g):.0f} (p10 {np.percentile(calme_g, 10):.0f}, p90 {np.percentile(calme_g, 90):.0f}) ; fraction en oscillation {dur_g.sum() / len(E):.3f}")
     if os.environ.get("TOUR82_CALIB") and len(groupes) > 2:
         # tour 82 : l'interpolation S_c est construite avec le jacobien d'un seul etat (apres la mise en regime), parfois mal place (max 36,9 ou 38,1 contre un seuil 38) ;
         # on la recale par un facteur multiplicatif pour que S_c(t_cal) soit le niveau exact du bloc complet, t_cal = fin de la deuxieme salve + 150 pas
@@ -132,6 +137,8 @@ def mode_reduction(nom, eps, xs, nrec):
                 bl[k] = (1 - fr) * suite[i][k] + fr * suite[i + 1][k]
             bl["niveaux"] = np.array([bl["niv0"], bl["S_max"]])
             res.append(bl)
+            if os.environ.get("TOUR83_DETAIL"):
+                print(f"   salve {g} : calme avant {a - prev_end} pas ; duree {groupes[g][1] - a + 1} pas ; lr p_z {lr * bl['pz']:.5e} ; sqrt(v_e3) {bl['sv_e3']:.4e}")
     if not res:
         print(f"{nom} lr = {lr} eps = {eps:.1e} x = {xs} : aucun franchissement (S_c interpole : max {Sc.max():.3f}, seuil {thr:.0f}, {len(groupes)} groupes d'amplitude)")
         return
