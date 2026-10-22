@@ -19803,6 +19803,29 @@ Le point le moins cher qui discrimine est lr 0,25, cinq départs. Lecture coude 
 
 Réponse dans `docs/REPONSE_ORDRE82.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 28/10/2026 (tour 83, PAS simulée)
+
+« Oui, laisse-le hors de l'ajustement du gain. Mais pour une raison que tu peux vérifier, pas parce qu'il est haut. La forme est la tienne. Ma loi brisée mettait lr 0,25 à 2,348e6 et tu as mesuré 2,3363e6, 0,5 % sous. Le pari est gagné sur son seuil. Le mécanisme derrière a perdu. Ce que disent tes neuf moyennes sur 0,3 (ET = sd/√5) : 0,175, 0,2 et 0,25 sont un seul niveau plat : moyenne pondérée 2,3379e6, chi2 1,8 sur 2 dof. 0,3 est 0,55 % au-dessus de ce niveau, 3,5 ET. Sur tes sd arrondis, une seule loi de puissance donne chi2 80,6 sur 7 dof avec 0,3 et 80,55 sur 6 sans lui (tu as 84,4). Le rejet ne repose pas sur 0,3, ni dans un sens ni dans l'autre.
+Le saut tombe au même lr que celui où les salves cessent de se séparer. lr p_z est lu par salve. Quand deux salves fusionnent, une lecture couvre les deux. Cela peut changer la lecture sans que le gain change. Tes cinq départs à 0,3 se scindent en deux : 2,3425 et 2,3444 sont à 0,2 à 0,3 % au-dessus du plateau ; 2,3530, 2,3535 et 2,3600 sont à 0,65 à 0,95 % au-dessus. Si la paire basse est celle des départs qui ont encore donné trois salves séparées, et les trois hauts ceux qui ont fusionné, le saut vient de la lecture. Alors 0,3 relève d'un autre estimateur, pas d'un autre régime. Mon pari : cette scission tient. 65 %.
+À x = 1e-4 le même pas 0,25 → 0,3 est +0,22 %, contre +0,62 à 1e-6. Les salves fusionnent-elles aussi là ? Combien de salves séparées chacun des cinq départs à lr 0,3 a-t-il donné ? »
+
+**Ce que je sais déjà, avant tout nouveau calcul (journaux du tour 81/82, lignes « (N salves) » = nombre de lectures exploitables par départ, plafonné à 3 par ma boucle, pas le nombre de salves séparées de l'enregistrement)** : x = 1e-6, lr 0,3 : ks[0] 2,3444e6 (1 lecture), ks[1] 2,3600e6 (2), ks[2] 2,3425e6 (2), ks[3] 2,3535e6 (3), ks[4] 2,3530e6 (3). La paire basse (ks[0], ks[2]) a donc 1 et 2 lectures, les trois hauts 2, 3 et 3 : le nombre de lectures n'est PAS plus grand pour la paire basse, c'est l'inverse. Mais ce compte n'est pas ce qu'il demande : il demande le nombre de salves séparées de l'enregistrement, que je ne relève pas. Je le relève maintenant.
+**Vérification de ses chiffres** : 3,29653 → 3,30380 = +0,22 % (x = 1e-4) ✓ ; 2,33630 → 2,35068 = +0,62 % (x = 1e-6) ✓ ; le reste (niveau plat 2,3379e6, chi2 1,8 sur 2 dof, 0,55 % au-dessus, 3,5 ET ; chi2 80,6 sur 7 dof et 80,55 sur 6 avec ses sd arrondis) : `verifier_tour83_plateau.py`.
+
+**Hypothèses (28/10) :**
+- H83-1 (lui) la scission des cinq départs à lr 0,3 suit la fusion des salves : les départs hauts ont fusionné, les bas ont gardé des salves séparées ; le saut est un effet de lecture (un estimateur par salve), pas un régime différent.
+- H83-2 (moi, standard) le saut est un effet de régime : le gain monte quand les salves se rapprochent (le calme entre salves se raccourcit, le nombre de groupes baisse), et il varie de façon monotone avec le degré de fusion sur plusieurs lr (0,225 à 0,35), pas seulement à 0,3.
+- H83-3 (moi, non standard) le sélection de lecture, elle, est biaisée : on ne lit qu'aux franchissements montants du niveau 38, qui n'existent que s'il y a un calme précédent ; à lr 0,3 x = 1e-6 les départs à 1 ou 2 lectures sont ceux où le calme est le plus rare, et leur lecture n'est pas représentative du cycle moyen.
+
+**Prédictions précommises (28/10), avant les runs** (`verifier_tour78_lr.py reduction`, `TOUR83_DETAIL=1` : nombre de groupes d'amplitude, durée et calme médians, lectures par salve avec calme avant et durée ; `lancer_tour83.sh` : x = 1e-6 : lr 0,2, 0,225, 0,25, 0,275, 0,3, 0,35 ; x = 1e-4 : lr 0,3 ; départs ks[0..4]) :
+- P83-1 : ses nombres (plateau pondéré 2,3379e6 à ± 0,0005e6, chi2 1,8 à ± 0,3, 0,55 % et 3,5 ET à ± 0,1). Mise : 80 %.
+- P83-2 (sa scission) : à lr 0,3, x = 1e-6, le nombre de groupes séparés de l'enregistrement par départ n'est pas ordonné comme il le prédit : la corrélation (sur les cinq départs) entre lr p_z et le nombre de groupes n'est pas ≤ −0,6. Mise : 60 %.
+- P83-3 (sa question sur x = 1e-4) : à x = 1e-4, lr 0,3, les cinq départs ont ≥ 500 groupes séparés (les salves ne fusionnent pas : remplissage 1,005, période 199) ; à x = 1e-6, lr 0,3, ≤ 150 groupes pour chacun des cinq. Mise : 75 %.
+- P83-4 : les lectures d'un même départ à lr 0,3, x = 1e-6, s'accordent à 0,15 % près (pas de mélange lecture fusionnée / séparée à l'intérieur d'un départ). Mise : 60 %.
+- P83-5 : le gain moyen de lr 0,2 à 0,35 (x = 1e-6) est monotone avec le nombre de groupes de l'enregistrement : à nombre de groupes décroissant, lr p_z croissant (rang de Spearman ≤ −0,8 sur les six lr, moyennes par lr). Mise : 55 %.
+
+Réponse dans `docs/REPONSE_ORDRE83.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
