@@ -19842,6 +19842,30 @@ Lecture : le gain à lr ≥ 0,3 est plus haut de 0,6 % que le plateau, et le nom
 
 Réponse dans `docs/REPONSE_ORDRE83.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 29/10/2026 (tour 84, PAS simulée)
+
+« Non. Garde 0,25, écarte seulement 0,3. Mon split a perdu : −0,03, et rien à 0,3 n'était séparé. J'ai lu ton plafond de boucle comme un compte de salves. Trois raisons, toutes de tes nombres (ET = sd/√n) : le rejet de la loi unique n'a jamais utilisé les enregistrements fusionnés. Sur 0,05 à 0,2 : chi2 64,8 sur 5 dof. Sur 0,05 à 0,15 seul : 48,6 sur 3. Il n'y a pas de bord net où couper. 0,2 passe déjà 64 % du temps en oscillation, 0,225 en passe 84. Les groupes vont 1329, 784, 169. Une coupure à 0,225 est un choix sur une courbe lisse.
+x = 1e-4 est le contrôle que tu as déjà fait. À lr 0,3 il a encore 575 à 713 groupes, donc sa lecture reste propre en dessous. Son exposant chute aussi au pas 0,2 → 0,25 : 0,0214, puis 0,0058. Prolonge la pente 0,15 → 0,2 et 0,25 tombe 0,35 % en dessous, 3,0 ET. À 1e-6 le même test donne 0,42 % en dessous, 2,1 ET. Le ralentissement apparaît donc là où les salves ne fusionnent jamais. Cela désigne le gain, pas l'estimateur, au moins jusqu'à 0,25. Un point faible : 1e-4 à 0,25 est n = 3. Si les deux départs sans lecture ont échoué de la même façon que k3 et k4 à lr 0,2, les 3,0 ET ne viennent que des départs qui sont restés lisibles. Pourquoi ces deux-là n'ont-ils pas donné de lecture ? »
+**Ajout de Théo (l'utilisateur, 29/10) :** « pourquoi garder 0,25 alors que si on met d'autres valeurs ça peut tout changer, tu aurais la réponse ou pas ? » : j'ai donc cherché la réponse par le calcul (sensibilité à la coupure, aux départs, au retrait d'un lr, et à un plancher d'erreur systématique).
+
+**Ce que je sais déjà avant tout calcul de ce tour (journaux du tour 82, `D:/tmp/t82_x1e-4_lr0.25_k*.log`, `t83_x1e-6_lr0.2_k{3,4}.log`)** : les deux départs de x = 1e-4, lr 0,25 sans lecture sont ks[0] (facteur de calibration S_c 0,90378 ; S_c interpolé maximum 35,113 sur 1317 groupes, seuil 38) et ks[2] (facteur 0,98344 ; maximum 38,691, aucun candidat dans les fenêtres inter-salves, 1350 groupes) ; à lr 0,2, x = 1e-6, ks[3] : facteur 1,02649, maximum 40,284 ; ks[4] : 0,98840, maximum 38,584 : **l'interpolation de S_c (un jacobien, une calibration à un seul instant) ne franchit pas 38 dans les fenêtres : défaut de mon instrument**, pas de la dynamique (1273 à 1350 groupes sont là). Autre fait relevé dans les journaux : **à x = 1e-4, lr 0,25, ks[3] et ks[4] donnent lr p_z = 3,2936e6 et 3,2935e6, sqrt(v_e3) 1,4531e-7 et 1,4532e-7** : deux départs quasi identiques à 3e-5 près ; si les départs convergent vers la même trajectoire à x = 1e-4, le n effectif est inférieur à 5 et les erreurs-types sd/√n sont sous-estimées.
+
+**Hypothèses (29/10) :**
+- H84-1 (lui) le ralentissement 0,2 → 0,25 est une propriété du gain, pas de l'estimateur, parce qu'il apparaît à x = 1e-4 où les salves ne fusionnent pas (n = 3 à 0,25) ; 0,25 doit rester dans l'ajustement.
+- H84-2 (moi, standard) les deux départs sans lecture à x = 1e-4, lr 0,25 sont un échec de mon instrument (S_c interpolé), pas un échec de la dynamique ; une lecture directe par balayage exact avant le début de chaque groupe les récupère.
+- H84-3 (moi, non standard) les départs à x = 1e-4 ne sont pas indépendants : l'échauffement de 20 000 + ks pas ne suffit pas à les distinguer (attracteur unique à 1e-4), donc le sd entre départs (0,01 à 0,27 %) mesure autre chose que l'incertitude de lecture, et les erreurs-types utilisées dans les chi2 sont trop petites ; un plancher d'incertitude systématique (0,05 à 0,1 %) change les significations.
+- H84-4 (moi) la signification du ralentissement dépend de la coupure et du plancher d'erreur : elle est ≥ 3σ à tout plancher ≤ 0,05 % pour toute coupure ≥ 0,2 à x = 1e-6, et tombe sous 2σ à un plancher de 0,1 %.
+
+**Prédictions précommises (29/10), avant tout calcul de ce tour** (`verifier_tour84_coupures.py` : ses nombres, sensibilité à la coupure, aux départs, au retrait d'un lr, au plancher ; `lancer_tour84.sh` : lecture directe `TOUR84_ROBUSTE=1` (balayage exact de a − 140 à a avant le début de chaque groupe, pas de 3, jusqu'à 3 salves lues), x = 1e-4 : lr 0,225, 0,25, 0,275, 0,35, 0,4 ; x = 1e-6 : lr 0,2 pour ks[3], ks[4]) :
+- P84-1 : ses nombres : chi2 64,8 sur 5 dof (0,05–0,2) et 48,6 sur 3 (0,05–0,15) à ± 3 ; pente 0,15 → 0,2 prolongée à 0,25 : 0,35 % sous (x = 1e-4) et 0,42 % sous (x = 1e-6) à ± 0,02 %. Mise : 70 %. Les ET (3,0 et 2,1) : par propagation complète de l'incertitude des trois moyennes j'attends moins, 2,2 et 1,2 ± 0,3. Mise : 60 %.
+- P84-2 : avec la lecture directe, les cinq départs de x = 1e-4, lr 0,25 donnent une lecture, ainsi que ks[3] et ks[4] à lr 0,2, x = 1e-6. Mise : 65 %.
+- P84-3 : à x = 1e-4, lr 0,25, les cinq départs fournissent moins de quatre valeurs distinctes de lr p_z (à 0,02 % près) : le n effectif est ≤ 3. Mise : 55 %.
+- P84-4 : à x = 1e-6, la différence d'exposant entre le segment bas (0,1–0,15) et le segment haut (0,175 jusqu'à la coupure) reste ≥ 3σ pour les coupures 0,2, 0,225, 0,25 (plancher 0), et pour chaque retrait d'un seul lr du segment haut, mais tombe sous 2σ avec un plancher de 0,1 %. Mise : 45 %.
+- P84-5 : à x = 1e-4 (cinq départs, lecture directe), l'écart de la valeur à lr 0,25 à la prolongation de la pente 0,15 → 0,2 reste sous 0,35 % (même sens) et ≥ 2 ET avec propagation complète (au plancher 0). Mise : 45 %.
+- P84-6 : à x = 1e-4, lr 0,225, 0,275, 0,35 les salves restent séparées (≥ 300 groupes dans 300 000 pas) ; à lr 0,4 : moins de 100 groupes. Mise : 40 % pour la conjonction.
+
+Réponse dans `docs/REPONSE_ORDRE84.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
