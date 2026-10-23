@@ -1,9 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 84 (vraie critique de dipankarsarkar, 29/10/2026) — LETTRE PRÊTE
+## Tour 85 (vraie critique de dipankarsarkar, 30/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE84.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 83
-est partie (sa critique du tour 84 y répond) et reste figée.
+**Lettre** : `docs/REPONSE_ORDRE85.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 84
+est partie (sa critique du tour 85 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 30/10/2026 (tour 85, PAS simulée) », avant « ## 9. ».
+**Consigne de l'utilisateur (23/10/2026, mémoire `ne-jamais-affirmer-sans-ses-biais`)** : ne jamais affirmer sans les biais possibles ; chaque verdict est conditionnel à son protocole ; commencer un résumé par la limite principale.
+
+**Sa critique** : chaîne abandonnée (ses 2,1 et 3,0 étaient faux : poids 1,776/0,776 du point extrapolé, mes 1,2, 2,2, 1,8 se reproduisent) ; le test de segments dit deux choses : x = 1e-6, coupure 0,25 : exposant haut −0,0059 (le gain cesse de monter) ; x = 1e-4 : +0,0076 ± 0,0029, 2,6 ET au-dessus de plat (ralentit) ; l'affirmation à 1e-4 tient au plancher (3,5 / 2,3 / 1,4 pour 0 / 0,1 / 0,2 %) qui peut se mesurer (écarts dans un départ à lr 0,3 : 0,02–0,30 % sur trois lectures) ; question : écart de salve à salve dans un départ à x = 1e-4, lr 0,1 et 0,15 ? pari : sous 0,05 %, test ≥ 3 σ (65 %).
+**Acquis (conditionnels : réduction, x = 1e-4, 8 premières salves par départ, 5 départs)** : écart-type poolé 0,021 % (lr 0,1) et 0,040 % (lr 0,15), étendue max/min − 1 : 0,014–0,080 % et 0,058–0,178 % : son pari tient par le sd, pas par l'étendue (que j'avais précommise : P85-2 ✗) ; les lectures **dérivent** le long des salves (lr 0,15, ks[0] : −0,05 % sur 8 salves ; lr 0,3 : +0,3–0,5 %), donc σ_w/√n sous-estime ; départs à bas lr = 1 ou 2 états ; **lr 0,3 à x = 1e-4 n'est pas propre** (ks[2] et ks[3] : groupes de 484–4379 pas, lectures à −3,5 % et −3,2 %) ; **test de segments à x = 1e-4 avec les erreurs mesurées : 1,5 σ (bas 0,1–0,2 : +0,0172 ; haut 0,2–0,3 : +0,0107 ± 0,0042) ; 1,2 σ sans lr 0,3 ; 1,2 σ sans les lectures de groupes > 300 pas** (sensibilités post hoc), haut au-dessus de plat 2,5 à 4,5 ET : le ralentissement à x = 1e-4 n'est pas établi, « continue de monter, peut-être plus lentement » est ce que les données portent ; pas de balayage 3 contre 1 : écart < 1e-5.
+**Mes ratés** : P85-2 (étendue), P85-3 (plancher de lecture à lr 0,3 : 0,131 %), P85-4 (2,8–3,5 σ prédit, 1,2–1,6 mesuré), mon énoncé du tour 84 « lr 0,3 propre à x = 1e-4 ».
+**Limites / biais** : lectures autocorrélées ; huit premières salves, pas un échantillon aléatoire ; segments choisis après avoir vu les données ; lr 0,225 et 0,275 non relus à huit lectures ; réduction seule.
+Écart à tes règles : aucun `python -c` ni heredoc ce tour ; six processus au plus ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 85 ; question : le plancher correct est-il l'étendue de la dérive le long de l'orbite plutôt que sd/√n ? (oui/non).
+2. Tirer des salves au hasard dans tout l'enregistrement (pas les huit premières) pour séparer dérive de l'orbite et dérive du démarrage.
+3. Relire lr 0,225 et 0,275 à huit lectures à x = 1e-4 ; refaire le test de segments.
+4. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 84 (vraie critique de dipankarsarkar, 29/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE84.md` (gitignorée), partie, figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 29/10/2026 (tour 84, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : non, garder 0,25 et écarter seulement 0,3 (son split a perdu : −0,03) ; trois raisons : le rejet de la loi unique n'utilise pas les enregistrements fusionnés (chi2 64,8/5 sur 0,05–0,2 ; 48,6/3 sur 0,05–0,15) ; pas de bord net (0,2 : 64 % en oscillation, 0,225 : 84 %, groupes 1329, 784, 169) ; x = 1e-4 est le contrôle (575–713 groupes à 0,3 ; exposant 0,0214 puis 0,0058 ; prolongation de 0,15 → 0,2 : 0,25 sous de 0,35 %, 3,0 ET ; 1e-6 : 0,42 %, 2,1 ET) ; point faible : 1e-4 à 0,25 est n = 3 ; pourquoi les deux départs sans lecture ?
