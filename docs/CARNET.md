@@ -19881,6 +19881,28 @@ x = 1e-4 est le contrôle que tu as déjà fait. À lr 0,3 il a encore 575 à 71
 
 Réponse dans `docs/REPONSE_ORDRE84.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 30/10/2026 (tour 85, PAS simulée)
+
+« Oui. Abandonne la chaîne, garde le test de segments. Mes 2,1 et 3,0 étaient faux. J'ai divisé par l'ET des seules moyennes à 0,2 et 0,25. Le point extrapolé porte aussi la pente. Avec r = ln(1,25)/ln(4/3) = 0,776, la moyenne à 0,2 entre avec le poids 1,776 et celle à 0,15 avec 0,776. Fait ainsi, tes 1,2, 2,2 et 1,8 se reproduisent à partir de tes tableaux. Ensuite le test de segments dit deux choses différentes aux deux x. À 1e-6, coupure 0,25 : exposant haut −0,0059. Le gain cesse de monter. À 1e-4 : +0,0076 ± 0,0029, 2,6 ET au-dessus de plat. Le gain ralentit. Il ne s'arrête pas. Je les énoncerais comme deux affirmations, pas une.
+L'affirmation à 1e-4 est celle qui tient au plancher : 3,5 à 0, 2,3 à 0,1, 1,4 à 0,2. Et le plancher y fait un vrai travail. Le ± 0,0005 de ton segment bas repose sur des lr où cinq départs donnent deux ou trois valeurs distinctes. Quand des départs sont le même état, l'écart entre eux est nul par construction. Il ne reste que le bruit de lecture propre. On peut donc mesurer le plancher au lieu de le choisir. À lr 0,3, tour 83, tes écarts à l'intérieur d'un départ étaient de 0,02 à 0,30 % sur trois lectures. Cela donne une ET d'environ 0,01 à 0,1 % sur la moyenne d'un départ. Cette bande met le test de 1e-4 entre 2,3 et 3,5. Quel est l'écart de salve à salve à l'intérieur d'un départ à x = 1e-4, lr 0,1 et 0,15 ? Mon pari : sous 0,05 %, donc le test reste à 3 ou plus. 65 %. »
+**Réponse de l'utilisateur à « Il dit quoi ? » (30/10)** : explication de ce message en langage courant, donnée dans le message final de ce tour ; le travail ci-dessous est le tour 85.
+
+**Vérification de ses chiffres (30/10)** : poids de la moyenne à 0,2 dans le point extrapolé : 1 + r = 1,776 ; poids de la moyenne à 0,15 : r = 0,776 (r = 0,22314/0,28768 = 0,7757) ✓ ; c'est exactement ma propagation de `chute_deux_pas` : 1,2 (x = 1e-6), 2,2 (x = 1e-4, n = 3), 1,8 (n = 5) ✓. 0,0076/0,0029 = 2,62 ET au-dessus de plat ✓ ; 3,5 / 2,3 / 1,4 aux planchers 0 / 0,1 / 0,2 % ✓ (mon tableau du tour 84) ; exposant haut −0,0059 à x = 1e-6, coupure 0,25 ✓. Écarts à l'intérieur d'un départ à lr 0,3, x = 1e-4 (tour 83) : 0,03 ; 0,06 ; 0,30 ; —(une lecture) ; 0,02 % (max/min − 1 sur trois lectures) ✓ ; ET d'une moyenne de trois lectures ≈ étendue/2,9 : 0,01 à 0,10 % ✓.
+
+**Hypothèses (30/10) :**
+- H85-1 (lui) l'écart de salve à salve à l'intérieur d'un départ est sous 0,05 % à x = 1e-4, lr 0,1 et 0,15 ; le plancher mesuré reste petit et le test de 1e-4 garde 3 σ ou plus.
+- H85-2 (moi, standard) à x = 1e-4, l'écart à l'intérieur d'un départ est une propriété de la trajectoire (bruit déterministe partagé par des départs identiques) : il décroît quand lr baisse, et l'incertitude correcte de la moyenne d'un lr est σ_w/√(n_salves × n_états_distincts), pas sd entre départs/√n.
+- H85-3 (moi, non standard) la lecture dépend de la méthode (pas de balayage 1 ou 3, fenêtre, interpolation S_c ou lecture directe) à un niveau (plancher de méthode) comparable au plancher de lecture : les moyennes des tours 82 et 84 à lr 0,15 (S_c interpolé, pas 1) et la lecture directe (pas 3) diffèrent de plus de 0,02 %.
+
+**Prédictions précommises (30/10), avant les runs** (`lancer_tour85.sh` : x = 1e-4, lr 0,05 / 0,1 / 0,15 / 0,2 / 0,25 / 0,3, départs ks[0..4], `TOUR84_ROBUSTE=1`, pas 3, 8 salves par départ (`TOUR85_NSAL=8`), `TOUR83_DETAIL=1`, moments à l'échelle, eps/lr = 2e-9 ; plus lr 0,15, ks[0] au pas 1 pour la méthode ; `verifier_tour85_plancher.py`) :
+- P85-1 : ses chiffres (poids 1,776/0,776 ; 1,2 ; 2,2 ; 1,8 ; 2,6 ET au-dessus de plat). Mise : 90 %.
+- P85-2 (son pari) : l'étendue (max/min − 1) des 8 lectures d'un départ, à lr 0,1 et 0,15, est sous 0,05 % pour chacun des 5 départs. Mise : 70 %. Pour lr 0,2 et 0,25 : sous 0,15 %. Mise : 55 %.
+- P85-3 : le plancher mesuré (σ_w/√(n_w n_distincts), en % de la moyenne) est sous 0,03 % à lr ≤ 0,15 et sous 0,08 % à lr 0,2–0,3. Mise : 55 %.
+- P85-4 : avec le plancher mesuré par lr à la place d'un plancher uniforme, le test de segments de x = 1e-4 (bas 0,1–0,2, haut 0,2–0,3) est entre 2,8 et 3,5 σ. Mise : 55 %.
+- P85-5 (méthode) : la moyenne des 8 lectures d'un départ, à lr 0,15, ks[0], au pas 3 et au pas 1 diffère de moins de 0,02 %. Mise : 65 %. La moyenne à lr 0,15 des 5 départs en lecture directe à 8 salves diffère de celle du tour 82 (3,27206e6) de moins de 0,05 %. Mise : 60 %.
+
+Réponse dans `docs/REPONSE_ORDRE85.md`.
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
