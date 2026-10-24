@@ -1,8 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 85 (vraie critique de dipankarsarkar, 30/10/2026) — LETTRE PRÊTE
+## Tour 86 (vraie critique de dipankarsarkar, 24/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE85.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 84
+**Lettre** : `docs/REPONSE_ORDRE86.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 85
+est partie (sa critique du tour 86 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 24/10/2026 (tour 86, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : non, mais pas sd/√n non plus ; la dérive est un biais, pas un plancher ; elle ne bouge l'exposant que si elle diffère selon lr ; poids 2,38 du point 0,3 sur la pente (0,2 ; 0,25 ; 0,3) ; recette : par départ lecture = a + b k, valeur à k fixe, ET entre départs, test de segments à k = 1 et k = 8 ; si ça bouge de 0,006, c'est la dérive ; question : la dérive de lr 0,3 continue-t-elle après la salve 8 ?
+**Acquis (conditionnels : réduction, x = 1e-4, 5 départs quasi clones jusqu'à lr 0,25, estimateur C/ρ calibré sur 8 lectures)** : ses chiffres se reproduisent (2,376 ; 0,18–0,30 ; 0,0043–0,0071 ; 0,0065) ; mais « trois départs sur cinq à 0,3–0,5 % » venait de MA lettre 85 et est inexact (lr 0,3 : cinq sur cinq, +0,15 à +0,62 %, moyenne +0,37 %) et lr 0,2 dérive dans l'autre sens (cinq sur cinq, −0,17 % en moyenne) ; **le test à k fixe bouge de 0,0103 entre k = 1 et k = 8 (3,0 σ → 0,4 σ), plus que ses 0,006** : dans ces données la salve lue fait le test ; **la dérive de lr 0,3 ne continue pas de monter** (pente +0,057 %/salve sur 1–8, −0,0007 sur 9–40, ≈ 0 ensuite) mais ondule de ±0,1–0,2 % par blocs de 50 salves ; à lr 0,2 la dérive de signe commun disparaît avec une attente de 30 000 pas (au lieu de 10 000), non résolu à lr 0,3 ; estimateur C/ρ (lecture × ρ constant à 0,003 % / 0,035 % sur 8 salves ; relectures aux groupes 50, 200, 500 : sd 0,012 % à lr 0,15, 0,038 % à lr 0,3 pour 22 salves sur 24) ; **lr 0,3 est un mélange de populations de lectures** (échantillon aléatoire de 60 salves par départ : 10,3 % de salves en retard à −3–4 %, 31 % à +0,3–0,45 %, 0 salve en retard à lr ≤ 0,25) ; **test de segments au niveau de l'enregistrement : 2,1 σ (C/ρ), 2,8 σ (lectures directes, toutes), 1,4 σ (sans les salves en retard) avec plancher 0,1 %** ; exposant haut +0,0117 / +0,0053 / +0,0127 contre +0,0173–0,0183 en bas.
+**Mes ratés** : P86-3 (déplacement < 0,003 : 0,010), P86-6, P86-8, P86-11 (attente), « stable à 0,1 % » ; ma lettre 85 (« trois départs sur cinq »).
+**Limites / biais** : réduction seule ; départs identiques à bas lr (ET entre départs seule trompeuse, jusqu'à 9,4 σ) ; plancher 0,1 % choisi ; salves d'un enregistrement non indépendantes ; segments choisis au tour 85 ; C/ρ ne voit pas les populations de lr 0,3 ; pente de ln(lecture) contre ln √v_e3 à −0,95 (pas −1), écart de 4 % non expliqué ; attentes différentes = trajectoires différentes.
+Écart à tes règles : aucun `python -c` ni heredoc ; six processus au plus ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 86 ; question : l'unité du test de segments est-elle la moyenne sur des salves tirées au hasard dans tout l'enregistrement, toutes comptées, et non les huit premières à k fixe ? (oui/non).
+2. Origine des populations de lectures à lr 0,3 (retard, +0,4 %) : franchissement du niveau 38 avant le début du groupe ; mécanisme du signe de la dérive (lr 0,2 négatif, lr 0,3 positif).
+3. Attente de 30 000 / 100 000 pas à lr 0,3 avec plus de cinq départs.
+4. Écart de 4 % sur la pente −0,95.
+5. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 85 (vraie critique de dipankarsarkar, 30/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE85.md` (gitignorée), partie, figée. La lettre 84
 est partie (sa critique du tour 85 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 30/10/2026 (tour 85, PAS simulée) », avant « ## 9. ».
 **Consigne de l'utilisateur (23/10/2026, mémoire `ne-jamais-affirmer-sans-ses-biais`)** : ne jamais affirmer sans les biais possibles ; chaque verdict est conditionnel à son protocole ; commencer un résumé par la limite principale.
