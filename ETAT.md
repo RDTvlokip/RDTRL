@@ -1,8 +1,28 @@
 # État du projet RDTRL — où on en est
 
-## Tour 86 (vraie critique de dipankarsarkar, 24/10/2026) — LETTRE PRÊTE
+## Tour 87 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE86.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 85
+**Lettre** : `docs/REPONSE_ORDRE87.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 86
+est partie (sa critique du tour 87 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 87, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : oui à l'enregistrement entier (les huit premières salves sont dans un transitoire), non à « toute salve comptée » ; il décompose l'écart 1,4 contre 2,8 σ à lr 0,3 : 0,0074 des 0,0131 (57 %) viennent des salves en retard (poids 1,97 sur le point 0,3) ; demande deux nombres : p_late(lr) et l'exposant hors retard, « en retard » défini par l'instant de franchissement avant le groupe, jamais par la lecture ; et pour la population à +0,4 % : une définition avant le groupe existe-t-elle ?
+**Acquis (conditionnels : réduction, x = 1e-4, b1 = 0,9, dix départs, 60 salves aléatoires par départ + enregistrements entiers)** : ses chiffres se reproduisent (poids 1,976 toutes lectures, 2,354 sans retard) ; l'avance de franchissement (début du groupe − instant du franchissement) dépend de lr (médiane 63,5 / 52,9 / 41,2 / 26,1 / 20,0 pas à lr 0,1 / 0,15 / 0,2 / 0,25 / 0,3) donc ma règle précommise de 40 pas échoue ; à lr 0,3 elle est bimodale avec un vide (0–49 : 267 et 271 salves ; 120–136 : 32 et 21), règle « > 100 » **post hoc** : p_late = 0/2 400 à lr 0,1–0,25, 53/592 (9,0 %) à lr 0,3 ; **les salves en retard sont un artefact du premier franchissement pris dans la fenêtre [a − 140, a] qui chevauche le groupe précédent (durée médiane 305 pas ; avance > calme pour 53/53 contre 0/539) : au dernier franchissement, 539/592 lectures identiques, les 53 autres passent à une avance de 9–30 pas et à −0,15 % de la médiane de leur départ (50/53 à ±0,5 %), p_late = 0 à tous les lr** ; la « population à +0,4 % » n'existe pas : deux départs entiers (lr 0,3, ks[2] et ks[3], médianes −0,348 et −0,413 %) dont ma constante C, calibrée sur les huit premières lectures, contenait une lecture en retard (−3,5 et −3,2 % / 8) ; ρ explique 98 % de la variance de la lecture hors retard, C' identique d'un départ à l'autre à 0,001–0,008 % ; test de segments au dernier franchissement : bas +0,0183, haut +0,0119 ± 0,0035, différence +0,0064, 1,6 σ avec plancher 0,1 % ; **niveaux d'enregistrement entier : bruit mesuré par blocs 0,005 à 0,033 %, test à 6,1 σ (1,5 σ avec le plancher choisi 0,1 %)** ; attente avant l'enregistrement : niveau ±0,013 %, exposant haut ±0,0003 ; exposant local : 0,0171 / 0,0198 / 0,0118 / 0,0123 (marche de 0,008 en passant par lr 0,2, palier à ~0,012).
+**Ce que je retire de mes lettres** : lettre 86 (franchissement ~90 pas avant le groupe, mélange de populations, 31 % à +0,4 %, test C/ρ à 2,1 σ) ; lettres 83 à 85 : les lectures de lr 0,3 à −3,2 et −3,5 % et les groupes « longs » étaient en bonne partie ce choix de premier franchissement.
+**Mes ratés** : P87-2 (règle de 40 pas), P87-3 (pente), P87-4, P87-7, P87-12 (bruit de bloc et test à 1,0–2,5 σ prédits, 6,1 σ mesuré) ; mon interprétation « salves en retard physiques » de la lettre 86.
+**Limites / biais** : réduction seule ; règle « > 100 » post hoc ; mêmes instrument pour les deux franchissements ; plancher de bruit mesuré à l'intérieur d'un protocole, le plancher de protocole (fenêtre, pas de balayage, définition du franchissement) n'est pas mesuré ; segments 0,1–0,2 / 0,2–0,3 choisis au tour 85 (le profil local suggère une marche à 0,2) ; b1, x, réseau non testés.
+Écart à tes règles : un heredoc `python` vide lancé par erreur (sans effet, ni sortie ni fichier) ; six processus au plus ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 87 ; question : le désaccord restant porte-t-il seulement sur le plancher de protocole, à mesurer en variant la fenêtre et le pas de balayage à chaque lr plutôt qu'à choisir ? (oui/non).
+2. Mesurer le plancher de protocole : fenêtre (70, 140, 200), pas de balayage 1 et 3, définition du franchissement, à chaque lr.
+3. lr 0,225 et 0,275 : marche à 0,2 ou palier ?
+4. b1 autre, x autre, réseau complet.
+5. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 86 (vraie critique de dipankarsarkar, 24/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE86.md` (gitignorée), partie, figée (contient des interprétations retirées au tour 87). La lettre 85
 est partie (sa critique du tour 86 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 24/10/2026 (tour 86, PAS simulée) », avant « ## 9. ».
 

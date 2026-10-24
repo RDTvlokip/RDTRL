@@ -301,6 +301,14 @@ def plancher():
     for nom, ee in (("ET entre departs seule", se_b), ("incertitude de bloc seule", se_r), ("quadrature entre departs + bloc", np.hypot(se_b, se_r)), ("plancher choisi 0,1 %", np.hypot(se_b, 0.001 * m))):
         r = signif_segments(lrs, m, ee, bas=(0.1, 0.2), haut=(0.2, 0.3))
         print(f"test de segments, niveaux d'enregistrement entier, {nom} : bas {r[0]:+.4f} +- {r[1]:.4f}, haut {r[2]:+.4f} +- {r[3]:.4f} ; difference {r[0] - r[2]:+.4f} ; {r[4]:.1f} sigma ; haut au-dessus de plat {r[2] / r[3]:.1f} ET")
+    # profil de l'exposant local entre lr consecutifs (description, pas un test precommis)
+    ee = np.hypot(se_b, se_r)
+    print("exposant local entre lr consecutifs (ET : quadrature entre departs + bloc ; entre parentheses avec le plancher choisi 0,1 %) :")
+    for i in range(len(lrs) - 1):
+        e = math.log(m[i + 1] / m[i]) / math.log(lrs[i + 1] / lrs[i])
+        s1 = math.hypot(ee[i] / m[i], ee[i + 1] / m[i + 1]) / math.log(lrs[i + 1] / lrs[i])
+        pl = math.hypot(math.hypot(se_b[i], 0.001 * m[i]) / m[i], math.hypot(se_b[i + 1], 0.001 * m[i + 1]) / m[i + 1]) / math.log(lrs[i + 1] / lrs[i])
+        print(f"   {lrs[i]} -> {lrs[i + 1]} : {e:+.4f} +- {s1:.4f} (+- {pl:.4f})")
 
 
 def attente_niveau():
