@@ -303,9 +303,50 @@ def plancher():
         print(f"test de segments, niveaux d'enregistrement entier, {nom} : bas {r[0]:+.4f} +- {r[1]:.4f}, haut {r[2]:+.4f} +- {r[3]:.4f} ; difference {r[0] - r[2]:+.4f} ; {r[4]:.1f} sigma ; haut au-dessus de plat {r[2] / r[3]:.1f} ET")
 
 
+def attente_niveau():
+    """Niveau de 1/rho (salves >= 9) selon l'attente avant l'enregistrement, lr 0,2 et 0,3 ; et dispersion de C' d'un depart a l'autre."""
+    L = charger(range(10), "t87d")
+    print("C' = mediane de lecture x rho (dernier franchissement) par depart : ecart-type relatif sur dix departs (%)")
+    for lr in LRS:
+        cs = []
+        for k in range(10):
+            m = (L[:, 0] == lr) & (L[:, 1] == k)
+            if m.sum() >= 20:
+                cs.append(np.median(L[m, 6] * L[m, 8]))
+        cs = np.array(cs)
+        print(f"   lr {lr}: {len(cs)} departs ; sd {100 * cs.std(ddof=1) / cs.mean():.4f} % ; etendue {100 * (cs.max() / cs.min() - 1):.4f} %")
+    niv = {}
+    for lr in (0.2, 0.3):
+        for att in (10000, 30000, 100000):
+            v = []
+            for k in range(5):
+                nom = f"{D}/t86_lr{lr}_k{k}.npz" if att == 10000 else f"{D}/t86_att{att}_lr{lr}_k{k}.npz"
+                try:
+                    z = np.load(nom)
+                except FileNotFoundError:
+                    continue
+                inv = 1 / z["RHO"][:, 1]
+                v.append(np.nanmean(inv[9:]))
+            niv[(lr, att)] = np.array(v)
+    print("niveau de 1/rho (salves >= 9), moyenne des cinq departs, relatif a l'attente 10 000 (%), ET de la moyenne (sd entre departs / racine de 5) :")
+    d = {}
+    for lr in (0.2, 0.3):
+        for att in (30000, 100000):
+            a = niv[(lr, 10000)]; b = niv[(lr, att)]
+            delta = 100 * (b.mean() / a.mean() - 1)
+            se = 100 * math.hypot(a.std(ddof=1) / a.mean(), b.std(ddof=1) / b.mean()) / math.sqrt(len(a))
+            d[(lr, att)] = delta
+            print(f"   lr {lr} attente {att:6d} : {delta:+.4f} % +- {se:.4f} %  (niveau 10 000 : sd entre departs {100 * a.std(ddof=1) / a.mean():.4f} %, attente {att} : {100 * b.std(ddof=1) / b.mean():.4f} %)")
+    for att in (30000, 100000):
+        dep = (d[(0.3, att)] - d[(0.2, att)]) / 100 / math.log(1.5)
+        print(f"   deplacement de l'exposant haut (0,2 -> 0,3) a attente {att} : {dep:+.4f}")
+
+
 if __name__ == "__main__":
     mode = sys.argv[1]
-    if mode == "plancher":
+    if mode == "attente":
+        attente_niveau()
+    elif mode == "plancher":
         plancher()
     elif mode == "dernier":
         dernier()
