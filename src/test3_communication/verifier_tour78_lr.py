@@ -100,7 +100,8 @@ def mode_reduction(nom, eps, xs, nrec):
     robuste = bool(os.environ.get("TOUR84_ROBUSTE"))   # tour 84 : lecture directe par balayage exact avant le debut de chaque groupe, sans interpolation S_c
     pas_bal = int(os.environ.get("TOUR84_PAS", "1"))
     nsal = int(os.environ.get("TOUR85_NSAL", "3"))   # tour 85 : nombre de salves lues par depart (pour mesurer l'ecart de salve a salve)
-    for g in range(1, min(len(groupes), max(12, 3 * nsal + 3) if robuste else 4)):
+    g0 = int(os.environ.get("TOUR86_G0", "1"))   # tour 86 : premier groupe lu (pour relire des salves tardives de l'enregistrement)
+    for g in range(g0, min(len(groupes), g0 - 1 + (max(12, 3 * nsal + 3) if robuste else 4))):
         if robuste and len(res) >= nsal:
             break
         prev_end = groupes[g - 1][1]; a = groupes[g][0]
