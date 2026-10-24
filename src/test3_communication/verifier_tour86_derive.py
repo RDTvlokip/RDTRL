@@ -46,6 +46,7 @@ def arithmetique():
     x = np.log([0.2, 0.25, 0.3])
     w = (x - x.mean()) / ((x - x.mean()) ** 2).sum()
     print(f"poids de chaque point dans la pente MCO non ponderee (0,2 ; 0,25 ; 0,3) : {np.round(w, 3)} (lui : 2,38 pour le point 0,3)")
+    print(f"poids dans la pente ponderee avec les ET totales du tour 85 (0,071 ; 0,088 ; 0,240 %) : {np.round(poids_ponderes([0.00071, 0.00088, 0.0024]), 3)}")
     print(f"  0,3 a 0,5 % sur 3 departs sur 5 : moyenne {3 / 5 * 0.3:.2f} a {3 / 5 * 0.5:.2f} % ; deplacement de l'exposant {w[2] * 0.0018:.4f} a {w[2] * 0.0030:.4f} ; 0,0172 - 0,0107 = {0.0172 - 0.0107:.4f}")
 
 

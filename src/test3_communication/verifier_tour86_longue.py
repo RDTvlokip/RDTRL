@@ -51,7 +51,8 @@ def enregistrer(lr, kidx, nrec):
     w["v"] = w["v"] * (lr / 0.05) ** 2
     redlib.avancer(w, float(PLI - mpf("1e-6")), 20000 + ks[kidx], eps=eps, cross=2.0, stop=False)
     w["x"] = w["x"] * (1.0 + 1e-9 * rng.standard_normal(6))
-    redlib.avancer_obs(w, delta, 10000, np.zeros((1, 7)), eps=eps)
+    att = int(os.environ.get("TOUR86_ATT", "10000"))   # attente apres le passage de x = 1e-6 a 1e-4, avant l'enregistrement (10 000 : protocole du tour 85)
+    redlib.avancer_obs(w, delta, att, np.zeros((1, 7)), eps=eps)
     rec = np.zeros((nrec, 7))
     first, maxrb, rb, done = redlib.avancer_obs(w, delta, nrec, rec, eps=eps)
     if maxrb > 0.9:
@@ -81,6 +82,8 @@ def enregistrer(lr, kidx, nrec):
     # calibration sur le journal du tour 85 (memes groupes : l'indice de salve du journal est l'indice de groupe)
     cal = []
     try:
+        if att != 10000:
+            raise FileNotFoundError   # le journal du tour 85 ne decrit que l'attente de 10 000 pas
         t_ = open(f"{D}/t85_x1e-4_lr{lr}_k{kidx}.log", encoding="utf-8", errors="replace").read()
         lect = [(int(g_), float(r_)) for g_, c_, d_, r_ in MOTIF.findall(t_)]
     except FileNotFoundError:
@@ -101,7 +104,7 @@ def enregistrer(lr, kidx, nrec):
         PR = C / RHO[:, 1]
         ecart = np.array([100 * (PR[g_] / r_ - 1) for g_, r_ in lect])
         print(f"   estimateur C/rho : ecart a la lecture, par salve lue (%) : " + " ".join(f"{v:+.4f}" for v in ecart))
-    np.savez(f"{D}/t86_lr{lr}_k{kidx}.npz", a=a, dur=dur, P=P, PR=PR, RHO=RHO, SLD=SLD, SL=SL, Z3=Z3, lect=np.array(lect) if lect else np.zeros((0, 2)), nrec=nrec)
+    np.savez(f"{D}/t86_lr{lr}_k{kidx}.npz" if att == 10000 else f"{D}/t86_att{att}_lr{lr}_k{kidx}.npz", a=a, dur=dur, P=P, PR=PR, RHO=RHO, SLD=SLD, SL=SL, Z3=Z3, lect=np.array(lect) if lect else np.zeros((0, 2)), nrec=nrec)
 
 
 def pente(g, y):
@@ -191,6 +194,24 @@ def synthese():
                 print(f"  lr {lr} k{k}: {len(apres)} salves apres un groupe long, ecart moyen {100 * (np.mean(P[apres]) / np.mean(P[autres]) - 1):+.4f} % ; {len(autres)} autres")
 
 
+def attente():
+    """Pente de ln(1/rho) sur les salves 1-8 (puis 9-40) selon l'attente avant l'enregistrement."""
+    for lr in (0.2, 0.3):
+        for att in (10000, 30000, 100000):
+            sl8, sl40, niv = [], [], []
+            for k in range(5):
+                nom = f"{D}/t86_lr{lr}_k{k}.npz" if att == 10000 else f"{D}/t86_att{att}_lr{lr}_k{k}.npz"
+                try:
+                    z = np.load(nom)
+                except FileNotFoundError:
+                    continue
+                inv = 1 / z["RHO"][:, 1]; G = len(inv); g = np.arange(G)
+                sl8.append(pente(g[1:9], inv[1:9])); sl40.append(pente(g[9:41], inv[9:41]))
+                niv.append(100 * (np.nanmean(inv[1:9]) / np.nanmean(inv[41:]) - 1))
+            if sl8:
+                print(f"lr {lr} attente {att:6d} : {len(sl8)} departs ; pente salves 1-8 {np.mean(sl8):+.4f} %/salve [{np.min(sl8):+.4f} .. {np.max(sl8):+.4f}] ; pente salves 9-40 {np.mean(sl40):+.4f} [{np.min(sl40):+.4f} .. {np.max(sl40):+.4f}] ; moyenne des salves 1-8 relative aux salves >= 41 : {np.mean(niv):+.3f} % [{np.min(niv):+.3f} .. {np.max(niv):+.3f}]")
+
+
 def validation():
     """Relectures au jacobien de salves tardives (t86_relecture_*) contre l'estimateur C/rho, meme salve."""
     tous = {}
@@ -220,10 +241,11 @@ def echantillon():
                 t = open(f"{D}/t86_alea_lr{lr}_k{k}.log", encoding="utf-8", errors="replace").read()
             except FileNotFoundError:
                 continue
-            PR = np.load(f"{D}/t86_lr{lr}_k{k}.npz")["PR"]
+            z_ = np.load(f"{D}/t86_lr{lr}_k{k}.npz")
+            PR, dur_ = z_["PR"], z_["dur"]
             lect = [(int(g_), float(r_)) for g_, c_, d_, r_ in MOTIF.findall(t)]
             if lect:
-                par_depart.append(np.array([(g_, r_, PR[g_]) for g_, r_ in lect]))
+                par_depart.append(np.array([(g_, r_, PR[g_], dur_[g_], dur_[g_ - 1]) for g_, r_ in lect]))
         res[lr] = par_depart
     print("echantillon aleatoire de salves, lecture directe : nombre de lectures, salves en retard (C/rho depasse la lecture de plus de 0,3 %), moyennes (direct tout, direct sans retard, C/rho sur les memes salves), ET entre departs (%)")
     stats = {}
@@ -235,11 +257,25 @@ def echantillon():
         ec = np.concatenate([100 * (a_[:, 2] / a_[:, 1] - 1) for a_ in pd_])
         retard = int((ec > 0.3).sum()); autre = int((np.abs(ec) > 0.3).sum()) - retard
         m_all = np.array([a_[:, 1].mean() for a_ in pd_])
-        m_ok = np.array([a_[np.abs(100 * (a_[:, 2] / a_[:, 1] - 1)) <= 0.3, 1].mean() for a_ in pd_])
+        m_ok = np.array([a_[100 * (a_[:, 2] / a_[:, 1] - 1) <= 0.3, 1].mean() for a_ in pd_])
         m_pr = np.array([a_[:, 2].mean() for a_ in pd_])
         stats[lr] = (m_all, m_ok, m_pr)
         print(f"  lr {lr}: {n} lectures dans {len(pd_)} departs ; en retard {retard} ({100 * retard / n:.1f} %), autres ecarts > 0,3 % : {autre} ; ecart sd sans les > 0,3 % {ec[np.abs(ec) <= 0.3].std(ddof=1):.4f} % ; moyennes {m_all.mean():.5e} | {m_ok.mean():.5e} | {m_pr.mean():.5e} ; ET entre departs {100 * m_all.std(ddof=1) / math.sqrt(len(m_all)) / m_all.mean():.3f} | {100 * m_ok.std(ddof=1) / math.sqrt(len(m_ok)) / m_ok.mean():.3f} | {100 * m_pr.std(ddof=1) / math.sqrt(len(m_pr)) / m_pr.mean():.3f}")
         print(f"        par depart : retards " + " ".join(str(int((100 * (a_[:, 2] / a_[:, 1] - 1) > 0.3).sum())) + "/" + str(len(a_)) for a_ in pd_) + " ; moyenne directe " + " ".join(f"{v:.5e}" for v in m_all))
+    for lr in (0.25, 0.3):
+        A = np.concatenate(res[lr])
+        ec = 100 * (A[:, 2] / A[:, 1] - 1)
+        print(f"lr {lr}: percentiles de l'ecart C/rho - lecture (%) 1 5 25 50 75 95 99 : " + " ".join(f"{v:+.3f}" for v in np.percentile(ec, [1, 5, 25, 50, 75, 95, 99])))
+        for nom, masque in (("groupe precedent long (> 300)", A[:, 4] > 300), ("groupe precedent court", A[:, 4] <= 300), ("groupe propre long (> 300)", A[:, 3] > 300), ("groupe propre court", A[:, 3] <= 300)):
+            if masque.sum():
+                e = ec[masque]
+                print(f"   {nom} : {int(masque.sum())} lectures ; ecart moyen {e.mean():+.3f} %, mediane {np.median(e):+.3f} % ; > +0,3 % : {int((e > 0.3).sum())} ; < -0,3 % : {int((e < -0.3).sum())}")
+        # lectures lues apres les huit premieres salves de l'enregistrement : le groupe 9-40 contre le reste
+        for lo, hi in ((9, 40), (41, 200), (201, 559)):
+            m_ = (A[:, 0] >= lo) & (A[:, 0] <= hi)
+            if m_.sum():
+                e = ec[m_]
+                print(f"   groupes {lo}-{hi} : {int(m_.sum())} lectures ; ecart moyen {e.mean():+.3f} %, mediane {np.median(e):+.3f} %")
     lrs = np.array([l for l in LRS[1:] if l in stats])
     if len(lrs) == 5:
         for nom, i in (("direct, toutes les lectures", 0), ("direct, sans les salves en retard", 1), ("C/rho sur les memes salves", 2)):
@@ -261,5 +297,7 @@ if __name__ == "__main__":
         enregistrer(float(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]) if len(sys.argv) > 4 else 300000)
     elif mode == "validation":
         validation()
+    elif mode == "attente":
+        attente()
     else:
         synthese()
