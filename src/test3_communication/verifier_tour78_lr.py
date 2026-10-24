@@ -101,7 +101,11 @@ def mode_reduction(nom, eps, xs, nrec):
     pas_bal = int(os.environ.get("TOUR84_PAS", "1"))
     nsal = int(os.environ.get("TOUR85_NSAL", "3"))   # tour 85 : nombre de salves lues par depart (pour mesurer l'ecart de salve a salve)
     g0 = int(os.environ.get("TOUR86_G0", "1"))   # tour 86 : premier groupe lu (pour relire des salves tardives de l'enregistrement)
-    for g in range(g0, min(len(groupes), g0 - 1 + (max(12, 3 * nsal + 3) if robuste else 4))):
+    gl = os.environ.get("TOUR86_GLIST")   # tour 86 : liste explicite de groupes a lire (echantillon aleatoire de salves)
+    liste_g = [int(q) for q in gl.split(",")] if gl else range(g0, min(len(groupes), g0 - 1 + (max(12, 3 * nsal + 3) if robuste else 4)))
+    for g in liste_g:
+        if g >= len(groupes):
+            continue
         if robuste and len(res) >= nsal:
             break
         prev_end = groupes[g - 1][1]; a = groupes[g][0]
