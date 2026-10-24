@@ -34,13 +34,13 @@ MOTIF = re.compile(r"salve (\d+) : calme avant (\d+) pas ; duree (\d+) pas ; lr 
 SEUIL_AVANCE = float(os.environ.get("TOUR87_SEUIL", "100"))   # precommis : 40 pas (echec : l'avance normale est 63 pas a lr 0,1 et 20 pas a lr 0,3) ; 100 pas trouve APRES avoir vu les histogrammes (ecart net entre 63 et 130 pas)
 
 
-def charger(ks):
+def charger(ks, prefixe="t87"):
     """Lignes (lr, k, g, calme, duree, duree du groupe precedent, lecture, avance, rho, sqrt(v_l3), z3, ecart C/rho - lecture en % ou nan)."""
     lignes = []
     for lr in LRS:
         for k in ks:
             try:
-                t = open(f"{D}/t87_alea_lr{lr}_k{k}.log", encoding="utf-8", errors="replace").read()
+                t = open(f"{D}/{prefixe}_alea_lr{lr}_k{k}.log", encoding="utf-8", errors="replace").read()
                 z = np.load(f"{D}/t86_lr{lr}_k{k}.npz")
             except FileNotFoundError:
                 continue
@@ -217,9 +217,99 @@ def analyse():
             print(f"   avance mediane des lectures normales {med:.1f} pas ; part des lectures a +0,4 % avec une avance plus courte {100 * (E[haute, 7] < med).mean():.1f} % ({int(haute.sum())} lectures)")
 
 
+def dernier():
+    """Lecture au dernier franchissement montant (t87d) contre le premier (t87), memes salves."""
+    F = charger(range(10), "t87"); L = charger(range(10), "t87d")
+    if len(F) == 0 or len(L) == 0:
+        print("pas de donnees")
+        return
+    cle = lambda r: (r[0], int(r[1]), int(r[2]))
+    dF = {cle(r): r for r in F}; dL = {cle(r): r for r in L}
+    communs = sorted(set(dF) & set(dL))
+    print(f"salves communes {len(communs)} sur {len(dF)} (premier) et {len(dL)} (dernier)")
+    print("lecture au dernier franchissement contre le premier : fraction identique (< 0,01 %), par lr")
+    for lr in LRS:
+        ks = [c for c in communs if c[0] == lr]
+        if ks:
+            diff = np.array([100 * (dL[c][6] / dF[c][6] - 1) for c in ks])
+            print(f"   lr {lr}: {len(ks)} salves ; identiques {int((np.abs(diff) < 0.01).sum())} ({100 * (np.abs(diff) < 0.01).mean():.1f} %) ; differences > 0,01 % : {int((np.abs(diff) >= 0.01).sum())} ; max |difference| {np.abs(diff).max():.3f} %")
+    # les salves a avance > 100 au premier franchissement (lr 0,3)
+    _, _ = centres(F)
+    tard = [c for c in communs if dF[c][7] > SEUIL_AVANCE]
+    print(f"salves a avance > {SEUIL_AVANCE:.0f} au premier franchissement : {len(tard)} (tous lr)")
+    if tard:
+        avs = np.array([dL[c][7] for c in tard])
+        # reference : mediane des lectures du premier franchissement hors retard, par (lr, depart)
+        rel = []
+        for c in tard:
+            ref = np.median([r[6] for kk, r in dF.items() if kk[0] == c[0] and kk[1] == c[1] and r[7] <= SEUIL_AVANCE])
+            rel.append(100 * (dL[c][6] / ref - 1))
+        rel = np.array(rel)
+        print(f"   avance au dernier franchissement : percentiles 5 25 50 75 95 " + " ".join(f"{v:.1f}" for v in np.percentile(avs, [5, 25, 50, 75, 95])) + f" ; < 60 pas : {int((avs < 60).sum())}/{len(avs)}")
+        print(f"   lecture au dernier franchissement relative a la mediane hors retard de son depart (%) : percentiles 5 25 50 75 95 " + " ".join(f"{v:+.3f}" for v in np.percentile(rel, [5, 25, 50, 75, 95])) + f" ; a moins de 0,5 % : {int((np.abs(rel) < 0.5).sum())}/{len(rel)}")
+        print(f"   lecture au premier franchissement des memes salves, relative a la mediane (%) : " + " ".join(f"{100 * (dF[c][6] / np.median([r[6] for kk, r in dF.items() if kk[0] == c[0] and kk[1] == c[1] and r[7] <= SEUIL_AVANCE]) - 1):+.2f}" for c in tard[:12]) + " ...")
+        # calme et duree du groupe precedent de ces salves : le debut de la fenetre est-il dans le groupe precedent ?
+        calmes = np.array([dF[c][3] for c in tard]); dprev = np.array([dF[c][5] for c in tard])
+        print(f"   calme avant (pas) : mediane {np.median(calmes):.0f} ; duree du groupe precedent : mediane {np.median(dprev):.0f} ; avance au premier franchissement > calme : {int((np.array([dF[c][7] for c in tard]) > calmes).sum())}/{len(tard)}")
+    # avance > calme parmi les salves normales
+    norm = [c for c in communs if c[0] == 0.3 and dF[c][7] <= SEUIL_AVANCE]
+    print(f"   lr 0,3, salves normales : avance au premier franchissement > calme avant : {sum(1 for c in norm if dF[c][7] > dF[c][3])}/{len(norm)}")
+    # p_late et test de segments avec le dernier franchissement
+    print(f"avance > {SEUIL_AVANCE:.0f} au dernier franchissement : " + ", ".join(f"lr {lr}: {int((L[L[:, 0] == lr][:, 7] > SEUIL_AVANCE).sum())}/{int((L[:, 0] == lr).sum())}" for lr in LRS))
+    A = L
+    test_segments(A, np.ones(len(A), bool), "dernier franchissement, toutes les lectures")
+    test_segments(A, A[:, 7] <= SEUIL_AVANCE, f"dernier franchissement, avance <= {SEUIL_AVANCE:.0f}")
+    mm = moyennes_depart(A, np.ones(len(A), bool))
+    print("   moyenne par lr (dernier, toutes) : " + " ".join(f"{mm[l].mean():.5e}" for l in LRS))
+    mm = moyennes_depart(F, F[:, 7] <= SEUIL_AVANCE)
+    print("   moyenne par lr (premier, hors retard) : " + " ".join(f"{mm[l].mean():.5e}" for l in LRS))
+
+
+def plancher():
+    """Incertitude du niveau d'un enregistrement mesuree par ses blocs de 100 salves, et test de segments avec elle."""
+    from verifier_tour84_coupures import signif_segments
+    L = charger(range(10), "t87d")
+    niveaux = {}; se_bloc = {}; ecart_ech = {}
+    for lr in LRS:
+        niv, sb, ec_ = [], [], []
+        for k in range(10):
+            try:
+                z = np.load(f"{D}/t86_lr{lr}_k{k}.npz")
+            except FileNotFoundError:
+                continue
+            m = (L[:, 0] == lr) & (L[:, 1] == k)
+            if m.sum() < 20:
+                continue
+            inv = 1 / z["RHO"][:, 1]
+            g = np.arange(len(inv))
+            ok = (g >= 9) & np.isfinite(inv)
+            cprim = np.median(L[m, 6] * L[m, 8])
+            niv.append(cprim * inv[ok].mean())
+            x = inv[ok]
+            nb = len(x) // 100
+            bl = x[:nb * 100].reshape(nb, 100).mean(axis=1)
+            sb.append(bl.std(ddof=1) / bl.mean() / math.sqrt(nb))
+            ech = (g >= 9) & (g <= 559) & np.isfinite(inv)
+            ec_.append(100 * (inv[ech].mean() / inv[ok].mean() - 1))
+            ecart_ech.setdefault(lr, []).append(100 * (np.mean(L[m, 6]) / (cprim * inv[ok].mean()) - 1))
+        niveaux[lr] = np.array(niv); se_bloc[lr] = np.array(sb)
+        print(f"lr {lr}: {len(niv)} departs ; niveau moyen {np.mean(niv):.5e} ; incertitude de bloc (un enregistrement) {100 * np.mean(sb):.3f} % [{100 * np.min(sb):.3f} .. {100 * np.max(sb):.3f}] ; ET entre departs {100 * np.std(niv, ddof=1) / math.sqrt(len(niv)) / np.mean(niv):.3f} % ; moyenne de 1/rho sur les groupes 9-559 contre toutes les salves >= 9 : {np.mean(ec_):+.3f} % [{np.min(ec_):+.3f} .. {np.max(ec_):+.3f}] ; moyenne directe de l'echantillon contre le niveau de l'enregistrement : {np.mean(ecart_ech[lr]):+.3f} % [{np.min(ecart_ech[lr]):+.3f} .. {np.max(ecart_ech[lr]):+.3f}]")
+    lrs = np.array(LRS)
+    m = np.array([niveaux[l].mean() for l in LRS])
+    se_b = np.array([niveaux[l].std(ddof=1) / math.sqrt(len(niveaux[l])) for l in LRS])
+    se_r = np.array([se_bloc[l].mean() for l in LRS]) * m
+    for nom, ee in (("ET entre departs seule", se_b), ("incertitude de bloc seule", se_r), ("quadrature entre departs + bloc", np.hypot(se_b, se_r)), ("plancher choisi 0,1 %", np.hypot(se_b, 0.001 * m))):
+        r = signif_segments(lrs, m, ee, bas=(0.1, 0.2), haut=(0.2, 0.3))
+        print(f"test de segments, niveaux d'enregistrement entier, {nom} : bas {r[0]:+.4f} +- {r[1]:.4f}, haut {r[2]:+.4f} +- {r[3]:.4f} ; difference {r[0] - r[2]:+.4f} ; {r[4]:.1f} sigma ; haut au-dessus de plat {r[2] / r[3]:.1f} ET")
+
+
 if __name__ == "__main__":
     mode = sys.argv[1]
-    if mode == "arithmetique":
+    if mode == "plancher":
+        plancher()
+    elif mode == "dernier":
+        dernier()
+    elif mode == "arithmetique":
         arithmetique()
     elif mode == "analyse":
         analyse()
