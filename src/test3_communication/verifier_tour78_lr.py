@@ -147,7 +147,7 @@ def mode_reduction(nom, eps, xs, nrec):
             ok = [i for i in range(len(suite) - 1) if suite[i]["S_max"] < thr <= suite[i + 1]["S_max"]]
             if not ok:
                 continue
-            i = ok[0]
+            i = ok[-1] if os.environ.get("TOUR87_DERNIER") else ok[0]   # tour 87 : dernier franchissement montant dans la fenetre (le plus proche du debut du groupe) au lieu du premier
             fr = (thr - suite[i]["S_max"]) / (suite[i + 1]["S_max"] - suite[i]["S_max"])
             bl = {}
             for k in ("S_max", "d_gap", "d_s", "c", "part_gap", "part_s", "part_autre", "ferm", "sv_e3", "sv_l3", "pz", "niv0"):
@@ -155,7 +155,7 @@ def mode_reduction(nom, eps, xs, nrec):
             bl["niveaux"] = np.array([bl["niv0"], bl["S_max"]])
             res.append(bl)
             if os.environ.get("TOUR83_DETAIL"):
-                print(f"   salve {g} : calme avant {a - prev_end} pas ; duree {groupes[g][1] - a + 1} pas ; lr p_z {lr * bl['pz']:.5e} ; sqrt(v_e3) {bl['sv_e3']:.4e}")
+                print(f"   salve {g} : calme avant {a - prev_end} pas ; duree {groupes[g][1] - a + 1} pas ; lr p_z {lr * bl['pz']:.5e} ; sqrt(v_e3) {bl['sv_e3']:.4e} ; avance {a - (max(t_c - fen, 1) + (i + 1 + fr) * pas_bal):.1f} pas")   # tour 87 : avance = debut du groupe moins instant (interpole) du franchissement du niveau
     if not res:
         print(f"{nom} lr = {lr} eps = {eps:.1e} x = {xs} : aucun franchissement (S_c interpole : max {Sc.max():.3f}, seuil {thr:.0f}, {len(groupes)} groupes d'amplitude)")
         return
