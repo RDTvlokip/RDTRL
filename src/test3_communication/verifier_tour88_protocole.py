@@ -229,6 +229,23 @@ def decomposition():
     print("   C'(lr) en valeur (tous departs) : " + " ".join(f"{lr}:{Cs[lr][0]:.6e}" for lr in lrs))
 
 
+def regime():
+    """Description (pas un test) : fraction du temps en oscillation, calme et duree de groupe medians a chaque lr de la grille."""
+    print("lr, nombre de groupes (moyenne des departs), fraction du temps en oscillation (somme des durees / pas enregistres), calme median, duree mediane de groupe")
+    for lr in (0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3):
+        ng, fo, cm, dm = [], [], [], []
+        for k in range(5):
+            try:
+                z = np.load(f"{D}/t86_lr{lr}_k{k}.npz")
+            except FileNotFoundError:
+                continue
+            a, dur, nrec = z["a"], z["dur"], int(z["nrec"])
+            ng.append(len(a)); fo.append(dur.sum() / nrec)
+            calme = a[1:] - (a[:-1] + dur[:-1])
+            cm.append(np.median(calme)); dm.append(np.median(dur))
+        print(f"   lr {lr}: {np.mean(ng):.0f} groupes ; oscillation {np.mean(fo):.3f} ; calme median {np.mean(cm):.0f} pas ; duree mediane {np.mean(dm):.0f} pas")
+
+
 def decalage_rho():
     print("niveau d'enregistrement avec rho pris 1 pas ou 30 pas avant le groupe (C' recalculee au meme decalage), dix departs : decalage de niveau (1 pas contre 30 pas), %")
     deltas = []
@@ -264,5 +281,7 @@ if __name__ == "__main__":
         decalage_rho()
     elif mode == "decomposition":
         decomposition()
+    elif mode == "regime":
+        regime()
     elif mode == "arithmetique":
         arithmetique()

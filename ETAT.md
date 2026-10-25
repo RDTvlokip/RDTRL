@@ -1,8 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 87 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PRÊTE
+## Tour 88 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE87.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 86
+**Lettre** : `docs/REPONSE_ORDRE88.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 87
+est partie (sa critique du tour 88 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 88, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : oui à mesurer le plancher de protocole, non à « seulement le plancher » s'il reste un nombre par point en quadrature : un biais commun à tous les lr s'annule ; seule compte la part qui diffère d'un lr à l'autre ; lr 0,2 pèse +3,89 dans bas − haut (+1,35 en bas, −2,54 en haut), lr 0,3 2,38 ; abaisser lr 0,2 de 0,10 % supprime la marche (0,0198 → 0,0163 ; 0,0118 → 0,0163) et fait tomber bas − haut de 0,006 à 0,002 ; le bruit mesuré à lr 0,2 est 0,018 %, donc seul un décalage de protocole propre à un lr peut le faire ; varier fenêtre et pas aux cinq lr, rapporter le décalage de chaque exposant local ; lr 0,225 discrimine ; question : le niveau de lr 0,2 bouge-t-il quand le pas passe à 1 ?
+**Acquis (conditionnels : réduction, x = 1e-4, b1 = 0,9 ; 3 départs par lr pour les variantes, 5 aux 4 nouveaux lr)** : ses chiffres se reproduisent (poids +3,89 ; 0,0163 ; bas − haut 0,0061 → 0,0023) ; le niveau de lr 0,2 est +0,100 ± 0,026 % au-dessus de la corde 0,15–0,25 ; **pas de balayage 3 → 1 : le niveau de lr 0,2 bouge de +0,00003 % (au plus 0,0006 % sur les cinq lr), exposants locaux < 0,0001 ; pas 6 : ≤ 0,0011 % ; fenêtre 210 : ≤ 0,00015 %** (écarts salve à salve ≤ 0,05 % à lr 0,25 et 0,3) ; décalage de ρ : 0,00000 % (sans contenu) ; **grille 0,025 : exposants locaux 0,0155 / 0,0191 / 0,0195 / 0,0201 | 0,0124 / 0,0111 / 0,0121 / 0,0125 ; lr 0,175 et 0,225 au-dessus de la corde de +0,049 ± 0,019 % et +0,055 ± 0,036 %** (décalage isolé de lr 0,2 prédit ≈ 0, courbure lisse +0,085 / +0,067) ; **un polynôme de degré 3 décrit les neuf niveaux (χ² 5,8 pour 5 ddl) : kink et courbure lisse d'échelle 0,2 non distingués** ; **décomposition niveau = C'(lr) × M(lr) : la marche (0,0077) est dans M = moyenne de 1/ρ, qui n'utilise aucun balayage (113 % ; C' en retire 13 %)** ; contexte descriptif : le calme médian passe sous la durée médiane de groupe entre lr 0,2 et 0,225 (170/123 → 127/127), l'exposant de M y tombe de 0,0227 à 0,0140.
+**Mes ratés** : P88-5 (forme : 94 % et 65 % de salves identiques à 0,01 % entre fenêtre 210 et 140 aux lr 0,25 et 0,3, contre 99 % et 90 % prédits ; écarts ≤ 0,05 %) ; P88-4 non testable.
+**Limites / biais** : trois départs par lr pour les variantes ; un seul réglage de chaque variable (pas 1 et 6, fenêtre 210) ; non variés : graine de perturbation, échelle des moments de départ, niveau 38, eps/lr, attente à d'autres lr que 0,2 et 0,3, b1, x, réseau ; la marche est une mesure de la réduction ; une courbe lisse de degré 3 suffit.
+Écart à tes règles : aucun `python -c` ni heredoc ; six processus au plus ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 88 ; question : le prochain test est-il de savoir si la marche bouge avec x et b1 plutôt qu'avec une partie de mon protocole ? (oui/non).
+2. La marche à x et b1 différents (reduction_numba_tour74_b1_08.py / _095.py existent) ; graine de perturbation et échelle des moments à lr 0,175–0,225.
+3. Ce qui change dans la trajectoire entre lr 0,2 et 0,225 (calme ≈ durée de groupe) : mécanisme de la baisse de l'exposant de M.
+4. Réseau complet au-delà de lr 0,1.
+5. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 87 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE87.md` (gitignorée), partie, figée. La lettre 86
 est partie (sa critique du tour 87 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 87, PAS simulée) », avant « ## 9. ».
 
