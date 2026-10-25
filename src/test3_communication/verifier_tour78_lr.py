@@ -110,9 +110,10 @@ def mode_reduction(nom, eps, xs, nrec):
             break
         prev_end = groupes[g - 1][1]; a = groupes[g][0]
         if robuste:
-            if a - 140 < 1:
+            fenr = int(os.environ.get("TOUR88_FEN", "70"))   # tour 88 : demi-fenetre du balayage en mode robuste (70 : fenetre [a - 140, a], reglage des tours 84 a 87)
+            if a - 2 * fenr < 1:
                 continue
-            t_c = a - 70
+            t_c = a - fenr
         else:
             cand = np.nonzero(Sc[prev_end + 5:a] >= thr)[0]
             if len(cand) == 0:
@@ -132,7 +133,7 @@ def mode_reduction(nom, eps, xs, nrec):
             # tour 80 : balayage de +-14 pas autour du franchissement interpole, bloc a chaque pas, interpolation lineaire des grandeurs au niveau S_max = thr
             fen = int(os.environ.get("TOUR81_FEN", "14"))   # demi-fenetre du balayage (tour 81 : 30 pour retrouver le franchissement des departs ks[1], ks[2])
             if robuste:
-                fen = 70
+                fen = fenr
             redlib.avancer(w1, delta, max(t_c - fen, 1), eps=eps, cross=2.0, stop=False)
             suite = []
             for _ in range((2 * fen) // pas_bal + 1):
