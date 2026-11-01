@@ -1,8 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 88 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PRÊTE
+## Tour 89 (vraie critique de dipankarsarkar, 01/11/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE88.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 87
+**Lettre** : `docs/REPONSE_ORDRE89.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 88
+est partie (sa critique du tour 89 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 01/11/2026 (tour 89, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : M = f M_osc + (1 − f) M_calm (moyenne temporelle) ; l'exposant de f saute en lr 0,2 (0,96 / 1,48 / 1,54) là où celui de M tombe de 0,0227 à 0,0140, et calme médian = durée médiane (127/127) à 0,225 ; si les poids portent la baisse de 0,0088, la marche est le croisement calme / groupe et suit lr\*(x, b1) ; sinon coïncidence ; quelle pièce porte les 0,0088 ?
+**Acquis (conditionnels : réduction, 5 départs par lr, b1 = 0,9 à trois x, b1 = 0,95 à un x)** : **M n'est pas une moyenne temporelle** (moyenne par groupe de 1/ρ pris 30 pas avant le début) ; sa décomposition s'applique à T = moyenne temporelle de 1/ρ(t) : **poids 8 %, moyenne conditionnelle oscillation 33 %, calme 59 %** de la marche de T (+0,0148) parce que T_osc ≈ T_calme à 0,01–0,3 % ; M suit T_calme (marche +0,00885 contre +0,00851, M/T_calme +0,00034) ; l'exposant de f saute aussi en lr 0,25 (+0,555 ± 0,093) où M ne change pas ; **par la règle précommise (coude persistant de M qui suit lr\* à x = 1e-3 et b1 = 0,95) : non soutenue** (pas de coude à x = 1e-3, b1 = 0,95 plat) ; descriptif post hoc : la plus grande baisse de l'exposant de M est à 0,008–0,025 sous lr\* aux trois x (lr 0,1875 / 0,2 / 0,275 pour lr\* 0,195 / 0,225 / 0,289 ; 2,2 / 10 / 7,8 σ) ; **M(f) coïncide entre les trois x à ≈ 10 % près et sa pente en ln f chute entre f ≈ 0,39 et 0,49** ; b1 = 0,8 s'effondre pour lr ≥ 0,15 ; b1 = 0,95 : exposant de M 5 à 50 fois plus petit, sans baisse.
+**Mes ratés** : P89-9 par la règle (coude de x = 1e-5) ; le saut de f en 0,25 lu avant la prédiction ; l'issue « pas de coude » que j'avais cotée à 40 %.
+**Limites / biais** : 5 départs par lr ; plus grande baisse parmi ~12 intervalles (post hoc) ; M(f) sur trois x seulement ; C' non recalculée hors base (exposants de M sans C') ; b1 ≠ 0,9 non informatif ; réduction seule.
+Écart à tes règles : aucun `python -c` ni heredoc ; six processus au plus ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 89 ; question : « M dépend de lr à travers f, par la dynamique de ρ et non par des poids » est-il l'énoncé à tester (b1 = 0,85 et 0,92, x = 1e-6 et 1e-2) ? (oui/non).
+2. Dérivation de ρ = √v_e3/√v_l3 comme fonction du rapport cyclique f (deux moyennes mobiles de mémoire 1 000 pas) : pourquoi la pente en ln f chute vers f ≈ 0,5.
+3. C' à x = 1e-5, 1e-3 : niveaux absolus de la lecture, pas seulement ses exposants.
+4. Réseau complet au-delà de lr 0,1.
+5. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 88 (vraie critique de dipankarsarkar, 25/10/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE88.md` (gitignorée), partie, figée. La lettre 87
 est partie (sa critique du tour 88 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 25/10/2026 (tour 88, PAS simulée) », avant « ## 9. ».
 

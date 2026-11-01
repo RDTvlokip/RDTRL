@@ -218,14 +218,57 @@ def config(b1, xs, lrs):
             star = math.exp(math.log(lrs[i]) + u * math.log(lrs[i + 1] / lrs[i]))
             break
     print(f"   lr* (calme median = duree mediane, interpolation en ln lr) : {star if star is None else round(star, 4)}")
+    # descriptif post hoc : plus grandes baisses de l'exposant local de M d'un intervalle au suivant, avec ET (entre departs, quadrature sur les deux niveaux)
+    seM = np.array([res[l]["M"].std(ddof=1) / math.sqrt(len(res[l]["M"])) / res[l]["M"].mean() for l in lrs])
+    ex = [(math.log(M[i + 1] / M[i]) / math.log(lrs[i + 1] / lrs[i]), math.hypot(seM[i], seM[i + 1]) / math.log(lrs[i + 1] / lrs[i])) for i in range(len(lrs) - 1)]
+    chutes = [(ex[i][0] - ex[i + 1][0], math.hypot(ex[i][1], ex[i + 1][1]), lrs[i + 1]) for i in range(len(ex) - 1)]
+    chutes.sort(reverse=True)
+    print("   (post hoc) plus grandes baisses de l'exposant local de M (au point lr) : " + " ; ".join(f"{c[2]}: {c[0]:+.5f} +- {c[1]:.5f}" + (f" (distance a lr* {c[2] - star:+.3f})" if star else "") for c in chutes[:3]))
     for nom, y in (("M", M), ("T", T)):
         lk, e1, e2, rss, rss0 = ajuster_coude(np.array(lrs), np.log(y))
         print(f"   coude de {nom} : lr_coude {lk:.4f} ; pente basse {e1:+.5f}, pente haute {e2:+.5f}, baisse {e1 - e2:+.5f} ; RSS coude {rss:.3e} contre droite {rss0:.3e} (rapport {rss / rss0:.4f})")
 
 
+def universel():
+    """Descriptif post hoc : M en fonction de f seule ? ln M(f) - ln M(f = 0,3) interpole, par configuration, et ecarts entre configurations."""
+    cfgs = [("b0.9 x1e-4", 0.9, "1e-4", [0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3]),
+            ("b0.9 x1e-3", 0.9, "1e-3", [0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3, 0.325, 0.35, 0.375, 0.4]),
+            ("b0.9 x1e-5", 0.9, "1e-5", [0.05, 0.075, 0.1, 0.1125, 0.125, 0.1375, 0.15, 0.1625, 0.175, 0.1875, 0.2, 0.2125, 0.225, 0.2375, 0.25]),
+            ("b0.95 x1e-4", 0.95, "1e-4", [0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1, 0.11, 0.12, 0.13, 0.14, 0.16, 0.2])]
+    courbes = {}
+    for nom, b1, xs, lrs in cfgs:
+        res = charger_config(b1, xs, lrs, range(5))
+        ls = [l for l in lrs if l in res]
+        f = np.array([res[l]["f"].mean() for l in ls]); M = np.array([res[l]["M"].mean() for l in ls])
+        o = np.argsort(f)
+        courbes[nom] = (f[o], np.log(M[o]))
+    fgrille = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8]
+    print("100 x (ln M(f) - ln M(f = 0,3)), interpole en f, par configuration (vide hors de la plage de f couverte) :")
+    print("   f      " + "  ".join(f"{n:>12s}" for n in courbes))
+    vals = {}
+    for fg in fgrille:
+        ligne = []
+        for n, (f, y) in courbes.items():
+            if f.min() <= 0.3 and f.min() <= fg <= f.max():
+                ligne.append(100 * (np.interp(fg, f, y) - np.interp(0.3, f, y)))
+            else:
+                ligne.append(float("nan"))
+        vals[fg] = ligne
+        print(f"   {fg:.2f}  " + "  ".join(f"{v:12.4f}" if not math.isnan(v) else f"{'':>12s}" for v in ligne))
+    print("pente de ln M contre ln f (intervalles successifs), b1 = 0,9, vers f = 0,5 :")
+    for n in ("b0.9 x1e-4", "b0.9 x1e-3", "b0.9 x1e-5"):
+        f, y = courbes[n]
+        s = []
+        for i in range(len(f) - 1):
+            s.append(f"{(f[i] + f[i + 1]) / 2:.3f}:{(y[i + 1] - y[i]) / math.log(f[i + 1] / f[i]):+.4f}")
+        print(f"   {n}: " + " ".join(s))
+
+
 if __name__ == "__main__":
     mode = sys.argv[1]
-    if mode == "f_exposants":
+    if mode == "universel":
+        universel()
+    elif mode == "f_exposants":
         arithmetique_f()
     elif mode == "essai":
         essai(float(sys.argv[2]), sys.argv[3], [float(v) for v in sys.argv[4:]])
