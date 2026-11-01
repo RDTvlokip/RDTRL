@@ -1,8 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 89 (vraie critique de dipankarsarkar, 01/11/2026) — LETTRE PRÊTE
+## Tour 90 (vraie critique de dipankarsarkar, 02/11/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE89.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 88
+**Lettre** : `docs/REPONSE_ORDRE90.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 89
+est partie (sa critique du tour 90 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 02/11/2026 (tour 90, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : M est une moyenne par groupe (son découpage était celui de T, 8 % dans les poids règle la question) ; vérification gratuite : tracer b1 = 0,95 contre f ; b1 = 0,85 et 0,92 testent la collapse ; prédiction : la pente de ln M sur ln f chute entre f = 0,45 et 0,5, où que ce soit en lr ; question de mécanisme : ρ lu dans le calme suit-il f sur la mémoire de v (b2) ? la chute bouge-t-elle quand b2 change, à calme = groupe fixe ? peut-on changer b2 sans toucher b1 ?
+**Acquis (conditionnels : réduction, x = 1e-4 pour les nouveaux modules, cinq départs par lr)** : **b1 = 0,95 ne tombe pas sur la même courbe M(f) sous f = 0,5** (sa grille commence à f = 0,316, M y monte de 0,023 % contre 0,81–0,92 % aux trois x, rapport 1/40 ; au-dessus de f = 0,5 amplitudes 0,76–1,05 fois celles des x) ; b1 = 0,92 : chute à f ≈ 0,55 (lr 0,2375, 0,025 au-dessus de lr\* = 0,2127, 2,8 σ) ; b1 = 0,85 : courbe erratique, plus grandes baisses à f = 0,21 et 0,25 ; **B2 est une constante séparée** (une ligne du module ; 4 modules b2 créés) ; **à mémoire ≤ 200 pas (b2 = 0,99 et 0,995) M ne dépend pas de lr** (exposant ≤ 7e-4) ; à b2 = 0,9995 et 0,9999 M monte puis décroît et la chute est à f = 0,2–0,27 et 0,19 (contre 0,45–0,49 à b2 = 0,999) : la mémoire intervient ; **régression intra-enregistrement : corrélation −0,95 à −0,99 entre ln(1/ρ_g) et la moyenne exponentielle F\_λ de l'indicateur d'oscillation, maximale à λ = 0,999 = b2 aux neuf lr** (durée du calme +0,41 à +0,86, durée du groupe précédent −0,50 à 0) ; pente −0,03 à −0,058 par unité de F (signe opposé à la tendance entre lr) ; décomposition d ln M/d ln lr = E + S\_F f' : le terme en f vaut 278 % de la marche, E la compense (marche −0,0157) : la marche n'est pas expliquée ; |S\_F| plateau de lr 0,15 à 0,2 puis chute.
+**Mes ratés** : P90-3 (b2 = 0,9995), P90-5 (petites mémoires : montée de M), P90-7 (signe), P90-8 (E sans marche) ; b1 = 0,85 ; erreur d'extraction (corrélations prises pour des pentes) corrigée avant publication des chiffres.
+**Limites / biais** : réduction, x = 1e-4 ; cinq départs par lr ; la corrélation à −0,99 est circulaire (F\_λ et ρ sont deux fonctions de l'histoire des gradients) ; la plus grande chute est cherchée parmi 10–14 intervalles ; aux petites mémoires calme de 40–96 pas juste au-dessus du décalage de 30 pas ; la décomposition suppose une réponse linéaire.
+Écart à tes règles : un `python -` heredoc vide n'a pas été lancé ce tour ; aucun `python -c` ; six processus au plus ; pas de Co-Authored-By ; modules créés par copie puis édition de la ligne B (pas de script de remplacement).
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 90 ; question : transformer « la dépendance en lr de M vient de ρ suivant le rapport cyclique sur la mémoire de v » en formule (ρ² = rapport de deux moyennes de g² sur salve et calme) avant d'autres scans ? (oui/non).
+2. Dérivation de ρ² = (A\_e F + a\_e (1 − F))/(A\_l F + a\_l (1 − F)) avec ajustement de A et a ; terme explicite en lr ; pourquoi |S\_F| chute à partir de lr 0,2.
+3. b1 = 0,92 et les modules b2 à d'autres x.
+4. Réseau complet au-delà de lr 0,1.
+5. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 89 (vraie critique de dipankarsarkar, 01/11/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE89.md` (gitignorée), partie, figée. La lettre 88
 est partie (sa critique du tour 89 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 01/11/2026 (tour 89, PAS simulée) », avant « ## 9. ».
 

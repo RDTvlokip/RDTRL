@@ -210,9 +210,44 @@ def regression(module, xs, lrs, ks=range(5)):
         print(f"      pente de ln(1/rho) sur F_lambda (par unite de F) : " + " ".join(f"{lam}:{np.mean(b_l[lam]):+.4f}" for lam in LAMBDAS) + f" ; lambda de plus forte correlation {best}")
 
 
+def decomposer():
+    """d ln M / d ln lr = terme explicite E + S_F(lr) x df/dln lr ; S_F = pente intra-enregistrement de ln(1/rho) sur F_0,999 (journaux t90_regr_lr*.log), M et f des enregistrements du tour 89 (base)."""
+    import re
+    grille = [0.1, 0.125, 0.15, 0.175, 0.2, 0.225, 0.25, 0.275, 0.3]
+    S = {}; R = {}
+    for lr in grille:
+        t = open(f"{D}/t90_regr_lr{lr}.log", encoding="utf-8", errors="replace").read()
+        lignes_log = [x for x in t.split("\n") if x.strip()]
+        ligne_r = [x for x in lignes_log if x.startswith("lr ") and "r(ln 1/rho" in x][0]
+        ligne_s = [x for x in lignes_log if "pente de ln(1/rho) sur F_lambda" in x][0]
+        S[lr] = float(re.search(r"0\.999:([+-][0-9.]+) 0\.9995", ligne_s).group(1))
+        R[lr] = float(re.search(r"0\.999:([+-][0-9.]+) 0\.9995", ligne_r).group(1))
+    res = charger_config(0.9, "1e-4", grille, range(5))
+    M = {l: res[l]["M"].mean() for l in grille}; f = {l: res[l]["f"].mean() for l in grille}
+    print("lr : pente intra-enregistrement S_F (par unite de F) a lambda = 0,999 et correlation")
+    print("   " + " ".join(f"{l}:{S[l]:+.4f}({R[l]:+.3f})" for l in grille))
+    lignes = []
+    print("intervalle : exposant de M ; f' = df/dln lr ; S_F moyen ; terme en f = S_F f' ; terme explicite E = exposant - terme en f")
+    for a, b in zip(grille[:-1], grille[1:]):
+        l = math.log(b / a)
+        eM = math.log(M[b] / M[a]) / l; fp = (f[b] - f[a]) / l; s = (S[a] + S[b]) / 2
+        lignes.append((a, b, l, eM, fp, s, s * fp, eM - s * fp))
+        print(f"   {a}->{b}: M {eM:+.5f} ; f' {fp:.4f} ; S_F {s:+.4f} ; terme en f {s * fp:+.5f} ; E {eM - s * fp:+.5f}")
+    def plage(lo, hi, i):
+        sel = [x for x in lignes if x[0] >= lo - 1e-9 and x[1] <= hi + 1e-9]
+        return sum(x[i] * x[2] for x in sel) / sum(x[2] for x in sel)
+    for nom, i in (("exposant de M", 3), ("terme en f", 6), ("terme explicite E", 7)):
+        bas, haut = plage(0.15, 0.2, i), plage(0.2, 0.3, i)
+        print(f"   {nom} : 0,15->0,2 {bas:+.5f} ; 0,2->0,3 {haut:+.5f} ; marche {bas - haut:+.5f}")
+    mM = plage(0.15, 0.2, 3) - plage(0.2, 0.3, 3); mf = plage(0.15, 0.2, 6) - plage(0.2, 0.3, 6)
+    print(f"   part de la marche portee par le terme en f : {100 * mf / mM:.0f} %")
+
+
 if __name__ == "__main__":
     mode = sys.argv[1]
-    if mode == "regression":
+    if mode == "decomposer":
+        decomposer()
+    elif mode == "regression":
         regression(sys.argv[2], sys.argv[3], [float(v) for v in sys.argv[4:]])
     elif mode == "libre":
         libre()
