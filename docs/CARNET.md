@@ -20080,6 +20080,43 @@ Réponse dans `docs/REPONSE_ORDRE87.md`.
 
 Réponse dans `docs/REPONSE_ORDRE88.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 01/11/2026 (tour 89, PAS simulée)
+
+« Oui, avec une prédiction attachée. Et une vérification gratuite d'abord, sur des enregistrements que tu as déjà. M est une moyenne temporelle, donc elle se découpe exactement : M = f · M_osc + (1 − f) · M_calm, avec f la fraction du temps en oscillation. Ton f bouge déjà à la marche. Son niveau n'a pas de coude, mais son exposant local en a un : 0,175 à 0,2 : 0,96 ; 0,2 à 0,225 : 1,48 ; 0,225 à 0,25 : 1,54. Donc l'exposant de f saute en passant par lr 0,2, dans le même intervalle où celui de M tombe de 0,0227 à 0,0140. Et ton calme médian rejoint la durée médiane de groupe (127 contre 127) à 0,225, dans cet intervalle. Si la baisse de 0,0088 de l'exposant de M vient des poids f, la marche est le croisement calme / groupe. Alors x et b1 donnent un test net : trouver lr* où le calme médian égale la durée médiane de groupe à chaque (x, b1). La marche doit suivre lr*, pas rester à 0,2. Si elle vit dans M_osc ou M_calm avec des poids qui ne font rien, le croisement est une coïncidence et x et b1 sont une recherche large. Quelle pièce porte les 0,0088 : les poids, ou les moyennes conditionnelles ? »
+
+**Ce que j'ai lu de lui avant les runs (01/11)** : il accepte de varier x et b1 et demande une prédiction ; il propose une décomposition exacte de M en poids f et moyennes conditionnelles, et un test qui discrimine « la marche est le croisement calme / groupe » (elle suit lr*) de « coïncidence » (elle ne suit pas).
+
+**Ce que mon code dit de M (01/11, avant les runs)** : M (tours 87–88, `decomposition`) est la moyenne, sur les groupes g ≥ 9, de 1/ρ_g avec ρ_g = √v_e3/√v_l3 pris **30 pas avant le début du groupe g**. Ce n'est pas une moyenne temporelle : il n'y a pas de poids f dans M, car chaque groupe compte une fois et l'instant de lecture est toujours dans le calme. La décomposition exacte f · T_osc + (1 − f) · T_calme est celle de la moyenne temporelle T de 1/ρ(t) sur tous les pas (ρ(t) = √v_e3/√v_l3 à chaque pas), un autre objet. Dans le calme, ρ(t) est constant (les deux √v décroissent du même facteur), égal à ρ_g du groupe suivant ; donc T_calme = Σ c_g /ρ_g / Σ c_g (pondération par la durée c_g de chaque calme), M = moyenne simple des 1/ρ_g : M/T_calme est le rapport des deux pondérations.
+
+**Vérification de ses chiffres (01/11, `verifier_tour89_poids.py f_exposants`, enregistrements existants du tour 86–88)** : f (fraction du temps en oscillation, tous groupes, dix départs aux lr 0,1 0,15 0,2 0,25 0,3, cinq aux autres) : 0,2517 0,2837 0,3188 0,3645 0,4168 0,4940 0,5839 0,7161 0,8855 pour lr 0,1 0,125 … 0,3. Exposants locaux de f : +0,536 +0,640 +0,870 **+1,004** **+1,443** **+1,586** +2,142 +2,441 (ET 0,011 à 0,075). À partir de mon tableau à trois chiffres du tour 88 (f = 0,365, 0,415, 0,494, 0,581), ses 0,96 / 1,48 / 1,54 se reproduisent (0,961, 1,480, 1,540) ; avec dix départs : 1,00 / 1,44 / 1,59. Le calme médian égale la durée médiane (127 contre 127) à lr 0,225 ✓ (tour 88, cinq départs). **P89-1 ✓.**
+**Ce que la vérification montre en plus (calculé avant d'écrire cette section : ce n'est pas une prédiction précommise, c'est un fait lu dans les enregistrements existants)** : la variation de l'exposant de f d'un intervalle au suivant vaut +0,104 ± 0,022 ; +0,230 ± 0,018 ; +0,133 ± 0,025 ; **+0,440 ± 0,056 (en lr 0,2)** ; +0,143 ± 0,085 ; **+0,555 ± 0,093 (en lr 0,25)** ; +0,299 ± 0,098. L'exposant de f saute donc en lr 0,2 **et** autant en lr 0,25 (+0,555), où l'exposant de M ne change pas (M : 0,0127 → 0,0138 → 0,0139 : variations −0,0012, +0,0011, +0,0001). Le saut de f en lr 0,2 n'est pas unique.
+
+**Structure des groupes pour (x, b1) (01/11, `lancer_tour89a.sh`, un départ, sept lr ; aucune moyenne de 1/ρ imprimée, seulement f, calme médian, durée médiane)** :
+- **b1 = 0,8, x = 1e-4 : effondré** pour lr ≥ 0,15 (lr 0,05 : f 0,149, calme 341, durée 60 ; lr 0,1 : 0,185, 301, 69). Le calme n'a pas rejoint la durée avant l'effondrement : **b1 = 0,8 n'est pas scannable**.
+- **b1 = 0,95, x = 1e-4** : lr 0,05 : f 0,464, calme 148, durée 132 ; 0,1 : 0,615, 110, 167 ; 0,15 : 0,726, 94, 187 ; 0,2 : 0,818, 83, 202 ; 0,3 : 0,928, 64, 226 ; 0,4 : 0,971, 64, 242. **lr\* ≈ 0,058** (interpolation en ln lr entre 0,05 et 0,1).
+- **x = 1e-3, b1 = 0,9** : lr 0,05 : f 0,195, calme 374, durée 92 ; 0,1 : 0,239, 339, 107 ; 0,15 : 0,287, 286, 116 ; 0,2 : 0,345, 228, 123 ; 0,25 : 0,417, 176, 128 ; 0,3 : 0,526, 118, 134 ; 0,4 : 0,865, 53, 145. **lr\* ≈ 0,287**.
+- **x = 1e-5, b1 = 0,9** : lr 0,05 : 0,199, 366, 92 ; 0,1 : 0,261, 300, 107 ; 0,15 : 0,352, 211, 116 ; 0,2 : 0,517, 111, 124 ; 0,25 : 0,865, 54, 133 ; 0,3 : un seul groupe (f = 1, oscillation continue). **lr\* ≈ 0,193**.
+- **Base (x = 1e-4, b1 = 0,9)** : **lr\* = 0,225** (127 contre 127). La marche de M est entre 0,2 et 0,225.
+Conséquence : x = 1e-5 ne discrimine pas (lr\* = 0,193 est à 0,007 de 0,2) ; **x = 1e-3 (lr\* ≈ 0,287) et b1 = 0,95 (lr\* ≈ 0,058) discriminent** entre « la marche suit lr\* » et « la marche reste à 0,2 ».
+
+**Hypothèses (01/11) :**
+- H89-1 (lui) la baisse de 0,0088 de l'exposant de M vient des poids f ; la marche est le croisement calme / groupe, et son lieu suit lr\*(x, b1).
+- H89-2 (moi, standard) ρ_g est un rapport de deux moyennes mobiles (b2 = 0,999, mémoire 1 000 pas) lissées sur plusieurs salves ; il dépend de la fraction du temps passé en oscillation par la dynamique de v, non par des poids dans M : f agit sur M par la dynamique, et la baisse est dans la moyenne conditionnelle de 1/ρ, pas dans une pondération.
+- H89-3 (moi, non standard) le croisement calme = durée est une coïncidence de lr entre deux échelles distinctes (durée du groupe fixée par la dynamique de s_e3, calme par la décroissance de v_l3) et la marche de M a une autre origine, p. ex. le moment où ρ_g cesse de revenir à sa valeur d'équilibre entre deux salves (calme ≈ 1 000/√… le temps de décroissance de v ne dépend pas de lr, mais la hauteur de la salve en dépend) ; alors la marche suit une quantité qui ne dépend ni de f ni de lr\*.
+- H89-4 (moi, standard) M/T_calme (rapport pondération par groupe / pondération par durée de calme) change peu avec lr : M suit T_calme.
+
+**Prédictions précommises (01/11), avant les enregistrements** (`lancer_tour89b.sh` : cinq départs par lr, configuration de base sur 13 lr de 0,05 à 0,35, x = 1e-3 sur 13 lr de 0,1 à 0,4, x = 1e-5 sur 15 lr de 0,05 à 0,25, b1 = 0,95 sur 15 lr de 0,02 à 0,2 ; `verifier_tour89_poids.py temps` pour la base, `config` pour les autres ; coude de M = ajustement continu à deux segments de ln M contre ln lr, position du coude balayée ; « coude » = rapport RSS(coude)/RSS(droite) < 0,3 et baisse de pente > 0,004 ; sinon « pas de coude ») :
+- P89-3 (sa question, pour T) : dans la décomposition exacte de l'exposant local de T (poids Δf (T_osc − T_calme)/T, conditionnelles f ΔT_osc/T et (1 − f) ΔT_calme/T), la part des poids dans la marche de T (exposant moyen 0,15 → 0,2 moins 0,2 → 0,3) est inférieure à 30 %. Mise : 55 %. (S'il dépasse 50 %, son hypothèse est soutenue pour T.)
+- P89-4 : T a une marche de même signe que celle de M et comprise entre 0,0044 et 0,0176 (facteur 2 de 0,0088). Mise : 40 %.
+- P89-5 : l'exposant de M/T_calme a une marche inférieure à 0,003 en valeur absolue (M suit T_calme). Mise : 50 %.
+- P89-6 (base, enregistrements neufs, ajustement sur lr 0,125–0,3) : coude de M en lr ∈ [0,19 ; 0,22], RSS(coude)/RSS(droite) < 0,2. Mise : 70 %.
+- P89-7 (x = 1e-3, grille 0,1–0,4, lr\* = 0,287) : coude à lr\* ± 0,025 : 35 % ; pas de coude : 40 % ; coude ailleurs (y compris à 0,2) : 25 %.
+- P89-8 (b1 = 0,95, grille 0,02–0,2, lr\* = 0,058) : coude à lr\* ± 0,01 : 30 % ; pas de coude : 40 % ; coude ailleurs : 30 %.
+- P89-9 (x = 1e-5, lr\* = 0,193, ne discrimine pas) : coude entre 0,18 et 0,21 : 50 %.
+Règle de lecture, fixée avant les données : si le coude de M suit lr\* à x = 1e-3 **et** à b1 = 0,95 (à ± 0,025 et ± 0,01), l'hypothèse « croisement calme / groupe » est compatible dans ce protocole ; s'il reste à 0,2 ± 0,025 pour x = 1e-3, ou s'il n'y a pas de coude dans une des deux configurations alors qu'il y en a un à la base, elle n'est pas soutenue ; les autres cas sont rapportés tels quels.
+
+Réponse dans `docs/REPONSE_ORDRE89.md` (à écrire après les runs).
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
