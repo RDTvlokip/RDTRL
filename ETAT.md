@@ -1,8 +1,27 @@
 # État du projet RDTRL — où on en est
 
-## Tour 90 (vraie critique de dipankarsarkar, 02/11/2026) — LETTRE PRÊTE
+## Tour 91 (vraie critique de dipankarsarkar, 04/11/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE90.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 89
+**Lettre** : `docs/REPONSE_ORDRE91.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 90
+est partie (sa critique du tour 91 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 04/11/2026 (tour 91, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : oui à la formule, à condition qu'elle reproduise le changement de signe (pente intra-enregistrement négative, tendance entre lr positive) : donc A ou a bouge avec lr, et ce mouvement serait la marche ; |S_F| plat de 0,15 à 0,2 puis qui tombe = contraste d'amplitudes qui se réduit ; ρ constant dans un calme, donc d_g = ln ρ_(g+1) − ln ρ_g est l'incrément de la salve g, lisible dans les ρ_g stockés ; son point fixe fixe M : d_g contre ρ_g donne-t-il une droite propre par lr, la pente bouge-t-elle à 0,2 ?
+**Acquis (conditionnels : réduction, b1 = 0,9, b2 = 0,999, x = 1e-4)** : ρ constant dans un calme (calmes / salves : 0,0001 à 0,002) ; **la droite des moyennes est propre mais le nuage ne l'est pas** (|r| = 0,13–0,19, quintiles R² ≥ 0,9) ; la pente simple |β| baisse de 0,0707 à 0,0313 (lr 0,1 → 0,25), −29 % entre 0,2 et 0,225 (≈ 2σ) mais le coude ajusté est à 0,26 : la pente ne bouge pas clairement à 0,2 ; **avec durée de salve, ln √v_l3 et calme avant, R² = 0,98** ; coefficient partiel de ln ρ = −(1 − 0,999^C) à 0,1–3 % (lr ≤ 0,25) ; **identité exacte ρ_(g+1)² = ω ρ_g² + (1 − ω) ρ*²** (ω = θ v_l(i0)/v_l(i2), ρ*² = I_e/I_l ; injections positives dans 100 % des cycles ; ⟨ω⟩ = 0,999^C par stationarité) ; **la marche de M est celle de la cible sur lr 0,15–0,25 (0,0093 contre 0,0090)**, ω n'y entre pas ; **ce qui bouge avec lr : la pente de ln ρ* sur la durée de la salve est ~0 (±2e-5) jusqu'à lr 0,15 puis +1,2e-4 (0,175), +3,0e-4 (0,2), +4,7e-4 (0,225), +7,4e-4 (0,25)** ; les deux injections I_e et I_l décroissent avec la durée de la salve dans les mêmes proportions (−3,7e-3 et −3,9e-3 par pas à 0,175, −2,0e-2 et −2,2e-2 à 0,25), à 6 % d'écart près ; la décomposition en niveau à durée de référence fixée n'est pas robuste (signe qui change entre d_ref = 100 et 140).
+**Mes ratés** : P91-2 (|r| ≥ 0,3), P91-3 (pente simple : 0,15–0,20 du modèle), P91-4 (coude à 0,2), P91-7 (fenêtre 0,2–0,3 contenant les lr fusionnés) ; l'identité de P91-6 et ⟨ω⟩ = b2^C sont des tautologies de stationarité.
+**Limites / biais** : un seul x, b1, b2 ; lr 0,275 et 0,3 fusionnés (cycles sans période) ; la fenêtre 0,15–0,25 est choisie après coup ; la durée de la salve dépend de ma coupure (seuil E > 3e-4, 30 pas de calme) ; la dépendance en la durée de la cible est post hoc.
+Écart à tes règles : aucun `python -c` ni heredoc ; six processus au plus ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 91 ; question : la prochaine mesure est-elle l'énergie injectée par pas, l'amplitude de crête et la durée prises séparément, pour savoir pourquoi une salve plus longue injecte moins, et pourquoi à partir de lr 0,175 ? (oui/non).
+2. La même carte à x = 1e-3 et 1e-5 (lr* = 0,289 et 0,195) : l'allumage de la dépendance en la durée suit-il lr* ?
+3. b2 = 0,9995 : la même carte (M y décroît avec lr).
+4. Réseau complet au-delà de lr 0,1.
+5. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 90 (vraie critique de dipankarsarkar, 02/11/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE90.md` (gitignorée), partie, figée. La lettre 89
 est partie (sa critique du tour 90 y répond) et reste figée.
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 02/11/2026 (tour 90, PAS simulée) », avant « ## 9. ».
 
