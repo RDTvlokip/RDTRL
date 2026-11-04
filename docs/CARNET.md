@@ -20187,6 +20187,34 @@ Règle de lecture, fixée avant les données : si la chute est à f ∈ [0,40 ; 
 
 Réponse dans `docs/REPONSE_ORDRE90.md`.
 
+### VRAIE CRITIQUE DE DIPANKARSARKAR, 04/11/2026 (tour 91, PAS simulée)
+
+« Oui. Avec une condition sur ce que la formule doit reproduire : le changement de signe. À l'intérieur d'un enregistrement, 1/ρ baisse avec F (pente −0,030 à −0,058 par unité de F de lr 0,1 à 0,3). Entre lr, M monte avec f (+0,049 par unité de f entre f 0,35 et 0,45). Une formule à amplitudes A et a fixes donne le même signe aux deux. Donc si elle s'ajuste, A ou a doit bouger avec lr. Ce mouvement serait la marche, pas le rapport cyclique. Ton |S_F| pointe déjà là. Il est plat de lr 0,15 à 0,2 (0,0577 à 0,0565), puis tombe (0,0486, 0,0411). Dans un rapport de deux moyennes, S_F est à peu près le contraste entre les deux amplitudes de salve, chacune rapportée à son niveau de calme. Un S_F qui tombe à 0,2 se lit comme ce contraste qui se réduit là où l'exposant de M chute. L'ingrédient est peut-être déjà dans tes enregistrements, avant tout ajustement. Tu as dit que ρ est constant à l'intérieur d'un calme. Donc tout changement de ρ a lieu dans une salve. Alors d_g = ln ρ à la salve g+1 moins ln ρ à la salve g est l'incrément propre de la salve g, lu directement sur le ρ_g que tu stockes. En régime permanent sa moyenne est nulle, donc l'information est dans la façon dont d_g dépend du ρ_g entrant et de la longueur de la salve. Le point fixe de cette carte fixe M. d_g contre ρ_g donne-t-il une droite propre par lr, et sa pente bouge-t-elle à 0,2 ? »
+
+**Ce que j'ai lu de lui avant les runs (04/11)** : il accepte de formuler ρ comme rapport de deux moyennes à condition de reproduire le changement de signe, ce qui force A ou a à bouger avec lr ; il prédit que ce mouvement est la marche et lit |S_F| comme le contraste des amplitudes qui se réduit en lr 0,2 ; il propose un test sans ajustement : la carte de retour d_g contre ρ_g, dont le point fixe fixe M.
+
+**Vérification de ses chiffres (04/11)** : pente intra-enregistrement de ln(1/ρ) sur F : −0,0295 (lr 0,275) à −0,0578 (lr 0,15) ✓ (« −0,030 à −0,058 ») ; entre lr : d ln M/df = +0,0489 entre f = 0,35 et 0,45 ✓ ; |S_F| : 0,0578, 0,0577, 0,0565 pour lr 0,15, 0,175, 0,2, puis 0,0486, 0,0411 pour 0,225, 0,25 ✓. Le signe : ln(1/ρ) = −½ ln[(A_e F + a_e (1 − F))/(A_l F + a_l (1 − F))] =: h(F) ; à amplitudes fixes, la pente intra-enregistrement est h'(F) et, entre lr, M ≈ h(f) donne d ln M/df = h'(f) : même signe ✓ (observés : −0,0565 et +0,0489, opposés). Précision sur sa lecture de S_F : h'(F) = −½ [(A_e − a_e)/v_e − (A_l − a_l)/v_l] avec v_i = A_i F + a_i (1 − F) : c'est la **différence** de deux excès de salve relatifs (chacun rapporté au niveau moyen v_i), pas le contraste entre les deux amplitudes ; S_F < 0 veut dire que l'excès relatif de e3 est plus grand que celui de l3. ρ constant dans le calme : lecture au décalage 1 et 30 pas avant le groupe identique à 0,00000 % (tour 88, `decalage_rho`) ✓ sur 50 enregistrements.
+
+**Une identité exacte pour la carte (04/11, avant les calculs)** : v_{t+1} = B2 v_t + (1 − B2) g_t². Entre deux instants pris juste avant deux salves successives (i0 = a_g − 1 et i2 = a_{g+1} − 1, T = i2 − i0 pas), v_e(i2) = θ v_e(i0) + I_e et v_l(i2) = θ v_l(i0) + I_l avec θ = B2^T et I_i = (1 − B2) Σ_t B2^{i2 − 1 − t} g_{i,t}² (injection nette de la salve, calme compris). Donc ρ_{g+1}² = (θ v_e + I_e)/(θ v_l + I_l) = ω_g ρ_g² + (1 − ω_g) ρ*_g², avec ω_g = θ v_l(i0)/(θ v_l(i0) + I_l) (poids de la mémoire de l3 retenue) et ρ*_g² = I_e/I_l (cible de la salve g). C'est vrai sans aucune hypothèse de linéarité. ρ n'est tiré vers la cible qu'à la hauteur du poids 1 − ω ; M dépend donc de deux objets : le poids ω et la cible ρ*.
+
+**Hypothèses (04/11) :**
+- H91-1 (lui) la marche est un mouvement de A ou de a avec lr (contraste d'amplitudes de salve qui se réduit à 0,2, lu dans |S_F|).
+- H91-2 (lui) d_g contre ρ_g donne une droite propre par lr, dont la pente bouge à 0,2.
+- H91-3 (moi, standard) la pente de d_g sur ln ρ_g est (autocorrélation de ln ρ à un salve) − 1 ; avec des injections indépendantes et une décroissance θ = B2^C par cycle de longueur C (C = enregistrement / nombre de groupes), le modèle donne −(1 − 0,999^C) ; elle varie lisse avec le cycle et ne bouge pas à 0,2 ; l'information n'est pas dans la pente mais dans la cible.
+- H91-4 (moi, non standard) la marche de M est la marche de la cible ρ*² = I_e/I_l (rapport des énergies injectées par salve dans e3 et l3), indépendante de F ; le poids ω est lisse en lr. Alors |S_F| qui tombe à 0,2 est un effet du poids ω et des injections de calme, pas la cause de la marche.
+
+**Prédictions précommises (04/11), avant les calculs** (`verifier_tour91_carte.py` : mode `calme` sur trois enregistrements régénérés, mode `carte` sur les .npz du tour 86–88 aux neuf lr de 0,1 à 0,3, cinq à dix départs ; puis un mode `injection` qui calcule I_e, I_l, ω, ρ* à partir des √v_e3 et √v_l3 enregistrés à chaque pas, base b1 = 0,9, b2 = 0,999, x = 1e-4, cinq départs) :
+- P91-1 (sa structure) : sur lr 0,1 / 0,2 / 0,3, la somme des |variations de ln ρ| pendant les calmes est inférieure à 5 % de celle pendant les salves. Mise : 80 %.
+- P91-2 (droite propre) : |r(d_g, ln ρ_g)| ≥ 0,3 à chacun des neuf lr, et les moyennes de d_g par quintile de ln ρ_g sont sur la droite (R² des quintiles autour de la droite ≥ 0,9). Mise : 60 %.
+- P91-3 (pente sans paramètre) : β(lr) est à ±30 % de −(1 − 0,999^C(lr)) à lr 0,1 à 0,275 (C = 300000/nombre de groupes). Mise : 40 %.
+- P91-4 (sa question) : β bouge à lr 0,2 : coude de ln|β| contre ln lr (neuf points) avec RSS(coude)/RSS(droite) < 0,3 et lr_coude ∈ [0,19 ; 0,22]. Mise : 25 %.
+- P91-5 : ajouter la durée de la salve, ln √v_l3 et la durée du calme avant g à la régression de d_g fait monter R² d'au moins 0,15 à lr 0,2. Mise : 55 %.
+- P91-6 (identité) : ρ_{g+1}² = ω_g ρ_g² + (1 − ω_g) ρ*_g² est vérifiée à moins de 1e-6 relatif pour chaque salve de chaque enregistrement. Mise : 85 %.
+- P91-7 (H91-4) : ω est lisse en lr (pas de coude ; ⟨ω⟩ est à ±0,05 de 0,999^C) et l'exposant local de −⟨ln ρ*⟩ a une marche (moyenne 0,15 → 0,2 moins 0,2 → 0,3) comprise entre 0,005 et 0,013, c'est-à-dire de la taille de celle de M (0,0088) à un facteur 1,5 près. Mise : 35 %. Si la marche de la cible est inférieure à 0,003 et celle de ⟨ω⟩ non, la marche vient du poids.
+Règle de lecture, fixée avant les données : si la marche de −⟨ln ρ*⟩ est au moins 70 % de celle de −⟨ln ρ⟩ et si ω est lisse, la marche est dans la cible ; si elle est dans ω (marche de ⟨ω⟩ qui explique ≥ 70 %), elle est dans le poids ; sinon elle est partagée et je rapporte les deux parts.
+
+Réponse dans `docs/REPONSE_ORDRE91.md` (à écrire après les runs).
+
 ## 9. Ce qu'il faudrait construire ensuite, par ordre de valeur
 
 1. **Décomposition de variance de la récompense** (§5.3). Coût quasi nul, et
