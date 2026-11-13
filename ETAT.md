@@ -1,9 +1,30 @@
 # État du projet RDTRL — où on en est
 
-## Tour 91 (vraie critique de dipankarsarkar, 04/11/2026) — LETTRE PRÊTE
+## Tour 92 (vraie critique de dipankarsarkar, 13/11/2026) — LETTRE PRÊTE
 
-**Lettre** : `docs/REPONSE_ORDRE91.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 90
+**Lettre** : `docs/REPONSE_ORDRE92.md` (gitignorée), PRÊTE À ENVOYER, première personne. La lettre 91
+est partie (sa critique du tour 92 y répond) et reste figée.
+**Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 13/11/2026 (tour 92, PAS simulée) », avant « ## 9. ».
+
+**Sa critique** : lire l'énergie par pas contre une prédiction qu'on a déjà : une énergie fixe par pas donnerait une pente de ln I sur L égale à 1/L (+0,0076 à +0,0093) ; jusqu'à lr 0,15 la pente est nulle, donc la salve porte un budget fixe ; ce qui s'allume à 0,175 est la chute du budget avec L ; γ est le demi-écart des pentes d'injection, l'asymétrie l3 / e3 est quasi fixe (rapport 1,05–1,08) ; suppose que le calme ajoute peu à I. Questions : ln(I / L) sur L est-il à −1/L jusqu'à 0,15 ? à partir de 0,175 la perte est-elle dans le pic ou dans la fin de la salve ?
+**Acquis (conditionnels : réduction, b1 = 0,9, b2 = 0,999, x = 1e-4, cinq départs par lr, lr 0,1–0,25)** : ses chiffres vérifiés ; γ = ½ (écart des pentes) est une **identité** ; **le calme ne porte pas plus de 7e-5 de I** ; pente de ln E_b (énergie de la salve seule) sur L ≈ 0 jusqu'à 0,15 (|pente| < 2e-3, écart-type par blocs 1,6–2,0e-3) **mais pas un budget fixe** : sd de ln E_b 5,7–6,6 % à lr ≤ 0,15, expliquée à R² 0,94–0,98 par ln v(i0) (pente −12 sur ln v_e(i0)) ; **la perte à partir de 0,175 est dans le pic** (|pente du pic| / |pente de E_b| = 1,17–1,23 ; largeur croissante), la fin du groupe porte environ 1 % de l'énergie ; **post hoc : en contrôlant ln v(i0) la pente de ln I sur L tombe à 0,1–4 % de sa valeur à lr 0,2 et 0,25, γ à −7e-6…−2,6e-5 (contre +7,4e-4)**, et **le point d'allumage à 0,175 dépend de ma coupure** (0,125 à 1e-4, signe opposé à 1e-3) : **je retire de la lettre 91 la lecture « une amplitude qui bouge avec lr, juste avant la marche »** ; la marche de M portée par la cible (tour 91) n'utilisait pas L.
+**Mes ratés** : P92-2 (rapport E_b / I à 0,175), P92-4 (le contrôle d'état), P92-5 (coupure), P92-6 (la perte est dans le pic, pas dans la fin), P92-7 ; tenues : P92-1, P92-3.
+**Limites / biais** : sd de L de 1,2–2,6 pas dans un enregistrement (pentes locales) ; départs quasi-clones à bas lr ; contrôle par la seule variable v (pas x, m) ; cause commune non isolée ; contrôles, médiation, profil aligné et γ contrôlé post hoc ; lr 0,275 et 0,3 non lus ; une seule base.
+Écart à tes règles : aucun `python -c` ni heredoc ; six processus au plus (35 enregistrements par lots de six, puis quatre analyses en parallèle) ; pas de Co-Authored-By.
+
+**Pistes concrètes pour la suite :**
+1. Envoyer la lettre 92 ; question : ln E_b contre lr p_z à l'instant où le niveau 38 est franchi avant chaque salve, à lr fixé, pour voir si v(i0) agit par cette lecture et si elle change à 0,2 ? (oui/non).
+2. Pourquoi la pente de ln E_b sur ln v(i0) est de −12 à tous les lr (sd de ln v(i0) de 0,4 à 1 % seulement) ; contrôle par les autres coordonnées (x, m).
+3. La carte du tour 91 (d_g contre ρ_g) avec l'état d'entrée à la place de L comme variable de contrôle.
+4. La même chose à x = 1e-3 et 1e-5, b2 = 0,9995.
+5. Réseau complet au-delà de lr 0,1.
+6. `.gitignore` modifié par l'utilisateur, non commité.
+
+## Tour 91 (vraie critique de dipankarsarkar, 04/11/2026) — LETTRE PARTIE
+
+**Lettre** : `docs/REPONSE_ORDRE91.md` (gitignorée), partie, figée. La lettre 90
 est partie (sa critique du tour 91 y répond) et reste figée.
+**Note du tour 92** : la lecture de la dépendance de la cible en la durée de la salve (« amplitude qui bouge avec lr à 0,175 ») est retirée dans la lettre 92 (elle disparaît en contrôlant l'état d'entrée et dépend de la coupure).
 **Carnet** : section « VRAIE CRITIQUE DE DIPANKARSARKAR, 04/11/2026 (tour 91, PAS simulée) », avant « ## 9. ».
 
 **Sa critique** : oui à la formule, à condition qu'elle reproduise le changement de signe (pente intra-enregistrement négative, tendance entre lr positive) : donc A ou a bouge avec lr, et ce mouvement serait la marche ; |S_F| plat de 0,15 à 0,2 puis qui tombe = contraste d'amplitudes qui se réduit ; ρ constant dans un calme, donc d_g = ln ρ_(g+1) − ln ρ_g est l'incrément de la salve g, lisible dans les ρ_g stockés ; son point fixe fixe M : d_g contre ρ_g donne-t-il une droite propre par lr, la pente bouge-t-elle à 0,2 ?
